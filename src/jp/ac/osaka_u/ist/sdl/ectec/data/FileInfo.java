@@ -23,39 +23,39 @@ public class FileInfo extends AbstractElement {
 	/**
 	 * the id of the start revision
 	 */
-	private final long startRevision;
+	private final long startRevisionId;
 
 	/**
 	 * the id of the end revision
 	 */
-	private final long endRevision;
+	private final long endRevisionid;
 
 	/**
 	 * the constructor for elements that are retrieved from the db
 	 * 
 	 * @param id
 	 * @param path
-	 * @param startRevision
-	 * @param endRevision
+	 * @param startRevisionId
+	 * @param endRevisionId
 	 */
-	public FileInfo(final long id, final String path, final long startRevision,
-			final long endRevision) {
+	public FileInfo(final long id, final String path,
+			final long startRevisionId, final long endRevisionId) {
 		super(id);
 		this.path = path;
-		this.startRevision = startRevision;
-		this.endRevision = endRevision;
+		this.startRevisionId = startRevisionId;
+		this.endRevisionid = endRevisionId;
 	}
 
 	/**
 	 * the constructor for newly created elements
 	 * 
 	 * @param path
-	 * @param startRevision
-	 * @param endRevision
+	 * @param startRevisionId
+	 * @param endRevisionId
 	 */
-	public FileInfo(final String path, final long startRevision,
-			final long endRevision) {
-		this(count.getAndIncrement(), path, startRevision, endRevision);
+	public FileInfo(final String path, final long startRevisionId,
+			final long endRevisionId) {
+		this(count.getAndIncrement(), path, startRevisionId, endRevisionId);
 	}
 
 	/**
@@ -72,8 +72,8 @@ public class FileInfo extends AbstractElement {
 	 * 
 	 * @return
 	 */
-	public final long getStartRevision() {
-		return this.startRevision;
+	public final long getStartRevisionId() {
+		return this.startRevisionId;
 	}
 
 	/**
@@ -81,8 +81,8 @@ public class FileInfo extends AbstractElement {
 	 * 
 	 * @return
 	 */
-	public final long getEndRevision() {
-		return this.endRevision;
+	public final long getEndRevisionId() {
+		return this.endRevisionid;
 	}
 
 }
