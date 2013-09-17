@@ -17,6 +17,11 @@ public abstract class AbstractElement {
 		this.id = id;
 	}
 
+	/**
+	 * get the id of this element
+	 * 
+	 * @return
+	 */
 	public final long getId() {
 		return this.id;
 	}
