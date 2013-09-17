@@ -54,4 +54,13 @@ public class CodeFragmentLinkInfo extends ElementLinkInfo {
 				beforeRevisionId, afterRevisionId, changed);
 	}
 
+	/**
+	 * get whether this code fragment was changed or not
+	 * 
+	 * @return
+	 */
+	public final boolean isChanged() {
+		return changed;
+	}
+
 }
