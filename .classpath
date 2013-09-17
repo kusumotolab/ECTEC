@@ -2,5 +2,20 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/commons-cli-1.2.jar" sourcepath="lib/commons-cli-1.2-sources.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.core.contenttype_3.4.200.v20130326-1255.jar" sourcepath="lib/org.eclipse.core.contenttype.source_3.4.200.v20130326-1255.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.core.jobs_3.5.300.v20130429-1813.jar" sourcepath="lib/org.eclipse.core.jobs.source_3.5.300.v20130429-1813.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.core.resources_3.8.100.v20130521-2026.jar" sourcepath="lib/org.eclipse.core.resources.source_3.8.100.v20130521-2026.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.core.runtime_3.9.0.v20130326-1255.jar" sourcepath="lib/org.eclipse.core.runtime.source_3.9.0.v20130326-1255.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.equinox.common_3.6.200.v20130402-1505.jar" sourcepath="lib/org.eclipse.equinox.common.source_3.6.200.v20130402-1505.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.equinox.preferences_3.5.100.v20130422-1538.jar" sourcepath="lib/org.eclipse.equinox.preferences.source_3.5.100.v20130422-1538.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.jdt.core_3.9.0.v20130604-1421.jar" sourcepath="lib/org.eclipse.jdt.core.source_3.9.0.v20130604-1421.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.osgi_3.9.0.v20130529-1710.jar" sourcepath="lib/org.eclipse.osgi.source_3.9.0.v20130529-1710.jar"/>
+	<classpathentry kind="lib" path="lib/sequence-library-1.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.7.2.jar"/>
+	<classpathentry kind="lib" path="lib/sqljet-1.1.4.jar"/>
+	<classpathentry kind="lib" path="lib/svnkit-1.7.4-v1.jar" sourcepath="lib/svnkit-1.7.4-v1-sources.jar"/>
+	<classpathentry kind="lib" path="lib/svnkit-cli-1.7.4-v1.jar" sourcepath="lib/svnkit-cli-1.7.4-v1-sources.jar"/>
+	<classpathentry kind="lib" path="lib/svnkit-javahl16-1.7.4-v1.jar" sourcepath="lib/svnkit-javahl16-1.7.4-v1-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
