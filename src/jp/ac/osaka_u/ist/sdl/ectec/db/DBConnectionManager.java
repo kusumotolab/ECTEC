@@ -140,15 +140,13 @@ public final class DBConnectionManager {
 	 * execute the query
 	 * 
 	 * @param query
+	 * @throws Exception
 	 */
-	public void executeUpdate(final String query) {
-		try {
-			final Statement stmt = createStatement();
-			stmt.executeUpdate(query);
-			stmt.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public void executeUpdate(final String query) throws Exception {
+		final Statement stmt = createStatement();
+		stmt.executeUpdate(query);
+		stmt.close();
+
 	}
 
 }
