@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/commons-cli-1.2.jar" sourcepath="lib/commons-cli-1.2-sources.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.core.contenttype_3.4.200.v20130326-1255.jar" sourcepath="lib/org.eclipse.core.contenttype.source_3.4.200.v20130326-1255.jar"/>
@@ -17,5 +18,6 @@
 	<classpathentry kind="lib" path="lib/svnkit-1.7.4-v1.jar" sourcepath="lib/svnkit-1.7.4-v1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/svnkit-cli-1.7.4-v1.jar" sourcepath="lib/svnkit-cli-1.7.4-v1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/svnkit-javahl16-1.7.4-v1.jar" sourcepath="lib/svnkit-javahl16-1.7.4-v1-sources.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
