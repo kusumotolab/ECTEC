@@ -213,7 +213,6 @@ public class DBMaker {
 		builder.append("AFTER_ELEMENT_ID LONG,");
 		builder.append("BEFORE_REVISION_ID LONG,");
 		builder.append("AFTER_REVISION_ID LONG,");
-		builder.append("BEFORE_ELEMENT_ID LONG,");
 		builder.append("CHANGED_ELEMENTS INTEGER,");
 		builder.append("ADDED_ELEMENTS INTEGER,");
 		builder.append("DELETED_ELEMENTS INTEGER,");
@@ -237,7 +236,7 @@ public class DBMaker {
 		builder.append("START_REVISION_ID LONG,");
 		builder.append("END_REVISION_ID LONG,");
 		builder.append("CLONES TEXT NOT NULL,");
-		builder.append("CLONE_LINKS NOT NULL,");
+		builder.append("CLONE_LINKS TEXT NOT NULL,");
 		builder.append("CHANGES INTEGER,");
 		builder.append("ADDITIONS INTEGER,");
 		builder.append("DELETIONS INTEGER,");
