@@ -45,4 +45,35 @@ public class StringUtils {
 		return convertListToString(collection, ",");
 	}
 
+	/**
+	 * convert the given string into a collection of long values <br>
+	 * the result will be stored in the collection specified as the first
+	 * argument
+	 * 
+	 * @param collection
+	 * @param str
+	 * @param separator
+	 */
+	public static void convertStringToCollection(
+			final Collection<Long> collection, final String str,
+			final String separator) {
+		final String[] splitStr = str.split(separator);
+		for (final String element : splitStr) {
+			collection.add(Long.parseLong(element));
+		}
+	}
+
+	/**
+	 * convert the given string into a collection of integers <br>
+	 * the result will be stored in the collection specified as the first
+	 * argument
+	 * 
+	 * @param collection
+	 * @param str
+	 */
+	public static void convertStringToCollection(
+			final Collection<Long> collection, final String str) {
+		convertStringToCollection(collection, str, ",");
+	}
+
 }

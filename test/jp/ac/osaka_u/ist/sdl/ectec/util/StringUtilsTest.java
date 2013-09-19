@@ -20,4 +20,20 @@ public class StringUtilsTest {
 		assertTrue(result.equals("1,2,3"));
 	}
 
+	@Test
+	public void test2() {
+		final String str = "1,2,3,100,100,200";
+		final List<Long> result = new ArrayList<Long>();
+		StringUtils.convertStringToCollection(result, str);
+		assertTrue(result.size() == 6);
+	}
+
+	@Test
+	public void test3() {
+		final String str = "1,2,3,100,100,200";
+		final List<Long> result = new ArrayList<Long>();
+		StringUtils.convertStringToCollection(result, str);
+		assertTrue(result.get(2) == 3);
+	}
+
 }
