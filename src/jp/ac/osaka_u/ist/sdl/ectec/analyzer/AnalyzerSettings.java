@@ -79,6 +79,11 @@ final class AnalyzerSettings {
 	private final boolean overwriteDb;
 
 	/**
+	 * the maximum number of statements that are batched
+	 */
+	private final int maxBatchCount;
+
+	/**
 	 * the path of the properties file
 	 */
 	private final String propertiesFilePath;
@@ -90,7 +95,8 @@ final class AnalyzerSettings {
 			final String endRevisionIdentifier,
 			final MessagePrintLevel verboseLevel,
 			final VersionControlSystem versionControlSystem,
-			final boolean overwriteDb, final String propertiesFilePath) {
+			final boolean overwriteDb, final int maxBatchCount,
+			final String propertiesFilePath) {
 		this.repositoryPath = repositoryPath;
 		this.dbPath = dbPath;
 		this.additionalPath = additionalPath;
@@ -103,6 +109,7 @@ final class AnalyzerSettings {
 		this.verboseLevel = verboseLevel;
 		this.versionControlSystem = versionControlSystem;
 		this.overwriteDb = overwriteDb;
+		this.maxBatchCount = maxBatchCount;
 		this.propertiesFilePath = propertiesFilePath;
 	}
 
@@ -156,6 +163,10 @@ final class AnalyzerSettings {
 
 	final boolean isOverwriteDb() {
 		return overwriteDb;
+	}
+
+	final int getMaxBatchCount() {
+		return maxBatchCount;
 	}
 
 	final String getPropertiesFilePath() {
@@ -213,10 +224,13 @@ final class AnalyzerSettings {
 				.getOptionValue("ow").equalsIgnoreCase("yes") ? true : false))
 				: defaultLoader.isOverwriteDb();
 
+		final int maxBatchCount = (cmd.hasOption("mb")) ? Integer.parseInt(cmd
+				.getOptionValue("mb")) : defaultLoader.getMaxBatchCount();
+
 		return new AnalyzerSettings(repositoryPath, dbPath, additionalPath,
 				language, threads, userName, passwd, startRevisionIdentifier,
 				endRevisionIdentifier, verboseLevel, versionControlSystem,
-				overwriteDb, propertiesFilePath);
+				overwriteDb, maxBatchCount, propertiesFilePath);
 	}
 
 	/**
@@ -313,6 +327,14 @@ final class AnalyzerSettings {
 			ow.setArgs(1);
 			ow.setRequired(false);
 			options.addOption(ow);
+		}
+
+		{
+			final Option mb = new Option("mb", "max-batch", true,
+					"the maximum number of batched statements");
+			mb.setArgs(1);
+			mb.setRequired(false);
+			options.addOption(mb);
 		}
 
 		{

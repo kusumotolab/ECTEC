@@ -27,5 +27,7 @@ public interface PropertiesKeys {
 	public static final String VERSION_CONTROL_SYSTEM = "ectec.version-control-system";
 	
 	public static final String OVERWRITE_DB = "ectec.overwrite-db";
+	
+	public static final String MAX_BATCH = "ectec.max-batch";
 
 }

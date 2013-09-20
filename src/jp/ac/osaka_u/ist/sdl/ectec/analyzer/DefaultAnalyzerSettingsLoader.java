@@ -67,13 +67,18 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 	 */
 	private final boolean overwriteDb;
 
+	/**
+	 * the maximum number of statements that are batched
+	 */
+	private final int maxBatchCount;
+
 	private DefaultAnalyzerSettingsLoader(final String additionalPath,
 			final Language language, final int threads, final String userName,
 			final String passwd, final String startRevisionIdentifier,
 			final String endRevisionIdentifier,
 			final MessagePrintLevel verboseLevel,
 			final VersionControlSystem versionControlSystem,
-			final boolean overwriteDb) {
+			final boolean overwriteDb, final int maxBatchCount) {
 		this.additionalPath = additionalPath;
 		this.language = language;
 		this.threads = threads;
@@ -84,6 +89,7 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 		this.verboseLevel = verboseLevel;
 		this.versionControlSystem = versionControlSystem;
 		this.overwriteDb = overwriteDb;
+		this.maxBatchCount = maxBatchCount;
 	}
 
 	/*
@@ -128,6 +134,10 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 
 	final boolean isOverwriteDb() {
 		return overwriteDb;
+	}
+
+	final int getMaxBatchCount() {
+		return maxBatchCount;
 	}
 
 	/*
@@ -205,9 +215,11 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 		final boolean overwriteDb = (prop.getProperty(OVERWRITE_DB)
 				.equalsIgnoreCase("yes")) ? true : false;
 
+		final int maxBatchCount = Integer.parseInt(prop.getProperty(MAX_BATCH));
+
 		return new DefaultAnalyzerSettingsLoader(additionalPath, language,
 				threads, userName, passwd, startRevisionIdentifier,
 				endRevisionIdentifier, verboseLevel, versionControlSystem,
-				overwriteDb);
+				overwriteDb, maxBatchCount);
 	}
 }
