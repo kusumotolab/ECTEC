@@ -29,6 +29,8 @@ public class AnalyzerMain {
 
 			preprocess(settings);
 
+			main(settings);
+
 			postprocess();
 
 		} catch (Exception e) {
@@ -90,6 +92,8 @@ public class AnalyzerMain {
 								: settings.getPropertiesFilePath()));
 		MessagePrinter.println("\toverwrite the db if it already exists: "
 				+ ((settings.isOverwriteDb()) ? "yes" : "no"));
+		MessagePrinter.println("\tthe maximum nuber of batched statements: "
+				+ settings.getMaxBatchCount());
 		MessagePrinter.stronglyPrintln();
 	}
 
@@ -107,10 +111,30 @@ public class AnalyzerMain {
 	private static void initializeDb(final AnalyzerSettings settings)
 			throws Exception {
 		MessagePrinter.stronglyPrintln("initializing the database ... ");
-		dbManager = new DBConnectionManager(settings.getDbPath());
+		dbManager = new DBConnectionManager(settings.getDbPath(),
+				settings.getMaxBatchCount());
 		final DBMaker dbMaker = new DBMaker(dbManager);
 		dbMaker.makeDb(settings.isOverwriteDb());
 		MessagePrinter.stronglyPrintln("\tOK");
+		MessagePrinter.stronglyPrintln();
+	}
+
+	private static void main(final AnalyzerSettings settings) throws Exception {
+		detectAndRegisterTargetRevisions(settings);
+	}
+
+	private static void detectAndRegisterTargetRevisions(
+			final AnalyzerSettings settings) throws Exception {
+		MessagePrinter.stronglyPrintln("detecting target revisions ... ");
+
+		final RevisionIdentifier identifier = new RevisionIdentifier(
+				repositoryManagerManager.getRepositoryManager()
+						.getTargetRevisionDetector(),
+				dbManager.getRevisionRegisterer());
+		identifier.detectAndRegister(settings.getLanguage(),
+				settings.getStartRevisionIdentifier(),
+				settings.getEndRevisionIdentifier());
+
 		MessagePrinter.stronglyPrintln();
 	}
 

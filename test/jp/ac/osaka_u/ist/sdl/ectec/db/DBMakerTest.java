@@ -18,7 +18,7 @@ public class DBMakerTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		manager = new DBConnectionManager("test-resources" + File.separator
-				+ "db" + File.separator + "test.db");
+				+ "db" + File.separator + "test.db", 10000);
 		maker = new DBMaker(manager);
 	}
 

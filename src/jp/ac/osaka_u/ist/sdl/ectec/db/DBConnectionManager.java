@@ -6,6 +6,14 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CloneGenealogyRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CloneSetLinkRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CloneSetRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CodeFragmentLinkRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CodeFragmentRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.FileRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.RevisionRegisterer;
+
 /**
  * A class to manage the connection between the db
  * 
@@ -19,16 +27,70 @@ public final class DBConnectionManager {
 	 */
 	private Connection connection;
 
+	private final RevisionRegisterer revisionRegisterer;
+
+	private final FileRegisterer fileRegisterer;
+
+	private final CodeFragmentRegisterer fragmentRegisterer;
+
+	private final CloneSetRegisterer cloneRegisterer;
+
+	private final CodeFragmentLinkRegisterer fragmentLinkRegisterer;
+
+	private final CloneSetLinkRegisterer cloneLinkRegisterer;
+
+	private final CloneGenealogyRegisterer cloneGenealogyRegisterer;
+
 	/**
 	 * the constructor
 	 * 
 	 * @param dbPath
 	 * @throws Exception
 	 */
-	public DBConnectionManager(final String dbPath) throws Exception {
+	public DBConnectionManager(final String dbPath, final int maxBatchCount)
+			throws Exception {
 		Class.forName("org.sqlite.JDBC");
 		this.connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
 		this.connection.setAutoCommit(false);
+		this.revisionRegisterer = new RevisionRegisterer(this, maxBatchCount);
+		this.fileRegisterer = new FileRegisterer(this, maxBatchCount);
+		this.fragmentRegisterer = new CodeFragmentRegisterer(this,
+				maxBatchCount);
+		this.cloneRegisterer = new CloneSetRegisterer(this, maxBatchCount);
+		this.fragmentLinkRegisterer = new CodeFragmentLinkRegisterer(this,
+				maxBatchCount);
+		this.cloneLinkRegisterer = new CloneSetLinkRegisterer(this,
+				maxBatchCount);
+		this.cloneGenealogyRegisterer = new CloneGenealogyRegisterer(this,
+				maxBatchCount);
+	}
+
+	public final RevisionRegisterer getRevisionRegisterer() {
+		return revisionRegisterer;
+	}
+
+	public final FileRegisterer getFileRegisterer() {
+		return fileRegisterer;
+	}
+
+	public final CodeFragmentRegisterer getFragmentRegisterer() {
+		return fragmentRegisterer;
+	}
+
+	public final CloneSetRegisterer getCloneRegisterer() {
+		return cloneRegisterer;
+	}
+
+	public final CodeFragmentLinkRegisterer getFragmentLinkRegisterer() {
+		return fragmentLinkRegisterer;
+	}
+
+	public final CloneSetLinkRegisterer getCloneLinkRegisterer() {
+		return cloneLinkRegisterer;
+	}
+
+	public final CloneGenealogyRegisterer getCloneGenealogyRegisterer() {
+		return cloneGenealogyRegisterer;
 	}
 
 	/**
