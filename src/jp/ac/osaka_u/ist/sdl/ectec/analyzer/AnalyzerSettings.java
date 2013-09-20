@@ -56,12 +56,12 @@ final class AnalyzerSettings {
 	/**
 	 * the identifier of the start revision
 	 */
-	private final String startRevisionIdentifier;
+	private String startRevisionIdentifier;
 
 	/**
 	 * the identifier of the end revision
 	 */
-	private final String endRevisionIdentifier;
+	private String endRevisionIdentifier;
 
 	/**
 	 * the level of verbose output
@@ -171,6 +171,14 @@ final class AnalyzerSettings {
 
 	final String getPropertiesFilePath() {
 		return propertiesFilePath;
+	}
+
+	final void setStartRevisionIdentifier(final String startRevisionIdentifier) {
+		this.startRevisionIdentifier = startRevisionIdentifier;
+	}
+
+	final void setEndRevisionIdentifier(final String endRevisionIdentifier) {
+		this.endRevisionIdentifier = endRevisionIdentifier;
 	}
 
 	static AnalyzerSettings parseArgs(final String[] args) throws Exception {
