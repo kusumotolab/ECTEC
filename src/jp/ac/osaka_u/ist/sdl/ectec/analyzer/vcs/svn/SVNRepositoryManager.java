@@ -8,10 +8,8 @@ import java.util.Collections;
 import java.util.List;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.IRepositoryManager;
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.RepositoryNotInitializedException;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.TargetRevisionDetector;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
-import jp.ac.osaka_u.ist.sdl.prevol.methodanalyzer.svn.RepositoryCreator;
 
 import org.tmatesoft.svn.core.ISVNDirEntryHandler;
 import org.tmatesoft.svn.core.SVNDepth;
