@@ -175,8 +175,8 @@ final class AnalyzerSettings {
 				.getCorrespondingLanguage(cmd.getOptionValue("l"))
 				: defaultLoader.getLanguage();
 
-		final int threads = (cmd.hasOption("th")) ? Integer.parseInt("th")
-				: defaultLoader.getThreads();
+		final int threads = (cmd.hasOption("th")) ? Integer.parseInt(cmd
+				.getOptionValue("th")) : defaultLoader.getThreads();
 
 		final String userName = (cmd.hasOption("u")) ? cmd.getOptionValue("u")
 				: defaultLoader.getUserName();
