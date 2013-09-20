@@ -11,6 +11,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.IRepositoryManager;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.RepositoryNotInitializedException;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.TargetRevisionDetector;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
+import jp.ac.osaka_u.ist.sdl.prevol.methodanalyzer.svn.RepositoryCreator;
 
 import org.tmatesoft.svn.core.ISVNDirEntryHandler;
 import org.tmatesoft.svn.core.SVNDepth;
@@ -67,13 +68,19 @@ public class SVNRepositoryManager implements IRepositoryManager {
 	 */
 	private final String additionalUrl;
 
-	public SVNRepositoryManager(final SVNURL url,
-			final SVNRepository repository, final String urlStr,
-			final String userName, final String passwd,
-			final String additionalUrl) {
+	public SVNRepositoryManager(final String urlRoot, final String userName,
+			final String passwd, final String additionalUrl) throws Exception {
 		this.targetRevisionDetector = new SVNTargetRevisionDetector(this);
-		this.url = url;
-		this.repository = repository;
+
+		final String urlStr = (additionalUrl == null) ? urlRoot : urlRoot
+				+ additionalUrl;
+		this.url = SVNURL.parseURIDecoded(urlStr);
+
+		final RepositoryCreator creator = RepositoryCreator
+				.getCorrespondingInstance(urlStr);
+
+		this.repository = creator.create(url, userName, passwd);
+
 		this.urlStr = urlStr;
 		this.userName = userName;
 		this.passwd = passwd;
