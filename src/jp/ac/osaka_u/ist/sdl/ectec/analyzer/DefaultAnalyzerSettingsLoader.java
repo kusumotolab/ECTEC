@@ -5,6 +5,7 @@ import java.util.Properties;
 import jp.ac.osaka_u.ist.sdl.ectec.PropertiesKeys;
 import jp.ac.osaka_u.ist.sdl.ectec.PropertiesReader;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
+import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrintLevel;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.VersionControlSystem;
 
 /**
@@ -52,6 +53,11 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 	private final String endRevisionIdentifier;
 
 	/**
+	 * the level of verbose output
+	 */
+	private final MessagePrintLevel verboseLevel;
+
+	/**
 	 * the version control system that manages the target repository
 	 */
 	private final VersionControlSystem versionControlSystem;
@@ -60,6 +66,7 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 			final Language language, final int threads, final String userName,
 			final String passwd, final String startRevisionIdentifier,
 			final String endRevisionIdentifier,
+			final MessagePrintLevel verboseLevel,
 			final VersionControlSystem versionControlSystem) {
 		this.additionalPath = additionalPath;
 		this.language = language;
@@ -68,6 +75,7 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 		this.passwd = passwd;
 		this.startRevisionIdentifier = startRevisionIdentifier;
 		this.endRevisionIdentifier = endRevisionIdentifier;
+		this.verboseLevel = verboseLevel;
 		this.versionControlSystem = versionControlSystem;
 	}
 
@@ -101,6 +109,10 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 
 	final String getEndRevisionIdentifier() {
 		return endRevisionIdentifier;
+	}
+
+	final MessagePrintLevel getVerboseLevel() {
+		return verboseLevel;
 	}
 
 	final VersionControlSystem getVersionControlSystem() {
@@ -172,11 +184,14 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 				.getProperty(END_REVISION_IDENTIFIER).equalsIgnoreCase("none")) ? null
 				: prop.getProperty(END_REVISION_IDENTIFIER);
 
+		final MessagePrintLevel verboseLevel = MessagePrintLevel
+				.getCorrespondingLevel(prop.getProperty(VERBOSE_LEVEL));
+
 		final VersionControlSystem versionControlSystem = VersionControlSystem
 				.getCorrespondingVersionControlSystem(VERSION_CONTROL_SYSTEM);
 
 		return new DefaultAnalyzerSettingsLoader(additionalPath, language,
 				threads, userName, passwd, startRevisionIdentifier,
-				endRevisionIdentifier, versionControlSystem);
+				endRevisionIdentifier, verboseLevel, versionControlSystem);
 	}
 }

@@ -22,6 +22,8 @@ public interface PropertiesKeys {
 
 	public static final String END_REVISION_IDENTIFIER = "ectec.end-revision-identifier";
 
+	public static final String VERBOSE_LEVEL = "ectec.verbose-level";
+
 	public static final String VERSION_CONTROL_SYSTEM = "ectec.version-control-system";
 
 }
