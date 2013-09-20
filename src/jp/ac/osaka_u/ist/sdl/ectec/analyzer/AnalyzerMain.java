@@ -51,6 +51,9 @@ public class AnalyzerMain {
 
 		// initialize the db
 		initializeDb(settings);
+
+		// detect start/end revisions if they are not specified
+		resetRevisionIdentifiers(settings);
 	}
 
 	private static void initialPrint(final AnalyzerSettings settings) {
@@ -119,7 +122,26 @@ public class AnalyzerMain {
 		MessagePrinter.stronglyPrintln();
 	}
 
+	private static void resetRevisionIdentifiers(final AnalyzerSettings settings)
+			throws Exception {
+		if (settings.getStartRevisionIdentifier() == null) {
+			settings.setStartRevisionIdentifier(repositoryManagerManager
+					.getRepositoryManager().getFirstRevision());
+		}
+		if (settings.getEndRevisionIdentifier() == null) {
+			settings.setEndRevisionIdentifier(repositoryManagerManager
+					.getRepositoryManager().getLatestRevision());
+		}
+	}
+
 	private static void main(final AnalyzerSettings settings) throws Exception {
+		MessagePrinter.stronglyPrintln("start main operations");
+		MessagePrinter.stronglyPrintln("\tfrom revision "
+				+ settings.getStartRevisionIdentifier());
+		MessagePrinter.stronglyPrintln("\tto revision "
+				+ settings.getEndRevisionIdentifier());
+		MessagePrinter.stronglyPrintln(
+				);
 		detectAndRegisterTargetRevisions(settings);
 	}
 
