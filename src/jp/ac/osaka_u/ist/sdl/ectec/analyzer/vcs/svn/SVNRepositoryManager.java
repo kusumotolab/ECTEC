@@ -113,6 +113,14 @@ public class SVNRepositoryManager implements IRepositoryManager {
 	public SVNURL getURL() {
 		return this.url;
 	}
+	
+	/**
+	 * get the first revision number (always equals to 1)
+	 */
+	@Override
+	public String getFirstRevision() throws Exception {
+		return ((Long) (long) 1).toString();
+	}
 
 	/**
 	 * get the revision number of the latest revision

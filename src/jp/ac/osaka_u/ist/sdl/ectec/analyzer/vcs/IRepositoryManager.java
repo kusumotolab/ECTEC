@@ -22,6 +22,14 @@ public interface IRepositoryManager {
 	public ITargetRevisionDetector getTargetRevisionDetector();
 
 	/**
+	 * get the identifier of the first revision
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public String getFirstRevision() throws Exception;
+
+	/**
 	 * get the identifier of the latest revision
 	 * 
 	 * @return
