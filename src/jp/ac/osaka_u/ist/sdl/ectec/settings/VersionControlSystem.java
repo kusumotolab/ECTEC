@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs;
+package jp.ac.osaka_u.ist.sdl.ectec.settings;
 
 /**
  * An enum that represents version control systems
