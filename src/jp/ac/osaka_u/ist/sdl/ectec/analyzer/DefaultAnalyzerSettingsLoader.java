@@ -188,7 +188,8 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 				.getCorrespondingLevel(prop.getProperty(VERBOSE_LEVEL));
 
 		final VersionControlSystem versionControlSystem = VersionControlSystem
-				.getCorrespondingVersionControlSystem(VERSION_CONTROL_SYSTEM);
+				.getCorrespondingVersionControlSystem(prop
+						.getProperty(VERSION_CONTROL_SYSTEM));
 
 		return new DefaultAnalyzerSettingsLoader(additionalPath, language,
 				threads, userName, passwd, startRevisionIdentifier,
