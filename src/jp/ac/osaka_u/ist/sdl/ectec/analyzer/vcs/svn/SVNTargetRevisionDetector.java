@@ -25,6 +25,15 @@ import org.tmatesoft.svn.core.io.SVNRepository;
  */
 public class SVNTargetRevisionDetector implements TargetRevisionDetector {
 
+	/**
+	 * the repository manager
+	 */
+	private final SVNRepositoryManager manager;
+
+	public SVNTargetRevisionDetector(final SVNRepositoryManager manager) {
+		this.manager = manager;
+	}
+
 	@Override
 	public List<RevisionInfo> detectTargetRevisions(final Language language,
 			final String startRevisionIdentifier,
@@ -33,7 +42,7 @@ public class SVNTargetRevisionDetector implements TargetRevisionDetector {
 		final long startRevisionNum = Long.parseLong(startRevisionIdentifier);
 		final long endRevisionNum = Long.parseLong(endRevisionIdentifier);
 
-		final SVNRepository repository = SVNRepositoryManager.getRepository();
+		final SVNRepository repository = manager.getRepository();
 
 		// compare the specified end revision num and the latest revision num
 		// and choose the lower one

@@ -122,51 +122,57 @@ public class SVNRepositoryManager {
 	}
 
 	/**
-	 * validate whether the repository is initialized
+	 * get the instance of SVNRepositoryManager
 	 * 
+	 * @return
 	 * @throws RepositoryNotInitializedException
 	 */
-	private static void validate() throws RepositoryNotInitializedException {
+	public static SVNRepositoryManager getInstance()
+			throws RepositoryNotInitializedException {
 		if (SINGLETON == null) {
 			throw new RepositoryNotInitializedException(
-					"The repository is not initialized. Call SVNRepositoryManager.setup(urlstr, name, passwd)");
+					"repository is not initialized");
 		}
+
+		return SINGLETON;
 	}
 
 	/**
 	 * get the repository as SVNRepository
 	 * 
 	 * @return
-	 * @throws RepositoryNotInitializedException
 	 */
-	public static SVNRepository getRepository()
-			throws RepositoryNotInitializedException {
-		validate();
-		return SINGLETON.repository;
+	public SVNRepository getRepository() {
+		return this.repository;
 	}
 
 	/**
 	 * get the url of the repository as SVNURL
 	 * 
 	 * @return
-	 * @throws RepositoryNotInitializedException
 	 */
-	public static SVNURL getURL() throws RepositoryNotInitializedException {
-		validate();
-		return SINGLETON.url;
+	public SVNURL getURL() {
+		return this.url;
 	}
 
 	/**
-	 * get the revision number of the lates revision
+	 * get the revision number of the latest revision
 	 * 
 	 * @return
-	 * @throws RepositoryNotInitializedException
 	 * @throws SVNException
 	 */
-	public static long getLatestRevision()
-			throws RepositoryNotInitializedException, SVNException {
-		validate();
-		return SINGLETON.repository.getLatestRevision();
+	public long getLatestRevisionAsLong() throws SVNException {
+		return this.repository.getLatestRevision();
+	}
+
+	/**
+	 * get the revision number of the latest revision
+	 * 
+	 * @return
+	 * @throws SVNException
+	 */
+	public String getLatestRevision() throws SVNException {
+		return ((Long) this.repository.getLatestRevision()).toString();
 	}
 
 	/**
@@ -175,18 +181,15 @@ public class SVNRepositoryManager {
 	 * @param revisionNum
 	 * @param path
 	 * @return
-	 * @throws RepositoryNotInitializedException
 	 * @throws SVNException
 	 */
-	public static synchronized String getFileContents(final long revisionNum,
-			final String path) throws RepositoryNotInitializedException,
-			SVNException {
-		validate();
+	public synchronized String getFileContents(final long revisionNum,
+			final String path) throws SVNException {
 		final StringBuilder builder = new StringBuilder();
 		final String normalizedPath = (path == null) ? "" : path;
-		final SVNURL target = SINGLETON.url.appendPath(normalizedPath, false);
+		final SVNURL target = this.url.appendPath(normalizedPath, false);
 		final SVNWCClient wcClient = SVNClientManager.newInstance(null,
-				SINGLETON.userName, SINGLETON.passwd).getWCClient();
+				this.userName, this.passwd).getWCClient();
 		wcClient.doGetFileContents(target, SVNRevision.create(revisionNum),
 				SVNRevision.create(revisionNum), false, new OutputStream() {
 
@@ -206,12 +209,10 @@ public class SVNRepositoryManager {
 	 * @param revisionNum
 	 * @param lang
 	 * @return
-	 * @throws RepositoryNotInitializedException
 	 * @throws SVNException
 	 */
-	public static synchronized List<String> getListOfSourceFiles(
-			final long revisionNum, final Language lang)
-			throws RepositoryNotInitializedException, SVNException {
+	public synchronized List<String> getListOfSourceFiles(
+			final long revisionNum, final Language lang) throws SVNException {
 		return getListOfSourceFiles(revisionNum, lang, null);
 	}
 
@@ -224,27 +225,25 @@ public class SVNRepositoryManager {
 	 * @param targets
 	 * @return
 	 * @throws SVNException
-	 * @throws RepositoryNotInitializedException
 	 */
-	public static synchronized List<String> getListOfSourceFiles(
+	public synchronized List<String> getListOfSourceFiles(
 			final long revisionNum, final Language lang,
-			final Collection<String> targets) throws SVNException,
-			RepositoryNotInitializedException {
-		validate();
-
+			final Collection<String> targets) throws SVNException {
 		final SVNLogClient logClient = SVNClientManager.newInstance(null,
-				SINGLETON.userName, SINGLETON.passwd).getLogClient();
+				this.userName, this.passwd).getLogClient();
+
+		final String additionalUrl = this.additionalUrl;
 
 		final List<String> result = new ArrayList<String>();
-		logClient.doList(SINGLETON.url, SVNRevision.create(revisionNum),
+		logClient.doList(this.url, SVNRevision.create(revisionNum),
 				SVNRevision.create(revisionNum), true, SVNDepth.INFINITY,
 				SVNDirEntry.DIRENT_ALL, new ISVNDirEntryHandler() {
 
 					@Override
 					public void handleDirEntry(SVNDirEntry dirEntry)
 							throws SVNException {
-						final String path = (SINGLETON.additionalUrl == null) ? dirEntry
-								.getRelativePath() : SINGLETON.additionalUrl
+						final String path = (additionalUrl == null) ? dirEntry
+								.getRelativePath() : additionalUrl
 								+ dirEntry.getRelativePath();
 
 						if (lang.isTarget(path)) {
@@ -272,19 +271,16 @@ public class SVNRepositoryManager {
 	 * @param beforeRevNum
 	 * @param afterRevNum
 	 * @return
-	 * @throws RepositoryNotInitializedException
 	 * @throws SVNException
 	 */
-	public static String doDiff(final long beforeRevNum, final long afterRevNum)
-			throws RepositoryNotInitializedException, SVNException {
-		validate();
-
+	public String doDiff(final long beforeRevNum, final long afterRevNum)
+			throws SVNException {
 		final SVNDiffClient diffClient = SVNClientManager.newInstance(null,
-				SINGLETON.userName, SINGLETON.passwd).getDiffClient();
+				this.userName, this.passwd).getDiffClient();
 		final StringBuilder diffText = new StringBuilder();
 		diffClient.doDiff(SINGLETON.url, SVNRevision.create(beforeRevNum),
-				SINGLETON.url, SVNRevision.create(afterRevNum),
-				SVNDepth.INFINITY, true, new OutputStream() {
+				this.url, SVNRevision.create(afterRevNum), SVNDepth.INFINITY,
+				true, new OutputStream() {
 					@Override
 					public void write(int arg0) throws IOException {
 						diffText.append((char) arg0);
