@@ -15,54 +15,20 @@ import java.sql.Statement;
 public final class DBConnectionManager {
 
 	/**
-	 * the singleton object
-	 */
-	private static DBConnectionManager SINGLETON = null;
-
-	/**
 	 * the connection between the db
 	 */
 	private Connection connection;
 
 	/**
-	 * the private constructor
+	 * the constructor
 	 * 
 	 * @param dbPath
 	 * @throws Exception
 	 */
-	private DBConnectionManager(final String dbPath) throws Exception {
+	public DBConnectionManager(final String dbPath) throws Exception {
 		Class.forName("org.sqlite.JDBC");
 		this.connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
 		this.connection.setAutoCommit(false);
-	}
-
-	/**
-	 * initialize this manager <br>
-	 * this method must be called before any operations for this manager <br>
-	 * this method works only at once when it is called in the first time <br>
-	 * this method will do nothing after the second call or later
-	 * 
-	 * @param dbPath
-	 * @throws Exception
-	 */
-	public static void createInstance(final String dbPath) throws Exception {
-		if (SINGLETON == null) {
-			SINGLETON = new DBConnectionManager(dbPath);
-		}
-	}
-
-	/**
-	 * get the instance <br>
-	 * this method must be called after this manager is initialized by calling
-	 * {@link DBConnectionManager#createInstance(String) createInstance(String)}
-	 * 
-	 * @return
-	 */
-	public static DBConnectionManager getInstance() {
-		if (SINGLETON == null) {
-			System.err.println("[Warning] db connection is not initialized");
-		}
-		return SINGLETON;
 	}
 
 	/**

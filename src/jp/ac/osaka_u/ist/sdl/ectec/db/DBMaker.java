@@ -17,8 +17,8 @@ public class DBMaker {
 	 * the constructor <br>
 	 * DBConnectionManager must be initialized before calling this constructor
 	 */
-	public DBMaker() {
-		this.dbManager = DBConnectionManager.getInstance();
+	public DBMaker(final DBConnectionManager dbManager) {
+		this.dbManager = dbManager;
 	}
 
 	/**
