@@ -11,18 +11,20 @@ import org.junit.Test;
 
 public class DBMakerTest {
 
+	private static DBConnectionManager manager;
+	
 	private static DBMaker maker;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		DBConnectionManager.createInstance("test-resources" + File.separator
+		manager = new DBConnectionManager("test-resources" + File.separator
 				+ "db" + File.separator + "test.db");
-		maker = new DBMaker();
+		maker = new DBMaker(manager);
 	}
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-		DBConnectionManager.getInstance().close();
+		manager.close();
 	}
 
 	@Test

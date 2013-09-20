@@ -30,11 +30,15 @@ public class DBMaker {
 	 * @throws Exception
 	 */
 	public void makeDb(final boolean overwrite) throws Exception {
+		dbManager.setAutoCommit(true);
+
 		if (overwrite) {
 			dropTables();
 		}
 
 		createNewTables();
+
+		dbManager.setAutoCommit(false);
 	}
 
 	/**
