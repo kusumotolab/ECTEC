@@ -11,7 +11,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
  * @author k-hotta
  * 
  */
-public interface TargetRevisionDetector {
+public interface ITargetRevisionDetector {
 
 	public List<RevisionInfo> detectTargetRevisions(final Language language,
 			final String startRevisionIdentifier,

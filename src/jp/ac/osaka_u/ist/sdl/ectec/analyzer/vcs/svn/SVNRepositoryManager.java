@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.IRepositoryManager;
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.TargetRevisionDetector;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.ITargetRevisionDetector;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 
 import org.tmatesoft.svn.core.ISVNDirEntryHandler;
@@ -92,7 +92,7 @@ public class SVNRepositoryManager implements IRepositoryManager {
 	 * @return
 	 */
 	@Override
-	public TargetRevisionDetector getTargetRevisionDetector() {
+	public ITargetRevisionDetector getTargetRevisionDetector() {
 		return this.targetRevisionDetector;
 	}
 

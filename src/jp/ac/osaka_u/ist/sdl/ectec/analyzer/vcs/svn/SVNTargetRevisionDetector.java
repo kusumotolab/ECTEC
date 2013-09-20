@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.TargetRevisionDetector;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.ITargetRevisionDetector;
 import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 
@@ -23,7 +23,7 @@ import org.tmatesoft.svn.core.io.SVNRepository;
  * @author k-hotta
  * 
  */
-public class SVNTargetRevisionDetector implements TargetRevisionDetector {
+public class SVNTargetRevisionDetector implements ITargetRevisionDetector {
 
 	/**
 	 * the repository manager

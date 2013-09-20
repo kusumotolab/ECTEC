@@ -19,7 +19,7 @@ public interface IRepositoryManager {
 	 * 
 	 * @return
 	 */
-	public TargetRevisionDetector getTargetRevisionDetector();
+	public ITargetRevisionDetector getTargetRevisionDetector();
 
 	/**
 	 * get the identifier of the latest revision
