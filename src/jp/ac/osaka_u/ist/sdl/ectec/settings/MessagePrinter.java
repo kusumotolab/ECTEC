@@ -297,7 +297,7 @@ public class MessagePrinter {
 	 * stronger
 	 */
 	public static void stronglyPrintln(final String str) {
-		if (level == VERBOSE) {
+		if (level != NONE) {
 			out.println(str);
 		}
 	}
@@ -309,7 +309,7 @@ public class MessagePrinter {
 	 * stronger
 	 */
 	public static void stronglyPrintln(final boolean b) {
-		if (level == VERBOSE) {
+		if (level != NONE) {
 			out.println(b);
 		}
 	}
@@ -321,7 +321,7 @@ public class MessagePrinter {
 	 * stronger
 	 */
 	public static void stronglyPrintln(final char c) {
-		if (level == VERBOSE) {
+		if (level != NONE) {
 			out.println(c);
 		}
 	}
@@ -333,7 +333,7 @@ public class MessagePrinter {
 	 * stronger
 	 */
 	public static void stronglyPrintln(final char[] s) {
-		if (level == VERBOSE) {
+		if (level != NONE) {
 			out.println(s);
 		}
 	}
@@ -345,7 +345,7 @@ public class MessagePrinter {
 	 * stronger
 	 */
 	public static void stronglyPrintln(final double d) {
-		if (level == VERBOSE) {
+		if (level != NONE) {
 			out.println(d);
 		}
 	}
@@ -357,7 +357,7 @@ public class MessagePrinter {
 	 * stronger
 	 */
 	public static void stronglyPrintln(final float f) {
-		if (level == VERBOSE) {
+		if (level != NONE) {
 			out.println(f);
 		}
 	}
@@ -369,7 +369,7 @@ public class MessagePrinter {
 	 * stronger
 	 */
 	public static void stronglyPrintln(final int i) {
-		if (level == VERBOSE) {
+		if (level != NONE) {
 			out.println(i);
 		}
 	}
@@ -381,7 +381,7 @@ public class MessagePrinter {
 	 * stronger
 	 */
 	public static void stronglyPrintln(final long l) {
-		if (level == VERBOSE) {
+		if (level != NONE) {
 			out.println(l);
 		}
 	}
@@ -393,7 +393,7 @@ public class MessagePrinter {
 	 * stronger
 	 */
 	public static void stronglyPrintln(final Object obj) {
-		if (level == VERBOSE) {
+		if (level != NONE) {
 			out.println(obj);
 		}
 	}
@@ -405,7 +405,7 @@ public class MessagePrinter {
 	 * stronger
 	 */
 	public static void eStronglyPrintln() {
-		if (level == VERBOSE) {
+		if (level != NONE) {
 			err.println();
 		}
 	}
@@ -417,7 +417,7 @@ public class MessagePrinter {
 	 * stronger
 	 */
 	public static void eStronglyPrintln(final String str) {
-		if (level == VERBOSE) {
+		if (level != NONE) {
 			err.println(str);
 		}
 	}
@@ -429,7 +429,7 @@ public class MessagePrinter {
 	 * stronger
 	 */
 	public static void eStronglyPrintln(final boolean b) {
-		if (level == VERBOSE) {
+		if (level != NONE) {
 			err.println(b);
 		}
 	}
@@ -441,7 +441,7 @@ public class MessagePrinter {
 	 * stronger
 	 */
 	public static void eStronglyPrintln(final char c) {
-		if (level == VERBOSE) {
+		if (level != NONE) {
 			err.println(c);
 		}
 	}
@@ -453,7 +453,7 @@ public class MessagePrinter {
 	 * stronger
 	 */
 	public static void eStronglyPrintln(final char[] s) {
-		if (level == VERBOSE) {
+		if (level != NONE) {
 			err.println(s);
 		}
 	}
@@ -465,7 +465,7 @@ public class MessagePrinter {
 	 * stronger
 	 */
 	public static void eStronglyPrintln(final double d) {
-		if (level == VERBOSE) {
+		if (level != NONE) {
 			err.println(d);
 		}
 	}
@@ -477,7 +477,7 @@ public class MessagePrinter {
 	 * stronger
 	 */
 	public static void eStronglyPrintln(final float f) {
-		if (level == VERBOSE) {
+		if (level != NONE) {
 			err.println(f);
 		}
 	}
@@ -489,7 +489,7 @@ public class MessagePrinter {
 	 * stronger
 	 */
 	public static void eStronglyPrintln(final int i) {
-		if (level == VERBOSE) {
+		if (level != NONE) {
 			err.println(i);
 		}
 	}
@@ -501,7 +501,7 @@ public class MessagePrinter {
 	 * stronger
 	 */
 	public static void eStronglyPrintln(final long l) {
-		if (level == VERBOSE) {
+		if (level != NONE) {
 			err.println(l);
 		}
 	}
@@ -513,8 +513,420 @@ public class MessagePrinter {
 	 * stronger
 	 */
 	public static void eStronglyPrintln(final Object obj) {
-		if (level == VERBOSE) {
+		if (level != NONE) {
 			err.println(obj);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(String) print(String)} for the specified
+	 * output stream <br>
+	 * this works only if the level is {@link MessagePrintLevel#VERBOSE VERBOSE}
+	 */
+	public static void print(final String str) {
+		if (level == VERBOSE) {
+			out.print(str);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(boolean) print(boolean)} for the specified
+	 * output stream <br>
+	 * this works only if the level is {@link MessagePrintLevel#VERBOSE VERBOSE}
+	 */
+	public static void print(final boolean b) {
+		if (level == VERBOSE) {
+			out.print(b);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(char) print(char)} for the specified output
+	 * stream <br>
+	 * this works only if the level is {@link MessagePrintLevel#VERBOSE VERBOSE}
+	 */
+	public static void print(final char c) {
+		if (level == VERBOSE) {
+			out.print(c);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(char[]) print(char[])} for the specified
+	 * output stream <br>
+	 * this works only if the level is {@link MessagePrintLevel#VERBOSE VERBOSE}
+	 */
+	public static void print(final char[] s) {
+		if (level == VERBOSE) {
+			out.print(s);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(double) print(double)} for the specified
+	 * output stream <br>
+	 * this works only if the level is {@link MessagePrintLevel#VERBOSE VERBOSE}
+	 */
+	public static void print(final double d) {
+		if (level == VERBOSE) {
+			out.print(d);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(float) print(float)} for the specified
+	 * output stream <br>
+	 * this works only if the level is {@link MessagePrintLevel#VERBOSE VERBOSE}
+	 */
+	public static void print(final float f) {
+		if (level == VERBOSE) {
+			out.print(f);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(int) print(int)} for the specified output
+	 * stream <br>
+	 * this works only if the level is {@link MessagePrintLevel#VERBOSE VERBOSE}
+	 */
+	public static void print(final int i) {
+		if (level == VERBOSE) {
+			out.print(i);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(l) print(l)} for the specified output
+	 * stream <br>
+	 * this works only if the level is {@link MessagePrintLevel#VERBOSE VERBOSE}
+	 */
+	public static void print(final long l) {
+		if (level == VERBOSE) {
+			out.print(l);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(obj) print(obj)} for the specified output
+	 * stream <br>
+	 * this works only if the level is {@link MessagePrintLevel#VERBOSE VERBOSE}
+	 */
+	public static void print(final Object obj) {
+		if (level == VERBOSE) {
+			out.print(obj);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(String) print(String)} for the specified
+	 * error stream <br>
+	 * this works only if the level is {@link MessagePrintLevel#VERBOSE VERBOSE}
+	 */
+	public static void ePrint(final String str) {
+		if (level == VERBOSE) {
+			err.print(str);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(boolean) print(boolean)} for the specified
+	 * error stream <br>
+	 * this works only if the level is {@link MessagePrintLevel#VERBOSE VERBOSE}
+	 */
+	public static void ePrint(final boolean b) {
+		if (level == VERBOSE) {
+			err.print(b);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(char) print(char)} for the specified error
+	 * stream <br>
+	 * this works only if the level is {@link MessagePrintLevel#VERBOSE VERBOSE}
+	 */
+	public static void ePrint(final char c) {
+		if (level == VERBOSE) {
+			err.print(c);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(char[]) print(char[])} for the specified
+	 * error stream <br>
+	 * this works only if the level is {@link MessagePrintLevel#VERBOSE VERBOSE}
+	 */
+	public static void ePrint(final char[] s) {
+		if (level == VERBOSE) {
+			err.print(s);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(double) print(double)} for the specified
+	 * error stream <br>
+	 * this works only if the level is {@link MessagePrintLevel#VERBOSE VERBOSE}
+	 */
+	public static void ePrint(final double d) {
+		if (level == VERBOSE) {
+			err.print(d);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(float) print(float)} for the specified
+	 * error stream <br>
+	 * this works only if the level is {@link MessagePrintLevel#VERBOSE VERBOSE}
+	 */
+	public static void ePrint(final float f) {
+		if (level == VERBOSE) {
+			err.print(f);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(int) print(int)} for the specified error
+	 * stream <br>
+	 * this works only if the level is {@link MessagePrintLevel#VERBOSE VERBOSE}
+	 */
+	public static void ePrint(final int i) {
+		if (level == VERBOSE) {
+			err.print(i);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(l) print(l)} for the specified error stream <br>
+	 * this works only if the level is {@link MessagePrintLevel#VERBOSE VERBOSE}
+	 */
+	public static void ePrint(final long l) {
+		if (level == VERBOSE) {
+			err.print(l);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(obj) print(obj)} for the specified error
+	 * stream <br>
+	 * this works only if the level is {@link MessagePrintLevel#VERBOSE VERBOSE}
+	 */
+	public static void ePrint(final Object obj) {
+		if (level == VERBOSE) {
+			err.print(obj);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(String) print(String)} for the specified
+	 * output stream <br>
+	 * this works if the level is {@link MessagePrintLevel#LITTLE LITTLE} or
+	 * stronger
+	 */
+	public static void stronglyPrint(final String str) {
+		if (level != NONE) {
+			out.print(str);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(boolean) print(boolean)} for the specified
+	 * output stream <br>
+	 * this works if the level is {@link MessagePrintLevel#LITTLE LITTLE} or
+	 * stronger
+	 */
+	public static void stronglyPrint(final boolean b) {
+		if (level != NONE) {
+			out.print(b);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(char) print(char)} for the specified output
+	 * stream <br>
+	 * this works if the level is {@link MessagePrintLevel#LITTLE LITTLE} or
+	 * stronger
+	 */
+	public static void stronglyPrint(final char c) {
+		if (level != NONE) {
+			out.print(c);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(char[]) print(char[])} for the specified
+	 * output stream <br>
+	 * this works if the level is {@link MessagePrintLevel#LITTLE LITTLE} or
+	 * stronger
+	 */
+	public static void stronglyPrint(final char[] s) {
+		if (level != NONE) {
+			out.print(s);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(double) print(double)} for the specified
+	 * output stream <br>
+	 * this works if the level is {@link MessagePrintLevel#LITTLE LITTLE} or
+	 * stronger
+	 */
+	public static void stronglyPrint(final double d) {
+		if (level != NONE) {
+			out.print(d);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(float) print(float)} for the specified
+	 * output stream <br>
+	 * this works if the level is {@link MessagePrintLevel#LITTLE LITTLE} or
+	 * stronger
+	 */
+	public static void stronglyPrint(final float f) {
+		if (level != NONE) {
+			out.print(f);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(int) print(int)} for the specified output
+	 * stream <br>
+	 * this works if the level is {@link MessagePrintLevel#LITTLE LITTLE} or
+	 * stronger
+	 */
+	public static void stronglyPrint(final int i) {
+		if (level != NONE) {
+			out.print(i);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(l) print(l)} for the specified output
+	 * stream <br>
+	 * this works if the level is {@link MessagePrintLevel#LITTLE LITTLE} or
+	 * stronger
+	 */
+	public static void stronglyPrint(final long l) {
+		if (level != NONE) {
+			out.print(l);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(obj) print(obj)} for the specified output
+	 * stream <br>
+	 * this works if the level is {@link MessagePrintLevel#LITTLE LITTLE} or
+	 * stronger
+	 */
+	public static void stronglyPrint(final Object obj) {
+		if (level != NONE) {
+			out.print(obj);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(String) print(String)} for the specified
+	 * error stream <br>
+	 * this works if the level is {@link MessagePrintLevel#LITTLE LITTLE} or
+	 * stronger
+	 */
+	public static void eStronglyPrint(final String str) {
+		if (level != NONE) {
+			err.print(str);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(boolean) print(boolean)} for the specified
+	 * error stream <br>
+	 * this works if the level is {@link MessagePrintLevel#LITTLE LITTLE} or
+	 * stronger
+	 */
+	public static void eStronglyPrint(final boolean b) {
+		if (level != NONE) {
+			err.print(b);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(char) print(char)} for the specified error
+	 * stream <br>
+	 * this works if the level is {@link MessagePrintLevel#LITTLE LITTLE} or
+	 * stronger
+	 */
+	public static void eStronglyPrint(final char c) {
+		if (level != NONE) {
+			err.print(c);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(char[]) print(char[])} for the specified
+	 * error stream <br>
+	 * this works if the level is {@link MessagePrintLevel#LITTLE LITTLE} or
+	 * stronger
+	 */
+	public static void eStronglyPrint(final char[] s) {
+		if (level != NONE) {
+			err.print(s);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(double) print(double)} for the specified
+	 * error stream <br>
+	 * this works if the level is {@link MessagePrintLevel#LITTLE LITTLE} or
+	 * stronger
+	 */
+	public static void eStronglyPrint(final double d) {
+		if (level != NONE) {
+			err.print(d);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(float) print(float)} for the specified
+	 * error stream <br>
+	 * this works if the level is {@link MessagePrintLevel#LITTLE LITTLE} or
+	 * stronger
+	 */
+	public static void eStronglyPrint(final float f) {
+		if (level != NONE) {
+			err.print(f);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(int) print(int)} for the specified error
+	 * stream <br>
+	 * this works if the level is {@link MessagePrintLevel#LITTLE LITTLE} or
+	 * stronger
+	 */
+	public static void eStronglyPrint(final int i) {
+		if (level != NONE) {
+			err.print(i);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(l) print(l)} for the specified error stream <br>
+	 * this works if the level is {@link MessagePrintLevel#LITTLE LITTLE} or
+	 * stronger
+	 */
+	public static void eStronglyPrint(final long l) {
+		if (level != NONE) {
+			err.print(l);
+		}
+	}
+
+	/**
+	 * call {@link PrintStream#print(obj) print(obj)} for the specified error
+	 * stream <br>
+	 * this works if the level is {@link MessagePrintLevel#LITTLE LITTLE} or
+	 * stronger
+	 */
+	public static void eStronglyPrint(final Object obj) {
+		if (level != NONE) {
+			err.print(obj);
 		}
 	}
 
