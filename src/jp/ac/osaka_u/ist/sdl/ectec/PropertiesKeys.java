@@ -25,5 +25,7 @@ public interface PropertiesKeys {
 	public static final String VERBOSE_LEVEL = "ectec.verbose-level";
 
 	public static final String VERSION_CONTROL_SYSTEM = "ectec.version-control-system";
+	
+	public static final String OVERWRITE_DB = "ectec.overwrite-db";
 
 }

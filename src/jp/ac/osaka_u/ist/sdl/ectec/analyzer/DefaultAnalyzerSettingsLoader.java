@@ -62,12 +62,18 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 	 */
 	private final VersionControlSystem versionControlSystem;
 
+	/**
+	 * whether overwrite the db if it has already existed
+	 */
+	private final boolean overwriteDb;
+
 	private DefaultAnalyzerSettingsLoader(final String additionalPath,
 			final Language language, final int threads, final String userName,
 			final String passwd, final String startRevisionIdentifier,
 			final String endRevisionIdentifier,
 			final MessagePrintLevel verboseLevel,
-			final VersionControlSystem versionControlSystem) {
+			final VersionControlSystem versionControlSystem,
+			final boolean overwriteDb) {
 		this.additionalPath = additionalPath;
 		this.language = language;
 		this.threads = threads;
@@ -77,6 +83,7 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 		this.endRevisionIdentifier = endRevisionIdentifier;
 		this.verboseLevel = verboseLevel;
 		this.versionControlSystem = versionControlSystem;
+		this.overwriteDb = overwriteDb;
 	}
 
 	/*
@@ -117,6 +124,10 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 
 	final VersionControlSystem getVersionControlSystem() {
 		return versionControlSystem;
+	}
+
+	final boolean isOverwriteDb() {
+		return overwriteDb;
 	}
 
 	/*
@@ -191,8 +202,12 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 				.getCorrespondingVersionControlSystem(prop
 						.getProperty(VERSION_CONTROL_SYSTEM));
 
+		final boolean overwriteDb = (prop.getProperty(OVERWRITE_DB)
+				.equalsIgnoreCase("yes")) ? true : false;
+
 		return new DefaultAnalyzerSettingsLoader(additionalPath, language,
 				threads, userName, passwd, startRevisionIdentifier,
-				endRevisionIdentifier, verboseLevel, versionControlSystem);
+				endRevisionIdentifier, verboseLevel, versionControlSystem,
+				overwriteDb);
 	}
 }

@@ -74,6 +74,11 @@ final class AnalyzerSettings {
 	private final VersionControlSystem versionControlSystem;
 
 	/**
+	 * whether overwrite the db if it has already existed
+	 */
+	private final boolean overwriteDb;
+
+	/**
 	 * the path of the properties file
 	 */
 	private final String propertiesFilePath;
@@ -85,7 +90,7 @@ final class AnalyzerSettings {
 			final String endRevisionIdentifier,
 			final MessagePrintLevel verboseLevel,
 			final VersionControlSystem versionControlSystem,
-			final String propertiesFilePath) {
+			final boolean overwriteDb, final String propertiesFilePath) {
 		this.repositoryPath = repositoryPath;
 		this.dbPath = dbPath;
 		this.additionalPath = additionalPath;
@@ -97,6 +102,7 @@ final class AnalyzerSettings {
 		this.endRevisionIdentifier = endRevisionIdentifier;
 		this.verboseLevel = verboseLevel;
 		this.versionControlSystem = versionControlSystem;
+		this.overwriteDb = overwriteDb;
 		this.propertiesFilePath = propertiesFilePath;
 	}
 
@@ -146,6 +152,10 @@ final class AnalyzerSettings {
 
 	final VersionControlSystem getVersionControlSystem() {
 		return versionControlSystem;
+	}
+
+	final boolean isOverwriteDb() {
+		return overwriteDb;
 	}
 
 	final String getPropertiesFilePath() {
@@ -199,10 +209,14 @@ final class AnalyzerSettings {
 				.getCorrespondingVersionControlSystem(cmd.getOptionValue("vc"))
 				: defaultLoader.getVersionControlSystem();
 
+		final boolean overwriteDb = (cmd.hasOption("ow")) ? ((cmd
+				.getOptionValue("ow").equalsIgnoreCase("yes") ? true : false))
+				: defaultLoader.isOverwriteDb();
+
 		return new AnalyzerSettings(repositoryPath, dbPath, additionalPath,
 				language, threads, userName, passwd, startRevisionIdentifier,
 				endRevisionIdentifier, verboseLevel, versionControlSystem,
-				propertiesFilePath);
+				overwriteDb, propertiesFilePath);
 	}
 
 	/**
@@ -291,6 +305,14 @@ final class AnalyzerSettings {
 			vc.setArgs(1);
 			vc.setRequired(false);
 			options.addOption(vc);
+		}
+
+		{
+			final Option ow = new Option("ow", "overwrite", true,
+					"overwrite db");
+			ow.setArgs(1);
+			ow.setRequired(false);
+			options.addOption(ow);
 		}
 
 		{
