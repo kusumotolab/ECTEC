@@ -12,7 +12,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
  * @author k-hotta
  * 
  */
-public class FileInfoRegisterer extends AbstractElementRegisterer<FileInfo> {
+public class FileRegisterer extends AbstractElementRegisterer<FileInfo> {
 
 	/**
 	 * the constructor
@@ -20,7 +20,7 @@ public class FileInfoRegisterer extends AbstractElementRegisterer<FileInfo> {
 	 * @param dbManager
 	 * @param maxBatchCount
 	 */
-	public FileInfoRegisterer(DBConnectionManager dbManager, int maxBatchCount) {
+	public FileRegisterer(DBConnectionManager dbManager, int maxBatchCount) {
 		super(dbManager, maxBatchCount);
 	}
 

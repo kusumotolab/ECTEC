@@ -12,7 +12,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
  * @author k-hotta
  * 
  */
-public class RevisionInfoRegisterer extends
+public class RevisionRegisterer extends
 		AbstractElementRegisterer<RevisionInfo> {
 
 	/**
@@ -21,7 +21,7 @@ public class RevisionInfoRegisterer extends
 	 * @param dbManager
 	 * @param maxBatchCount
 	 */
-	public RevisionInfoRegisterer(DBConnectionManager dbManager,
+	public RevisionRegisterer(DBConnectionManager dbManager,
 			int maxBatchCount) {
 		super(dbManager, maxBatchCount);
 	}
