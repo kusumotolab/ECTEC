@@ -7,7 +7,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.IRepositoryManager;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.RepositoryNotInitializedException;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.TargetRevisionDetector;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 
 import org.tmatesoft.svn.core.ISVNDirEntryHandler;
@@ -28,7 +30,12 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
  * @author k-hotta
  * 
  */
-public class SVNRepositoryManager {
+public class SVNRepositoryManager implements IRepositoryManager {
+
+	/**
+	 * the target revision detector
+	 */
+	private final SVNTargetRevisionDetector targetRevisionDetector;
 
 	/**
 	 * the URL of the repository
@@ -60,15 +67,11 @@ public class SVNRepositoryManager {
 	 */
 	private final String additionalUrl;
 
-	/**
-	 * the singleton object
-	 */
-	private static SVNRepositoryManager SINGLETON = null;
-
-	private SVNRepositoryManager(final SVNURL url,
+	public SVNRepositoryManager(final SVNURL url,
 			final SVNRepository repository, final String urlStr,
 			final String userName, final String passwd,
 			final String additionalUrl) {
+		this.targetRevisionDetector = new SVNTargetRevisionDetector(this);
 		this.url = url;
 		this.repository = repository;
 		this.urlStr = urlStr;
@@ -78,63 +81,14 @@ public class SVNRepositoryManager {
 	}
 
 	/**
-	 * set up the repository
-	 * 
-	 * @param urlRoot
-	 * @param additionalUrl
-	 * @param userName
-	 * @param passwd
-	 * @return
-	 * @throws Exception
-	 */
-	public static SVNRepositoryManager setup(final String urlRoot,
-			final String additionalUrl, final String userName,
-			final String passwd) throws Exception {
-		if (SINGLETON != null) {
-			return SINGLETON;
-		}
-
-		final String urlStr = (additionalUrl == null) ? urlRoot : urlRoot
-				+ additionalUrl;
-		final SVNURL url = SVNURL.parseURIDecoded(urlStr);
-
-		final RepositoryCreator creator = RepositoryCreator
-				.getCorrespondingInstance(urlStr);
-
-		final SVNRepository repository = creator.create(url, userName, passwd);
-
-		SINGLETON = new SVNRepositoryManager(url, repository, urlStr, userName,
-				passwd, additionalUrl);
-
-		return SINGLETON;
-	}
-
-	/**
-	 * set up the repository without using user names and passwords
-	 * 
-	 * @param urlStr
-	 * @return
-	 * @throws Exception
-	 */
-	public static SVNRepositoryManager setup(final String urlStr)
-			throws Exception {
-		return setup(urlStr, null, null, null);
-	}
-
-	/**
-	 * get the instance of SVNRepositoryManager
+	 * get the target revisions detector corresponding to each version control
+	 * system
 	 * 
 	 * @return
-	 * @throws RepositoryNotInitializedException
 	 */
-	public static SVNRepositoryManager getInstance()
-			throws RepositoryNotInitializedException {
-		if (SINGLETON == null) {
-			throw new RepositoryNotInitializedException(
-					"repository is not initialized");
-		}
-
-		return SINGLETON;
+	@Override
+	public TargetRevisionDetector getTargetRevisionDetector() {
+		return this.targetRevisionDetector;
 	}
 
 	/**
@@ -171,8 +125,23 @@ public class SVNRepositoryManager {
 	 * @return
 	 * @throws SVNException
 	 */
+	@Override
 	public String getLatestRevision() throws SVNException {
 		return ((Long) this.repository.getLatestRevision()).toString();
+	}
+
+	/**
+	 * get the file contents
+	 * 
+	 * @param revisionIdentifier
+	 * @param path
+	 * @return
+	 * @throws SVNException
+	 */
+	@Override
+	public String getFileContents(final String revisionIdentifier,
+			final String path) throws SVNException {
+		return getFileContents(Long.parseLong(revisionIdentifier), path);
 	}
 
 	/**
@@ -204,6 +173,21 @@ public class SVNRepositoryManager {
 	}
 
 	/**
+	 * get the list of source files
+	 * 
+	 * @param revisionIdentifier
+	 * @param language
+	 * @return
+	 * @throws Exception
+	 */
+	@Override
+	public synchronized List<String> getListOfSourceFiles(
+			final String revisionIdentifier, final Language lang)
+			throws Exception {
+		return getListOfSourceFiles(Long.parseLong(revisionIdentifier), lang);
+	}
+
+	/**
 	 * get the list of paths of all the source files in the given revision
 	 * 
 	 * @param revisionNum
@@ -218,7 +202,25 @@ public class SVNRepositoryManager {
 
 	/**
 	 * get the list of paths of all the source files in the given revision which
-	 * is included int the given collection of strings
+	 * is included in the given collection of strings
+	 * 
+	 * @param revisionIdentifier
+	 * @param language
+	 * @param targets
+	 * @return
+	 * @throws Exception
+	 */
+	@Override
+	public synchronized List<String> getListOfSourceFiles(
+			final String revisionIdentifier, final Language language,
+			final Collection<String> targets) throws Exception {
+		return getListOfSourceFiles(Long.parseLong(revisionIdentifier),
+				language, targets);
+	}
+
+	/**
+	 * get the list of paths of all the source files in the given revision which
+	 * is included in the given collection of strings
 	 * 
 	 * @param revisionNum
 	 * @param lang
@@ -268,6 +270,20 @@ public class SVNRepositoryManager {
 	/**
 	 * run diff
 	 * 
+	 * @param beforeRevisionIdentifier
+	 * @param afterRevisionIdentifier
+	 * @return
+	 * @throws Exception
+	 */
+	public String doDiff(final String beforeRevisionIdentifier,
+			final String afterRevisionIdentifier) throws Exception {
+		return doDiff(Long.parseLong(beforeRevisionIdentifier),
+				Long.parseLong(afterRevisionIdentifier));
+	}
+
+	/**
+	 * run diff
+	 * 
 	 * @param beforeRevNum
 	 * @param afterRevNum
 	 * @return
@@ -278,9 +294,9 @@ public class SVNRepositoryManager {
 		final SVNDiffClient diffClient = SVNClientManager.newInstance(null,
 				this.userName, this.passwd).getDiffClient();
 		final StringBuilder diffText = new StringBuilder();
-		diffClient.doDiff(SINGLETON.url, SVNRevision.create(beforeRevNum),
-				this.url, SVNRevision.create(afterRevNum), SVNDepth.INFINITY,
-				true, new OutputStream() {
+		diffClient.doDiff(this.url, SVNRevision.create(beforeRevNum), this.url,
+				SVNRevision.create(afterRevNum), SVNDepth.INFINITY, true,
+				new OutputStream() {
 					@Override
 					public void write(int arg0) throws IOException {
 						diffText.append((char) arg0);

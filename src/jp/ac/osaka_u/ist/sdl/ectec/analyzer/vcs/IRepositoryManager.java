@@ -53,7 +53,7 @@ public interface IRepositoryManager {
 
 	/**
 	 * get the list of paths of all the source files in the given revision which
-	 * is included int the given collection of strings
+	 * is included in the given collection of strings
 	 * 
 	 * @param revisionIdentifier
 	 * @param language
