@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import jp.ac.osaka_u.ist.sdl.ectec.data.FileInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 
 /**
@@ -19,6 +20,12 @@ public class FileInfoInstancesCreatingThread implements Runnable {
 	 * the file path and lds of revisions when it was changed
 	 */
 	private final ConcurrentMap<String, SortedSet<ChangeOnFile>> changedFiles;
+
+	/**
+	 * the key is the id of a revision and the value is the id of the previous
+	 * revision of the key revision
+	 */
+	private final ConcurrentMap<Long, Long> revisionsMap;
 
 	/**
 	 * the instances of FileInfo
@@ -42,10 +49,12 @@ public class FileInfoInstancesCreatingThread implements Runnable {
 
 	public FileInfoInstancesCreatingThread(
 			final ConcurrentMap<String, SortedSet<ChangeOnFile>> changedFiles,
+			final ConcurrentMap<Long, Long> revisionsMap,
 			final ConcurrentMap<Long, FileInfo> files,
 			final String[] targetPaths, final AtomicInteger index,
 			final long lastRevisionId) {
 		this.changedFiles = changedFiles;
+		this.revisionsMap = revisionsMap;
 		this.files = files;
 		this.targetPaths = targetPaths;
 		this.index = index;
@@ -84,6 +93,7 @@ public class FileInfoInstancesCreatingThread implements Runnable {
 				}
 
 				final long revision = nextChange.getChagnedRevisionId();
+				final long previousRevision = revisionsMap.get(revision);
 
 				switch (currentChange.getChangeType()) {
 				case ADD:
