@@ -38,11 +38,6 @@ public class SVNRepositoryManager implements IRepositoryManager {
 	private final SVNTargetRevisionDetector targetRevisionDetector;
 
 	/**
-	 * the changed files detector
-	 */
-	private final SVNChangedFilesDetector changedFilesDetector;
-
-	/**
 	 * the URL of the repository
 	 */
 	private final SVNURL url;
@@ -75,7 +70,6 @@ public class SVNRepositoryManager implements IRepositoryManager {
 	public SVNRepositoryManager(final String urlRoot, final String userName,
 			final String passwd, final String additionalUrl) throws Exception {
 		this.targetRevisionDetector = new SVNTargetRevisionDetector(this);
-		this.changedFilesDetector = new SVNChangedFilesDetector(this);
 
 		final String urlStr = (additionalUrl == null) ? urlRoot : urlRoot
 				+ additionalUrl;
@@ -104,11 +98,11 @@ public class SVNRepositoryManager implements IRepositoryManager {
 	}
 
 	/**
-	 * get the changed files detector
+	 * create a new changed files detector
 	 */
 	@Override
-	public IChangedFilesDetector getChangedFilesDetector() {
-		return this.changedFilesDetector;
+	public IChangedFilesDetector createChangedFilesDetector() {
+		return new SVNChangedFilesDetector(this);
 	}
 
 	/**
