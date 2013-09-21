@@ -68,8 +68,6 @@ public class SVNChangedFilesDetector implements IChangedFilesDetector {
 				});
 
 		return Collections.unmodifiableMap(result);
-
-		return null;
 	}
 
 }
