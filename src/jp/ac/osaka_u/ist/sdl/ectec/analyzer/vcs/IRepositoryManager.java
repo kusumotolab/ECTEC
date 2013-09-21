@@ -22,6 +22,13 @@ public interface IRepositoryManager {
 	public ITargetRevisionDetector getTargetRevisionDetector();
 
 	/**
+	 * get the detector for changed files
+	 * 
+	 * @return
+	 */
+	public IChangedFilesDetector getChangedFilesDetector();
+
+	/**
 	 * get the identifier of the first revision
 	 * 
 	 * @return

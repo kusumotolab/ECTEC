@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.IChangedFilesDetector;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.IRepositoryManager;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.ITargetRevisionDetector;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
@@ -35,6 +36,11 @@ public class SVNRepositoryManager implements IRepositoryManager {
 	 * the target revision detector
 	 */
 	private final SVNTargetRevisionDetector targetRevisionDetector;
+
+	/**
+	 * the changed files detector
+	 */
+	private final SVNChangedFilesDetector changedFilesDetector;
 
 	/**
 	 * the URL of the repository
@@ -69,6 +75,7 @@ public class SVNRepositoryManager implements IRepositoryManager {
 	public SVNRepositoryManager(final String urlRoot, final String userName,
 			final String passwd, final String additionalUrl) throws Exception {
 		this.targetRevisionDetector = new SVNTargetRevisionDetector(this);
+		this.changedFilesDetector = new SVNChangedFilesDetector(this);
 
 		final String urlStr = (additionalUrl == null) ? urlRoot : urlRoot
 				+ additionalUrl;
@@ -97,6 +104,14 @@ public class SVNRepositoryManager implements IRepositoryManager {
 	}
 
 	/**
+	 * get the changed files detector
+	 */
+	@Override
+	public IChangedFilesDetector getChangedFilesDetector() {
+		return this.changedFilesDetector;
+	}
+
+	/**
 	 * get the repository as SVNRepository
 	 * 
 	 * @return
@@ -113,7 +128,7 @@ public class SVNRepositoryManager implements IRepositoryManager {
 	public SVNURL getURL() {
 		return this.url;
 	}
-	
+
 	/**
 	 * get the first revision number (always equals to 1)
 	 */
