@@ -6,7 +6,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer.filedetector;
  * @author k-hotta
  * 
  */
-public class ChangeOnFile {
+public class ChangeOnFile implements Comparable<ChangeOnFile> {
 
 	/**
 	 * the path of the file
@@ -55,6 +55,12 @@ public class ChangeOnFile {
 	 */
 	public final ChangeTypeOnFile getChangeType() {
 		return type;
+	}
+
+	@Override
+	public int compareTo(ChangeOnFile another) {
+		return ((Long) this.changedRevisionId).compareTo(another
+				.getChagnedRevisionId());
 	}
 
 }
