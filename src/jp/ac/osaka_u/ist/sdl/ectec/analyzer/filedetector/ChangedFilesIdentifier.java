@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.analyzer;
+package jp.ac.osaka_u.ist.sdl.ectec.analyzer.filedetector;
 
 import java.util.Collection;
 
