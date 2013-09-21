@@ -29,7 +29,7 @@ public class ChangedFilesDetectingThread implements Runnable {
 	 * the key is the path of a file and the value is a set of ids of revisions
 	 * where the file whose path is specified with the key is changed
 	 */
-	private final ConcurrentMap<String, SortedSet<Long>> changedFiles;
+	private final ConcurrentMap<String, SortedSet<ChangeOnFile>> changedFiles;
 
 	/**
 	 * the target language
@@ -47,7 +47,7 @@ public class ChangedFilesDetectingThread implements Runnable {
 	private final AtomicInteger index;
 
 	public ChangedFilesDetectingThread(final IChangedFilesDetector detector,
-			final ConcurrentMap<String, SortedSet<Long>> changedFiles,
+			final ConcurrentMap<String, SortedSet<ChangeOnFile>> changedFiles,
 			final Language language, final RevisionInfo[] targetRevisions,
 			final AtomicInteger index) {
 		this.detector = detector;
@@ -90,11 +90,15 @@ public class ChangedFilesDetectingThread implements Runnable {
 					 */
 					synchronized (changedFiles) {
 						if (!changedFiles.containsKey(path)) {
-							changedFiles.put(path, new TreeSet<Long>());
+							changedFiles.put(path, new TreeSet<ChangeOnFile>());
 						}
 					}
 
-					changedFiles.get(path).add(targetRevision.getId());
+					final ChangeOnFile changeOnFile = new ChangeOnFile(path,
+							targetRevision.getId(),
+							ChangeTypeOnFile.getCorrespondingChangeType(entry
+									.getValue()));
+					changedFiles.get(path).add(changeOnFile);
 				}
 
 			} catch (Exception e) {
