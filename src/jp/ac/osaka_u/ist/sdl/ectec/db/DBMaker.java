@@ -54,6 +54,7 @@ public class DBMaker {
 		dbManager.executeUpdate(getCodeFragmentLinkTableQuery());
 		dbManager.executeUpdate(getCloneSetLinkTableQuery());
 		dbManager.executeUpdate(getCloneGenealogyTableQuery());
+		dbManager.executeUpdate(getCrdQuery());
 	}
 
 	/**
@@ -98,6 +99,12 @@ public class DBMaker {
 
 		try {
 			dbManager.executeUpdate("DROP TABLE CLONE_GENEALOGY");
+		} catch (Exception e) {
+			// e.printStackTrace();
+		}
+
+		try {
+			dbManager.executeUpdate("DROP TABLE CRD");
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
@@ -245,6 +252,27 @@ public class DBMaker {
 		builder.append("ADDITIONS INTEGER,");
 		builder.append("DELETIONS INTEGER,");
 		builder.append("DEAD INTEGER");
+		builder.append(")");
+
+		return builder.toString();
+	}
+
+	/**
+	 * get the query to create the table for genealogies of clones
+	 * 
+	 * @return
+	 */
+	private String getCrdQuery() {
+		final StringBuilder builder = new StringBuilder();
+
+		builder.append("create table CRD(");
+		builder.append("CRD_ID LONG PRIMARY KEY,");
+		builder.append("TYPE TEXT NOT NULL,");
+		builder.append("HEAD TEXT NOT NULL,");
+		builder.append("ANCHOR TEXT NOT NULL,");
+		builder.append("CM INTEGER,");
+		builder.append("ANCESTORS TEXT NOT NULL,");
+		builder.append("FULL_TEXT TEXT NOT NULL");
 		builder.append(")");
 
 		return builder.toString();
