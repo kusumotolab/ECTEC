@@ -1,10 +1,9 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.svn;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.ITargetRevisionDetector;
@@ -35,8 +34,8 @@ public class SVNTargetRevisionDetector implements ITargetRevisionDetector {
 	}
 
 	@Override
-	public List<RevisionInfo> detectTargetRevisions(final Language language,
-			final String startRevisionIdentifier,
+	public Map<RevisionInfo, Long> detectTargetRevisions(
+			final Language language, final String startRevisionIdentifier,
 			final String endRevisionIdentifier) throws Exception {
 		// startRevisionIdentifier and endRevisionIdentifier must be Long
 		final long startRevisionNum = Long.parseLong(startRevisionIdentifier);
@@ -77,12 +76,14 @@ public class SVNTargetRevisionDetector implements ITargetRevisionDetector {
 					}
 				});
 
-		final List<RevisionInfo> revisionInstances = new ArrayList<RevisionInfo>();
+		final Map<RevisionInfo, Long> revisionInstances = new TreeMap<RevisionInfo, Long>();
+		long previousRevision = -1;
 		for (final long revision : revisions) {
 			revisionInstances
-					.add(new RevisionInfo(((Long) revision).toString()));
+					.put(new RevisionInfo(((Long) revision).toString()), previousRevision);
+			previousRevision = revision;
 		}
 
-		return Collections.unmodifiableList(revisionInstances);
+		return Collections.unmodifiableMap(revisionInstances);
 	}
 }

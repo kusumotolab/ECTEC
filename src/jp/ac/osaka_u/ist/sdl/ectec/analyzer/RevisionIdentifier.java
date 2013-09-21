@@ -1,6 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer;
 
-import java.util.List;
+import java.util.Map;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.ITargetRevisionDetector;
 import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
@@ -41,21 +41,22 @@ public class RevisionIdentifier {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<RevisionInfo> detectAndRegister(final Language language,
+	public Map<RevisionInfo, Long> detectAndRegister(final Language language,
 			final String startRevisionIdentifier,
 			final String endRevisionIdentifier) throws Exception {
-		final List<RevisionInfo> targetRevisions = detector
+		final Map<RevisionInfo, Long> targetRevisions = detector
 				.detectTargetRevisions(language, startRevisionIdentifier,
 						endRevisionIdentifier);
-		
-		MessagePrinter.stronglyPrintln("\t" + targetRevisions.size() + " revisions are detected");
+
+		MessagePrinter.stronglyPrintln("\t" + targetRevisions.size()
+				+ " revisions are detected");
 
 		MessagePrinter.stronglyPrintln();
-		
+
 		MessagePrinter.stronglyPrintln("registering target revisions ... ");
-		registerer.register(targetRevisions);
+		registerer.register(targetRevisions.keySet());
 		MessagePrinter.stronglyPrintln("\tOK");
-		
+
 		return targetRevisions;
 	}
 }

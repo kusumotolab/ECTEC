@@ -1,6 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs;
 
-import java.util.List;
+import java.util.Map;
 
 import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
@@ -13,7 +13,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
  */
 public interface ITargetRevisionDetector {
 
-	public List<RevisionInfo> detectTargetRevisions(final Language language,
+	public Map<RevisionInfo, Long> detectTargetRevisions(final Language language,
 			final String startRevisionIdentifier,
 			final String endRevisionIdentifier) throws Exception;
 

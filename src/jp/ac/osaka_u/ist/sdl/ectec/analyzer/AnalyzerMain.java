@@ -1,6 +1,10 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer;
 
+import java.util.Map;
+
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.filedetector.ChangedFilesIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.RepositoryManagerManager;
+import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBMaker;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
@@ -140,12 +144,14 @@ public class AnalyzerMain {
 				+ settings.getStartRevisionIdentifier());
 		MessagePrinter.stronglyPrintln("\tto revision "
 				+ settings.getEndRevisionIdentifier());
-		MessagePrinter.stronglyPrintln(
-				);
-		detectAndRegisterTargetRevisions(settings);
+		MessagePrinter.stronglyPrintln();
+
+		final Map<RevisionInfo, Long> revisions = detectAndRegisterTargetRevisions(settings);
+
+		detectAndRegisterFiles(settings, revisions);
 	}
 
-	private static void detectAndRegisterTargetRevisions(
+	private static Map<RevisionInfo, Long> detectAndRegisterTargetRevisions(
 			final AnalyzerSettings settings) throws Exception {
 		MessagePrinter.stronglyPrintln("detecting target revisions ... ");
 
@@ -153,11 +159,22 @@ public class AnalyzerMain {
 				repositoryManagerManager.getRepositoryManager()
 						.getTargetRevisionDetector(),
 				dbManager.getRevisionRegisterer());
-		identifier.detectAndRegister(settings.getLanguage(),
-				settings.getStartRevisionIdentifier(),
+		final Map<RevisionInfo, Long> revisions = identifier.detectAndRegister(
+				settings.getLanguage(), settings.getStartRevisionIdentifier(),
 				settings.getEndRevisionIdentifier());
 
 		MessagePrinter.stronglyPrintln();
+
+		return revisions;
+	}
+
+	private static void detectAndRegisterFiles(final AnalyzerSettings settings,
+			final Map<RevisionInfo, Long> revisions) throws Exception {
+		final ChangedFilesIdentifier identifier = new ChangedFilesIdentifier(
+				repositoryManagerManager.getRepositoryManager(),
+				dbManager.getFileRegisterer(), settings.getLanguage(),
+				settings.getThreads());
+		identifier.detectAndRegister(revisions);
 	}
 
 	private static void postprocess() {

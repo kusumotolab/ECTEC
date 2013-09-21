@@ -1,5 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.filedetector;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.SortedSet;
@@ -13,6 +14,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.data.FileInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.FileRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
+import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 
 /**
  * A class to detect and register changed files
@@ -62,19 +64,32 @@ public class ChangedFilesIdentifier {
 	 * the db
 	 * 
 	 * @param targetRevisions
+	 * @throws SQLException
 	 */
-	public void detectAndRegister(final Map<RevisionInfo, Long> targetRevisions) {
+	public void detectAndRegister(final Map<RevisionInfo, Long> targetRevisions)
+			throws SQLException {
 		final SortedSet<RevisionInfo> revisionsAsSet = new TreeSet<RevisionInfo>();
 		revisionsAsSet.addAll(targetRevisions.keySet());
+
+		MessagePrinter
+				.stronglyPrintln("detecting changed files in each revision ... ");
 		final ConcurrentMap<String, SortedSet<ChangeOnFile>> changedFiles = detectChangedFiles(revisionsAsSet);
+		MessagePrinter.stronglyPrintln();
 
 		final ConcurrentMap<Long, Long> revisionsMap = new ConcurrentHashMap<Long, Long>();
 		for (Map.Entry<RevisionInfo, Long> entry : targetRevisions.entrySet()) {
 			revisionsMap.put(entry.getKey().getId(), entry.getValue());
 		}
 
+		MessagePrinter.stronglyPrintln("creating  instances of files ... ");
 		final ConcurrentMap<Long, FileInfo> fileInstances = createFileInstances(
 				changedFiles, revisionsAsSet.last().getId(), revisionsMap);
+		MessagePrinter.stronglyPrintln();
+
+		MessagePrinter.stronglyPrintln("registering files ... ");
+		registerer.register(fileInstances.values());
+		MessagePrinter.stronglyPrintln("\tOK");
+		MessagePrinter.stronglyPrintln();
 	}
 
 	/**

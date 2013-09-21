@@ -5,7 +5,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import jp.ac.osaka_u.ist.sdl.ectec.data.FileInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 
 /**
@@ -72,8 +71,8 @@ public class FileInfoInstancesCreatingThread implements Runnable {
 
 			final String path = targetPaths[currentIndex];
 
-			MessagePrinter.println("\tanalyzing " + path + " [" + currentIndex
-					+ "/" + targetPaths.length + "]");
+			MessagePrinter.println("\tanalyzing " + path + " ["
+					+ (currentIndex + 1) + "/" + targetPaths.length + "]");
 
 			// get the ids of revisions where this file was updated
 			final SortedSet<ChangeOnFile> changes = changedFiles.get(path);

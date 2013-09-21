@@ -69,8 +69,8 @@ public class ChangedFilesDetectingThread implements Runnable {
 			final RevisionInfo targetRevision = targetRevisions[currentIndex];
 
 			MessagePrinter.println("\tanalyzing revision "
-					+ targetRevision.getIdentifier() + " [" + currentIndex
-					+ "/" + targetRevisions.length + "]");
+					+ targetRevision.getIdentifier() + " ["
+					+ (currentIndex + 1) + "/" + targetRevisions.length + "]");
 
 			try {
 				// detect changed files in this revision
