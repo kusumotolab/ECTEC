@@ -38,9 +38,10 @@ public class RevisionIdentifier {
 	 * @param language
 	 * @param startRevisionIdentifier
 	 * @param endRevisionIdentifier
+	 * @return
 	 * @throws Exception
 	 */
-	public void detectAndRegister(final Language language,
+	public List<RevisionInfo> detectAndRegister(final Language language,
 			final String startRevisionIdentifier,
 			final String endRevisionIdentifier) throws Exception {
 		final List<RevisionInfo> targetRevisions = detector
@@ -54,6 +55,7 @@ public class RevisionIdentifier {
 		MessagePrinter.stronglyPrintln("registering target revisions ... ");
 		registerer.register(targetRevisions);
 		MessagePrinter.stronglyPrintln("\tOK");
+		
+		return targetRevisions;
 	}
-
 }
