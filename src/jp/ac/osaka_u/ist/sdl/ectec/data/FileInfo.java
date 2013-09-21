@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author k-hotta
  * 
  */
-public class FileInfo extends AbstractElement {
+public class FileInfo extends AbstractElement implements Comparable<FileInfo> {
 
 	/**
 	 * a counter to keep the number of created elements
@@ -83,6 +83,11 @@ public class FileInfo extends AbstractElement {
 	 */
 	public final long getEndRevisionId() {
 		return this.endRevisionid;
+	}
+
+	@Override
+	public int compareTo(FileInfo another) {
+		return ((Long) this.getId()).compareTo(another.getId());
 	}
 
 }

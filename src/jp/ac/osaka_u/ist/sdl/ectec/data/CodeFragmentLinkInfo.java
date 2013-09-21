@@ -8,7 +8,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author k-hotta
  * 
  */
-public class CodeFragmentLinkInfo extends ElementLinkInfo {
+public class CodeFragmentLinkInfo extends ElementLinkInfo implements
+		Comparable<CodeFragmentLinkInfo> {
 
 	/**
 	 * a counter to keep the number of created elements
@@ -61,6 +62,11 @@ public class CodeFragmentLinkInfo extends ElementLinkInfo {
 	 */
 	public final boolean isChanged() {
 		return changed;
+	}
+
+	@Override
+	public int compareTo(CodeFragmentLinkInfo another) {
+		return ((Long) this.getId()).compareTo(another.getId());
 	}
 
 }

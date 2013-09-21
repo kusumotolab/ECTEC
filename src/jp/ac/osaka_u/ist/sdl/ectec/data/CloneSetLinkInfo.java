@@ -10,7 +10,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author k-hotta
  * 
  */
-public class CloneSetLinkInfo extends ElementLinkInfo {
+public class CloneSetLinkInfo extends ElementLinkInfo implements
+		Comparable<CloneSetLinkInfo> {
 
 	/**
 	 * a counter to keep the number of created elements
@@ -139,6 +140,11 @@ public class CloneSetLinkInfo extends ElementLinkInfo {
 	 */
 	public final List<Long> getCodeFragmentLinks() {
 		return Collections.unmodifiableList(codeFragmentLinks);
+	}
+
+	@Override
+	public int compareTo(CloneSetLinkInfo another) {
+		return ((Long) this.getId()).compareTo(another.getId());
 	}
 
 }

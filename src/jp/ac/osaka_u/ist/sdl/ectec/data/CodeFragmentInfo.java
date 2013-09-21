@@ -9,7 +9,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author k-hotta
  * 
  */
-public class CodeFragmentInfo extends AbstractElement {
+public class CodeFragmentInfo extends AbstractElement implements
+		Comparable<CodeFragmentInfo> {
 
 	/**
 	 * a counter to keep the number of created elements
@@ -103,6 +104,11 @@ public class CodeFragmentInfo extends AbstractElement {
 	 */
 	public final long getEndRevisionId() {
 		return this.endRevisionId;
+	}
+
+	@Override
+	public int compareTo(CodeFragmentInfo another) {
+		return ((Long) this.getId()).compareTo(another.getId());
 	}
 
 }

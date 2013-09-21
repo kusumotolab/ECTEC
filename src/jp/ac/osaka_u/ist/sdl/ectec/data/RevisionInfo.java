@@ -8,7 +8,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author k-hotta
  * 
  */
-public class RevisionInfo extends AbstractElement {
+public class RevisionInfo extends AbstractElement implements
+		Comparable<RevisionInfo> {
 
 	/**
 	 * a counter to keep the number of created elements
@@ -47,6 +48,11 @@ public class RevisionInfo extends AbstractElement {
 	 */
 	public final String getIdentifier() {
 		return this.identifier;
+	}
+
+	@Override
+	public int compareTo(RevisionInfo another) {
+		return ((Long) this.getId()).compareTo(another.getId());
 	}
 
 }

@@ -10,7 +10,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author k-hotta
  * 
  */
-public class CloneSetInfo extends AbstractElement {
+public class CloneSetInfo extends AbstractElement implements
+		Comparable<CloneSetInfo> {
 
 	/**
 	 * a counter to keep the number of created elements
@@ -67,6 +68,11 @@ public class CloneSetInfo extends AbstractElement {
 	 */
 	public final List<Long> getElements() {
 		return Collections.unmodifiableList(elements);
+	}
+
+	@Override
+	public int compareTo(CloneSetInfo another) {
+		return ((Long) this.getId()).compareTo(another.getId());
 	}
 
 }
