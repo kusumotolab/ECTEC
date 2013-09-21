@@ -1,7 +1,9 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.svn;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.IChangedFilesDetector;
@@ -39,6 +41,8 @@ public class SVNChangedFilesDetector implements IChangedFilesDetector {
 
 		final Map<String, Character> result = new HashMap<String, Character>();
 
+		final List<String> deleted = new ArrayList<String>();
+
 		final SVNRepository repository = manager.getRepository();
 
 		repository.log(null, revision, revision, true, false,
@@ -59,13 +63,21 @@ public class SVNChangedFilesDetector implements IChangedFilesDetector {
 							// in the case that directories are deleted
 							else if (('D' == entry.getValue().getType())
 									|| ('R' == entry.getValue().getType())) {
-								result.put(entry.getKey().substring(1), entry
-										.getValue().getType());
+								deleted.add(entry.getKey().substring(1));
 								continue;
 							}
 						}
 					}
 				});
+
+		if (!deleted.isEmpty()) {
+			final List<String> sourceFilesInDeletedDir = manager
+					.getListOfSourceFiles(revisionIdentifier, language, deleted);
+
+			for (final String deletedFile : sourceFilesInDeletedDir) {
+				result.put(deletedFile, 'D');
+			}
+		}
 
 		return Collections.unmodifiableMap(result);
 	}
