@@ -40,6 +40,9 @@ public class CodeFragmentRegisterer extends
 		pstmt.setLong(++column, element.getCrdId());
 		pstmt.setLong(++column, element.getStartRevisionId());
 		pstmt.setLong(++column, element.getEndRevisionId());
+		pstmt.setLong(++column, element.getHash());
+		pstmt.setInt(++column, element.getStartLine());
+		pstmt.setInt(++column, element.getEndLine());
 	}
 
 }

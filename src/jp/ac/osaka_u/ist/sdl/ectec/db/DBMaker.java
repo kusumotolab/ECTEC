@@ -167,7 +167,10 @@ public class DBMaker {
 		builder.append("OWNER_FILE_ID LONG,");
 		builder.append("CRD_ID LONG,");
 		builder.append("START_REVISION_ID LONG,");
-		builder.append("END_REVISION_ID LONG");
+		builder.append("END_REVISION_ID LONG,");
+		builder.append("HASH LONG,");
+		builder.append("START_LINE INTEGER,");
+		builder.append("END_LINE INTEGER");
 		builder.append(")");
 
 		return builder.toString();

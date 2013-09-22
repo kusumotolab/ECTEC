@@ -38,6 +38,21 @@ public class CodeFragmentInfo extends AbstractElement implements
 	private final long endRevisionId;
 
 	/**
+	 * the hash value created from this fragment
+	 */
+	private final long hash;
+
+	/**
+	 * the start line of this fragment
+	 */
+	private final int startLine;
+
+	/**
+	 * the end line of this fragment
+	 */
+	private final int endLine;
+
+	/**
 	 * the constructor for elements that are retrieved from the db
 	 * 
 	 * @param id
@@ -45,15 +60,22 @@ public class CodeFragmentInfo extends AbstractElement implements
 	 * @param crdId
 	 * @param startRevisionId
 	 * @param endRevisionId
+	 * @param hash
+	 * @param startLine
+	 * @param endLine
 	 */
 	public CodeFragmentInfo(final long id, final long ownerFileId,
 			final long crdId, final long startRevisionId,
-			final long endRevisionId) {
+			final long endRevisionId, final long hash, final int startLine,
+			final int endLine) {
 		super(id);
 		this.ownerFileId = ownerFileId;
 		this.crdId = crdId;
 		this.startRevisionId = startRevisionId;
 		this.endRevisionId = endRevisionId;
+		this.hash = hash;
+		this.startLine = startLine;
+		this.endLine = endLine;
 	}
 
 	/**
@@ -63,11 +85,15 @@ public class CodeFragmentInfo extends AbstractElement implements
 	 * @param crdId
 	 * @param startRevisionId
 	 * @param endRevisionId
+	 * @param hash
+	 * @param startLine
+	 * @param endLine
 	 */
 	public CodeFragmentInfo(final long ownerFileId, final long crdId,
-			final long startRevisionId, final long endRevisionId) {
+			final long startRevisionId, final long endRevisionId,
+			final long hash, final int startLine, final int endLine) {
 		this(count.getAndIncrement(), ownerFileId, crdId, startRevisionId,
-				endRevisionId);
+				endRevisionId, hash, startLine, endLine);
 	}
 
 	/**
@@ -104,6 +130,33 @@ public class CodeFragmentInfo extends AbstractElement implements
 	 */
 	public final long getEndRevisionId() {
 		return this.endRevisionId;
+	}
+
+	/**
+	 * get the hash value
+	 * 
+	 * @return
+	 */
+	public final long getHash() {
+		return this.hash;
+	}
+
+	/**
+	 * get the start line
+	 * 
+	 * @return
+	 */
+	public final int getStartLine() {
+		return this.startLine;
+	}
+
+	/**
+	 * get the end line
+	 * 
+	 * @return
+	 */
+	public final int getEndLine() {
+		return this.endLine;
 	}
 
 	@Override
