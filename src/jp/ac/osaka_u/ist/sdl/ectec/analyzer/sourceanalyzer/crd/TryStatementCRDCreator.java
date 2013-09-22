@@ -17,8 +17,8 @@ import org.eclipse.jdt.core.dom.TryStatement;
  */
 public class TryStatementCRDCreator extends AbstractCRDCreator<TryStatement> {
 
-	public TryStatementCRDCreator(TryStatement node, List<CRD> ancestors) {
-		super(node, ancestors, BlockType.TRY);
+	public TryStatementCRDCreator(TryStatement node, CRD parent) {
+		super(node, parent, BlockType.TRY);
 	}
 
 	/**

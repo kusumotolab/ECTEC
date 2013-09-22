@@ -19,8 +19,8 @@ import org.eclipse.jdt.core.dom.Statement;
  */
 public class ElseStatementCRDCreator extends AbstractCRDCreator<Statement> {
 
-	public ElseStatementCRDCreator(Statement node, List<CRD> ancestors) {
-		super(node, ancestors, BlockType.ELSE);
+	public ElseStatementCRDCreator(Statement node, CRD parent) {
+		super(node, parent, BlockType.ELSE);
 	}
 
 	/**

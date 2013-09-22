@@ -1,7 +1,5 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd;
 
-import java.util.List;
-
 import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 
@@ -16,8 +14,8 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
  */
 public class MethodCRDCreator extends AbstractCRDCreator<MethodDeclaration> {
 
-	public MethodCRDCreator(MethodDeclaration node, List<CRD> ancestors) {
-		super(node, ancestors, BlockType.METHOD);
+	public MethodCRDCreator(MethodDeclaration node, CRD parent) {
+		super(node, parent, BlockType.METHOD);
 	}
 
 	/**

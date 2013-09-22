@@ -1,7 +1,5 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd;
 
-import java.util.List;
-
 import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 
@@ -15,8 +13,8 @@ import org.eclipse.jdt.core.dom.CatchClause;
  */
 public class CatchClauseCRDCreator extends AbstractCRDCreator<CatchClause> {
 
-	public CatchClauseCRDCreator(CatchClause node, List<CRD> ancestors) {
-		super(node, ancestors, BlockType.CATCH);
+	public CatchClauseCRDCreator(CatchClause node, CRD parent) {
+		super(node, parent, BlockType.CATCH);
 	}
 
 	/**

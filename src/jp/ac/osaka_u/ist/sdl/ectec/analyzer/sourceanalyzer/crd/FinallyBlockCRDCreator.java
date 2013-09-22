@@ -18,8 +18,8 @@ import org.eclipse.jdt.core.dom.TryStatement;
  */
 public class FinallyBlockCRDCreator extends AbstractCRDCreator<Block> {
 
-	public FinallyBlockCRDCreator(Block node, List<CRD> ancestors) {
-		super(node, ancestors, BlockType.FINALLY);
+	public FinallyBlockCRDCreator(Block node, CRD parent) {
+		super(node, parent, BlockType.FINALLY);
 	}
 
 	/**

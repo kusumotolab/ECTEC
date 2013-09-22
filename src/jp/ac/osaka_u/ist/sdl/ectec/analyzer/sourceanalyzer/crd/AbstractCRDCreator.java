@@ -23,19 +23,19 @@ public abstract class AbstractCRDCreator<T extends ASTNode> {
 	protected final T node;
 
 	/**
-	 * the crds for the ancestors of this node
+	 * the crd for the parent of this node
 	 */
-	protected final List<CRD> ancestors;
+	protected final CRD parent;
 
 	/**
 	 * the type of the block
 	 */
 	protected final BlockType bType;
 
-	public AbstractCRDCreator(final T node, final List<CRD> ancestors,
+	public AbstractCRDCreator(final T node, final CRD parent,
 			final BlockType bType) {
 		this.node = node;
-		this.ancestors = ancestors;
+		this.parent = parent;
 		this.bType = bType;
 	}
 
@@ -49,8 +49,8 @@ public abstract class AbstractCRDCreator<T extends ASTNode> {
 		final String anchor = getAnchor();
 
 		final List<Long> ancestorIds = new ArrayList<Long>();
-		for (final CRD ancestor : ancestors) {
-			ancestorIds.add(ancestor.getId());
+		for (final long ancestorId : parent.getAncestors()) {
+			ancestorIds.add(ancestorId);
 		}
 
 		final MetricsCalculator cmCalculator = new MetricsCalculator();
@@ -58,8 +58,8 @@ public abstract class AbstractCRDCreator<T extends ASTNode> {
 		final int cm = cmCalculator.getCC() + cmCalculator.getFO();
 
 		final String thisCrdStr = getStringCrdForThisBlock(head, anchor, cm);
-		final String fullText = (ancestors.isEmpty()) ? thisCrdStr : ancestors
-				.get(ancestors.size() - 1).getFullText() + thisCrdStr;
+		final String fullText = (parent == null) ? thisCrdStr : parent
+				.getFullText() + thisCrdStr;
 
 		return new CRD(bType, head, anchor, cm, ancestorIds, fullText);
 	}

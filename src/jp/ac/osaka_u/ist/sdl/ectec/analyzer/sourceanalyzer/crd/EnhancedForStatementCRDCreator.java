@@ -1,7 +1,5 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd;
 
-import java.util.List;
-
 import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 
@@ -16,9 +14,8 @@ import org.eclipse.jdt.core.dom.EnhancedForStatement;
 public class EnhancedForStatementCRDCreator extends
 		AbstractCRDCreator<EnhancedForStatement> {
 
-	public EnhancedForStatementCRDCreator(EnhancedForStatement node,
-			List<CRD> ancestors) {
-		super(node, ancestors, BlockType.ENHANCED_FOR);
+	public EnhancedForStatementCRDCreator(EnhancedForStatement node, CRD parent) {
+		super(node, parent, BlockType.ENHANCED_FOR);
 	}
 
 	/**

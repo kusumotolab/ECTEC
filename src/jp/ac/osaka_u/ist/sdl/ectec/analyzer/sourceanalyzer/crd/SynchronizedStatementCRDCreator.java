@@ -1,7 +1,5 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd;
 
-import java.util.List;
-
 import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 
@@ -17,8 +15,8 @@ public class SynchronizedStatementCRDCreator extends
 		AbstractCRDCreator<SynchronizedStatement> {
 
 	public SynchronizedStatementCRDCreator(SynchronizedStatement node,
-			List<CRD> ancestors) {
-		super(node, ancestors, BlockType.SYNCHRONIZED);
+			CRD parent) {
+		super(node, parent, BlockType.SYNCHRONIZED);
 	}
 
 	/**
