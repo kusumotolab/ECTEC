@@ -8,7 +8,6 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.IRepositoryManager;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.data.FileInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -49,7 +48,7 @@ public class CodeFragmentDetectingThread implements Runnable {
 	/**
 	 * a map having target revisions
 	 */
-	private final ConcurrentMap<Long, RevisionInfo> revisions;
+	private final ConcurrentMap<Long, String> revisions;
 
 	/**
 	 * the hash calculator
@@ -61,7 +60,7 @@ public class CodeFragmentDetectingThread implements Runnable {
 			final ConcurrentMap<Long, CodeFragmentInfo> detectedFragments,
 			final FileInfo[] targetFiles, final AtomicInteger index,
 			final IRepositoryManager manager,
-			final ConcurrentMap<Long, RevisionInfo> revisions,
+			final ConcurrentMap<Long, String> revisions,
 			final IHashCalculator hashCalculator) {
 		this.detectedCrds = detectedCrds;
 		this.detectedFragments = detectedFragments;
@@ -86,8 +85,8 @@ public class CodeFragmentDetectingThread implements Runnable {
 					+ targetFiles.length + "] processing "
 					+ targetFile.getPath());
 
-			final String startRevision = revisions.get(
-					targetFile.getStartRevisionId()).getIdentifier();
+			final String startRevision = revisions.get(targetFile
+					.getStartRevisionId());
 			try {
 				final String src = manager.getFileContents(startRevision,
 						targetFile.getPath());
