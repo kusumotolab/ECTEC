@@ -1,5 +1,7 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash;
 
+import org.eclipse.jdt.core.dom.ASTNode;
+
 /**
  * An interface that represents how to calculate a hash value from a code
  * fragment
@@ -10,11 +12,11 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash;
 public interface IHashCalculator {
 
 	/**
-	 * get a hash value calcuated from the given string as a long value
+	 * get a hash value calculated from the given node as a long value
 	 * 
-	 * @param str
+	 * @param node
 	 * @return
 	 */
-	public long getHashValue(final String str);
+	public long getHashValue(final ASTNode node);
 
 }
