@@ -97,7 +97,7 @@ public class CodeFragmentDetectingThreadMonitor {
 			}
 
 			// break this loop if all the other threads have died
-			if (Thread.activeCount() == 1) {
+			if (Thread.activeCount() == 2) {
 				break;
 			}
 		}
