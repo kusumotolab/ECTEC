@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer;
+package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd;
 
 import java.util.List;
 
