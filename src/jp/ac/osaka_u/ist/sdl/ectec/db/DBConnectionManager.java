@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CRDRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CloneGenealogyRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CloneSetLinkRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CloneSetRegisterer;
@@ -41,6 +42,8 @@ public final class DBConnectionManager {
 
 	private final CloneGenealogyRegisterer cloneGenealogyRegisterer;
 
+	private final CRDRegisterer crdRegisterer;
+
 	/**
 	 * the constructor
 	 * 
@@ -63,6 +66,7 @@ public final class DBConnectionManager {
 				maxBatchCount);
 		this.cloneGenealogyRegisterer = new CloneGenealogyRegisterer(this,
 				maxBatchCount);
+		this.crdRegisterer = new CRDRegisterer(this, maxBatchCount);
 	}
 
 	public final RevisionRegisterer getRevisionRegisterer() {
@@ -91,6 +95,10 @@ public final class DBConnectionManager {
 
 	public final CloneGenealogyRegisterer getCloneGenealogyRegisterer() {
 		return cloneGenealogyRegisterer;
+	}
+
+	public final CRDRegisterer getCrdRegisterer() {
+		return crdRegisterer;
 	}
 
 	/**
