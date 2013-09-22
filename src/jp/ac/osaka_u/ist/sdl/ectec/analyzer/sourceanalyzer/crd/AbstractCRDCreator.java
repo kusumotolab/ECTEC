@@ -47,11 +47,16 @@ public abstract class AbstractCRDCreator<T extends ASTNode> {
 	public CRD createCrd() {
 		final String head = bType.getHead();
 		final String anchor = getAnchor();
-		final int cm = -1; // TODO implement
+
 		final List<Long> ancestorIds = new ArrayList<Long>();
 		for (final CRD ancestor : ancestors) {
 			ancestorIds.add(ancestor.getId());
 		}
+
+		final MetricsCalculator cmCalculator = new MetricsCalculator();
+		node.accept(cmCalculator);
+		final int cm = cmCalculator.getCC() + cmCalculator.getFO();
+
 		final String thisCrdStr = getStringCrdForThisBlock(head, anchor, cm);
 		final String fullText = (ancestors.isEmpty()) ? thisCrdStr : ancestors
 				.get(ancestors.size() - 1).getFullText() + thisCrdStr;
