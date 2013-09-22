@@ -49,6 +49,7 @@ public abstract class AbstractCRDCreator<T extends ASTNode> {
 		final String anchor = getAnchor();
 
 		final List<Long> ancestorIds = new ArrayList<Long>();
+		
 		for (final long ancestorId : parent.getAncestors()) {
 			ancestorIds.add(ancestorId);
 		}

@@ -1,12 +1,18 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer;
 
+import java.util.Collection;
 import java.util.Map;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.filedetector.ChangedFilesIdentifier;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.CodeFragmentIdentifier;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.DefaultHashCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.RepositoryManagerManager;
+import jp.ac.osaka_u.ist.sdl.ectec.data.FileInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBMaker;
+import jp.ac.osaka_u.ist.sdl.ectec.settings.Constants;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 
 /**
@@ -148,7 +154,10 @@ public class AnalyzerMain {
 
 		final Map<RevisionInfo, Long> revisions = detectAndRegisterTargetRevisions(settings);
 
-		detectAndRegisterFiles(settings, revisions);
+		final Map<Long, FileInfo> files = detectAndRegisterFiles(settings,
+				revisions);
+
+		detectAndRegisterFragments(settings, revisions.keySet(), files.values());
 	}
 
 	private static Map<RevisionInfo, Long> detectAndRegisterTargetRevisions(
@@ -168,13 +177,36 @@ public class AnalyzerMain {
 		return revisions;
 	}
 
-	private static void detectAndRegisterFiles(final AnalyzerSettings settings,
+	private static Map<Long, FileInfo> detectAndRegisterFiles(
+			final AnalyzerSettings settings,
 			final Map<RevisionInfo, Long> revisions) throws Exception {
 		final ChangedFilesIdentifier identifier = new ChangedFilesIdentifier(
 				repositoryManagerManager.getRepositoryManager(),
 				dbManager.getFileRegisterer(), settings.getLanguage(),
 				settings.getThreads());
-		identifier.detectAndRegister(revisions);
+		return identifier.detectAndRegister(revisions);
+	}
+
+	private static void detectAndRegisterFragments(
+			final AnalyzerSettings settings,
+			final Collection<RevisionInfo> revisions,
+			final Collection<FileInfo> files) throws Exception {
+		MessagePrinter
+				.stronglyPrintln("detecting and registering code fragments and their crds ... ");
+
+		// TODO implement to choose correct hash calculator
+		final IHashCalculator hashCalculator = new DefaultHashCalculator();
+
+		final CodeFragmentIdentifier identifier = new CodeFragmentIdentifier(
+				files, revisions, settings.getThreads(), hashCalculator,
+				dbManager.getCrdRegisterer(),
+				dbManager.getFragmentRegisterer(),
+				Constants.MAX_ELEMENTS_COUNT,
+				repositoryManagerManager.getRepositoryManager());
+
+		identifier.run();
+
+		MessagePrinter.stronglyPrintln();
 	}
 
 	private static void postprocess() {

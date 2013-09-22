@@ -77,7 +77,6 @@ public class CodeFragmentDetectingThreadMonitor {
 					for (final CRD crd : currentElements) {
 						detectedCrds.remove(crd.getId());
 					}
-
 				}
 
 				if (detectedFragments.size() >= maxElementsCount) {
@@ -91,7 +90,6 @@ public class CodeFragmentDetectingThreadMonitor {
 					for (final CodeFragmentInfo fragment : currentElements) {
 						detectedFragments.remove(fragment.getId());
 					}
-
 				}
 
 			} catch (Exception e) {

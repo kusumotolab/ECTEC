@@ -14,5 +14,7 @@ public interface Constants {
 	public static final String PREDICATE_DIVIDER = " :: ";
 
 	public static long MONITORING_INTERVAL = 1000;
-	
+
+	public static int MAX_ELEMENTS_COUNT = 10000;
+
 }

@@ -66,7 +66,7 @@ public class ChangedFilesIdentifier {
 	 * @param targetRevisions
 	 * @throws SQLException
 	 */
-	public void detectAndRegister(final Map<RevisionInfo, Long> targetRevisions)
+	public Map<Long, FileInfo> detectAndRegister(final Map<RevisionInfo, Long> targetRevisions)
 			throws SQLException {
 		final SortedSet<RevisionInfo> revisionsAsSet = new TreeSet<RevisionInfo>();
 		revisionsAsSet.addAll(targetRevisions.keySet());
@@ -90,6 +90,8 @@ public class ChangedFilesIdentifier {
 		registerer.register(fileInstances.values());
 		MessagePrinter.stronglyPrintln("\tOK");
 		MessagePrinter.stronglyPrintln();
+		
+		return fileInstances;
 	}
 
 	/**
