@@ -28,7 +28,7 @@ public class CodeFragmentRegisterer extends
 
 	@Override
 	protected String createPreparedStatementQueue() {
-		return "insert into CODE_FRAGMENT values (?,?,?,?,?)";
+		return "insert into CODE_FRAGMENT values (?,?,?,?,?,?,?,?)";
 	}
 
 	@Override
