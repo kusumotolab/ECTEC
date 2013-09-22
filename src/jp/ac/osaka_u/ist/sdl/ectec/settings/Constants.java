@@ -13,4 +13,6 @@ public interface Constants {
 
 	public static final String PREDICATE_DIVIDER = " :: ";
 
+	public static long MONITORING_INTERVAL = 1000;
+	
 }
