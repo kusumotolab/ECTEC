@@ -110,6 +110,9 @@ public class CodeFragmentDetectingThreadMonitor {
 		crdRegisterer.register(detectedCrds.values());
 		fragmentRegisterer.register(detectedFragments.values());
 
+		numberOfCrds += detectedCrds.size();
+		numberOfFragments += detectedFragments.size();
+		
 		MessagePrinter.println("\t\tOK");
 
 		MessagePrinter.println();
