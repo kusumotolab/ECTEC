@@ -90,7 +90,7 @@ public class CodeFragmentIdentifier {
 		for (final RevisionInfo revision : revisions) {
 			revisionIdentifiers.put(revision.getId(), revision.getIdentifier());
 		}
-		
+
 		final FileInfo[] filesArray = targetFiles.toArray(new FileInfo[0]);
 
 		if (threadsCount == 1) {
@@ -137,7 +137,7 @@ public class CodeFragmentIdentifier {
 		for (int i = 0; i < filesArray.length; i++) {
 			final FileInfo file = filesArray[i];
 			MessagePrinter.println("\t[" + (i + 1) + "/" + filesArray.length
-					+ "] processing" + file.getPath());
+					+ "] processing " + file.getPath());
 
 			final String startRevision = revisionIdentifiers.get(file
 					.getStartRevisionId());
