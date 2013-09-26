@@ -8,7 +8,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
  * @author k-hotta
  * 
  */
-public class DefaultHashCalculator implements IHashCalculator {
+public class ExactHashCalculator implements IHashCalculator {
 
 	@Override
 	public long getHashValue(final ASTNode node) {

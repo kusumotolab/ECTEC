@@ -5,7 +5,7 @@ import java.util.Map;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.filedetector.ChangedFilesIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.CodeFragmentIdentifier;
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.DefaultHashCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.ExactHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.RepositoryManagerManager;
 import jp.ac.osaka_u.ist.sdl.ectec.data.FileInfo;
@@ -195,7 +195,7 @@ public class AnalyzerMain {
 				.stronglyPrintln("detecting and registering code fragments and their crds ... ");
 
 		// TODO implement to choose correct hash calculator
-		final IHashCalculator hashCalculator = new DefaultHashCalculator();
+		final IHashCalculator hashCalculator = new ExactHashCalculator();
 
 		final CodeFragmentIdentifier identifier = new CodeFragmentIdentifier(
 				files, revisions, settings.getThreads(), hashCalculator,

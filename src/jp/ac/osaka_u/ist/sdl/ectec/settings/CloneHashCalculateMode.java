@@ -1,6 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.settings;
 
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.DefaultHashCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.ExactHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
 
 /**
@@ -16,19 +16,19 @@ public enum CloneHashCalculateMode {
 	 * calculate hash values without any normalizations <br>
 	 * (except for white spaces, tabs, and new line characters)
 	 */
-	EXACT(new String[] { "e", "exact" }, new DefaultHashCalculator()),
+	EXACT(new String[] { "e", "exact" }, new ExactHashCalculator()),
 
 	/**
 	 * calculate hash values with identifiers are normalized
 	 */
 	IDENTIFIER_NORMALIZED(new String[] { "d", "default", "w", "weak" },
-			new DefaultHashCalculator()),
+			new ExactHashCalculator()),
 
 	/**
 	 * calculate hash values with identifiers and sub-blocks are normalized
 	 */
 	SUBBLOCK_NORMALIZED(new String[] { "s", "strong", "strict", "subtree" },
-			new DefaultHashCalculator());
+			new ExactHashCalculator());
 
 	/**
 	 * an array of strings which are used to choose this mode
