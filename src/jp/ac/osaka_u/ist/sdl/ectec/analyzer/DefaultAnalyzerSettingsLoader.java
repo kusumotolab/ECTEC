@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import jp.ac.osaka_u.ist.sdl.ectec.PropertiesKeys;
 import jp.ac.osaka_u.ist.sdl.ectec.PropertiesReader;
+import jp.ac.osaka_u.ist.sdl.ectec.settings.CloneHashCalculateMode;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrintLevel;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.VersionControlSystem;
@@ -72,13 +73,19 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 	 */
 	private final int maxBatchCount;
 
+	/**
+	 * the mode to calculate hash values for clone detection
+	 */
+	private final CloneHashCalculateMode cloneHashMode;
+
 	private DefaultAnalyzerSettingsLoader(final String additionalPath,
 			final Language language, final int threads, final String userName,
 			final String passwd, final String startRevisionIdentifier,
 			final String endRevisionIdentifier,
 			final MessagePrintLevel verboseLevel,
 			final VersionControlSystem versionControlSystem,
-			final boolean overwriteDb, final int maxBatchCount) {
+			final boolean overwriteDb, final int maxBatchCount,
+			final CloneHashCalculateMode cloneHashMode) {
 		this.additionalPath = additionalPath;
 		this.language = language;
 		this.threads = threads;
@@ -90,6 +97,7 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 		this.versionControlSystem = versionControlSystem;
 		this.overwriteDb = overwriteDb;
 		this.maxBatchCount = maxBatchCount;
+		this.cloneHashMode = cloneHashMode;
 	}
 
 	/*
@@ -138,6 +146,10 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 
 	final int getMaxBatchCount() {
 		return maxBatchCount;
+	}
+
+	final CloneHashCalculateMode getCloneHashCalculateMode() {
+		return cloneHashMode;
 	}
 
 	/*
@@ -217,9 +229,12 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 
 		final int maxBatchCount = Integer.parseInt(prop.getProperty(MAX_BATCH));
 
+		final CloneHashCalculateMode cloneHashMode = CloneHashCalculateMode
+				.getCorrespondingMode(prop.getProperty(HASH_FOR_CLONE));
+
 		return new DefaultAnalyzerSettingsLoader(additionalPath, language,
 				threads, userName, passwd, startRevisionIdentifier,
 				endRevisionIdentifier, verboseLevel, versionControlSystem,
-				overwriteDb, maxBatchCount);
+				overwriteDb, maxBatchCount, cloneHashMode);
 	}
 }

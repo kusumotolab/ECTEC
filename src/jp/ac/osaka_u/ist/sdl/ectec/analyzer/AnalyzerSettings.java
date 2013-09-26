@@ -1,5 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer;
 
+import jp.ac.osaka_u.ist.sdl.ectec.settings.CloneHashCalculateMode;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrintLevel;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.VersionControlSystem;
@@ -84,6 +85,11 @@ final class AnalyzerSettings {
 	private final int maxBatchCount;
 
 	/**
+	 * the mode to calculate hash values for clone detection
+	 */
+	private final CloneHashCalculateMode cloneHashMode;
+
+	/**
 	 * the path of the properties file
 	 */
 	private final String propertiesFilePath;
@@ -96,6 +102,7 @@ final class AnalyzerSettings {
 			final MessagePrintLevel verboseLevel,
 			final VersionControlSystem versionControlSystem,
 			final boolean overwriteDb, final int maxBatchCount,
+			final CloneHashCalculateMode cloneHashMode,
 			final String propertiesFilePath) {
 		this.repositoryPath = repositoryPath;
 		this.dbPath = dbPath;
@@ -110,11 +117,12 @@ final class AnalyzerSettings {
 		this.versionControlSystem = versionControlSystem;
 		this.overwriteDb = overwriteDb;
 		this.maxBatchCount = maxBatchCount;
+		this.cloneHashMode = cloneHashMode;
 		this.propertiesFilePath = propertiesFilePath;
 	}
 
 	/*
-	 * getttes follow
+	 * getters follow
 	 */
 
 	final String getRepositoryPath() {
@@ -171,6 +179,10 @@ final class AnalyzerSettings {
 
 	final String getPropertiesFilePath() {
 		return propertiesFilePath;
+	}
+
+	final CloneHashCalculateMode getCloneHashCalculateMode() {
+		return cloneHashMode;
 	}
 
 	final void setStartRevisionIdentifier(final String startRevisionIdentifier) {
@@ -235,10 +247,14 @@ final class AnalyzerSettings {
 		final int maxBatchCount = (cmd.hasOption("mb")) ? Integer.parseInt(cmd
 				.getOptionValue("mb")) : defaultLoader.getMaxBatchCount();
 
+		final CloneHashCalculateMode cloneHashMode = (cmd.hasOption("ch")) ? CloneHashCalculateMode
+				.getCorrespondingMode(cmd.getOptionValue("ch")) : defaultLoader
+				.getCloneHashCalculateMode();
+
 		return new AnalyzerSettings(repositoryPath, dbPath, additionalPath,
 				language, threads, userName, passwd, startRevisionIdentifier,
 				endRevisionIdentifier, verboseLevel, versionControlSystem,
-				overwriteDb, maxBatchCount, propertiesFilePath);
+				overwriteDb, maxBatchCount, cloneHashMode, propertiesFilePath);
 	}
 
 	/**
@@ -343,6 +359,14 @@ final class AnalyzerSettings {
 			mb.setArgs(1);
 			mb.setRequired(false);
 			options.addOption(mb);
+		}
+
+		{
+			final Option ch = new Option("ch", "clone-hash", true,
+					"how to calculate hash values for clone detection");
+			ch.setArgs(1);
+			ch.setRequired(false);
+			options.addOption(ch);
 		}
 
 		{

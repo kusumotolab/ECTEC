@@ -29,5 +29,7 @@ public interface PropertiesKeys {
 	public static final String OVERWRITE_DB = "ectec.overwrite-db";
 	
 	public static final String MAX_BATCH = "ectec.max-batch";
+	
+	public static final String HASH_FOR_CLONE = "ectec.clone-hash";
 
 }
