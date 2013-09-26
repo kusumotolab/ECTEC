@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import jp.ac.osaka_u.ist.sdl.ectec.PropertiesKeys;
 import jp.ac.osaka_u.ist.sdl.ectec.PropertiesReader;
+import jp.ac.osaka_u.ist.sdl.ectec.settings.CRDSimilarityCalculateMode;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.CloneHashCalculateMode;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrintLevel;
@@ -78,6 +79,11 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 	 */
 	private final CloneHashCalculateMode cloneHashMode;
 
+	/**
+	 * the mode to calculate crd similarities
+	 */
+	private final CRDSimilarityCalculateMode crdSimilarityMode;
+
 	private DefaultAnalyzerSettingsLoader(final String additionalPath,
 			final Language language, final int threads, final String userName,
 			final String passwd, final String startRevisionIdentifier,
@@ -85,7 +91,8 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 			final MessagePrintLevel verboseLevel,
 			final VersionControlSystem versionControlSystem,
 			final boolean overwriteDb, final int maxBatchCount,
-			final CloneHashCalculateMode cloneHashMode) {
+			final CloneHashCalculateMode cloneHashMode,
+			final CRDSimilarityCalculateMode crdSimilarityMode) {
 		this.additionalPath = additionalPath;
 		this.language = language;
 		this.threads = threads;
@@ -98,6 +105,7 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 		this.overwriteDb = overwriteDb;
 		this.maxBatchCount = maxBatchCount;
 		this.cloneHashMode = cloneHashMode;
+		this.crdSimilarityMode = crdSimilarityMode;
 	}
 
 	/*
@@ -150,6 +158,10 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 
 	final CloneHashCalculateMode getCloneHashCalculateMode() {
 		return cloneHashMode;
+	}
+
+	final CRDSimilarityCalculateMode getCrdSimilarityMode() {
+		return crdSimilarityMode;
 	}
 
 	/*
@@ -232,9 +244,12 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 		final CloneHashCalculateMode cloneHashMode = CloneHashCalculateMode
 				.getCorrespondingMode(prop.getProperty(HASH_FOR_CLONE));
 
+		final CRDSimilarityCalculateMode crdSimilarityMode = CRDSimilarityCalculateMode
+				.getCorrespondingMode(CRD_SIMILARITY);
+
 		return new DefaultAnalyzerSettingsLoader(additionalPath, language,
 				threads, userName, passwd, startRevisionIdentifier,
 				endRevisionIdentifier, verboseLevel, versionControlSystem,
-				overwriteDb, maxBatchCount, cloneHashMode);
+				overwriteDb, maxBatchCount, cloneHashMode, crdSimilarityMode);
 	}
 }

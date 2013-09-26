@@ -32,4 +32,6 @@ public interface PropertiesKeys {
 	
 	public static final String HASH_FOR_CLONE = "ectec.clone-hash";
 
+	public static final String CRD_SIMILARITY = "ectec.crd-similarity";
+	
 }

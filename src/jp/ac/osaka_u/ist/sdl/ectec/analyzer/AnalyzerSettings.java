@@ -1,5 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer;
 
+import jp.ac.osaka_u.ist.sdl.ectec.settings.CRDSimilarityCalculateMode;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.CloneHashCalculateMode;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrintLevel;
@@ -90,6 +91,11 @@ final class AnalyzerSettings {
 	private final CloneHashCalculateMode cloneHashMode;
 
 	/**
+	 * the mode to calculate crd similarities
+	 */
+	private final CRDSimilarityCalculateMode crdSimilarityMode;
+
+	/**
 	 * the path of the properties file
 	 */
 	private final String propertiesFilePath;
@@ -103,6 +109,7 @@ final class AnalyzerSettings {
 			final VersionControlSystem versionControlSystem,
 			final boolean overwriteDb, final int maxBatchCount,
 			final CloneHashCalculateMode cloneHashMode,
+			final CRDSimilarityCalculateMode crdSimilarityMode,
 			final String propertiesFilePath) {
 		this.repositoryPath = repositoryPath;
 		this.dbPath = dbPath;
@@ -118,6 +125,7 @@ final class AnalyzerSettings {
 		this.overwriteDb = overwriteDb;
 		this.maxBatchCount = maxBatchCount;
 		this.cloneHashMode = cloneHashMode;
+		this.crdSimilarityMode = crdSimilarityMode;
 		this.propertiesFilePath = propertiesFilePath;
 	}
 
@@ -183,6 +191,10 @@ final class AnalyzerSettings {
 
 	final CloneHashCalculateMode getCloneHashCalculateMode() {
 		return cloneHashMode;
+	}
+
+	final CRDSimilarityCalculateMode getCrdSimilarityMode() {
+		return crdSimilarityMode;
 	}
 
 	final void setStartRevisionIdentifier(final String startRevisionIdentifier) {
@@ -251,10 +263,16 @@ final class AnalyzerSettings {
 				.getCorrespondingMode(cmd.getOptionValue("ch")) : defaultLoader
 				.getCloneHashCalculateMode();
 
+		final CRDSimilarityCalculateMode crdSimilarityMode = (cmd
+				.hasOption("cs")) ? CRDSimilarityCalculateMode
+				.getCorrespondingMode(cmd.getOptionValue("cs")) : defaultLoader
+				.getCrdSimilarityMode();
+
 		return new AnalyzerSettings(repositoryPath, dbPath, additionalPath,
 				language, threads, userName, passwd, startRevisionIdentifier,
 				endRevisionIdentifier, verboseLevel, versionControlSystem,
-				overwriteDb, maxBatchCount, cloneHashMode, propertiesFilePath);
+				overwriteDb, maxBatchCount, cloneHashMode, crdSimilarityMode,
+				propertiesFilePath);
 	}
 
 	/**
@@ -367,6 +385,14 @@ final class AnalyzerSettings {
 			ch.setArgs(1);
 			ch.setRequired(false);
 			options.addOption(ch);
+		}
+
+		{
+			final Option cs = new Option("cs", "crd-similarity", true,
+					"how to calculate crd similarity");
+			cs.setArgs(1);
+			cs.setRequired(false);
+			options.addOption(cs);
 		}
 
 		{
