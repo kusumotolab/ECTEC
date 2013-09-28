@@ -33,6 +33,6 @@ public interface ICodeFragmentLinker {
 			final Collection<CodeFragmentInfo> beforeBlocks,
 			final Collection<CodeFragmentInfo> afterBlocks,
 			final ICRDSimilarityCalculator similarityCalculator,
-			final long similarityThreshold, final Map<Long, CRD> crds,
+			final double similarityThreshold, final Map<Long, CRD> crds,
 			final long beforeRevisionId, final long afterRevisionId);
 }

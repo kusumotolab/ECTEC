@@ -30,7 +30,7 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 			Collection<CodeFragmentInfo> beforeFragments,
 			Collection<CodeFragmentInfo> afterFragments,
 			ICRDSimilarityCalculator similarityCalculator,
-			long similarityThreshold, Map<Long, CRD> crds,
+			double similarityThreshold, Map<Long, CRD> crds,
 			long beforeRevisionId, long afterRevisionId) {
 		final FragmentLinkConditionUmpire umpire = new FragmentLinkConditionUmpire(
 				similarityThreshold);
