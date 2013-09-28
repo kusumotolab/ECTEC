@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.linker;
+package jp.ac.osaka_u.ist.sdl.ectec.analyzer.linker;
 
 import java.util.HashMap;
 import java.util.Map;

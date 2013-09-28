@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer;
+package jp.ac.osaka_u.ist.sdl.ectec.analyzer.linker;
 
 import java.util.Collection;
 import java.util.Map;

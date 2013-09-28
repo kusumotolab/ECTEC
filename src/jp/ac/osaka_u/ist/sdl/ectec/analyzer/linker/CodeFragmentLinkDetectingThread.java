@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer;
+package jp.ac.osaka_u.ist.sdl.ectec.analyzer.linker;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -8,7 +8,6 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.linker.ICodeFragmentLinker;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.similarity.ICRDSimilarityCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
