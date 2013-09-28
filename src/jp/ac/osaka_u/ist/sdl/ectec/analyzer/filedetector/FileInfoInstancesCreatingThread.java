@@ -97,13 +97,15 @@ public class FileInfoInstancesCreatingThread implements Runnable {
 				switch (currentChange.getChangeType()) {
 				case ADD:
 					final FileInfo addedFile = new FileInfo(path,
-							currentChange.getChagnedRevisionId(), revision - 1);
+							currentChange.getChagnedRevisionId(),
+							previousRevision);
 					files.put(addedFile.getId(), addedFile);
 					break;
 
 				case CHANGE:
 					final FileInfo changedFile = new FileInfo(path,
-							currentChange.getChagnedRevisionId(), revision - 1);
+							currentChange.getChagnedRevisionId(),
+							previousRevision);
 					files.put(changedFile.getId(), changedFile);
 					break;
 
