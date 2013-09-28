@@ -2,6 +2,8 @@ package jp.ac.osaka_u.ist.sdl.ectec.settings;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.ExactHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IdentifierNormalizedHashCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.SubblockNormalizedHashCalculator;
 
 /**
  * An enum that represents how to calculate hash values from blocks for clone
@@ -22,13 +24,13 @@ public enum CloneHashCalculateMode {
 	 * calculate hash values with identifiers are normalized
 	 */
 	IDENTIFIER_NORMALIZED(new String[] { "d", "default", "w", "weak" },
-			new ExactHashCalculator()),
+			new IdentifierNormalizedHashCalculator()),
 
 	/**
 	 * calculate hash values with identifiers and sub-blocks are normalized
 	 */
 	SUBBLOCK_NORMALIZED(new String[] { "s", "strong", "strict", "subtree" },
-			new ExactHashCalculator());
+			new SubblockNormalizedHashCalculator());
 
 	/**
 	 * an array of strings which are used to choose this mode
