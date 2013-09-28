@@ -12,7 +12,7 @@ public enum BlockType {
 
 	METHOD("method"),
 
-	CATCH("class"),
+	CATCH("catch"),
 
 	DO("do"),
 
