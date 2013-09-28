@@ -32,9 +32,11 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 			ICRDSimilarityCalculator similarityCalculator,
 			long similarityThreshold, Map<Long, CRD> crds,
 			long beforeRevisionId, long afterRevisionId) {
+		final FragmentLinkConditionUmpire umpire = new FragmentLinkConditionUmpire(
+				similarityThreshold);
 		final Map<CodeFragmentInfo, CodeFragmentInfo> pairs = detectPairs(
-				beforeFragments, afterFragments, similarityCalculator,
-				similarityThreshold, crds);
+				beforeFragments, afterFragments, similarityCalculator, umpire,
+				crds);
 
 		return makeLinkInstances(pairs, beforeRevisionId, afterRevisionId);
 	}
@@ -81,7 +83,7 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 			Collection<CodeFragmentInfo> beforeFragments,
 			Collection<CodeFragmentInfo> afterFragments,
 			ICRDSimilarityCalculator similarityCalculator,
-			long similarityThreshold, Map<Long, CRD> crds) {
+			FragmentLinkConditionUmpire umpire, Map<Long, CRD> crds) {
 		// the result (detected pairs of fragments) with the shuffled
 		// the key is an AFTER fragment and the value is a BEFORE fragment
 		final Map<CodeFragmentInfo, CodeFragmentInfo> reversedResult = new TreeMap<CodeFragmentInfo, CodeFragmentInfo>();
@@ -108,8 +110,7 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 		final Map<CodeFragmentInfo, Queue<CodeFragmentInfo>> wishLists = new TreeMap<CodeFragmentInfo, Queue<CodeFragmentInfo>>();
 
 		fillSimilarityTableAndWishList(beforeFragmentsSet, afterFragmentsSet,
-				similarityTable, wishLists, similarityCalculator,
-				similarityThreshold, crds);
+				similarityTable, wishLists, similarityCalculator, umpire, crds);
 
 		final List<CodeFragmentInfo> unmarriedBeforeFragments = new ArrayList<CodeFragmentInfo>();
 		unmarriedBeforeFragments.addAll(beforeFragmentsSet);
@@ -149,19 +150,21 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 			final Table<Long, Long, Double> similarityTable,
 			final Map<CodeFragmentInfo, Queue<CodeFragmentInfo>> wishLists,
 			final ICRDSimilarityCalculator similarityCalculator,
-			final long similarityThreshold, final Map<Long, CRD> crds) {
+			FragmentLinkConditionUmpire umpire, final Map<Long, CRD> crds) {
 		for (final CodeFragmentInfo beforeFragment : beforeFragments) {
 			// fill a row of similarity table
 			final Map<CodeFragmentInfo, Double> similarities = new TreeMap<CodeFragmentInfo, Double>();
+			final CRD beforeCrd = crds.get(beforeFragment.getCrdId());
 
 			for (final CodeFragmentInfo afterFragment : afterFragments) {
+				final CRD afterCrd = crds.get(afterFragment.getCrdId());
 				final double similarity = similarityCalculator.calcSimilarity(
-						crds.get(beforeFragment.getCrdId()),
-						crds.get(afterFragment.getCrdId()));
+						beforeCrd, afterCrd);
 
 				// register the similarity into the table
 				// if the similarity is equal to or over than the threshold
-				if (similarity >= similarityThreshold) {
+				if (umpire
+						.satisfyAllConditions(beforeCrd, afterCrd, similarity)) {
 					similarityTable.changeValueAt(beforeFragment.getId(),
 							afterFragment.getId(), similarity);
 					similarities.put(afterFragment, similarity);
