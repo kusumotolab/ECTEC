@@ -34,4 +34,6 @@ public interface PropertiesKeys {
 
 	public static final String CRD_SIMILARITY = "ectec.crd-similarity";
 	
+	public static final String FRAGMENT_LINK = "ectec.fragment-link";
+	
 }

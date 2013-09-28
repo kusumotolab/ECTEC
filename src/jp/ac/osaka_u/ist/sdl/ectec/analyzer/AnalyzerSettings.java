@@ -2,6 +2,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer;
 
 import jp.ac.osaka_u.ist.sdl.ectec.settings.CRDSimilarityCalculateMode;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.CloneHashCalculateMode;
+import jp.ac.osaka_u.ist.sdl.ectec.settings.CodeFragmentLinkMode;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrintLevel;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.VersionControlSystem;
@@ -96,6 +97,11 @@ final class AnalyzerSettings {
 	private final CRDSimilarityCalculateMode crdSimilarityMode;
 
 	/**
+	 * the mode to link code fragments
+	 */
+	private final CodeFragmentLinkMode fragmentLinkMode;
+
+	/**
 	 * the path of the properties file
 	 */
 	private final String propertiesFilePath;
@@ -110,6 +116,7 @@ final class AnalyzerSettings {
 			final boolean overwriteDb, final int maxBatchCount,
 			final CloneHashCalculateMode cloneHashMode,
 			final CRDSimilarityCalculateMode crdSimilarityMode,
+			final CodeFragmentLinkMode fragmentLinkMode,
 			final String propertiesFilePath) {
 		this.repositoryPath = repositoryPath;
 		this.dbPath = dbPath;
@@ -127,6 +134,7 @@ final class AnalyzerSettings {
 		this.cloneHashMode = cloneHashMode;
 		this.crdSimilarityMode = crdSimilarityMode;
 		this.propertiesFilePath = propertiesFilePath;
+		this.fragmentLinkMode = fragmentLinkMode;
 	}
 
 	/*
@@ -195,6 +203,10 @@ final class AnalyzerSettings {
 
 	final CRDSimilarityCalculateMode getCrdSimilarityMode() {
 		return crdSimilarityMode;
+	}
+
+	final CodeFragmentLinkMode getFragmentLinkMode() {
+		return fragmentLinkMode;
 	}
 
 	final void setStartRevisionIdentifier(final String startRevisionIdentifier) {
@@ -268,11 +280,15 @@ final class AnalyzerSettings {
 				.getCorrespondingMode(cmd.getOptionValue("cs")) : defaultLoader
 				.getCrdSimilarityMode();
 
+		final CodeFragmentLinkMode fragmentLinkMode = (cmd.hasOption("fl")) ? CodeFragmentLinkMode
+				.getCorrespondingMode(cmd.getOptionValue("fl")) : defaultLoader
+				.getFragmentLinkMode();
+
 		return new AnalyzerSettings(repositoryPath, dbPath, additionalPath,
 				language, threads, userName, passwd, startRevisionIdentifier,
 				endRevisionIdentifier, verboseLevel, versionControlSystem,
 				overwriteDb, maxBatchCount, cloneHashMode, crdSimilarityMode,
-				propertiesFilePath);
+				fragmentLinkMode, propertiesFilePath);
 	}
 
 	/**
@@ -393,6 +409,14 @@ final class AnalyzerSettings {
 			cs.setArgs(1);
 			cs.setRequired(false);
 			options.addOption(cs);
+		}
+
+		{
+			final Option fl = new Option("fl", "fragment-link", true,
+					"how to link code fragments");
+			fl.setArgs(1);
+			fl.setRequired(false);
+			options.addOption(fl);
 		}
 
 		{

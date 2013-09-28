@@ -6,6 +6,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.PropertiesKeys;
 import jp.ac.osaka_u.ist.sdl.ectec.PropertiesReader;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.CRDSimilarityCalculateMode;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.CloneHashCalculateMode;
+import jp.ac.osaka_u.ist.sdl.ectec.settings.CodeFragmentLinkMode;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrintLevel;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.VersionControlSystem;
@@ -84,6 +85,11 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 	 */
 	private final CRDSimilarityCalculateMode crdSimilarityMode;
 
+	/**
+	 * the mode to link code fragments
+	 */
+	private final CodeFragmentLinkMode fragmentLinkMode;
+
 	private DefaultAnalyzerSettingsLoader(final String additionalPath,
 			final Language language, final int threads, final String userName,
 			final String passwd, final String startRevisionIdentifier,
@@ -92,7 +98,8 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 			final VersionControlSystem versionControlSystem,
 			final boolean overwriteDb, final int maxBatchCount,
 			final CloneHashCalculateMode cloneHashMode,
-			final CRDSimilarityCalculateMode crdSimilarityMode) {
+			final CRDSimilarityCalculateMode crdSimilarityMode,
+			final CodeFragmentLinkMode fragmentLinkMode) {
 		this.additionalPath = additionalPath;
 		this.language = language;
 		this.threads = threads;
@@ -106,6 +113,7 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 		this.maxBatchCount = maxBatchCount;
 		this.cloneHashMode = cloneHashMode;
 		this.crdSimilarityMode = crdSimilarityMode;
+		this.fragmentLinkMode = fragmentLinkMode;
 	}
 
 	/*
@@ -162,6 +170,10 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 
 	final CRDSimilarityCalculateMode getCrdSimilarityMode() {
 		return crdSimilarityMode;
+	}
+
+	final CodeFragmentLinkMode getFragmentLinkMode() {
+		return fragmentLinkMode;
 	}
 
 	/*
@@ -245,11 +257,15 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 				.getCorrespondingMode(prop.getProperty(HASH_FOR_CLONE));
 
 		final CRDSimilarityCalculateMode crdSimilarityMode = CRDSimilarityCalculateMode
-				.getCorrespondingMode(CRD_SIMILARITY);
+				.getCorrespondingMode(prop.getProperty(CRD_SIMILARITY));
+
+		final CodeFragmentLinkMode fragmentLinkMode = CodeFragmentLinkMode
+				.getCorrespondingMode(prop.getProperty(FRAGMENT_LINK));
 
 		return new DefaultAnalyzerSettingsLoader(additionalPath, language,
 				threads, userName, passwd, startRevisionIdentifier,
 				endRevisionIdentifier, verboseLevel, versionControlSystem,
-				overwriteDb, maxBatchCount, cloneHashMode, crdSimilarityMode);
+				overwriteDb, maxBatchCount, cloneHashMode, crdSimilarityMode,
+				fragmentLinkMode);
 	}
 }
