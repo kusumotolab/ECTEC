@@ -54,6 +54,7 @@ public abstract class AbstractCRDCreator<T extends ASTNode> {
 			for (final long ancestorId : parent.getAncestors()) {
 				ancestorIds.add(ancestorId);
 			}
+			ancestorIds.add(parent.getId());
 		}
 
 		final MetricsCalculator cmCalculator = new MetricsCalculator();
