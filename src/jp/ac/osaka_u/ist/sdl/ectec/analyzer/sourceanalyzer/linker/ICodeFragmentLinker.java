@@ -18,20 +18,21 @@ import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentLinkInfo;
 public interface ICodeFragmentLinker {
 
 	/**
-	 * detect pairs of code fragments <br>
-	 * code fragments that are not changed in the commit must be removed from
-	 * the arguments
+	 * detect pairs of code fragments
 	 * 
 	 * @param beforeBlocks
 	 * @param afterBlocks
 	 * @param similarityCalculator
 	 * @param similarityThreshold
 	 * @param crds
+	 * @param beforeRevisionId
+	 * @param afterRevisionId
 	 * @return
 	 */
 	public Map<Long, CodeFragmentLinkInfo> detectFragmentPairs(
 			final Collection<CodeFragmentInfo> beforeBlocks,
 			final Collection<CodeFragmentInfo> afterBlocks,
 			final ICRDSimilarityCalculator similarityCalculator,
-			final long similarityThreshold, final Map<Long, CRD> crds);
+			final long similarityThreshold, final Map<Long, CRD> crds,
+			final long beforeRevisionId, final long afterRevisionId);
 }

@@ -15,7 +15,8 @@ public class MultipleCodeFragmentLinker implements ICodeFragmentLinker {
 			Collection<CodeFragmentInfo> beforeBlocks,
 			Collection<CodeFragmentInfo> afterBlocks,
 			ICRDSimilarityCalculator similarityCalculator,
-			long similarityThreshold, Map<Long, CRD> crds) {
+			long similarityThreshold, Map<Long, CRD> crds,
+			long beforeRevisionId, long afterRevisionId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
