@@ -202,12 +202,12 @@ public class AnalyzerMain {
 		MessagePrinter
 				.stronglyPrintln("detecting and registering code fragments and their crds ... ");
 
-		// TODO implement to choose correct hash calculator
-		final IHashCalculator hashCalculator = new ExactHashCalculator();
+		final IHashCalculator hashCalculatorForClone = settings
+				.getCloneHashCalculateMode().getCalculator();
 
 		final CodeFragmentIdentifier identifier = new CodeFragmentIdentifier(
-				files, revisions, settings.getThreads(), hashCalculator,
-				dbManager.getCrdRegisterer(),
+				files, revisions, settings.getThreads(),
+				hashCalculatorForClone, dbManager.getCrdRegisterer(),
 				dbManager.getFragmentRegisterer(),
 				Constants.MAX_ELEMENTS_COUNT,
 				repositoryManagerManager.getRepositoryManager());
