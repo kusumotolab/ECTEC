@@ -20,17 +20,19 @@ import jp.ac.osaka_u.ist.sdl.ectec.util.Table;
  * 
  */
 public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
-
+	
 	@Override
 	public Map<Long, CodeFragmentLinkInfo> detectFragmentPairs(
 			Collection<CodeFragmentInfo> beforeBlocks,
 			Collection<CodeFragmentInfo> afterBlocks,
-			ICRDSimilarityCalculator similarityCalculator) {
+			ICRDSimilarityCalculator similarityCalculator,
+			long similarityThreshold, Map<Long, CRD> crds) {
 		Table<Long, Long, Double> similarityTable = null;
 		Map<CodeFragmentInfo, Queue<CodeFragmentInfo>> wishLists = null;
 
 		return null;
 	}
+	
 
 	private void fillSimilarityTableAndWishList(
 			final Set<CodeFragmentInfo> beforeFragments,

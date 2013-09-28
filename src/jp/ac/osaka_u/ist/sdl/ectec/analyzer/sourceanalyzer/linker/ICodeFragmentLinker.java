@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.similarity.ICRDSimilarityCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentLinkInfo;
 
@@ -24,10 +25,13 @@ public interface ICodeFragmentLinker {
 	 * @param beforeBlocks
 	 * @param afterBlocks
 	 * @param similarityCalculator
+	 * @param similarityThreshold
+	 * @param crds
 	 * @return
 	 */
 	public Map<Long, CodeFragmentLinkInfo> detectFragmentPairs(
 			final Collection<CodeFragmentInfo> beforeBlocks,
 			final Collection<CodeFragmentInfo> afterBlocks,
-			final ICRDSimilarityCalculator similarityCalculator);
+			final ICRDSimilarityCalculator similarityCalculator,
+			final long similarityThreshold, final Map<Long, CRD> crds);
 }
