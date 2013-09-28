@@ -107,6 +107,14 @@ public class AnalyzerMain {
 				+ ((settings.isOverwriteDb()) ? "yes" : "no"));
 		MessagePrinter.println("\tthe maximum nuber of batched statements: "
 				+ settings.getMaxBatchCount());
+		MessagePrinter
+				.println("\thow to calculate hash values for clone detection: "
+						+ settings.getCloneHashCalculateMode().toString());
+		MessagePrinter.println("\thow to calculate similarity of CRDs: "
+				+ settings.getCrdSimilarityMode().toString());
+		MessagePrinter.println("\thow to link code fragments: "
+				+ settings.getFragmentLinkMode().toString());
+
 		MessagePrinter.stronglyPrintln();
 	}
 
