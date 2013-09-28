@@ -38,13 +38,13 @@ public class RevisionIdentifier {
 	 * @param language
 	 * @param startRevisionIdentifier
 	 * @param endRevisionIdentifier
-	 * @return
+	 * @return keys are revisions and values are their previous revisions
 	 * @throws Exception
 	 */
-	public Map<RevisionInfo, Long> detectAndRegister(final Language language,
+	public Map<RevisionInfo, RevisionInfo> detectAndRegister(final Language language,
 			final String startRevisionIdentifier,
 			final String endRevisionIdentifier) throws Exception {
-		final Map<RevisionInfo, Long> targetRevisions = detector
+		final Map<RevisionInfo, RevisionInfo> targetRevisions = detector
 				.detectTargetRevisions(language, startRevisionIdentifier,
 						endRevisionIdentifier);
 

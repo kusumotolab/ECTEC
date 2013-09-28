@@ -34,7 +34,7 @@ public class SVNTargetRevisionDetector implements ITargetRevisionDetector {
 	}
 
 	@Override
-	public Map<RevisionInfo, Long> detectTargetRevisions(
+	public Map<RevisionInfo, RevisionInfo> detectTargetRevisions(
 			final Language language, final String startRevisionIdentifier,
 			final String endRevisionIdentifier) throws Exception {
 		// startRevisionIdentifier and endRevisionIdentifier must be Long
@@ -76,12 +76,13 @@ public class SVNTargetRevisionDetector implements ITargetRevisionDetector {
 					}
 				});
 
-		final Map<RevisionInfo, Long> revisionInstances = new TreeMap<RevisionInfo, Long>();
-		long previousRevision = -1;
+		final Map<RevisionInfo, RevisionInfo> revisionInstances = new TreeMap<RevisionInfo, RevisionInfo>();
+		RevisionInfo previousRevision = new RevisionInfo(-1, "dummy");
 		for (final long revision : revisions) {
-			revisionInstances
-					.put(new RevisionInfo(((Long) revision).toString()), previousRevision);
-			previousRevision = revision;
+			final RevisionInfo newRevision = new RevisionInfo(
+					((Long) revision).toString());
+			revisionInstances.put(newRevision, previousRevision);
+			previousRevision = newRevision;
 		}
 
 		return Collections.unmodifiableMap(revisionInstances);

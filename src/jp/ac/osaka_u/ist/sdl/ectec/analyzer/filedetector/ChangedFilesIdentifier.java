@@ -66,7 +66,8 @@ public class ChangedFilesIdentifier {
 	 * @param targetRevisions
 	 * @throws SQLException
 	 */
-	public Map<Long, FileInfo> detectAndRegister(final Map<RevisionInfo, Long> targetRevisions)
+	public Map<Long, FileInfo> detectAndRegister(
+			final Map<RevisionInfo, RevisionInfo> targetRevisions)
 			throws SQLException {
 		final SortedSet<RevisionInfo> revisionsAsSet = new TreeSet<RevisionInfo>();
 		revisionsAsSet.addAll(targetRevisions.keySet());
@@ -77,8 +78,9 @@ public class ChangedFilesIdentifier {
 		MessagePrinter.stronglyPrintln();
 
 		final ConcurrentMap<Long, Long> revisionsMap = new ConcurrentHashMap<Long, Long>();
-		for (Map.Entry<RevisionInfo, Long> entry : targetRevisions.entrySet()) {
-			revisionsMap.put(entry.getKey().getId(), entry.getValue());
+		for (Map.Entry<RevisionInfo, RevisionInfo> entry : targetRevisions
+				.entrySet()) {
+			revisionsMap.put(entry.getKey().getId(), entry.getValue().getId());
 		}
 
 		MessagePrinter.stronglyPrintln("creating  instances of files ... ");
@@ -90,7 +92,7 @@ public class ChangedFilesIdentifier {
 		registerer.register(fileInstances.values());
 		MessagePrinter.stronglyPrintln("\tOK");
 		MessagePrinter.stronglyPrintln();
-		
+
 		return fileInstances;
 	}
 

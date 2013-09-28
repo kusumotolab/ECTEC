@@ -13,8 +13,8 @@ import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
  */
 public interface ITargetRevisionDetector {
 
-	public Map<RevisionInfo, Long> detectTargetRevisions(final Language language,
-			final String startRevisionIdentifier,
+	public Map<RevisionInfo, RevisionInfo> detectTargetRevisions(
+			final Language language, final String startRevisionIdentifier,
 			final String endRevisionIdentifier) throws Exception;
 
 }

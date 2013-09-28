@@ -160,7 +160,7 @@ public class AnalyzerMain {
 				+ settings.getEndRevisionIdentifier());
 		MessagePrinter.stronglyPrintln();
 
-		final Map<RevisionInfo, Long> revisions = detectAndRegisterTargetRevisions(settings);
+		final Map<RevisionInfo, RevisionInfo> revisions = detectAndRegisterTargetRevisions(settings);
 
 		final Map<Long, FileInfo> files = detectAndRegisterFiles(settings,
 				revisions);
@@ -168,7 +168,7 @@ public class AnalyzerMain {
 		detectAndRegisterFragments(settings, revisions.keySet(), files.values());
 	}
 
-	private static Map<RevisionInfo, Long> detectAndRegisterTargetRevisions(
+	private static Map<RevisionInfo, RevisionInfo> detectAndRegisterTargetRevisions(
 			final AnalyzerSettings settings) throws Exception {
 		MessagePrinter.stronglyPrintln("detecting target revisions ... ");
 
@@ -176,7 +176,7 @@ public class AnalyzerMain {
 				repositoryManagerManager.getRepositoryManager()
 						.getTargetRevisionDetector(),
 				dbManager.getRevisionRegisterer());
-		final Map<RevisionInfo, Long> revisions = identifier.detectAndRegister(
+		final Map<RevisionInfo, RevisionInfo> revisions = identifier.detectAndRegister(
 				settings.getLanguage(), settings.getStartRevisionIdentifier(),
 				settings.getEndRevisionIdentifier());
 
@@ -187,7 +187,7 @@ public class AnalyzerMain {
 
 	private static Map<Long, FileInfo> detectAndRegisterFiles(
 			final AnalyzerSettings settings,
-			final Map<RevisionInfo, Long> revisions) throws Exception {
+			final Map<RevisionInfo, RevisionInfo> revisions) throws Exception {
 		final ChangedFilesIdentifier identifier = new ChangedFilesIdentifier(
 				repositoryManagerManager.getRepositoryManager(),
 				dbManager.getFileRegisterer(), settings.getLanguage(),
