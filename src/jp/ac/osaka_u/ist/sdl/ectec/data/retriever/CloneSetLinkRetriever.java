@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.data.registerer;
+package jp.ac.osaka_u.ist.sdl.ectec.data.retriever;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.ac.osaka_u.ist.sdl.ectec.data.CloneSetLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.LinkElementRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.util.StringUtils;
 
