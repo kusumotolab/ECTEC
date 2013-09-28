@@ -169,6 +169,7 @@ public class DBMaker {
 		builder.append("START_REVISION_ID LONG,");
 		builder.append("END_REVISION_ID LONG,");
 		builder.append("HASH LONG,");
+		builder.append("HASH_FOR_CLONE LONG,");
 		builder.append("START_LINE INTEGER,");
 		builder.append("END_LINE INTEGER");
 		builder.append(")");

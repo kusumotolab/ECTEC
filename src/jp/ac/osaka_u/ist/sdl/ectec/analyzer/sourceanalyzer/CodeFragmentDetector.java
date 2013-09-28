@@ -20,6 +20,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd.SwitchStatementCR
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd.SynchronizedStatementCRDCreator;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd.TryStatementCRDCreator;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd.WhileStatementCRDCreator;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.ExactHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
@@ -98,11 +99,17 @@ public class CodeFragmentDetector extends ASTVisitor {
 	/**
 	 * the calculator for hash values
 	 */
-	private final IHashCalculator hashCalculator;
+	private final ExactHashCalculator exactHashCalculator;
+
+	/**
+	 * the calculator for hash values for clone detection
+	 */
+	private final IHashCalculator cloneHashCalculator;
 
 	public CodeFragmentDetector(final long ownerFileId,
 			final long startRevisionId, final long endRevisionId,
-			final CompilationUnit root, final IHashCalculator hashCalculator) {
+			final CompilationUnit root,
+			final IHashCalculator cloneHashCalculator) {
 		this.detectedCrds = new TreeMap<Long, CRD>();
 		this.detectedFragments = new TreeMap<Long, CodeFragmentInfo>();
 		this.ownerFileId = ownerFileId;
@@ -112,7 +119,8 @@ public class CodeFragmentDetector extends ASTVisitor {
 		this.root = root;
 		this.optionalFinallyBlocks = new HashMap<TryStatement, Block>();
 		this.optionalElseBlocks = new HashMap<IfStatement, Block>();
-		this.hashCalculator = hashCalculator;
+		this.exactHashCalculator = new ExactHashCalculator();
+		this.cloneHashCalculator = cloneHashCalculator;
 	}
 
 	/**
@@ -177,10 +185,11 @@ public class CodeFragmentDetector extends ASTVisitor {
 			final long crdId) {
 		final int startLine = getStartLine(node);
 		final int endLine = getEndLine(node);
-		final long hash = hashCalculator.getHashValue(node);
+		final long hash = exactHashCalculator.getHashValue(node);
+		final long hashForClone = cloneHashCalculator.getHashValue(node);
 
 		return new CodeFragmentInfo(ownerFileId, crdId, startRevisionId,
-				endRevisionId, hash, startLine, endLine);
+				endRevisionId, hash, hashForClone, startLine, endLine);
 	}
 
 	/**

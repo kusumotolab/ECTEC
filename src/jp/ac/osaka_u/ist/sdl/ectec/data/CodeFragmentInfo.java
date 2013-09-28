@@ -43,6 +43,11 @@ public class CodeFragmentInfo extends AbstractElement implements
 	private final long hash;
 
 	/**
+	 * the hash value used to detect clones
+	 */
+	private final long hashForClone;
+
+	/**
 	 * the start line of this fragment
 	 */
 	private final int startLine;
@@ -66,14 +71,15 @@ public class CodeFragmentInfo extends AbstractElement implements
 	 */
 	public CodeFragmentInfo(final long id, final long ownerFileId,
 			final long crdId, final long startRevisionId,
-			final long endRevisionId, final long hash, final int startLine,
-			final int endLine) {
+			final long endRevisionId, final long hash, final long hashForClone,
+			final int startLine, final int endLine) {
 		super(id);
 		this.ownerFileId = ownerFileId;
 		this.crdId = crdId;
 		this.startRevisionId = startRevisionId;
 		this.endRevisionId = endRevisionId;
 		this.hash = hash;
+		this.hashForClone = hashForClone;
 		this.startLine = startLine;
 		this.endLine = endLine;
 	}
@@ -91,9 +97,10 @@ public class CodeFragmentInfo extends AbstractElement implements
 	 */
 	public CodeFragmentInfo(final long ownerFileId, final long crdId,
 			final long startRevisionId, final long endRevisionId,
-			final long hash, final int startLine, final int endLine) {
+			final long hash, final long hashForClone, final int startLine,
+			final int endLine) {
 		this(count.getAndIncrement(), ownerFileId, crdId, startRevisionId,
-				endRevisionId, hash, startLine, endLine);
+				endRevisionId, hash, hashForClone, startLine, endLine);
 	}
 
 	/**
@@ -139,6 +146,15 @@ public class CodeFragmentInfo extends AbstractElement implements
 	 */
 	public final long getHash() {
 		return this.hash;
+	}
+
+	/**
+	 * get the hash value for clone detection
+	 * 
+	 * @return
+	 */
+	public final long getHashForClone() {
+		return this.hashForClone;
 	}
 
 	/**

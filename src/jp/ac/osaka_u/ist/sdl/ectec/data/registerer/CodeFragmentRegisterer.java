@@ -28,7 +28,7 @@ public class CodeFragmentRegisterer extends
 
 	@Override
 	protected String createPreparedStatementQueue() {
-		return "insert into CODE_FRAGMENT values (?,?,?,?,?,?,?,?)";
+		return "insert into CODE_FRAGMENT values (?,?,?,?,?,?,?,?,?)";
 	}
 
 	@Override
@@ -41,6 +41,7 @@ public class CodeFragmentRegisterer extends
 		pstmt.setLong(++column, element.getStartRevisionId());
 		pstmt.setLong(++column, element.getEndRevisionId());
 		pstmt.setLong(++column, element.getHash());
+		pstmt.setLong(++column, element.getHashForClone());
 		pstmt.setInt(++column, element.getStartLine());
 		pstmt.setInt(++column, element.getEndLine());
 	}
