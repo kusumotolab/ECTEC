@@ -2,7 +2,9 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -156,7 +158,8 @@ public class CodeFragmentIdentifier {
 			detectedFragments.putAll(detector.getDetectedFragments());
 
 			if (detectedCrds.size() >= maxElementsCount) {
-				final Collection<CRD> currentElements = detectedCrds.values();
+				final Set<CRD> currentElements = new TreeSet<CRD>();
+				currentElements.addAll(detectedCrds.values());
 				crdRegisterer.register(currentElements);
 				MessagePrinter.println("\t" + currentElements.size()
 						+ " CRDs have been registered into db");
@@ -190,7 +193,7 @@ public class CodeFragmentIdentifier {
 
 		numberOfCrds += detectedCrds.size();
 		numberOfFragments += detectedFragments.size();
-		
+
 		MessagePrinter.println("\t\tOK");
 
 		MessagePrinter.println();

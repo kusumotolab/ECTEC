@@ -102,6 +102,11 @@ final class AnalyzerSettings {
 	private final CodeFragmentLinkMode fragmentLinkMode;
 
 	/**
+	 * the threshold for similarities between crds
+	 */
+	private final double similarityThreshold;
+
+	/**
 	 * the path of the properties file
 	 */
 	private final String propertiesFilePath;
@@ -117,7 +122,7 @@ final class AnalyzerSettings {
 			final CloneHashCalculateMode cloneHashMode,
 			final CRDSimilarityCalculateMode crdSimilarityMode,
 			final CodeFragmentLinkMode fragmentLinkMode,
-			final String propertiesFilePath) {
+			final double similarityThreshold, final String propertiesFilePath) {
 		this.repositoryPath = repositoryPath;
 		this.dbPath = dbPath;
 		this.additionalPath = additionalPath;
@@ -134,6 +139,7 @@ final class AnalyzerSettings {
 		this.cloneHashMode = cloneHashMode;
 		this.crdSimilarityMode = crdSimilarityMode;
 		this.propertiesFilePath = propertiesFilePath;
+		this.similarityThreshold = similarityThreshold;
 		this.fragmentLinkMode = fragmentLinkMode;
 	}
 
@@ -207,6 +213,10 @@ final class AnalyzerSettings {
 
 	final CodeFragmentLinkMode getFragmentLinkMode() {
 		return fragmentLinkMode;
+	}
+
+	final double getSimilarityThreshold() {
+		return similarityThreshold;
 	}
 
 	final void setStartRevisionIdentifier(final String startRevisionIdentifier) {
@@ -284,11 +294,15 @@ final class AnalyzerSettings {
 				.getCorrespondingMode(cmd.getOptionValue("fl")) : defaultLoader
 				.getFragmentLinkMode();
 
+		final double similarityThreshold = (cmd.hasOption("st")) ? Double
+				.parseDouble(cmd.getOptionValue("st")) : defaultLoader
+				.getSimilarityThreshold();
+
 		return new AnalyzerSettings(repositoryPath, dbPath, additionalPath,
 				language, threads, userName, passwd, startRevisionIdentifier,
 				endRevisionIdentifier, verboseLevel, versionControlSystem,
 				overwriteDb, maxBatchCount, cloneHashMode, crdSimilarityMode,
-				fragmentLinkMode, propertiesFilePath);
+				fragmentLinkMode, similarityThreshold, propertiesFilePath);
 	}
 
 	/**
@@ -417,6 +431,14 @@ final class AnalyzerSettings {
 			fl.setArgs(1);
 			fl.setRequired(false);
 			options.addOption(fl);
+		}
+
+		{
+			final Option st = new Option("st", "similarity-threshold", true,
+					"the threshold for similarities of crds");
+			st.setArgs(1);
+			st.setRequired(false);
+			options.addOption(st);
 		}
 
 		{

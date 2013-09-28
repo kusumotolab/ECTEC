@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -154,7 +155,7 @@ public class CodeFragmentLinkDetectingThread implements Runnable {
 				MessagePrinter.ePrintln("something is wrong in processing "
 						+ targetRevision.getIdentifier());
 			}
-			
+
 			processedRevisions.put(targetRevision.getId(), targetRevision);
 		}
 	}
@@ -170,7 +171,9 @@ public class CodeFragmentLinkDetectingThread implements Runnable {
 			if (!codeFragments.containsKey(revisionId)) {
 				final Map<Long, CodeFragmentInfo> retrievedFragments = fragmentRetriever
 						.retrieveElementsInSpecifiedRevision(revisionId);
-				codeFragments.put(revisionId, retrievedFragments);
+				final Map<Long, CodeFragmentInfo> concurrentRetrievedFragments = new ConcurrentHashMap<Long, CodeFragmentInfo>();
+				concurrentRetrievedFragments.putAll(retrievedFragments);
+				codeFragments.put(revisionId, concurrentRetrievedFragments);
 			}
 		}
 
@@ -186,7 +189,9 @@ public class CodeFragmentLinkDetectingThread implements Runnable {
 
 				final Map<Long, CRD> retrievedCrds = crdRetriever
 						.retrieveWithIds(crdIds);
-				crds.put(revisionId, retrievedCrds);
+				final Map<Long, CRD> concurrentRetrievedCrds = new ConcurrentHashMap<Long, CRD>();
+				concurrentRetrievedCrds.putAll(retrievedCrds);
+				crds.put(revisionId, concurrentRetrievedCrds);
 			}
 		}
 	}

@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.Map;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.filedetector.ChangedFilesIdentifier;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.linker.CodeFragmentLinkIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.CodeFragmentIdentifier;
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.ExactHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.RepositoryManagerManager;
 import jp.ac.osaka_u.ist.sdl.ectec.data.FileInfo;
@@ -166,6 +166,8 @@ public class AnalyzerMain {
 				revisions);
 
 		detectAndRegisterFragments(settings, revisions.keySet(), files.values());
+
+		detectAndRegisterFragmentLinks(settings, revisions);
 	}
 
 	private static Map<RevisionInfo, RevisionInfo> detectAndRegisterTargetRevisions(
@@ -176,9 +178,10 @@ public class AnalyzerMain {
 				repositoryManagerManager.getRepositoryManager()
 						.getTargetRevisionDetector(),
 				dbManager.getRevisionRegisterer());
-		final Map<RevisionInfo, RevisionInfo> revisions = identifier.detectAndRegister(
-				settings.getLanguage(), settings.getStartRevisionIdentifier(),
-				settings.getEndRevisionIdentifier());
+		final Map<RevisionInfo, RevisionInfo> revisions = identifier
+				.detectAndRegister(settings.getLanguage(),
+						settings.getStartRevisionIdentifier(),
+						settings.getEndRevisionIdentifier());
 
 		MessagePrinter.stronglyPrintln();
 
@@ -212,6 +215,25 @@ public class AnalyzerMain {
 				Constants.MAX_ELEMENTS_COUNT,
 				repositoryManagerManager.getRepositoryManager());
 
+		identifier.run();
+
+		MessagePrinter.stronglyPrintln();
+	}
+
+	private static void detectAndRegisterFragmentLinks(
+			final AnalyzerSettings settings,
+			final Map<RevisionInfo, RevisionInfo> revisions) throws Exception {
+		MessagePrinter
+				.stronglyPrintln("detecting and registering links of code fragments ... ");
+
+		final CodeFragmentLinkIdentifier identifier = new CodeFragmentLinkIdentifier(
+				revisions, settings.getThreads(),
+				dbManager.getFragmentLinkRegisterer(),
+				dbManager.getFragmentRetriever(), dbManager.getCrdRetriever(),
+				settings.getFragmentLinkMode().getLinker(),
+				settings.getSimilarityThreshold(), settings
+						.getCrdSimilarityMode().getCalculator(),
+				Constants.MAX_ELEMENTS_COUNT);
 		identifier.run();
 
 		MessagePrinter.stronglyPrintln();

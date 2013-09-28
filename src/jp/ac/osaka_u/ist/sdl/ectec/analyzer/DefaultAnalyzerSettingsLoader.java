@@ -90,6 +90,11 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 	 */
 	private final CodeFragmentLinkMode fragmentLinkMode;
 
+	/**
+	 * the threshold for similarities between crds
+	 */
+	private final double similarityThreshold;
+
 	private DefaultAnalyzerSettingsLoader(final String additionalPath,
 			final Language language, final int threads, final String userName,
 			final String passwd, final String startRevisionIdentifier,
@@ -99,7 +104,8 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 			final boolean overwriteDb, final int maxBatchCount,
 			final CloneHashCalculateMode cloneHashMode,
 			final CRDSimilarityCalculateMode crdSimilarityMode,
-			final CodeFragmentLinkMode fragmentLinkMode) {
+			final CodeFragmentLinkMode fragmentLinkMode,
+			final double similarityThreshold) {
 		this.additionalPath = additionalPath;
 		this.language = language;
 		this.threads = threads;
@@ -114,6 +120,7 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 		this.cloneHashMode = cloneHashMode;
 		this.crdSimilarityMode = crdSimilarityMode;
 		this.fragmentLinkMode = fragmentLinkMode;
+		this.similarityThreshold = similarityThreshold;
 	}
 
 	/*
@@ -174,6 +181,10 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 
 	final CodeFragmentLinkMode getFragmentLinkMode() {
 		return fragmentLinkMode;
+	}
+
+	final double getSimilarityThreshold() {
+		return similarityThreshold;
 	}
 
 	/*
@@ -262,10 +273,13 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 		final CodeFragmentLinkMode fragmentLinkMode = CodeFragmentLinkMode
 				.getCorrespondingMode(prop.getProperty(FRAGMENT_LINK));
 
+		final double similarityThreshold = Double.parseDouble(prop
+				.getProperty(SIMILARITY_THRESHOLD));
+
 		return new DefaultAnalyzerSettingsLoader(additionalPath, language,
 				threads, userName, passwd, startRevisionIdentifier,
 				endRevisionIdentifier, verboseLevel, versionControlSystem,
 				overwriteDb, maxBatchCount, cloneHashMode, crdSimilarityMode,
-				fragmentLinkMode);
+				fragmentLinkMode, similarityThreshold);
 	}
 }

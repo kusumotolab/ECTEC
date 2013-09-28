@@ -58,7 +58,7 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 			final CodeFragmentInfo beforeFragment = entry.getKey();
 			final CodeFragmentInfo afterFragment = entry.getValue();
 
-			final boolean changed = beforeFragment.getHash() == afterFragment
+			final boolean changed = beforeFragment.getHash() != afterFragment
 					.getHash();
 
 			final CodeFragmentLinkInfo link = new CodeFragmentLinkInfo(

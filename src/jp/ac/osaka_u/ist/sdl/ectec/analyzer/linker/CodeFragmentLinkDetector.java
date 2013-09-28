@@ -2,9 +2,10 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer.linker;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.similarity.ICRDSimilarityCalculator;
@@ -150,8 +151,8 @@ public class CodeFragmentLinkDetector {
 			processedRevisions.put(targetRevision.getId(), targetRevision);
 
 			if (detectedLinks.size() >= maxElementsCount) {
-				final Collection<CodeFragmentLinkInfo> currentElements = detectedLinks
-						.values();
+				final Set<CodeFragmentLinkInfo> currentElements = new HashSet<CodeFragmentLinkInfo>();
+				currentElements.addAll(detectedLinks.values());
 				fragmentLinkRegisterer.register(currentElements);
 				MessagePrinter.println("\t" + currentElements.size()
 						+ " links of fragments have been registered into db");

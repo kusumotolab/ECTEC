@@ -59,7 +59,9 @@ public class StringUtils {
 			final String separator) {
 		final String[] splitStr = str.split(separator);
 		for (final String element : splitStr) {
-			collection.add(Long.parseLong(element));
+			if (!element.isEmpty()) {
+				collection.add(Long.parseLong(element));
+			}
 		}
 	}
 

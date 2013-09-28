@@ -1,6 +1,8 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer;
 
 import java.util.Collection;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentMap;
 
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
@@ -67,8 +69,8 @@ public class CodeFragmentDetectingThreadMonitor {
 				Thread.sleep(Constants.MONITORING_INTERVAL);
 
 				if (detectedCrds.size() >= maxElementsCount) {
-					final Collection<CRD> currentElements = detectedCrds
-							.values();
+					final Set<CRD> currentElements = new TreeSet<CRD>();
+					currentElements.addAll(detectedCrds.values());
 					crdRegisterer.register(currentElements);
 					MessagePrinter.println("\t" + currentElements.size()
 							+ " CRDs have been registered into db");
@@ -112,7 +114,7 @@ public class CodeFragmentDetectingThreadMonitor {
 
 		numberOfCrds += detectedCrds.size();
 		numberOfFragments += detectedFragments.size();
-		
+
 		MessagePrinter.println("\t\tOK");
 
 		MessagePrinter.println();
@@ -120,7 +122,7 @@ public class CodeFragmentDetectingThreadMonitor {
 		MessagePrinter.println("the numbers of detected elements are ... ");
 		MessagePrinter.println("\tCRD: " + numberOfCrds);
 		MessagePrinter.println("\tFragment: " + numberOfFragments);
-		
+
 	}
 
 }

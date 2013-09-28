@@ -1,7 +1,8 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.linker;
 
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
@@ -85,8 +86,8 @@ public class CodeFragmentLinkDetectingThreadMonitor {
 
 				// checking the number of detected links
 				if (detectedLinks.size() >= maxElementsCount) {
-					final Collection<CodeFragmentLinkInfo> currentElements = detectedLinks
-							.values();
+					final Set<CodeFragmentLinkInfo> currentElements = new HashSet<CodeFragmentLinkInfo>();
+					currentElements.addAll(detectedLinks.values());
 					fragmentLinkRegisterer.register(currentElements);
 					MessagePrinter
 							.println("\t"
@@ -120,22 +121,23 @@ public class CodeFragmentLinkDetectingThreadMonitor {
 				break;
 			}
 
-			MessagePrinter.println();
-
-			MessagePrinter.println("\tall threads have finished their work");
-			MessagePrinter
-					.println("\tregistering all the remaining elements into db ");
-			fragmentLinkRegisterer.register(detectedLinks.values());
-
-			numberOfLinks += detectedLinks.size();
-
-			MessagePrinter.println("\t\tOK");
-
-			MessagePrinter.println();
-
-			MessagePrinter.println("the numbers of detected elements are ... ");
-			MessagePrinter.println("\tLinks: " + numberOfLinks);
 		}
+
+		MessagePrinter.println();
+
+		MessagePrinter.println("\tall threads have finished their work");
+		MessagePrinter
+				.println("\tregistering all the remaining elements into db ");
+		fragmentLinkRegisterer.register(detectedLinks.values());
+
+		numberOfLinks += detectedLinks.size();
+
+		MessagePrinter.println("\t\tOK");
+
+		MessagePrinter.println();
+
+		MessagePrinter.println("the numbers of detected elements are ... ");
+		MessagePrinter.println("\tLinks: " + numberOfLinks);
 
 	}
 }
