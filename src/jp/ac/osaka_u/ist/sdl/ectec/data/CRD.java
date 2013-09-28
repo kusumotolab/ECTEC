@@ -140,4 +140,13 @@ public class CRD extends AbstractElement {
 		return this.fullText;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (o.getClass() != this.getClass()) {
+			return false;
+		}
+
+		return ((CRD) o).getFullText().equals(this.getFullText());
+	}
+
 }
