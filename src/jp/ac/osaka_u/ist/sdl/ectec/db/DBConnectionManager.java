@@ -14,6 +14,14 @@ import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CodeFragmentLinkRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CodeFragmentRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.FileRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.RevisionRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CRDRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CloneGenealogyRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CloneSetLinkRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CloneSetRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CodeFragmentLinkRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CodeFragmentRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.FileRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.RevisionRetriever;
 
 /**
  * A class to manage the connection between the db
@@ -44,6 +52,22 @@ public final class DBConnectionManager {
 
 	private final CRDRegisterer crdRegisterer;
 
+	private final RevisionRetriever revisionRetriever;
+
+	private final FileRetriever fileRetriever;
+
+	private final CodeFragmentRetriever fragmentRetriever;
+
+	private final CloneSetRetriever cloneRetriever;
+
+	private final CodeFragmentLinkRetriever fragmentLinkRetriever;
+
+	private final CloneSetLinkRetriever cloneLinkRetriever;
+
+	private final CloneGenealogyRetriever cloneGenealogyRetriever;
+
+	private final CRDRetriever crdRetriever;
+
 	/**
 	 * the constructor
 	 * 
@@ -67,6 +91,14 @@ public final class DBConnectionManager {
 		this.cloneGenealogyRegisterer = new CloneGenealogyRegisterer(this,
 				maxBatchCount);
 		this.crdRegisterer = new CRDRegisterer(this, maxBatchCount);
+		this.revisionRetriever = new RevisionRetriever(this);
+		this.fileRetriever = new FileRetriever(this);
+		this.fragmentRetriever = new CodeFragmentRetriever(this);
+		this.cloneRetriever = new CloneSetRetriever(this);
+		this.fragmentLinkRetriever = new CodeFragmentLinkRetriever(this);
+		this.cloneLinkRetriever = new CloneSetLinkRetriever(this);
+		this.cloneGenealogyRetriever = new CloneGenealogyRetriever(this);
+		this.crdRetriever = new CRDRetriever(this);
 	}
 
 	public final RevisionRegisterer getRevisionRegisterer() {
@@ -99,6 +131,38 @@ public final class DBConnectionManager {
 
 	public final CRDRegisterer getCrdRegisterer() {
 		return crdRegisterer;
+	}
+
+	public final RevisionRetriever getRevisionRetriever() {
+		return revisionRetriever;
+	}
+
+	public final FileRetriever getFileRetriever() {
+		return fileRetriever;
+	}
+
+	public final CodeFragmentRetriever getFragmentRetriever() {
+		return fragmentRetriever;
+	}
+
+	public final CloneSetRetriever getCloneRetriever() {
+		return cloneRetriever;
+	}
+
+	public final CodeFragmentLinkRetriever getFragmentLinkRetriever() {
+		return fragmentLinkRetriever;
+	}
+
+	public final CloneSetLinkRetriever getCloneLinkRetriever() {
+		return cloneLinkRetriever;
+	}
+
+	public final CloneGenealogyRetriever getCloneGenealogyRetriever() {
+		return cloneGenealogyRetriever;
+	}
+
+	public final CRDRetriever getCrdRetriever() {
+		return crdRetriever;
 	}
 
 	/**
