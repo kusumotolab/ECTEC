@@ -1,11 +1,17 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.genealogydetector;
 
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import jp.ac.osaka_u.ist.sdl.ectec.data.ElementLinkInfo;
 
 public class ElementChain<L extends ElementLinkInfo> {
+
+	/**
+	 * the revisions
+	 */
+	private final SortedSet<Long> revisions;
 
 	/**
 	 * the concatenated links
@@ -18,6 +24,7 @@ public class ElementChain<L extends ElementLinkInfo> {
 	private final Set<Long> elements;
 
 	public ElementChain(final L link) {
+		this.revisions = new TreeSet<Long>();
 		this.links = new TreeSet<Long>();
 		this.elements = new TreeSet<Long>();
 		this.links.add(link.getId());
@@ -33,7 +40,23 @@ public class ElementChain<L extends ElementLinkInfo> {
 		return elements;
 	}
 
+	public final SortedSet<Long> getRevisions() {
+		return revisions;
+	}
+
+	public final long getFirstRevision() {
+		return revisions.first();
+	}
+
+	public final long getLastRevision() {
+		return revisions.last();
+	}
+
 	public void invite(final L anotherLink) {
+		synchronized (revisions) {
+			this.revisions.add(anotherLink.getBeforeRevisionId());
+			this.revisions.add(anotherLink.getAfterRevisionId());
+		}
 		synchronized (links) {
 			this.links.add(anotherLink.getId());
 		}
