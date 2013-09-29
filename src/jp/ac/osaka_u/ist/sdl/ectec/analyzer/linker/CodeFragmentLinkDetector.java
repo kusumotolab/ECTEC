@@ -122,10 +122,6 @@ public class CodeFragmentLinkDetector {
 
 		for (int i = 0; i < targetRevisions.length; i++) {
 			final RevisionInfo targetRevision = targetRevisions[i];
-			MessagePrinter.println("\t[" + (i + 1) + "/"
-					+ targetRevisions.length
-					+ "] processing the commit to revision "
-					+ targetRevision.getIdentifier());
 
 			final long beforeRevisionId = revisionsMap.get(targetRevision
 					.getId());
@@ -149,6 +145,11 @@ public class CodeFragmentLinkDetector {
 					beforeRevisionId, afterRevisionId));
 
 			processedRevisions.put(targetRevision.getId(), targetRevision);
+
+			MessagePrinter.println("\t[" + (i + 1) + "/"
+					+ targetRevisions.length
+					+ "] processed the commit to revision "
+					+ targetRevision.getIdentifier());
 
 			if (detectedLinks.size() >= maxElementsCount) {
 				final Set<CodeFragmentLinkInfo> currentElements = new HashSet<CodeFragmentLinkInfo>();

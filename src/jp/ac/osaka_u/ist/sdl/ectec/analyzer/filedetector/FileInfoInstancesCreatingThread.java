@@ -71,8 +71,8 @@ public class FileInfoInstancesCreatingThread implements Runnable {
 
 			final String path = targetPaths[currentIndex];
 
-			MessagePrinter.println("\tanalyzing " + path + " ["
-					+ (currentIndex + 1) + "/" + targetPaths.length + "]");
+			MessagePrinter.println("\t[" + (currentIndex + 1) + "/"
+					+ targetPaths.length + "] analyzing " + path);
 
 			// get the ids of revisions where this file was updated
 			final SortedSet<ChangeOnFile> changes = changedFiles.get(path);

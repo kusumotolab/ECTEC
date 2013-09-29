@@ -123,15 +123,15 @@ public class CodeFragmentLinkDetectingThread implements Runnable {
 			}
 
 			final RevisionInfo targetRevision = targetRevisions[currentIndex];
-			MessagePrinter.println("\t[" + (currentIndex + 1) + "/"
-					+ targetRevisions.length
-					+ "] processing the commit to revision "
-					+ targetRevision.getIdentifier());
 
 			final long beforeRevisionId = revisionsMap.get(targetRevision
 					.getId());
 			if (beforeRevisionId == -1) {
 				processedRevisions.put(targetRevision.getId(), targetRevision);
+				MessagePrinter.println("\t[" + processedRevisions.size() + "/"
+						+ targetRevisions.length
+						+ "] processed the commit to revision "
+						+ targetRevision.getIdentifier());
 				continue;
 			}
 			final long afterRevisionId = targetRevision.getId();
@@ -157,6 +157,10 @@ public class CodeFragmentLinkDetectingThread implements Runnable {
 			}
 
 			processedRevisions.put(targetRevision.getId(), targetRevision);
+			MessagePrinter.println("\t[" + processedRevisions.size() + "/"
+					+ targetRevisions.length
+					+ "] processed the commit to revision "
+					+ targetRevision.getIdentifier());
 		}
 	}
 
