@@ -54,6 +54,7 @@ public class DBMaker {
 		dbManager.executeUpdate(getCodeFragmentLinkTableQuery());
 		dbManager.executeUpdate(getCloneSetLinkTableQuery());
 		dbManager.executeUpdate(getCloneGenealogyTableQuery());
+		dbManager.executeUpdate(getCodeFragmentGenealogyTableQuery());
 		dbManager.executeUpdate(getCrdQuery());
 	}
 
@@ -99,6 +100,12 @@ public class DBMaker {
 
 		try {
 			dbManager.executeUpdate("DROP TABLE CLONE_GENEALOGY");
+		} catch (Exception e) {
+			// e.printStackTrace();
+		}
+
+		try {
+			dbManager.executeUpdate("DROP TABLE CODE_FRAGMENT_GENEALOGY");
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
@@ -256,6 +263,25 @@ public class DBMaker {
 		builder.append("ADDITIONS INTEGER,");
 		builder.append("DELETIONS INTEGER,");
 		builder.append("DEAD INTEGER");
+		builder.append(")");
+
+		return builder.toString();
+	}
+
+	/**
+	 * get the query to create the table for genealogies of code fragments
+	 * 
+	 * @return
+	 */
+	private String getCodeFragmentGenealogyTableQuery() {
+		final StringBuilder builder = new StringBuilder();
+
+		builder.append("create table CODE_FRAGMENT_GENEALOGY(");
+		builder.append("CODE_FRAGMENT_GENEALOGY_ID LONG PRIMARY KEY,");
+		builder.append("START_REVISION_ID LONG,");
+		builder.append("END_REVISION_ID LONG,");
+		builder.append("CODE_FRAGMENTS TEXT NOT NULL,");
+		builder.append("CODE_FRAGMENT_LINKS TEXT NOT NULL");
 		builder.append(")");
 
 		return builder.toString();
