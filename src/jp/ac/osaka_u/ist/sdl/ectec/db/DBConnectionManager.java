@@ -10,6 +10,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CRDRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CloneGenealogyRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CloneSetLinkRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CloneSetRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CodeFragmentGenealogyRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CodeFragmentLinkRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CodeFragmentRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.FileRegisterer;
@@ -18,6 +19,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CRDRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CloneGenealogyRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CloneSetLinkRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CloneSetRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CodeFragmentGenealogyRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CodeFragmentLinkRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CodeFragmentRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.FileRetriever;
@@ -50,6 +52,8 @@ public final class DBConnectionManager {
 
 	private final CloneGenealogyRegisterer cloneGenealogyRegisterer;
 
+	private final CodeFragmentGenealogyRegisterer fragmentGenealogyRegisterer;
+
 	private final CRDRegisterer crdRegisterer;
 
 	private final RevisionRetriever revisionRetriever;
@@ -65,6 +69,8 @@ public final class DBConnectionManager {
 	private final CloneSetLinkRetriever cloneLinkRetriever;
 
 	private final CloneGenealogyRetriever cloneGenealogyRetriever;
+
+	private final CodeFragmentGenealogyRetriever fragmentGenealogyRetriever;
 
 	private final CRDRetriever crdRetriever;
 
@@ -90,6 +96,8 @@ public final class DBConnectionManager {
 				maxBatchCount);
 		this.cloneGenealogyRegisterer = new CloneGenealogyRegisterer(this,
 				maxBatchCount);
+		this.fragmentGenealogyRegisterer = new CodeFragmentGenealogyRegisterer(
+				this, maxBatchCount);
 		this.crdRegisterer = new CRDRegisterer(this, maxBatchCount);
 		this.revisionRetriever = new RevisionRetriever(this);
 		this.fileRetriever = new FileRetriever(this);
@@ -98,6 +106,8 @@ public final class DBConnectionManager {
 		this.fragmentLinkRetriever = new CodeFragmentLinkRetriever(this);
 		this.cloneLinkRetriever = new CloneSetLinkRetriever(this);
 		this.cloneGenealogyRetriever = new CloneGenealogyRetriever(this);
+		this.fragmentGenealogyRetriever = new CodeFragmentGenealogyRetriever(
+				this);
 		this.crdRetriever = new CRDRetriever(this);
 	}
 
@@ -127,6 +137,10 @@ public final class DBConnectionManager {
 
 	public final CloneGenealogyRegisterer getCloneGenealogyRegisterer() {
 		return cloneGenealogyRegisterer;
+	}
+
+	public final CodeFragmentGenealogyRegisterer getFragmentGenealogyRegisterer() {
+		return fragmentGenealogyRegisterer;
 	}
 
 	public final CRDRegisterer getCrdRegisterer() {
@@ -159,6 +173,10 @@ public final class DBConnectionManager {
 
 	public final CloneGenealogyRetriever getCloneGenealogyRetriever() {
 		return cloneGenealogyRetriever;
+	}
+
+	public final CodeFragmentGenealogyRetriever getFragmentGenealogyRetriever() {
+		return fragmentGenealogyRetriever;
 	}
 
 	public final CRDRetriever getCrdRetriever() {
