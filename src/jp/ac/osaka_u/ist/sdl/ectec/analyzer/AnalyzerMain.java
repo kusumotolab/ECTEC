@@ -8,6 +8,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.linker.CodeFragmentLinkIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.CodeFragmentIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.RepositoryManagerManager;
+import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
 import jp.ac.osaka_u.ist.sdl.ectec.data.FileInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
@@ -178,17 +179,17 @@ public class AnalyzerMain {
 				+ settings.getEndRevisionIdentifier());
 		MessagePrinter.stronglyPrintln();
 
-		final Map<RevisionInfo, RevisionInfo> revisions = detectAndRegisterTargetRevisions(settings);
+		final Map<Long, Commit> commits = detectAndRegisterTargetRevisions(settings);
 
 		final Map<Long, FileInfo> files = detectAndRegisterFiles(settings,
-				revisions);
+				commits);
 
-		detectAndRegisterFragments(settings, revisions.keySet(), files.values());
+		detectAndRegisterFragments(settings, files.values());
 
-		detectAndRegisterFragmentLinks(settings, revisions);
+		detectAndRegisterFragmentLinks(settings, commits);
 	}
 
-	private static Map<RevisionInfo, RevisionInfo> detectAndRegisterTargetRevisions(
+	private static Map<Long, Commit> detectAndRegisterTargetRevisions(
 			final AnalyzerSettings settings) throws Exception {
 		MessagePrinter.stronglyPrintln("detecting target revisions ... ");
 
@@ -196,32 +197,33 @@ public class AnalyzerMain {
 				repositoryManagerManager.getRepositoryManager()
 						.getTargetRevisionDetector(),
 				dbManager.getRevisionRegisterer());
-		final Map<RevisionInfo, RevisionInfo> revisions = identifier
-				.detectAndRegister(settings.getLanguage(),
-						settings.getStartRevisionIdentifier(),
-						settings.getEndRevisionIdentifier());
+		final Map<Long, Commit> commits = identifier.detectAndRegister(
+				settings.getLanguage(), settings.getStartRevisionIdentifier(),
+				settings.getEndRevisionIdentifier());
 
 		MessagePrinter.stronglyPrintln();
 
-		return revisions;
+		return commits;
 	}
 
 	private static Map<Long, FileInfo> detectAndRegisterFiles(
-			final AnalyzerSettings settings,
-			final Map<RevisionInfo, RevisionInfo> revisions) throws Exception {
+			final AnalyzerSettings settings, final Map<Long, Commit> commits)
+			throws Exception {
 		final ChangedFilesIdentifier identifier = new ChangedFilesIdentifier(
 				repositoryManagerManager.getRepositoryManager(),
 				dbManager.getFileRegisterer(), settings.getLanguage(),
 				settings.getThreads());
-		return identifier.detectAndRegister(revisions);
+		return identifier.detectAndRegister(commits);
 	}
 
 	private static void detectAndRegisterFragments(
-			final AnalyzerSettings settings,
-			final Collection<RevisionInfo> revisions,
-			final Collection<FileInfo> files) throws Exception {
+			final AnalyzerSettings settings, final Collection<FileInfo> files)
+			throws Exception {
 		MessagePrinter
 				.stronglyPrintln("detecting and registering code fragments and their crds ... ");
+
+		final Collection<RevisionInfo> revisions = dbManager
+				.getRevisionRetriever().retrieveAll().values();
 
 		final IHashCalculator hashCalculatorForClone = settings
 				.getCloneHashCalculateMode().getCalculator();
@@ -240,12 +242,12 @@ public class AnalyzerMain {
 
 	private static void detectAndRegisterFragmentLinks(
 			final AnalyzerSettings settings,
-			final Map<RevisionInfo, RevisionInfo> revisions) throws Exception {
+			final Map<Long, Commit> commits) throws Exception {
 		MessagePrinter
 				.stronglyPrintln("detecting and registering links of code fragments ... ");
 
 		final CodeFragmentLinkIdentifier identifier = new CodeFragmentLinkIdentifier(
-				revisions, settings.getThreads(),
+				commits, settings.getThreads(),
 				dbManager.getFragmentLinkRegisterer(),
 				dbManager.getFragmentRetriever(), dbManager.getCrdRetriever(),
 				settings.getFragmentLinkMode().getLinker(),

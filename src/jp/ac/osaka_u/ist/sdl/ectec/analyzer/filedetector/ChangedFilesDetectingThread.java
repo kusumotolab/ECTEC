@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.IChangedFilesDetector;
-import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 
@@ -37,9 +37,9 @@ public class ChangedFilesDetectingThread implements Runnable {
 	private final Language language;
 
 	/**
-	 * the target revisions as array
+	 * the target commits as array
 	 */
-	private final RevisionInfo[] targetRevisions;
+	private final Commit[] commits;
 
 	/**
 	 * the counter that points which revision is the next target
@@ -48,12 +48,12 @@ public class ChangedFilesDetectingThread implements Runnable {
 
 	public ChangedFilesDetectingThread(final IChangedFilesDetector detector,
 			final ConcurrentMap<String, SortedSet<ChangeOnFile>> changedFiles,
-			final Language language, final RevisionInfo[] targetRevisions,
+			final Language language, final Commit[] commits,
 			final AtomicInteger index) {
 		this.detector = detector;
 		this.changedFiles = changedFiles;
 		this.language = language;
-		this.targetRevisions = targetRevisions;
+		this.commits = commits;
 		this.index = index;
 	}
 
@@ -62,21 +62,23 @@ public class ChangedFilesDetectingThread implements Runnable {
 		while (true) {
 			final int currentIndex = index.getAndIncrement();
 
-			if (currentIndex >= targetRevisions.length) {
+			if (currentIndex >= commits.length) {
 				break;
 			}
 
-			final RevisionInfo targetRevision = targetRevisions[currentIndex];
+			final Commit targetCommit = commits[currentIndex];
+			final String targetRevisionIdentifier = targetCommit
+					.getAfterRevisionIdentifier();
 
 			MessagePrinter.println("\t[" + (currentIndex + 1) + "/"
-					+ targetRevisions.length + "] analyzing revision "
-					+ targetRevision.getIdentifier());
+					+ commits.length + "] analyzing commit from revision "
+					+ targetCommit.getBeforeRevisionIdentifier()
+					+ " to revision" + targetRevisionIdentifier);
 
 			try {
 				// detect changed files in this revision
 				final Map<String, Character> changedFilesInThisRevision = detector
-						.detectChangedFiles(targetRevision.getIdentifier(),
-								language);
+						.detectChangedFiles(targetRevisionIdentifier, language);
 
 				// store paths detected the above step into the concurrent map
 				for (final Map.Entry<String, Character> entry : changedFilesInThisRevision
@@ -95,7 +97,7 @@ public class ChangedFilesDetectingThread implements Runnable {
 					}
 
 					final ChangeOnFile changeOnFile = new ChangeOnFile(path,
-							targetRevision.getId(),
+							targetCommit.getId(),
 							ChangeTypeOnFile.getCorrespondingChangeType(entry
 									.getValue()));
 					changedFiles.get(path).add(changeOnFile);
@@ -104,7 +106,7 @@ public class ChangedFilesDetectingThread implements Runnable {
 			} catch (Exception e) {
 				MessagePrinter
 						.eStronglyPrintln("[ERROR] something is occured when analyzing revision "
-								+ targetRevision.getIdentifier());
+								+ targetRevisionIdentifier);
 				e.printStackTrace();
 			}
 		}

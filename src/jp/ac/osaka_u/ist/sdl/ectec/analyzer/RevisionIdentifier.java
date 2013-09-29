@@ -1,8 +1,10 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer;
 
+import java.util.List;
 import java.util.Map;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.ITargetRevisionDetector;
+import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
 import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.RevisionRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
@@ -38,15 +40,16 @@ public class RevisionIdentifier {
 	 * @param language
 	 * @param startRevisionIdentifier
 	 * @param endRevisionIdentifier
-	 * @return keys are revisions and values are their previous revisions
+	 * @return
 	 * @throws Exception
 	 */
-	public Map<RevisionInfo, RevisionInfo> detectAndRegister(final Language language,
+	public Map<Long, Commit> detectAndRegister(final Language language,
 			final String startRevisionIdentifier,
 			final String endRevisionIdentifier) throws Exception {
-		final Map<RevisionInfo, RevisionInfo> targetRevisions = detector
-				.detectTargetRevisions(language, startRevisionIdentifier,
-						endRevisionIdentifier);
+		detector.detect(language, startRevisionIdentifier,
+				endRevisionIdentifier);
+		final Map<Long, RevisionInfo> targetRevisions = detector
+				.getTargetRevisions();
 
 		MessagePrinter.stronglyPrintln("\t" + targetRevisions.size()
 				+ " revisions are detected");
@@ -54,9 +57,11 @@ public class RevisionIdentifier {
 		MessagePrinter.stronglyPrintln();
 
 		MessagePrinter.stronglyPrintln("registering target revisions ... ");
-		registerer.register(targetRevisions.keySet());
+		registerer.register(targetRevisions.values());
 		MessagePrinter.stronglyPrintln("\tOK");
 
-		return targetRevisions;
+		final Map<Long, Commit> commits = detector.getCommits();
+
+		return commits;
 	}
 }

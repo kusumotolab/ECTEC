@@ -13,7 +13,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.similarity.ICRDSimila
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
 import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CRDRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CodeFragmentRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
@@ -32,9 +32,9 @@ public class CodeFragmentLinkDetectingThread implements Runnable {
 	private final ConcurrentMap<Long, CodeFragmentLinkInfo> detectedLinks;
 
 	/**
-	 * the target revisions
+	 * the target commits
 	 */
-	private final RevisionInfo[] targetRevisions;
+	private final Commit[] targetCommits;
 
 	/**
 	 * the retriever for code fragments
@@ -57,15 +57,9 @@ public class CodeFragmentLinkDetectingThread implements Runnable {
 	private final ConcurrentMap<Long, Map<Long, CRD>> crds;
 
 	/**
-	 * already processed revisions
+	 * already processed commits
 	 */
-	private final ConcurrentMap<Long, RevisionInfo> processedRevisions;
-
-	/**
-	 * the map whose keys are revision ids and whose values are ids of previous
-	 * revisions
-	 */
-	private final ConcurrentMap<Long, Long> revisionsMap;
+	private final ConcurrentMap<Long, Commit> processedCommits;
 
 	/**
 	 * a counter that points the current state of the processing
@@ -89,24 +83,22 @@ public class CodeFragmentLinkDetectingThread implements Runnable {
 
 	public CodeFragmentLinkDetectingThread(
 			final ConcurrentMap<Long, CodeFragmentLinkInfo> detectedLinks,
-			final RevisionInfo[] targetRevisions,
+			final Commit[] targetCommits,
 			final CodeFragmentRetriever fragmentRetriever,
 			final CRDRetriever crdRetriever,
 			final ConcurrentMap<Long, Map<Long, CodeFragmentInfo>> codeFragments,
 			final ConcurrentMap<Long, Map<Long, CRD>> crds,
-			final ConcurrentMap<Long, RevisionInfo> processedRevisions,
-			final ConcurrentMap<Long, Long> revisionsMap,
+			final ConcurrentMap<Long, Commit> processedCommits,
 			final AtomicInteger index, final ICodeFragmentLinker linker,
 			final double similarityThreshold,
 			final ICRDSimilarityCalculator similarityCalculator) {
 		this.detectedLinks = detectedLinks;
-		this.targetRevisions = targetRevisions;
+		this.targetCommits = targetCommits;
 		this.fragmentRetriever = fragmentRetriever;
 		this.crdRetriever = crdRetriever;
 		this.codeFragments = codeFragments;
 		this.crds = crds;
-		this.processedRevisions = processedRevisions;
-		this.revisionsMap = revisionsMap;
+		this.processedCommits = processedCommits;
 		this.index = index;
 		this.linker = linker;
 		this.similarityThreshold = similarityThreshold;
@@ -118,23 +110,24 @@ public class CodeFragmentLinkDetectingThread implements Runnable {
 		while (true) {
 			final int currentIndex = index.getAndIncrement();
 
-			if (currentIndex >= targetRevisions.length) {
+			if (currentIndex >= targetCommits.length) {
 				break;
 			}
 
-			final RevisionInfo targetRevision = targetRevisions[currentIndex];
+			final Commit targetCommit = targetCommits[currentIndex];
 
-			final long beforeRevisionId = revisionsMap.get(targetRevision
-					.getId());
+			final long beforeRevisionId = targetCommit.getBeforeRevisionId();
 			if (beforeRevisionId == -1) {
-				processedRevisions.put(targetRevision.getId(), targetRevision);
-				MessagePrinter.println("\t[" + processedRevisions.size() + "/"
-						+ targetRevisions.length
-						+ "] processed the commit to revision "
-						+ targetRevision.getIdentifier());
+				processedCommits.put(targetCommit.getId(), targetCommit);
+				MessagePrinter.println("\t[" + processedCommits.size() + "/"
+						+ targetCommits.length
+						+ "] processed the commit from revision "
+						+ targetCommit.getBeforeRevisionIdentifier()
+						+ " to revision "
+						+ targetCommit.getAfterRevisionIdentifier());
 				continue;
 			}
-			final long afterRevisionId = targetRevision.getId();
+			final long afterRevisionId = targetCommit.getAfterRevisionId();
 
 			try {
 				// retrieve necessary elements
@@ -152,15 +145,20 @@ public class CodeFragmentLinkDetectingThread implements Runnable {
 						beforeRevisionId, afterRevisionId));
 
 			} catch (Exception e) {
-				MessagePrinter.ePrintln("something is wrong in processing "
-						+ targetRevision.getIdentifier());
+				MessagePrinter
+						.ePrintln("something is wrong in processing the commit from revision"
+								+ targetCommit.getBeforeRevisionIdentifier()
+								+ " to revision "
+								+ targetCommit.getAfterRevisionIdentifier());
 			}
 
-			processedRevisions.put(targetRevision.getId(), targetRevision);
-			MessagePrinter.println("\t[" + processedRevisions.size() + "/"
-					+ targetRevisions.length
-					+ "] processed the commit to revision "
-					+ targetRevision.getIdentifier());
+			processedCommits.put(targetCommit.getId(), targetCommit);
+			MessagePrinter.println("\t[" + processedCommits.size() + "/"
+					+ targetCommits.length
+					+ "] processed the commit from revision "
+					+ targetCommit.getBeforeRevisionIdentifier()
+					+ " to revision "
+					+ targetCommit.getAfterRevisionIdentifier());
 		}
 	}
 

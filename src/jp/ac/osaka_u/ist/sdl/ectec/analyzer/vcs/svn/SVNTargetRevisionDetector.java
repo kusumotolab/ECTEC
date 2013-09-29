@@ -7,6 +7,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.ITargetRevisionDetector;
+import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
 import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 
@@ -29,13 +30,25 @@ public class SVNTargetRevisionDetector implements ITargetRevisionDetector {
 	 */
 	private final SVNRepositoryManager manager;
 
+	/**
+	 * detected target revisions
+	 */
+	private final Map<Long, RevisionInfo> targetRevisions;
+
+	/**
+	 * detected commits
+	 */
+	private final Map<Long, Commit> commits;
+
 	public SVNTargetRevisionDetector(final SVNRepositoryManager manager) {
 		this.manager = manager;
+		this.targetRevisions = new TreeMap<Long, RevisionInfo>();
+		this.commits = new TreeMap<Long, Commit>();
 	}
 
 	@Override
-	public Map<RevisionInfo, RevisionInfo> detectTargetRevisions(
-			final Language language, final String startRevisionIdentifier,
+	public void detect(final Language language,
+			final String startRevisionIdentifier,
 			final String endRevisionIdentifier) throws Exception {
 		// startRevisionIdentifier and endRevisionIdentifier must be Long
 		final long startRevisionNum = Long.parseLong(startRevisionIdentifier);
@@ -76,15 +89,29 @@ public class SVNTargetRevisionDetector implements ITargetRevisionDetector {
 					}
 				});
 
-		final Map<RevisionInfo, RevisionInfo> revisionInstances = new TreeMap<RevisionInfo, RevisionInfo>();
-		RevisionInfo previousRevision = new RevisionInfo(-1, "dummy");
+		RevisionInfo previousRevision = new RevisionInfo(-1, "INITIAL");
 		for (final long revision : revisions) {
 			final RevisionInfo newRevision = new RevisionInfo(
 					((Long) revision).toString());
-			revisionInstances.put(newRevision, previousRevision);
+			targetRevisions.put(newRevision.getId(), newRevision);
+
+			final Commit commit = new Commit(previousRevision.getId(),
+					newRevision.getId(), previousRevision.getIdentifier(),
+					newRevision.getIdentifier());
+			commits.put(commit.getId(), commit);
+
 			previousRevision = newRevision;
 		}
 
-		return Collections.unmodifiableMap(revisionInstances);
+	}
+
+	@Override
+	public Map<Long, RevisionInfo> getTargetRevisions() {
+		return Collections.unmodifiableMap(targetRevisions);
+	}
+
+	@Override
+	public Map<Long, Commit> getCommits() {
+		return Collections.unmodifiableMap(commits);
 	}
 }

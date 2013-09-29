@@ -2,6 +2,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer.linker;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.similarity.ICRDSimila
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CodeFragmentLinkRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CRDRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CodeFragmentRetriever;
@@ -29,9 +30,9 @@ public class CodeFragmentLinkDetector {
 	private final Map<Long, CodeFragmentLinkInfo> detectedLinks;
 
 	/**
-	 * the target revisions
+	 * the target commits
 	 */
-	private final RevisionInfo[] targetRevisions;
+	private final Commit[] targetCommits;
 
 	/**
 	 * the registerer for links of code fragments
@@ -59,15 +60,15 @@ public class CodeFragmentLinkDetector {
 	private final Map<Long, Map<Long, CRD>> crds;
 
 	/**
-	 * already processed revisions
+	 * already processed commits
 	 */
-	private final Map<Long, RevisionInfo> processedRevisions;
+	private final Map<Long, Commit> processedCommits;
 
 	/**
-	 * the map whose keys are revision ids and whose values are ids of previous
-	 * revisions
+	 * id of a revision and a collection of ids of commits that relates to the
+	 * revision
 	 */
-	private final Map<Long, Long> revisionsMap;
+	private final Map<Long, Collection<Long>> revisionAndRelatedCommits;
 
 	/**
 	 * the linker
@@ -89,23 +90,23 @@ public class CodeFragmentLinkDetector {
 	 */
 	private final int maxElementsCount;
 
-	public CodeFragmentLinkDetector(final RevisionInfo[] targetRevisions,
+	public CodeFragmentLinkDetector(final Commit[] targetCommits,
 			final CodeFragmentLinkRegisterer fragmentLinkRegisterer,
 			final CodeFragmentRetriever fragmentRetriever,
 			final CRDRetriever crdRetriever,
-			final Map<Long, Long> revisionsMap,
+			final Map<Long, Collection<Long>> revisionAndRelatedCommits,
 			final ICodeFragmentLinker linker, final double similarityThreshold,
 			final ICRDSimilarityCalculator similarityCalculator,
 			final int maxElementsCount) {
 		this.detectedLinks = new TreeMap<Long, CodeFragmentLinkInfo>();
-		this.targetRevisions = targetRevisions;
+		this.targetCommits = targetCommits;
 		this.fragmentLinkRegisterer = fragmentLinkRegisterer;
 		this.fragmentRetriever = fragmentRetriever;
 		this.crdRetriever = crdRetriever;
 		this.codeFragments = new TreeMap<Long, Map<Long, CodeFragmentInfo>>();
 		this.crds = new TreeMap<Long, Map<Long, CRD>>();
-		this.processedRevisions = new TreeMap<Long, RevisionInfo>();
-		this.revisionsMap = revisionsMap;
+		this.processedCommits = new TreeMap<Long, Commit>();
+		this.revisionAndRelatedCommits = revisionAndRelatedCommits;
 		this.linker = linker;
 		this.similarityThreshold = similarityThreshold;
 		this.similarityCalculator = similarityCalculator;
@@ -120,16 +121,21 @@ public class CodeFragmentLinkDetector {
 	public void detectAndRegister() throws Exception {
 		int numberOfLinks = 0;
 
-		for (int i = 0; i < targetRevisions.length; i++) {
-			final RevisionInfo targetRevision = targetRevisions[i];
+		for (int i = 0; i < targetCommits.length; i++) {
+			final Commit targetCommit = targetCommits[i];
 
-			final long beforeRevisionId = revisionsMap.get(targetRevision
-					.getId());
+			final long beforeRevisionId = targetCommit.getBeforeRevisionId();
 			if (beforeRevisionId == -1) {
-				processedRevisions.put(targetRevision.getId(), targetRevision);
+				processedCommits.put(targetCommit.getId(), targetCommit);
+				MessagePrinter.println("\t[" + processedCommits.size() + "/"
+						+ targetCommits.length
+						+ "] processed the commit from revision "
+						+ targetCommit.getBeforeRevisionIdentifier()
+						+ " to revision "
+						+ targetCommit.getAfterRevisionIdentifier());
 				continue;
 			}
-			final long afterRevisionId = targetRevision.getId();
+			final long afterRevisionId = targetCommit.getAfterRevisionId();
 
 			retrieveElements(beforeRevisionId);
 			retrieveElements(afterRevisionId);
@@ -144,12 +150,13 @@ public class CodeFragmentLinkDetector {
 					similarityCalculator, similarityThreshold, currentCrds,
 					beforeRevisionId, afterRevisionId));
 
-			processedRevisions.put(targetRevision.getId(), targetRevision);
-
-			MessagePrinter.println("\t[" + (i + 1) + "/"
-					+ targetRevisions.length
-					+ "] processed the commit to revision "
-					+ targetRevision.getIdentifier());
+			processedCommits.put(targetCommit.getId(), targetCommit);
+			MessagePrinter.println("\t[" + processedCommits.size() + "/"
+					+ targetCommits.length
+					+ "] processed the commit from revision "
+					+ targetCommit.getBeforeRevisionIdentifier()
+					+ " to revision "
+					+ targetCommit.getAfterRevisionIdentifier());
 
 			if (detectedLinks.size() >= maxElementsCount) {
 				final Set<CodeFragmentLinkInfo> currentElements = new HashSet<CodeFragmentLinkInfo>();
@@ -164,14 +171,23 @@ public class CodeFragmentLinkDetector {
 				}
 			}
 
-			for (final Map.Entry<Long, RevisionInfo> entry : processedRevisions
-					.entrySet()) {
-				if (processedRevisions.containsKey(revisionsMap.get(entry
-						.getKey()))) {
-					final long removeRevisionId = revisionsMap.get(entry
-							.getKey());
-					codeFragments.remove(removeRevisionId);
-					crds.remove(removeRevisionId);
+			// remove fragments if they are no longer needed
+			final Collection<Long> fragmentRevisionIds = codeFragments.keySet();
+			for (final long revisionId : fragmentRevisionIds) {
+				final Collection<Long> relatedCommits = revisionAndRelatedCommits
+						.get(revisionId);
+				if (processedCommits.keySet().containsAll(relatedCommits)) {
+					codeFragments.remove(revisionId);
+				}
+			}
+
+			// remove crds if they are no longer needed
+			final Collection<Long> crdRevisionIds = crds.keySet();
+			for (final long revisionId : crdRevisionIds) {
+				final Collection<Long> relatedCommits = revisionAndRelatedCommits
+						.get(revisionId);
+				if (processedCommits.keySet().containsAll(relatedCommits)) {
+					crds.remove(revisionId);
 				}
 			}
 		}

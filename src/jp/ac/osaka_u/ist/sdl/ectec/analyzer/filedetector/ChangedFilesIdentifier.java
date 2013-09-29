@@ -10,8 +10,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.IRepositoryManager;
+import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
 import jp.ac.osaka_u.ist.sdl.ectec.data.FileInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.FileRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
@@ -66,26 +66,22 @@ public class ChangedFilesIdentifier {
 	 * @param targetRevisions
 	 * @throws SQLException
 	 */
-	public Map<Long, FileInfo> detectAndRegister(
-			final Map<RevisionInfo, RevisionInfo> targetRevisions)
+	public Map<Long, FileInfo> detectAndRegister(final Map<Long, Commit> commits)
 			throws SQLException {
-		final SortedSet<RevisionInfo> revisionsAsSet = new TreeSet<RevisionInfo>();
-		revisionsAsSet.addAll(targetRevisions.keySet());
+		final SortedSet<Long> revisionsAsSet = new TreeSet<Long>();
+		for (final Map.Entry<Long, Commit> entry : commits.entrySet()) {
+			revisionsAsSet.add(entry.getValue().getBeforeRevisionId());
+		}
 
 		MessagePrinter
 				.stronglyPrintln("detecting changed files in each revision ... ");
-		final ConcurrentMap<String, SortedSet<ChangeOnFile>> changedFiles = detectChangedFiles(revisionsAsSet);
+		final ConcurrentMap<String, SortedSet<ChangeOnFile>> changedFiles = detectChangedFiles(commits
+				.values());
 		MessagePrinter.stronglyPrintln();
-
-		final ConcurrentMap<Long, Long> revisionsMap = new ConcurrentHashMap<Long, Long>();
-		for (Map.Entry<RevisionInfo, RevisionInfo> entry : targetRevisions
-				.entrySet()) {
-			revisionsMap.put(entry.getKey().getId(), entry.getValue().getId());
-		}
 
 		MessagePrinter.stronglyPrintln("creating  instances of files ... ");
 		final ConcurrentMap<Long, FileInfo> fileInstances = createFileInstances(
-				changedFiles, revisionsAsSet.last().getId(), revisionsMap);
+				changedFiles, revisionsAsSet.last(), commits);
 		MessagePrinter.stronglyPrintln();
 
 		MessagePrinter.stronglyPrintln("registering files ... ");
@@ -103,19 +99,18 @@ public class ChangedFilesIdentifier {
 	 * @return
 	 */
 	private ConcurrentMap<String, SortedSet<ChangeOnFile>> detectChangedFiles(
-			final Collection<RevisionInfo> targetRevisions) {
+			final Collection<Commit> commits) {
 		final Thread[] threads = new Thread[threadsCount];
 
 		final ConcurrentMap<String, SortedSet<ChangeOnFile>> changedFiles = new ConcurrentHashMap<String, SortedSet<ChangeOnFile>>();
 		final AtomicInteger index = new AtomicInteger(0);
 
-		final RevisionInfo[] revisionsAsArray = targetRevisions
-				.toArray(new RevisionInfo[0]);
+		final Commit[] commitsAsArray = commits.toArray(new Commit[0]);
 
 		for (int i = 0; i < threadsCount; i++) {
 			threads[i] = new Thread(new ChangedFilesDetectingThread(
 					manager.createChangedFilesDetector(), changedFiles,
-					language, revisionsAsArray, index));
+					language, commitsAsArray, index));
 			threads[i].start();
 		}
 
@@ -123,7 +118,6 @@ public class ChangedFilesIdentifier {
 			try {
 				thread.join();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -140,8 +134,7 @@ public class ChangedFilesIdentifier {
 	 */
 	private ConcurrentMap<Long, FileInfo> createFileInstances(
 			final ConcurrentMap<String, SortedSet<ChangeOnFile>> changes,
-			final long lastRevisionId,
-			final ConcurrentMap<Long, Long> targetRevisions) {
+			final long lastRevisionId, final Map<Long, Commit> commits) {
 		final Thread[] threads = new Thread[threadsCount];
 
 		final ConcurrentMap<Long, FileInfo> fileInstances = new ConcurrentHashMap<Long, FileInfo>();
@@ -150,9 +143,12 @@ public class ChangedFilesIdentifier {
 		final String[] targetPathsAsArray = changes.keySet().toArray(
 				new String[0]);
 
+		final ConcurrentMap<Long, Commit> concurrentCommits = new ConcurrentHashMap<Long, Commit>();
+		concurrentCommits.putAll(commits);
+
 		for (int i = 0; i < threadsCount; i++) {
 			threads[i] = new Thread(new FileInfoInstancesCreatingThread(
-					changes, targetRevisions, fileInstances,
+					changes, concurrentCommits, fileInstances,
 					targetPathsAsArray, index, lastRevisionId));
 			threads[i].start();
 		}
@@ -161,7 +157,6 @@ public class ChangedFilesIdentifier {
 			try {
 				thread.join();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

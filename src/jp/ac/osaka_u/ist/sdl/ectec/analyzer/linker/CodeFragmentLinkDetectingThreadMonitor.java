@@ -1,5 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.linker;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -8,7 +9,7 @@ import java.util.concurrent.ConcurrentMap;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CodeFragmentLinkRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Constants;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
@@ -42,15 +43,15 @@ public class CodeFragmentLinkDetectingThreadMonitor {
 	private final ConcurrentMap<Long, Map<Long, CRD>> crds;
 
 	/**
-	 * already processed revisions
+	 * already processed commits
 	 */
-	private final ConcurrentMap<Long, RevisionInfo> processedRevisions;
+	private final ConcurrentMap<Long, Commit> processedCommits;
 
 	/**
-	 * the map whose keys are revision ids and whose values are ids of previous
-	 * revisions
+	 * id of a revision and a collection of ids of commits that relates to the
+	 * revision
 	 */
-	private final ConcurrentMap<Long, Long> revisionsMap;
+	private final Map<Long, Collection<Long>> revisionAndRelatedCommits;
 
 	/**
 	 * the threshold for elements <br>
@@ -65,15 +66,15 @@ public class CodeFragmentLinkDetectingThreadMonitor {
 			final CodeFragmentLinkRegisterer fragmentLinkRegisterer,
 			final ConcurrentMap<Long, Map<Long, CodeFragmentInfo>> codeFragments,
 			final ConcurrentMap<Long, Map<Long, CRD>> crds,
-			final ConcurrentMap<Long, RevisionInfo> processedRevisions,
-			final ConcurrentMap<Long, Long> revisionsMap,
+			final ConcurrentMap<Long, Commit> processedCommits,
+			final Map<Long, Collection<Long>> revisionAndRelatedCommits,
 			final int maxElementsCount) {
 		this.detectedLinks = detectedLinks;
 		this.fragmentLinkRegisterer = fragmentLinkRegisterer;
 		this.codeFragments = codeFragments;
 		this.crds = crds;
-		this.processedRevisions = processedRevisions;
-		this.revisionsMap = revisionsMap;
+		this.processedCommits = processedCommits;
+		this.revisionAndRelatedCommits = revisionAndRelatedCommits;
 		this.maxElementsCount = maxElementsCount;
 	}
 
@@ -100,15 +101,24 @@ public class CodeFragmentLinkDetectingThreadMonitor {
 					}
 				}
 
-				// checking processed revisions
-				for (final Map.Entry<Long, RevisionInfo> entry : processedRevisions
-						.entrySet()) {
-					if (processedRevisions.containsKey(revisionsMap.get(entry
-							.getKey()))) {
-						final long removeRevisionId = revisionsMap.get(entry
-								.getKey());
-						codeFragments.remove(removeRevisionId);
-						crds.remove(removeRevisionId);
+				// remove fragments if they are no longer needed
+				final Collection<Long> fragmentRevisionIds = codeFragments
+						.keySet();
+				for (final long revisionId : fragmentRevisionIds) {
+					final Collection<Long> relatedCommits = revisionAndRelatedCommits
+							.get(revisionId);
+					if (processedCommits.keySet().containsAll(relatedCommits)) {
+						codeFragments.remove(revisionId);
+					}
+				}
+
+				// remove crds if they are no longer needed
+				final Collection<Long> crdRevisionIds = crds.keySet();
+				for (final long revisionId : crdRevisionIds) {
+					final Collection<Long> relatedCommits = revisionAndRelatedCommits
+							.get(revisionId);
+					if (processedCommits.keySet().containsAll(relatedCommits)) {
+						crds.remove(revisionId);
 					}
 				}
 

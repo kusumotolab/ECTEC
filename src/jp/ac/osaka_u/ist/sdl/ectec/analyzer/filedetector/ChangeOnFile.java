@@ -14,19 +14,19 @@ public class ChangeOnFile implements Comparable<ChangeOnFile> {
 	private final String path;
 
 	/**
-	 * the id of the revision where this file was changed
+	 * the id of the commit where this file was changed
 	 */
-	private final long changedRevisionId;
+	private final long changedCommitId;
 
 	/**
 	 * the type of the change
 	 */
 	private final ChangeTypeOnFile type;
 
-	public ChangeOnFile(final String path, final long changedRevisionId,
+	public ChangeOnFile(final String path, final long changedCommitId,
 			final ChangeTypeOnFile type) {
 		this.path = path;
-		this.changedRevisionId = changedRevisionId;
+		this.changedCommitId = changedCommitId;
 		this.type = type;
 	}
 
@@ -40,12 +40,12 @@ public class ChangeOnFile implements Comparable<ChangeOnFile> {
 	}
 
 	/**
-	 * get the id of the revision where this file was changed
+	 * get the id of the commit where this file was changed
 	 * 
 	 * @return
 	 */
-	public final long getChagnedRevisionId() {
-		return this.changedRevisionId;
+	public final long getChagnedCommitId() {
+		return this.changedCommitId;
 	}
 
 	/**
@@ -59,8 +59,8 @@ public class ChangeOnFile implements Comparable<ChangeOnFile> {
 
 	@Override
 	public int compareTo(ChangeOnFile another) {
-		return ((Long) this.changedRevisionId).compareTo(another
-				.getChagnedRevisionId());
+		return ((Long) this.changedCommitId).compareTo(another
+				.getChagnedCommitId());
 	}
 
 }
