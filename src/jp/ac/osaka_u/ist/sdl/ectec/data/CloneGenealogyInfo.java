@@ -1,6 +1,5 @@
 package jp.ac.osaka_u.ist.sdl.ectec.data;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -10,33 +9,14 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author k-hotta
  * 
  */
-public class CloneGenealogyInfo extends AbstractElement implements
+public class CloneGenealogyInfo extends
+		AbstractGenealogyInfo<CloneSetInfo, CloneSetLinkInfo> implements
 		Comparable<CloneGenealogyInfo> {
 
 	/**
 	 * a counter to keep the number of created elements
 	 */
 	private static final AtomicLong count = new AtomicLong(0);
-
-	/**
-	 * the id of the start revision
-	 */
-	private final long startRevisionId;
-
-	/**
-	 * the id of the end revision
-	 */
-	private final long endRevisionId;
-
-	/**
-	 * the list of the ids of clones included in this genealogy
-	 */
-	private final List<Long> clones;
-
-	/**
-	 * the list of the ids of clone links related to this genealogy
-	 */
-	private final List<Long> cloneLinks;
 
 	/**
 	 * the number of changes
@@ -64,23 +44,19 @@ public class CloneGenealogyInfo extends AbstractElement implements
 	 * @param id
 	 * @param startRevisionId
 	 * @param endRevisionId
-	 * @param clones
-	 * @param cloneLinks
+	 * @param elements
+	 * @param links
 	 * @param numberOfChanges
 	 * @param numberOfAdditions
 	 * @param numberOfDeletions
 	 * @param dead
 	 */
 	public CloneGenealogyInfo(final long id, final long startRevisionId,
-			final long endRevisionId, final List<Long> clones,
-			final List<Long> cloneLinks, final int numberOfChanges,
+			final long endRevisionId, final List<Long> elements,
+			final List<Long> links, final int numberOfChanges,
 			final int numberOfAdditions, final int numberOfDeletions,
 			final boolean dead) {
-		super(id);
-		this.startRevisionId = startRevisionId;
-		this.endRevisionId = endRevisionId;
-		this.clones = clones;
-		this.cloneLinks = cloneLinks;
+		super(id, startRevisionId, endRevisionId, elements, links);
 		this.numberOfChanges = numberOfChanges;
 		this.numberOfAdditions = numberOfAdditions;
 		this.numberOfDeletions = numberOfDeletions;
@@ -92,57 +68,21 @@ public class CloneGenealogyInfo extends AbstractElement implements
 	 * 
 	 * @param startRevisionId
 	 * @param endRevisionId
-	 * @param clones
-	 * @param cloneLinks
+	 * @param elements
+	 * @param links
 	 * @param numberOfChanges
 	 * @param numberOfAdditions
 	 * @param numberOfDeletions
 	 * @param dead
 	 */
 	public CloneGenealogyInfo(final long startRevisionId,
-			final long endRevisionId, final List<Long> clones,
-			final List<Long> cloneLinks, final int numberOfChanges,
+			final long endRevisionId, final List<Long> elements,
+			final List<Long> links, final int numberOfChanges,
 			final int numberOfAdditions, final int numberOfDeletions,
 			final boolean dead) {
-		this(count.getAndIncrement(), startRevisionId, endRevisionId, clones,
-				cloneLinks, numberOfChanges, numberOfAdditions,
-				numberOfDeletions, dead);
-	}
-
-	/**
-	 * get the id of the start revision
-	 * 
-	 * @return
-	 */
-	public final long getStartRevisionId() {
-		return this.startRevisionId;
-	}
-
-	/**
-	 * get the id of the end revision
-	 * 
-	 * @return
-	 */
-	public final long getEndRevisionId() {
-		return this.endRevisionId;
-	}
-
-	/**
-	 * get the list of ids of clones included in this genealogy
-	 * 
-	 * @return
-	 */
-	public final List<Long> getClones() {
-		return Collections.unmodifiableList(this.clones);
-	}
-
-	/**
-	 * get the list of ids of clone links related to this genealogy
-	 * 
-	 * @return
-	 */
-	public final List<Long> getCloneLinks() {
-		return Collections.unmodifiableList(this.cloneLinks);
+		this(count.getAndIncrement(), startRevisionId, endRevisionId, elements,
+				links, numberOfChanges, numberOfAdditions, numberOfDeletions,
+				dead);
 	}
 
 	/**
