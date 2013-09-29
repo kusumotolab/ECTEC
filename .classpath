@@ -14,10 +14,13 @@
 	<classpathentry kind="lib" path="lib/org.eclipse.osgi_3.9.0.v20130529-1710.jar" sourcepath="lib/org.eclipse.osgi.source_3.9.0.v20130529-1710.jar"/>
 	<classpathentry kind="lib" path="lib/sequence-library-1.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.7.2.jar"/>
-	<classpathentry kind="lib" path="lib/sqljet-1.1.4.jar"/>
+	<classpathentry kind="lib" path="lib/sqljet-1.1.4.jar" sourcepath="C:/Users/k-hotta/.m2/repository/org/tmatesoft/sqljet/sqljet/1.1.4/sqljet-1.1.4-sources.jar"/>
 	<classpathentry kind="lib" path="lib/svnkit-1.7.4-v1.jar" sourcepath="lib/svnkit-1.7.4-v1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/svnkit-cli-1.7.4-v1.jar" sourcepath="lib/svnkit-cli-1.7.4-v1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/svnkit-javahl16-1.7.4-v1.jar" sourcepath="lib/svnkit-javahl16-1.7.4-v1-sources.jar"/>
+	<classpathentry kind="lib" path="lib/antlr-runtime-3.4.jar"/>
+	<classpathentry kind="lib" path="lib/jna-3.4.0.jar"/>
+	<classpathentry kind="lib" path="lib/trilead-ssh2-1.0.0-build215.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
