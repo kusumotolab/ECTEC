@@ -17,16 +17,27 @@ public class CodeFragmentGenealogyInfo extends
 	 */
 	private static final AtomicLong count = new AtomicLong(0);
 
+	/**
+	 * the number of changed
+	 */
+	private final int changedCount;
+
 	public CodeFragmentGenealogyInfo(final long id, final long startRevisionId,
 			final long endRevisionId, final List<Long> elements,
-			final List<Long> links) {
+			final List<Long> links, final int changedCount) {
 		super(id, startRevisionId, endRevisionId, elements, links);
+		this.changedCount = changedCount;
 	}
 
 	public CodeFragmentGenealogyInfo(final long startRevisionId,
 			final long endRevisionId, final List<Long> elements,
-			final List<Long> links) {
+			final List<Long> links, final int changedCount) {
 		this(count.getAndIncrement(), startRevisionId, endRevisionId, elements,
-				links);
+				links, changedCount);
 	}
+
+	public final int getChangedCount() {
+		return changedCount;
+	}
+
 }

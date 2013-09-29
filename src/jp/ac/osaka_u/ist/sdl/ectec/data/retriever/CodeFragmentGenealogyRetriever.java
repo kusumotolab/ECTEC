@@ -31,6 +31,7 @@ public class CodeFragmentGenealogyRetriever extends
 		final long endRevisionId = rs.getLong(++column);
 		final String elementsStr = rs.getString(++column);
 		final String linksStr = rs.getString(++column);
+		final int changes = rs.getInt(++column);
 
 		final List<Long> elements = new ArrayList<Long>();
 		StringUtils.convertStringToCollection(elements, elementsStr);
@@ -38,7 +39,7 @@ public class CodeFragmentGenealogyRetriever extends
 		StringUtils.convertStringToCollection(links, linksStr);
 
 		return new CodeFragmentGenealogyInfo(id, startRevisionId,
-				endRevisionId, elements, links);
+				endRevisionId, elements, links, changes);
 	}
 
 	@Override

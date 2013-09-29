@@ -281,7 +281,8 @@ public class DBMaker {
 		builder.append("START_REVISION_ID LONG,");
 		builder.append("END_REVISION_ID LONG,");
 		builder.append("CODE_FRAGMENTS TEXT NOT NULL,");
-		builder.append("CODE_FRAGMENT_LINKS TEXT NOT NULL");
+		builder.append("CODE_FRAGMENT_LINKS TEXT NOT NULL,");
+		builder.append("CHANGES INTEGER");
 		builder.append(")");
 
 		return builder.toString();

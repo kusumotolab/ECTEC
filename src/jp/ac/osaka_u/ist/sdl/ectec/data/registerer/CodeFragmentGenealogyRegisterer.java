@@ -23,7 +23,7 @@ public class CodeFragmentGenealogyRegisterer extends
 
 	@Override
 	protected String createPreparedStatementQueue() {
-		return "insert into CODE_FRAGMENT_GENEALOGY values (?,?,?,?,?)";
+		return "insert into CODE_FRAGMENT_GENEALOGY values (?,?,?,?,?,?)";
 	}
 
 	@Override
@@ -37,5 +37,6 @@ public class CodeFragmentGenealogyRegisterer extends
 				StringUtils.convertListToString(element.getElements()));
 		pstmt.setString(++column,
 				StringUtils.convertListToString(element.getLinks()));
+		pstmt.setInt(++column, element.getChangedCount());
 	}
 }

@@ -54,7 +54,8 @@ public class FragmentGenealogyIdentifier {
 		final Collection<ElementChain<CodeFragmentLinkInfo>> chains = chainDetector
 				.detect();
 
-		final FragmentChainFinalizer finalizer = new FragmentChainFinalizer();
+		final FragmentChainFinalizer finalizer = new FragmentChainFinalizer(
+				retriever);
 		final Map<Long, CodeFragmentGenealogyInfo> genealogies = finalizer
 				.finalize(chains);
 
