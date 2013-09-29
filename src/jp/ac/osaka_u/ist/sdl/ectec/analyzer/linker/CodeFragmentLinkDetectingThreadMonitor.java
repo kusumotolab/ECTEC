@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentMap;
 
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
@@ -102,8 +103,8 @@ public class CodeFragmentLinkDetectingThreadMonitor {
 				}
 
 				// remove fragments if they are no longer needed
-				final Collection<Long> fragmentRevisionIds = codeFragments
-						.keySet();
+				final Collection<Long> fragmentRevisionIds = new TreeSet<Long>();
+				fragmentRevisionIds.addAll(codeFragments.keySet());
 				for (final long revisionId : fragmentRevisionIds) {
 					final Collection<Long> relatedCommits = revisionAndRelatedCommits
 							.get(revisionId);
@@ -113,7 +114,8 @@ public class CodeFragmentLinkDetectingThreadMonitor {
 				}
 
 				// remove crds if they are no longer needed
-				final Collection<Long> crdRevisionIds = crds.keySet();
+				final Collection<Long> crdRevisionIds = new TreeSet<Long>();
+				fragmentRevisionIds.addAll(crds.keySet());
 				for (final long revisionId : crdRevisionIds) {
 					final Collection<Long> relatedCommits = revisionAndRelatedCommits
 							.get(revisionId);

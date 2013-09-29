@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.similarity.ICRDSimilarityCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
@@ -172,7 +173,8 @@ public class CodeFragmentLinkDetector {
 			}
 
 			// remove fragments if they are no longer needed
-			final Collection<Long> fragmentRevisionIds = codeFragments.keySet();
+			final Collection<Long> fragmentRevisionIds = new TreeSet<Long>();
+			fragmentRevisionIds.addAll(codeFragments.keySet());
 			for (final long revisionId : fragmentRevisionIds) {
 				final Collection<Long> relatedCommits = revisionAndRelatedCommits
 						.get(revisionId);
@@ -182,7 +184,8 @@ public class CodeFragmentLinkDetector {
 			}
 
 			// remove crds if they are no longer needed
-			final Collection<Long> crdRevisionIds = crds.keySet();
+			final Collection<Long> crdRevisionIds = new TreeSet<Long>();
+			fragmentRevisionIds.addAll(crds.keySet());
 			for (final long revisionId : crdRevisionIds) {
 				final Collection<Long> relatedCommits = revisionAndRelatedCommits
 						.get(revisionId);
