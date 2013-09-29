@@ -40,9 +40,9 @@ public class CloneGenealogyRegisterer extends
 		pstmt.setLong(++column, element.getStartRevisionId());
 		pstmt.setLong(++column, element.getEndRevisionId());
 		pstmt.setString(++column,
-				StringUtils.convertListToString(element.getClones()));
+				StringUtils.convertListToString(element.getElements()));
 		pstmt.setString(++column,
-				StringUtils.convertListToString(element.getCloneLinks()));
+				StringUtils.convertListToString(element.getLinks()));
 		pstmt.setInt(++column, element.getNumberOfChanges());
 		pstmt.setInt(++column, element.getNumberOfAdditions());
 		pstmt.setInt(++column, element.getNumberOfDeletions());
