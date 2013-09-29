@@ -1,6 +1,5 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer;
 
-import java.util.List;
 import java.util.Map;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.ITargetRevisionDetector;

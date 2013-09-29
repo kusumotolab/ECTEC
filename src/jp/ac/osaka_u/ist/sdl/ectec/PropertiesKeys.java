@@ -37,5 +37,7 @@ public interface PropertiesKeys {
 	public static final String FRAGMENT_LINK = "ectec.fragment-link";
 
 	public static final String SIMILARITY_THRESHOLD = "ectec.similarity-threshold";
+	
+	public static final String GRANULARITY = "ectec.granularity";
 
 }

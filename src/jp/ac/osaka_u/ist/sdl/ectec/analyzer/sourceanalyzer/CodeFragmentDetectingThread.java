@@ -8,6 +8,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.IRepositoryManager;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.data.FileInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.settings.AnalyzeGranularity;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -55,13 +56,19 @@ public class CodeFragmentDetectingThread implements Runnable {
 	 */
 	private final IHashCalculator hashCalculator;
 
+	/**
+	 * the granularity of the analysis
+	 */
+	private final AnalyzeGranularity granularity;
+
 	public CodeFragmentDetectingThread(
 			final ConcurrentMap<Long, CRD> detectedCrds,
 			final ConcurrentMap<Long, CodeFragmentInfo> detectedFragments,
 			final FileInfo[] targetFiles, final AtomicInteger index,
 			final IRepositoryManager manager,
 			final ConcurrentMap<Long, String> revisions,
-			final IHashCalculator hashCalculator) {
+			final IHashCalculator hashCalculator,
+			final AnalyzeGranularity granularity) {
 		this.detectedCrds = detectedCrds;
 		this.detectedFragments = detectedFragments;
 		this.targetFiles = targetFiles;
@@ -69,6 +76,7 @@ public class CodeFragmentDetectingThread implements Runnable {
 		this.manager = manager;
 		this.revisions = revisions;
 		this.hashCalculator = hashCalculator;
+		this.granularity = granularity;
 	}
 
 	@Override
@@ -94,7 +102,8 @@ public class CodeFragmentDetectingThread implements Runnable {
 
 				final CodeFragmentDetector detector = new CodeFragmentDetector(
 						targetFile.getId(), targetFile.getStartRevisionId(),
-						targetFile.getEndRevisionId(), root, hashCalculator);
+						targetFile.getEndRevisionId(), root, hashCalculator,
+						granularity);
 
 				root.accept(detector);
 

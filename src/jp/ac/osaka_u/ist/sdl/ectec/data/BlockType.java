@@ -1,5 +1,7 @@
 package jp.ac.osaka_u.ist.sdl.ectec.data;
 
+import jp.ac.osaka_u.ist.sdl.ectec.settings.AnalyzeGranularity;
+
 /**
  * An enum that represents types of blocks
  * 
@@ -8,39 +10,46 @@ package jp.ac.osaka_u.ist.sdl.ectec.data;
  */
 public enum BlockType {
 
-	CLASS("class"),
+	CLASS("class", new AnalyzeGranularity[] { AnalyzeGranularity.ALL,
+			AnalyzeGranularity.CLASS, AnalyzeGranularity.CLASS_METHOD }),
 
-	METHOD("method"),
+	METHOD("method", new AnalyzeGranularity[] { AnalyzeGranularity.ALL,
+			AnalyzeGranularity.METHOD, AnalyzeGranularity.CLASS_METHOD }),
 
-	CATCH("catch"),
+	CATCH("catch", new AnalyzeGranularity[] { AnalyzeGranularity.ALL }),
 
-	DO("do"),
+	DO("do", new AnalyzeGranularity[] { AnalyzeGranularity.ALL }),
 
-	ELSE("else"),
+	ELSE("else", new AnalyzeGranularity[] { AnalyzeGranularity.ALL }),
 
-	ENHANCED_FOR("for"),
+	ENHANCED_FOR("for", new AnalyzeGranularity[] { AnalyzeGranularity.ALL }),
 
-	FINALLY("finally"),
+	FINALLY("finally", new AnalyzeGranularity[] { AnalyzeGranularity.ALL }),
 
-	FOR("for"),
+	FOR("for", new AnalyzeGranularity[] { AnalyzeGranularity.ALL }),
 
-	IF("if"),
+	IF("if", new AnalyzeGranularity[] { AnalyzeGranularity.ALL }),
 
-	SWITCH("switch"),
+	SWITCH("switch", new AnalyzeGranularity[] { AnalyzeGranularity.ALL }),
 
-	SYNCHRONIZED("synchronized"),
+	SYNCHRONIZED("synchronized",
+			new AnalyzeGranularity[] { AnalyzeGranularity.ALL }),
 
-	TRY("try"),
+	TRY("try", new AnalyzeGranularity[] { AnalyzeGranularity.ALL }),
 
-	WHILE("while");
+	WHILE("while", new AnalyzeGranularity[] { AnalyzeGranularity.ALL });
 
 	/**
 	 * the head string
 	 */
 	private final String head;
 
-	private BlockType(final String head) {
+	private final AnalyzeGranularity[] correspondingGranularities;
+
+	private BlockType(final String head,
+			final AnalyzeGranularity[] correspondingGranularities) {
 		this.head = head;
+		this.correspondingGranularities = correspondingGranularities;
 	}
 
 	/**
@@ -52,4 +61,13 @@ public enum BlockType {
 		return head;
 	}
 
+	public final boolean isInterested(final AnalyzeGranularity granularity) {
+		for (final AnalyzeGranularity correspondingGranularity : correspondingGranularities) {
+			if (granularity == correspondingGranularity) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 }

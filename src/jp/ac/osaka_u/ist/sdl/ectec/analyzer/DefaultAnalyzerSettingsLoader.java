@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import jp.ac.osaka_u.ist.sdl.ectec.PropertiesKeys;
 import jp.ac.osaka_u.ist.sdl.ectec.PropertiesReader;
+import jp.ac.osaka_u.ist.sdl.ectec.settings.AnalyzeGranularity;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.CRDSimilarityCalculateMode;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.CloneHashCalculateMode;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.CodeFragmentLinkMode;
@@ -95,6 +96,11 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 	 */
 	private final double similarityThreshold;
 
+	/**
+	 * the granularity of the analysis
+	 */
+	private final AnalyzeGranularity granularity;
+
 	private DefaultAnalyzerSettingsLoader(final String additionalPath,
 			final Language language, final int threads, final String userName,
 			final String passwd, final String startRevisionIdentifier,
@@ -105,7 +111,8 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 			final CloneHashCalculateMode cloneHashMode,
 			final CRDSimilarityCalculateMode crdSimilarityMode,
 			final CodeFragmentLinkMode fragmentLinkMode,
-			final double similarityThreshold) {
+			final double similarityThreshold,
+			final AnalyzeGranularity granularity) {
 		this.additionalPath = additionalPath;
 		this.language = language;
 		this.threads = threads;
@@ -121,6 +128,7 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 		this.crdSimilarityMode = crdSimilarityMode;
 		this.fragmentLinkMode = fragmentLinkMode;
 		this.similarityThreshold = similarityThreshold;
+		this.granularity = granularity;
 	}
 
 	/*
@@ -185,6 +193,10 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 
 	final double getSimilarityThreshold() {
 		return similarityThreshold;
+	}
+
+	final AnalyzeGranularity getGranularity() {
+		return granularity;
 	}
 
 	/*
@@ -276,10 +288,13 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 		final double similarityThreshold = Double.parseDouble(prop
 				.getProperty(SIMILARITY_THRESHOLD));
 
+		final AnalyzeGranularity granularity = AnalyzeGranularity
+				.getCorrespondingGranularity(prop.getProperty(GRANULARITY));
+
 		return new DefaultAnalyzerSettingsLoader(additionalPath, language,
 				threads, userName, passwd, startRevisionIdentifier,
 				endRevisionIdentifier, verboseLevel, versionControlSystem,
 				overwriteDb, maxBatchCount, cloneHashMode, crdSimilarityMode,
-				fragmentLinkMode, similarityThreshold);
+				fragmentLinkMode, similarityThreshold, granularity);
 	}
 }

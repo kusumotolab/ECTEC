@@ -1,5 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer;
 
+import jp.ac.osaka_u.ist.sdl.ectec.settings.AnalyzeGranularity;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.CRDSimilarityCalculateMode;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.CloneHashCalculateMode;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.CodeFragmentLinkMode;
@@ -107,6 +108,11 @@ final class AnalyzerSettings {
 	private final double similarityThreshold;
 
 	/**
+	 * the granularity of the analysis
+	 */
+	private final AnalyzeGranularity granularity;
+
+	/**
 	 * the path of the properties file
 	 */
 	private final String propertiesFilePath;
@@ -122,7 +128,9 @@ final class AnalyzerSettings {
 			final CloneHashCalculateMode cloneHashMode,
 			final CRDSimilarityCalculateMode crdSimilarityMode,
 			final CodeFragmentLinkMode fragmentLinkMode,
-			final double similarityThreshold, final String propertiesFilePath) {
+			final double similarityThreshold,
+			final AnalyzeGranularity granularity,
+			final String propertiesFilePath) {
 		this.repositoryPath = repositoryPath;
 		this.dbPath = dbPath;
 		this.additionalPath = additionalPath;
@@ -140,6 +148,7 @@ final class AnalyzerSettings {
 		this.crdSimilarityMode = crdSimilarityMode;
 		this.propertiesFilePath = propertiesFilePath;
 		this.similarityThreshold = similarityThreshold;
+		this.granularity = granularity;
 		this.fragmentLinkMode = fragmentLinkMode;
 	}
 
@@ -217,6 +226,10 @@ final class AnalyzerSettings {
 
 	final double getSimilarityThreshold() {
 		return similarityThreshold;
+	}
+
+	final AnalyzeGranularity getGranularity() {
+		return granularity;
 	}
 
 	final void setStartRevisionIdentifier(final String startRevisionIdentifier) {
@@ -298,11 +311,16 @@ final class AnalyzerSettings {
 				.parseDouble(cmd.getOptionValue("st")) : defaultLoader
 				.getSimilarityThreshold();
 
+		final AnalyzeGranularity granularity = (cmd.hasOption("g")) ? AnalyzeGranularity
+				.getCorrespondingGranularity(cmd.getOptionValue("g"))
+				: defaultLoader.getGranularity();
+
 		return new AnalyzerSettings(repositoryPath, dbPath, additionalPath,
 				language, threads, userName, passwd, startRevisionIdentifier,
 				endRevisionIdentifier, verboseLevel, versionControlSystem,
 				overwriteDb, maxBatchCount, cloneHashMode, crdSimilarityMode,
-				fragmentLinkMode, similarityThreshold, propertiesFilePath);
+				fragmentLinkMode, similarityThreshold, granularity,
+				propertiesFilePath);
 	}
 
 	/**
@@ -439,6 +457,14 @@ final class AnalyzerSettings {
 			st.setArgs(1);
 			st.setRequired(false);
 			options.addOption(st);
+		}
+
+		{
+			final Option g = new Option("g", "granularity", true,
+					"granularity of the analysis");
+			g.setArgs(1);
+			g.setRequired(false);
+			options.addOption(g);
 		}
 
 		{

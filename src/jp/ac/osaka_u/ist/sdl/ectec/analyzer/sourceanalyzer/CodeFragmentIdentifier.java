@@ -17,6 +17,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.data.FileInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CRDRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CodeFragmentRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.settings.AnalyzeGranularity;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -69,13 +70,19 @@ public class CodeFragmentIdentifier {
 	 */
 	private final IRepositoryManager repositoryManager;
 
+	/**
+	 * the granularity of the analysis
+	 */
+	private final AnalyzeGranularity granularity;
+
 	public CodeFragmentIdentifier(final Collection<FileInfo> targetFiles,
 			final Collection<RevisionInfo> revisions, final int threadsCount,
 			final IHashCalculator hashCalculator,
 			final CRDRegisterer crdRegisterer,
 			final CodeFragmentRegisterer fragmentRegisterer,
 			final int maxElementsCount,
-			final IRepositoryManager repositoryManager) {
+			final IRepositoryManager repositoryManager,
+			final AnalyzeGranularity granularity) {
 		this.targetFiles = targetFiles;
 		this.revisions = revisions;
 		this.threadsCount = threadsCount;
@@ -84,6 +91,7 @@ public class CodeFragmentIdentifier {
 		this.fragmentRegisterer = fragmentRegisterer;
 		this.maxElementsCount = maxElementsCount;
 		this.repositoryManager = repositoryManager;
+		this.granularity = granularity;
 	}
 
 	public void run() throws Exception {
@@ -117,7 +125,8 @@ public class CodeFragmentIdentifier {
 		for (int i = 0; i < threadsCount - 1; i++) {
 			threads[i] = new Thread(new CodeFragmentDetectingThread(
 					detectedCrds, detectedFragments, filesArray, index,
-					repositoryManager, revisionIdentifiers, hashCalculator));
+					repositoryManager, revisionIdentifiers, hashCalculator,
+					granularity));
 			threads[i].start();
 		}
 
@@ -150,7 +159,7 @@ public class CodeFragmentIdentifier {
 
 			final CodeFragmentDetector detector = new CodeFragmentDetector(
 					file.getId(), file.getStartRevisionId(),
-					file.getEndRevisionId(), root, hashCalculator);
+					file.getEndRevisionId(), root, hashCalculator, granularity);
 
 			root.accept(detector);
 

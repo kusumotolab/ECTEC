@@ -120,6 +120,8 @@ public class AnalyzerMain {
 				+ settings.getCrdSimilarityMode().toString());
 		MessagePrinter.println("\thow to link code fragments: "
 				+ settings.getFragmentLinkMode().toString());
+		MessagePrinter.println("\tthe granularity of the analysis: "
+				+ settings.getGranularity().toString());
 
 		MessagePrinter.stronglyPrintln();
 	}
@@ -236,7 +238,8 @@ public class AnalyzerMain {
 				hashCalculatorForClone, dbManager.getCrdRegisterer(),
 				dbManager.getFragmentRegisterer(),
 				Constants.MAX_ELEMENTS_COUNT,
-				repositoryManagerManager.getRepositoryManager());
+				repositoryManagerManager.getRepositoryManager(),
+				settings.getGranularity());
 
 		identifier.run();
 

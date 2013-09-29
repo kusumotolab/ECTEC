@@ -22,8 +22,10 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd.TryStatementCRDCr
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd.WhileStatementCRDCreator;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.ExactHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.settings.AnalyzeGranularity;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -106,10 +108,16 @@ public class CodeFragmentDetector extends ASTVisitor {
 	 */
 	private final IHashCalculator cloneHashCalculator;
 
+	/**
+	 * the granularity of the analysis
+	 */
+	private final AnalyzeGranularity granularity;
+
 	public CodeFragmentDetector(final long ownerFileId,
 			final long startRevisionId, final long endRevisionId,
 			final CompilationUnit root,
-			final IHashCalculator cloneHashCalculator) {
+			final IHashCalculator cloneHashCalculator,
+			final AnalyzeGranularity granularity) {
 		this.detectedCrds = new TreeMap<Long, CRD>();
 		this.detectedFragments = new TreeMap<Long, CodeFragmentInfo>();
 		this.ownerFileId = ownerFileId;
@@ -121,6 +129,7 @@ public class CodeFragmentDetector extends ASTVisitor {
 		this.optionalElseBlocks = new HashMap<IfStatement, Block>();
 		this.exactHashCalculator = new ExactHashCalculator();
 		this.cloneHashCalculator = cloneHashCalculator;
+		this.granularity = granularity;
 	}
 
 	/**
@@ -204,8 +213,12 @@ public class CodeFragmentDetector extends ASTVisitor {
 		final CRD crd = creator.createCrd();
 		detectedCrds.put(crd.getId(), crd);
 
-		final CodeFragmentInfo fragment = createCodeFragment(node, crd.getId());
-		detectedFragments.put(fragment.getId(), fragment);
+		final BlockType bType = crd.getType();
+		if (bType.isInterested(granularity)) {
+			final CodeFragmentInfo fragment = createCodeFragment(node,
+					crd.getId());
+			detectedFragments.put(fragment.getId(), fragment);
+		}
 
 		return crd;
 	}
