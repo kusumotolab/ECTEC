@@ -49,6 +49,10 @@ public class FragmentGenealogyPrinter {
 					.entrySet()) {
 				final CodeFragmentGenealogyInfo genealogy = entry.getValue();
 
+				if (genealogy.getChangedCount() == 0) {
+					continue;
+				}
+
 				final long startRevisionId = genealogy.getStartRevisionId();
 				final long endRevisionId = genealogy.getEndRevisionId();
 
