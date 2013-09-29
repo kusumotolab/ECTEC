@@ -48,6 +48,10 @@ public class AnalyzerMain {
 		}
 	}
 
+	/*
+	 * preprocessors follow
+	 */
+
 	private static void preprocess(final AnalyzerSettings settings)
 			throws Exception {
 		// set the level of verbose output
@@ -152,6 +156,20 @@ public class AnalyzerMain {
 		}
 	}
 
+	/*
+	 * preprocessors end
+	 */
+
+	/*
+	 * the main process follows
+	 */
+
+	/**
+	 * the main function
+	 * 
+	 * @param settings
+	 * @throws Exception
+	 */
 	private static void main(final AnalyzerSettings settings) throws Exception {
 		MessagePrinter.stronglyPrintln("start main operations");
 		MessagePrinter.stronglyPrintln("\tfrom revision "
@@ -238,6 +256,14 @@ public class AnalyzerMain {
 
 		MessagePrinter.stronglyPrintln();
 	}
+
+	/*
+	 * main process ends
+	 */
+
+	/*
+	 * post processors follow
+	 */
 
 	private static void postprocess() {
 		if (dbManager != null) {
