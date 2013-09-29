@@ -25,10 +25,24 @@ public class Commit extends AbstractElement {
 	 */
 	private final long afterRevisionId;
 
-	public Commit(final long beforeRevisionId, final long afterRevisionId) {
+	/**
+	 * the identifier of the before revision
+	 */
+	private final String beforeRevisionIdentifier;
+
+	/**
+	 * the identifier of the after revision
+	 */
+	private final String afterRevisionIdentifier;
+
+	public Commit(final long beforeRevisionId, final long afterRevisionId,
+			final String beforeRevisionIdentifier,
+			final String afterRevisionIdentifier) {
 		super(count.getAndIncrement());
 		this.beforeRevisionId = beforeRevisionId;
 		this.afterRevisionId = afterRevisionId;
+		this.beforeRevisionIdentifier = beforeRevisionIdentifier;
+		this.afterRevisionIdentifier = afterRevisionIdentifier;
 	}
 
 	/**
@@ -47,6 +61,24 @@ public class Commit extends AbstractElement {
 	 */
 	public final long getAfterRevisionId() {
 		return this.afterRevisionId;
+	}
+
+	/**
+	 * get the before revision identifier
+	 * 
+	 * @return
+	 */
+	public final String getBeforeRevisionIdentifier() {
+		return this.beforeRevisionIdentifier;
+	}
+
+	/**
+	 * get the after revision identifier
+	 * 
+	 * @return
+	 */
+	public final String getAfterRevisionIdentifier() {
+		return this.afterRevisionIdentifier;
 	}
 
 }
