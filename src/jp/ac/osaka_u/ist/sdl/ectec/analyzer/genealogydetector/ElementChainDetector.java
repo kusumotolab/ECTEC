@@ -1,5 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.genealogydetector;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -51,8 +52,8 @@ public class ElementChainDetector<L extends ElementLinkInfo> {
 	 * @return
 	 * @throws Exception
 	 */
-	public Set<ElementChain<L>> detect() throws Exception {
-		final Set<ElementChain<L>> detectedChains = new HashSet<ElementChain<L>>();
+	public Collection<ElementChain<L>> detect() throws Exception {
+		final ConcurrentMap<Long, ElementChain<L>> detectedChains = new ConcurrentHashMap<Long, ElementChain<L>>();
 		int count = 0;
 
 		// analyze a single revision with multiple threads
@@ -91,7 +92,7 @@ public class ElementChainDetector<L extends ElementLinkInfo> {
 			}
 		}
 
-		return Collections.unmodifiableSet(detectedChains);
+		return Collections.unmodifiableCollection(detectedChains.values());
 	}
 
 	/**
@@ -106,13 +107,13 @@ public class ElementChainDetector<L extends ElementLinkInfo> {
 
 		private final AtomicInteger index;
 
-		private final Set<ElementChain<L>> detectedChains;
+		private final ConcurrentMap<Long, ElementChain<L>> detectedChains;
 
 		private final ConcurrentMap<Long, L> links;
 
 		private GenealogyDetectingThread(final Long[] keyArray,
 				final AtomicInteger index,
-				final Set<ElementChain<L>> detectedChains,
+				final ConcurrentMap<Long, ElementChain<L>> detectedChains,
 				final ConcurrentMap<Long, L> links) {
 			this.keyArray = keyArray;
 			this.index = index;
@@ -135,7 +136,9 @@ public class ElementChainDetector<L extends ElementLinkInfo> {
 				// true if
 				// this link has its correspondents in the detected chains
 				boolean invited = false;
-				for (final ElementChain<L> chain : detectedChains) {
+				final Set<ElementChain<L>> chains = new HashSet<ElementChain<L>>();
+				chains.addAll(detectedChains.values());
+				for (final ElementChain<L> chain : chains) {
 					if (chain.isFriend(link)) {
 						chain.invite(link);
 						invited = true;
@@ -147,7 +150,7 @@ public class ElementChainDetector<L extends ElementLinkInfo> {
 				// then create new chain
 				if (!invited) {
 					final ElementChain<L> newChain = new ElementChain<L>(link);
-					detectedChains.add(newChain);
+					detectedChains.put(newChain.getId(), newChain);
 				}
 			}
 		}

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.filedetector.ChangedFilesIdentifier;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.genealogydetector.FragmentGenealogyIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.linker.CodeFragmentLinkIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.CodeFragmentIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
@@ -187,6 +188,8 @@ public class AnalyzerMain {
 		detectAndRegisterFragments(settings, files.values());
 
 		detectAndRegisterFragmentLinks(settings, commits);
+
+		detectAndRegisterFragmentGenealogies(settings);
 	}
 
 	private static Map<Long, Commit> detectAndRegisterTargetRevisions(
@@ -241,8 +244,8 @@ public class AnalyzerMain {
 	}
 
 	private static void detectAndRegisterFragmentLinks(
-			final AnalyzerSettings settings,
-			final Map<Long, Commit> commits) throws Exception {
+			final AnalyzerSettings settings, final Map<Long, Commit> commits)
+			throws Exception {
 		MessagePrinter
 				.stronglyPrintln("detecting and registering links of code fragments ... ");
 
@@ -255,6 +258,23 @@ public class AnalyzerMain {
 						.getCrdSimilarityMode().getCalculator(),
 				Constants.MAX_ELEMENTS_COUNT);
 		identifier.run();
+
+		MessagePrinter.stronglyPrintln();
+	}
+
+	private static void detectAndRegisterFragmentGenealogies(
+			final AnalyzerSettings settings) throws Exception {
+		MessagePrinter
+				.stronglyPrintln("detecting and registering genealogies of code fragments ... ");
+
+		final Map<Long, RevisionInfo> targetRevisions = dbManager
+				.getRevisionRetriever().retrieveAll();
+
+		final FragmentGenealogyIdentifier identifier = new FragmentGenealogyIdentifier(
+				targetRevisions, settings.getThreads(),
+				dbManager.getFragmentLinkRetriever(),
+				dbManager.getFragmentGenealogyRegisterer());
+		identifier.detectAndRegister();
 
 		MessagePrinter.stronglyPrintln();
 	}

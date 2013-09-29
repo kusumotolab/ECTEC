@@ -3,10 +3,21 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer.genealogydetector;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicLong;
 
 import jp.ac.osaka_u.ist.sdl.ectec.data.ElementLinkInfo;
 
 public class ElementChain<L extends ElementLinkInfo> {
+
+	/**
+	 * the counter to have the number of created elements
+	 */
+	private static final AtomicLong count = new AtomicLong(0);
+
+	/**
+	 * the id
+	 */
+	private final long id;
 
 	/**
 	 * the revisions
@@ -24,12 +35,19 @@ public class ElementChain<L extends ElementLinkInfo> {
 	private final Set<Long> elements;
 
 	public ElementChain(final L link) {
+		this.id = count.getAndIncrement();
 		this.revisions = new TreeSet<Long>();
 		this.links = new TreeSet<Long>();
 		this.elements = new TreeSet<Long>();
+		this.revisions.add(link.getBeforeRevisionId());
+		this.revisions.add(link.getAfterRevisionId());
 		this.links.add(link.getId());
 		this.elements.add(link.getBeforeElementId());
 		this.elements.add(link.getAfterElementId());
+	}
+
+	public final long getId() {
+		return id;
 	}
 
 	public final Set<Long> getLinks() {
@@ -73,6 +91,10 @@ public class ElementChain<L extends ElementLinkInfo> {
 		} else {
 			return false;
 		}
+	}
+
+	public static void resetCounter() {
+		count.set(0);
 	}
 
 }

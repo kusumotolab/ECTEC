@@ -1,8 +1,8 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.genealogydetector;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import jp.ac.osaka_u.ist.sdl.ectec.data.AbstractGenealogyInfo;
@@ -24,7 +24,7 @@ public abstract class ElementChainFinalizer<L extends ElementLinkInfo, G extends
 	 * @param chains
 	 * @return
 	 */
-	public Map<Long, G> finalize(final Set<ElementChain<L>> chains) {
+	public Map<Long, G> finalize(final Collection<ElementChain<L>> chains) {
 		final Map<Long, G> result = new TreeMap<Long, G>();
 		for (final ElementChain<L> chain : chains) {
 			final G genealogy = createInstanceFromChain(chain);
