@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -88,6 +90,22 @@ public abstract class AbstractElementRetriever<T extends AbstractElement> {
 		builder.append(")");
 
 		return retrieve(builder.toString());
+	}
+
+	/**
+	 * retrieve elements having one of the given id
+	 * 
+	 * @param ids
+	 * @return
+	 * @throws SQLException
+	 */
+	public SortedMap<Long, T> retrieveWithIds(long... ids) throws SQLException {
+		final Set<Long> idSet = new HashSet<Long>();
+		for (final long id : ids) {
+			idSet.add(id);
+		}
+
+		return retrieveWithIds(idSet);
 	}
 
 	/**
