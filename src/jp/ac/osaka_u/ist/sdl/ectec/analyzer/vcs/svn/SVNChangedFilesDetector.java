@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.IChangedFilesDetector;
+import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 
 import org.tmatesoft.svn.core.ISVNLogEntryHandler;
@@ -34,10 +35,10 @@ public class SVNChangedFilesDetector implements IChangedFilesDetector {
 	}
 
 	@Override
-	public Map<String, Character> detectChangedFiles(
-			final String revisionIdentifier, final Language language)
-			throws Exception {
-		final long revision = Long.parseLong(revisionIdentifier);
+	public Map<String, Character> detectChangedFiles(final Commit commit,
+			final Language language) throws Exception {
+		final long revision = Long.parseLong(commit
+				.getAfterRevisionIdentifier());
 
 		final Map<String, Character> result = new HashMap<String, Character>();
 
@@ -72,7 +73,8 @@ public class SVNChangedFilesDetector implements IChangedFilesDetector {
 
 		if (!deleted.isEmpty()) {
 			final List<String> sourceFilesInDeletedDir = manager
-					.getListOfSourceFiles(revisionIdentifier, language, deleted);
+					.getListOfSourceFiles(commit.getBeforeRevisionIdentifier(),
+							language, deleted);
 
 			for (final String deletedFile : sourceFilesInDeletedDir) {
 				result.put(deletedFile, 'D');

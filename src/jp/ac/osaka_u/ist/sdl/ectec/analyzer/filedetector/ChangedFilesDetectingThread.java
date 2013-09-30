@@ -78,7 +78,7 @@ public class ChangedFilesDetectingThread implements Runnable {
 			try {
 				// detect changed files in this revision
 				final Map<String, Character> changedFilesInThisRevision = detector
-						.detectChangedFiles(targetRevisionIdentifier, language);
+						.detectChangedFiles(targetCommit, language);
 
 				// store paths detected the above step into the concurrent map
 				for (final Map.Entry<String, Character> entry : changedFilesInThisRevision
