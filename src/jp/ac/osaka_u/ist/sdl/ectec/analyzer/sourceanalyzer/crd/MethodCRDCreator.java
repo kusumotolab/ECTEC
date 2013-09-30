@@ -1,6 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd;
 
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.normalizer.StringCreateVisitor;
 import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 
@@ -16,7 +16,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 public class MethodCRDCreator extends AbstractBlockAnalyzer<MethodDeclaration> {
 
 	public MethodCRDCreator(MethodDeclaration node, CRD parent,
-			IHashCalculator visitor) {
+			StringCreateVisitor visitor) {
 		super(node, parent, BlockType.METHOD, visitor);
 	}
 
@@ -49,6 +49,11 @@ public class MethodCRDCreator extends AbstractBlockAnalyzer<MethodDeclaration> {
 		builder.append(")");
 
 		return builder.toString();
+	}
+
+	@Override
+	protected String getNormalizedAnchor() {
+		return detectCanonicalSignature(node);
 	}
 
 }

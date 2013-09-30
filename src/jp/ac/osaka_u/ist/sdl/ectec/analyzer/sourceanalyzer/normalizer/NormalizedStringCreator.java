@@ -21,7 +21,7 @@ import org.eclipse.jdt.core.dom.TypeLiteral;
  * @author k-hotta
  * 
  */
-public class ExtendedNaiveASTFlattener extends MyNaiveAstFlattener {
+public class NormalizedStringCreator extends StringCreateVisitor {
 
 	@Override
 	public boolean visit(Javadoc node) {

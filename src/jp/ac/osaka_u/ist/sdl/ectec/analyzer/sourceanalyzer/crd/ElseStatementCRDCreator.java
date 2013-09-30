@@ -1,12 +1,13 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.normalizer.NormalizedStringCreator;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.normalizer.StringCreateVisitor;
 import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
-import jp.ac.osaka_u.ist.sdl.ectec.settings.Constants;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.IfStatement;
@@ -21,7 +22,7 @@ import org.eclipse.jdt.core.dom.Statement;
 public class ElseStatementCRDCreator extends AbstractBlockAnalyzer<Statement> {
 
 	public ElseStatementCRDCreator(Statement node, CRD parent,
-			IHashCalculator visitor) {
+			StringCreateVisitor visitor) {
 		super(node, parent, BlockType.ELSE, visitor);
 	}
 
@@ -31,25 +32,19 @@ public class ElseStatementCRDCreator extends AbstractBlockAnalyzer<Statement> {
 	 */
 	@Override
 	protected String getAnchor() {
-		final StringBuilder builder = new StringBuilder();
-
-		final List<String> predicates = detectElsePredicates(node);
-		for (final String predicate : predicates) {
-			builder.append(predicate + Constants.PREDICATE_DIVIDER);
-		}
-
-		builder.delete(builder.length() - Constants.PREDICATE_DIVIDER.length(),
-				builder.length());
-
-		return builder.toString();
+		return detectElsePredicates(node);
 	}
 
-	private List<String> detectElsePredicates(Statement elseStatement) {
-		List<String> predicates = new LinkedList<String>();
+	@Override
+	protected String getNormalizedAnchor() {
+		return detectNormalizedElsePredicates(node);
+	}
 
+	private String detectElsePredicates(Statement elseStatement) {
+		List<String> predicates = new LinkedList<String>();
 		detectPredicates(elseStatement.getParent(), predicates);
 
-		return predicates;
+		return convert(predicates);
 	}
 
 	private void detectPredicates(ASTNode node, List<String> predicates) {
@@ -61,6 +56,59 @@ public class ElseStatementCRDCreator extends AbstractBlockAnalyzer<Statement> {
 
 		IfStatement ifStatement = (IfStatement) node;
 		predicates.add(ifStatement.getExpression().toString());
+	}
+
+	private String convert(final List<String> predicates) {
+		final StringBuilder builder = new StringBuilder();
+		if (!predicates.isEmpty()) {
+			builder.append("!(");
+			boolean isFirstPredicate = true;
+			for (String predicate : predicates) {
+				if (!isFirstPredicate) {
+					builder.append(" || ");
+				} else {
+					isFirstPredicate = false;
+				}
+				builder.append("!(");
+				builder.append(predicate);
+				builder.append(")");
+			}
+			builder.append(")");
+		}
+
+		return builder.toString();
+	}
+
+	private String detectNormalizedElsePredicates(Statement elseStatement) {
+		final NormalizedStringCreator anchorNormalizer = new NormalizedStringCreator();
+
+		final List<IfStatement> parentIfs = new ArrayList<IfStatement>();
+		ASTNode parent = node.getParent();
+		while (parent instanceof IfStatement) {
+			final IfStatement parentIf = (IfStatement) parent;
+			parentIfs.add(parentIf);
+			parent = parent.getParent();
+		}
+
+		if (!parentIfs.isEmpty()) {
+			anchorNormalizer.getBuffer().append("!(");
+
+			boolean isFirstPredicate = true;
+			for (final IfStatement parentIf : parentIfs) {
+				if (!isFirstPredicate) {
+					anchorNormalizer.getBuffer().append(" || ");
+				} else {
+					isFirstPredicate = false;
+				}
+				anchorNormalizer.getBuffer().append("!(");
+				parentIf.getExpression().accept(anchorNormalizer);
+				anchorNormalizer.getBuffer().append(")");
+			}
+
+			anchorNormalizer.getBuffer().append(")");
+		}
+
+		return anchorNormalizer.getString();
 	}
 
 }

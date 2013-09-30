@@ -1,6 +1,7 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd;
 
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.normalizer.NormalizedStringCreator;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.normalizer.StringCreateVisitor;
 import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 
@@ -15,7 +16,7 @@ import org.eclipse.jdt.core.dom.DoStatement;
 public class DoStatementCRDCreator extends AbstractBlockAnalyzer<DoStatement> {
 
 	public DoStatementCRDCreator(DoStatement node, CRD parent,
-			IHashCalculator visitor) {
+			StringCreateVisitor visitor) {
 		super(node, parent, BlockType.DO, visitor);
 	}
 
@@ -25,6 +26,13 @@ public class DoStatementCRDCreator extends AbstractBlockAnalyzer<DoStatement> {
 	@Override
 	protected String getAnchor() {
 		return node.getExpression().toString();
+	}
+
+	@Override
+	protected String getNormalizedAnchor() {
+		final NormalizedStringCreator anchorNormalizer = new NormalizedStringCreator();
+		node.getExpression().accept(anchorNormalizer);
+		return anchorNormalizer.getString();
 	}
 
 }

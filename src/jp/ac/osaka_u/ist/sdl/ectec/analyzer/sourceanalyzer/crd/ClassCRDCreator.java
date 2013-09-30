@@ -1,6 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd;
 
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.normalizer.StringCreateVisitor;
 import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 
@@ -17,7 +17,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 public class ClassCRDCreator extends AbstractBlockAnalyzer<TypeDeclaration> {
 
 	public ClassCRDCreator(TypeDeclaration node, CRD parent,
-			IHashCalculator visitor) {
+			StringCreateVisitor visitor) {
 		super(node, parent, BlockType.CLASS, visitor);
 	}
 
@@ -56,6 +56,11 @@ public class ClassCRDCreator extends AbstractBlockAnalyzer<TypeDeclaration> {
 		if (node.getPackage() != null) {
 			builder.insert(0, node.getPackage().getName() + ".");
 		}
+	}
+
+	@Override
+	protected String getNormalizedAnchor() {
+		return getFullyQualifiedName(node);
 	}
 
 }

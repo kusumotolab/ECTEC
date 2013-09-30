@@ -3,7 +3,8 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.HashCalculatorCreator;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.normalizer.NormalizerCreator;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.IRepositoryManager;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
@@ -54,12 +55,17 @@ public class CodeFragmentDetectingThread implements Runnable {
 	/**
 	 * the factory for block analyzers
 	 */
-	private final HashCalculatorCreator blockAnalyzerCreator;
+	private final NormalizerCreator blockAnalyzerCreator;
 
 	/**
 	 * the granularity of the analysis
 	 */
 	private final AnalyzeGranularity granularity;
+
+	/**
+	 * the hash calculator
+	 */
+	private final IHashCalculator hashCalculator;
 
 	public CodeFragmentDetectingThread(
 			final ConcurrentMap<Long, CRD> detectedCrds,
@@ -68,7 +74,8 @@ public class CodeFragmentDetectingThread implements Runnable {
 			final IRepositoryManager manager,
 			final ConcurrentMap<Long, String> revisions,
 			final AnalyzeGranularity granularity,
-			final HashCalculatorCreator blockAnalyzerCreator) {
+			final NormalizerCreator blockAnalyzerCreator,
+			final IHashCalculator hashCalculator) {
 		this.detectedCrds = detectedCrds;
 		this.detectedFragments = detectedFragments;
 		this.targetFiles = targetFiles;
@@ -77,6 +84,7 @@ public class CodeFragmentDetectingThread implements Runnable {
 		this.revisions = revisions;
 		this.blockAnalyzerCreator = blockAnalyzerCreator;
 		this.granularity = granularity;
+		this.hashCalculator = hashCalculator;
 	}
 
 	@Override
@@ -102,8 +110,8 @@ public class CodeFragmentDetectingThread implements Runnable {
 
 				final CodeFragmentDetector detector = new CodeFragmentDetector(
 						targetFile.getId(), targetFile.getStartRevisionId(),
-						targetFile.getEndRevisionId(), root, granularity,
-						blockAnalyzerCreator);
+						targetFile.getEndRevisionId(), hashCalculator, root,
+						granularity, blockAnalyzerCreator);
 
 				root.accept(detector);
 

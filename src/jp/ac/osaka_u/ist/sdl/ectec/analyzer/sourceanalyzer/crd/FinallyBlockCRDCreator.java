@@ -2,7 +2,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd;
 
 import java.util.List;
 
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.normalizer.StringCreateVisitor;
 import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Constants;
@@ -20,7 +20,7 @@ import org.eclipse.jdt.core.dom.TryStatement;
 public class FinallyBlockCRDCreator extends AbstractBlockAnalyzer<Block> {
 
 	public FinallyBlockCRDCreator(Block node, CRD parent,
-			IHashCalculator visitor) {
+			StringCreateVisitor visitor) {
 		super(node, parent, BlockType.FINALLY, visitor);
 	}
 
@@ -56,9 +56,35 @@ public class FinallyBlockCRDCreator extends AbstractBlockAnalyzer<Block> {
 		return builder.toString();
 	}
 
+	private String getTryAnchor(final TryStatement node) {
+		final StringBuilder builder = new StringBuilder();
+
+		@SuppressWarnings("rawtypes")
+		List catchClauses = node.catchClauses();
+
+		boolean catchAnyException = false;
+
+		for (Object obj : catchClauses) {
+			final CatchClause catchClause = (CatchClause) obj;
+			final String caughtExceptionType = catchClause.getException()
+					.getType().toString();
+			builder.append(caughtExceptionType + Constants.PREDICATE_DIVIDER);
+			catchAnyException = true;
+		}
+
+		if (catchAnyException) {
+			builder.delete(
+					builder.length() - Constants.PREDICATE_DIVIDER.length(),
+					builder.length());
+		}
+
+		return builder.toString();
+	}
+
 	@Override
-	protected void visit() {
-		visitor.visitFinally(node);
+	protected String getNormalizedAnchor() {
+		final TryStatement parentTry = (TryStatement) node.getParent();
+		return getTryAnchor(parentTry);
 	}
 
 }

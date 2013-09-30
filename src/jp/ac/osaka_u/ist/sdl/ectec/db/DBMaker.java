@@ -70,7 +70,7 @@ public class DBMaker {
 		}
 
 		try {
-			dbManager.executeUpdate("DROP TABLE COMMIT");
+			dbManager.executeUpdate("DROP TABLE VCS_COMMIT");
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}

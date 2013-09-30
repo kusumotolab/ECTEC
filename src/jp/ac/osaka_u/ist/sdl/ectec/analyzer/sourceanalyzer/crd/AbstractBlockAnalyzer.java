@@ -3,7 +3,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd;
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.normalizer.StringCreateVisitor;
 import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 
@@ -33,9 +33,9 @@ public abstract class AbstractBlockAnalyzer<T extends ASTNode> {
 	protected final BlockType bType;
 
 	/**
-	 * the normalized anchor
+	 * the visitor to create string for clone detection
 	 */
-	protected final IHashCalculator visitor;
+	protected final StringCreateVisitor visitor;
 
 	/**
 	 * the crd created as a result of analysis
@@ -48,7 +48,7 @@ public abstract class AbstractBlockAnalyzer<T extends ASTNode> {
 	private String stringForCloneDetection;
 
 	public AbstractBlockAnalyzer(final T node, final CRD parent,
-			final BlockType bType, final IHashCalculator visitor) {
+			final BlockType bType, final StringCreateVisitor visitor) {
 		this.node = node;
 		this.parent = parent;
 		this.bType = bType;
@@ -71,6 +71,7 @@ public abstract class AbstractBlockAnalyzer<T extends ASTNode> {
 	public void analyze() {
 		final String head = bType.getHead();
 		final String anchor = getAnchor();
+		final String normalizedAnchor = getNormalizedAnchor();
 
 		final List<Long> ancestorIds = new ArrayList<Long>();
 
@@ -89,15 +90,11 @@ public abstract class AbstractBlockAnalyzer<T extends ASTNode> {
 		final String fullText = (parent == null) ? thisCrdStr : parent
 				.getFullText() + "\n" + thisCrdStr;
 
-		visit();
-
-		createdCrd = new CRD(bType, head, anchor,
-				visitor.getNormalizedAnchor(), cm, ancestorIds, fullText);
-		stringForCloneDetection = visitor.getString();
-	}
-
-	protected void visit() {
 		node.accept(visitor);
+
+		createdCrd = new CRD(bType, head, anchor, normalizedAnchor, cm,
+				ancestorIds, fullText);
+		stringForCloneDetection = visitor.toString();
 	}
 
 	/**
@@ -125,5 +122,7 @@ public abstract class AbstractBlockAnalyzer<T extends ASTNode> {
 	 * @return
 	 */
 	protected abstract String getAnchor();
+
+	protected abstract String getNormalizedAnchor();
 
 }

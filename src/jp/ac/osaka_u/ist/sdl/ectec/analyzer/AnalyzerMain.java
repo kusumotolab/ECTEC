@@ -7,7 +7,9 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.filedetector.ChangedFilesIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.genealogydetector.FragmentGenealogyIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.linker.CodeFragmentLinkIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.CodeFragmentIdentifier;
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.HashCalculatorCreator;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.DefaultHashCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.normalizer.NormalizerCreator;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.RepositoryManagerManager;
 import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
 import jp.ac.osaka_u.ist.sdl.ectec.data.FileInfo;
@@ -231,8 +233,10 @@ public class AnalyzerMain {
 		final Collection<RevisionInfo> revisions = dbManager
 				.getRevisionRetriever().retrieveAll().values();
 
-		final HashCalculatorCreator blockAnalyzerCreator = new HashCalculatorCreator(
+		final NormalizerCreator blockAnalyzerCreator = new NormalizerCreator(
 				settings.getCloneHashCalculateMode());
+
+		final IHashCalculator hashCalculator = new DefaultHashCalculator();
 
 		final CodeFragmentIdentifier identifier = new CodeFragmentIdentifier(
 				files, revisions, settings.getThreads(),
@@ -240,7 +244,7 @@ public class AnalyzerMain {
 				dbManager.getFragmentRegisterer(),
 				Constants.MAX_ELEMENTS_COUNT,
 				repositoryManagerManager.getRepositoryManager(),
-				settings.getGranularity(), blockAnalyzerCreator);
+				settings.getGranularity(), blockAnalyzerCreator, hashCalculator);
 
 		identifier.run();
 

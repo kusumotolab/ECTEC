@@ -9,7 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.HashCalculatorCreator;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.normalizer.NormalizerCreator;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.IRepositoryManager;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
@@ -73,7 +74,12 @@ public class CodeFragmentIdentifier {
 	/**
 	 * a factory for block analyzers
 	 */
-	private final HashCalculatorCreator blockAnalyzerCreator;
+	private final NormalizerCreator blockAnalyzerCreator;
+
+	/**
+	 * the hash calculator
+	 */
+	private final IHashCalculator hashCalculator;
 
 	public CodeFragmentIdentifier(final Collection<FileInfo> targetFiles,
 			final Collection<RevisionInfo> revisions, final int threadsCount,
@@ -82,7 +88,8 @@ public class CodeFragmentIdentifier {
 			final int maxElementsCount,
 			final IRepositoryManager repositoryManager,
 			final AnalyzeGranularity granularity,
-			final HashCalculatorCreator blockAnalyzerCreator) {
+			final NormalizerCreator blockAnalyzerCreator,
+			final IHashCalculator hashCalculator) {
 		this.targetFiles = targetFiles;
 		this.revisions = revisions;
 		this.threadsCount = threadsCount;
@@ -92,6 +99,7 @@ public class CodeFragmentIdentifier {
 		this.repositoryManager = repositoryManager;
 		this.granularity = granularity;
 		this.blockAnalyzerCreator = blockAnalyzerCreator;
+		this.hashCalculator = hashCalculator;
 	}
 
 	public void run() throws Exception {
@@ -126,7 +134,7 @@ public class CodeFragmentIdentifier {
 			threads[i] = new Thread(new CodeFragmentDetectingThread(
 					detectedCrds, detectedFragments, filesArray, index,
 					repositoryManager, revisionIdentifiers, granularity,
-					blockAnalyzerCreator));
+					blockAnalyzerCreator, hashCalculator));
 			threads[i].start();
 		}
 
@@ -159,7 +167,7 @@ public class CodeFragmentIdentifier {
 
 			final CodeFragmentDetector detector = new CodeFragmentDetector(
 					file.getId(), file.getStartRevisionId(),
-					file.getEndRevisionId(), root, granularity,
+					file.getEndRevisionId(), hashCalculator, root, granularity,
 					blockAnalyzerCreator);
 
 			root.accept(detector);

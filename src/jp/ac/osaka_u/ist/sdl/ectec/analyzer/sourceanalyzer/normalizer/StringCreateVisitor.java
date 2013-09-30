@@ -1,6 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.normalizer;
 
-public class StringCreateVisitor extends ExtendedNaiveASTFlattener {
+public class StringCreateVisitor extends MyNaiveAstFlattener {
 
 	private String str = null;
 
@@ -34,4 +34,5 @@ public class StringCreateVisitor extends ExtendedNaiveASTFlattener {
 		return tmpBuilder.toString();
 	}
 
+	
 }
