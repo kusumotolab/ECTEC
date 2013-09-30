@@ -109,6 +109,49 @@ public abstract class AbstractElementRetriever<T extends AbstractElement> {
 	}
 
 	/**
+	 * retrieve elements NOT having one of the given id
+	 * 
+	 * @param ids
+	 * @return
+	 * @throws SQLException
+	 */
+	public SortedMap<Long, T> retrieveWithoutIds(final Collection<Long> ids)
+			throws SQLException {
+		if (ids.isEmpty()) {
+			return new TreeMap<Long, T>();
+		}
+		final StringBuilder builder = new StringBuilder();
+		builder.append("select * from " + getTableName() + " where "
+				+ getIdColumnName() + " not in (");
+
+		for (final long id : ids) {
+			builder.append(id + ",");
+		}
+
+		builder.deleteCharAt(builder.length() - 1);
+		builder.append(")");
+
+		return retrieve(builder.toString());
+	}
+
+	/**
+	 * retrieve elements NOT having one of the given id
+	 * 
+	 * @param ids
+	 * @return
+	 * @throws SQLException
+	 */
+	public SortedMap<Long, T> retrieveWithoutIds(long... ids)
+			throws SQLException {
+		final Set<Long> idSet = new HashSet<Long>();
+		for (final long id : ids) {
+			idSet.add(id);
+		}
+
+		return retrieveWithoutIds(idSet);
+	}
+
+	/**
 	 * build an instance of element from the given record
 	 * 
 	 * @param rs
