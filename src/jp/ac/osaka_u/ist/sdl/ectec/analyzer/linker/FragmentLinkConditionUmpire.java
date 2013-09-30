@@ -3,6 +3,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer.linker;
 import java.util.HashMap;
 import java.util.Map;
 
+import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 
 /**
@@ -71,7 +72,13 @@ public class FragmentLinkConditionUmpire {
 
 	public final boolean satisfyConditionalBlockConditions(final CRD beforeCrd,
 			final CRD afterCrd) {
-		return true; // TODO implement
+		final BlockType beforeType = beforeCrd.getType();
+		final BlockType afterType = afterCrd.getType();
+		final String beforeNormalizedAnchor = beforeCrd.getNormalizedAnchor();
+		final String afterNormalizedAnchor = afterCrd.getNormalizedAnchor();
+
+		return (beforeType == afterType)
+				&& (beforeNormalizedAnchor.equals(afterNormalizedAnchor));
 	}
 
 	/**
