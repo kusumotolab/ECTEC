@@ -275,6 +275,7 @@ public class AnalyzerMain {
 
 		final FragmentGenealogyIdentifier identifier = new FragmentGenealogyIdentifier(
 				targetRevisions, settings.getThreads(),
+				dbManager.getFragmentRetriever(),
 				dbManager.getFragmentLinkRetriever(),
 				dbManager.getFragmentGenealogyRegisterer());
 		identifier.detectAndRegister();

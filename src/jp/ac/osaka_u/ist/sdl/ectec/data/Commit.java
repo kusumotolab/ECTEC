@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author k-hotta
  * 
  */
-public class Commit extends AbstractElement {
+public class Commit extends AbstractElement implements Comparable<Commit> {
 
 	/**
 	 * the counter for having the number of created instances
@@ -79,6 +79,11 @@ public class Commit extends AbstractElement {
 	 */
 	public final String getAfterRevisionIdentifier() {
 		return this.afterRevisionIdentifier;
+	}
+
+	@Override
+	public int compareTo(Commit another) {
+		return ((Long) this.getId()).compareTo(another.getId());
 	}
 
 }

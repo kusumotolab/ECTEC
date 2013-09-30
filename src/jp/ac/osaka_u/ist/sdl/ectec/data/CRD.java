@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author k-hotta
  * 
  */
-public class CRD extends AbstractElement {
+public class CRD extends AbstractElement implements Comparable<CRD> {
 
 	/**
 	 * a counter to keep the number of created elements
@@ -147,6 +147,11 @@ public class CRD extends AbstractElement {
 		}
 
 		return ((CRD) o).getFullText().equals(this.getFullText());
+	}
+
+	@Override
+	public int compareTo(CRD another) {
+		return ((Long) this.getId()).compareTo(another.getId());
 	}
 
 }

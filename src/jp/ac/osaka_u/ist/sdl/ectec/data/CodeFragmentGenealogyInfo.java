@@ -10,7 +10,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * 
  */
 public class CodeFragmentGenealogyInfo extends
-		AbstractGenealogyInfo<CodeFragmentInfo, CodeFragmentLinkInfo> {
+		AbstractGenealogyInfo<CodeFragmentInfo, CodeFragmentLinkInfo> implements
+		Comparable<CodeFragmentGenealogyInfo> {
 
 	/**
 	 * the conter to have the number of created elements
@@ -38,6 +39,11 @@ public class CodeFragmentGenealogyInfo extends
 
 	public final int getChangedCount() {
 		return changedCount;
+	}
+
+	@Override
+	public int compareTo(CodeFragmentGenealogyInfo another) {
+		return ((Long) this.getId()).compareTo(another.getId());
 	}
 
 }

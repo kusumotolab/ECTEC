@@ -95,12 +95,8 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 		afterFragmentsSet.addAll(afterFragments);
 
 		// detect pairs of fragments whose crds are equal to each other
-		reversedResult.putAll(detectSameCrdFragmentPairs(beforeFragments,
-				afterFragments, crds));
-
-		// remove code fragments from the target which already have a partner
-		beforeFragmentsSet.removeAll(reversedResult.values());
-		afterFragmentsSet.removeAll(reversedResult.keySet());
+		// and remove them
+		removeSameCrdFragmentPairs(beforeFragmentsSet, afterFragmentsSet, crds);
 
 		/*
 		 * initialize the similarity table and with lists for each of remaining
@@ -214,36 +210,28 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 		return result;
 	}
 
-	/**
-	 * detect fragment pairs whose crds are equal to each other
-	 * 
-	 * @param beforeFragments
-	 * @param afterFragments
-	 * @param crds
-	 * @return
-	 */
-	private Map<CodeFragmentInfo, CodeFragmentInfo> detectSameCrdFragmentPairs(
+	private void removeSameCrdFragmentPairs(
 			final Collection<CodeFragmentInfo> beforeFragments,
 			final Collection<CodeFragmentInfo> afterFragments,
 			final Map<Long, CRD> crds) {
-		final Map<CodeFragmentInfo, CodeFragmentInfo> result = new TreeMap<CodeFragmentInfo, CodeFragmentInfo>();
-
-		final Set<CodeFragmentInfo> processedAfterMethods = new HashSet<CodeFragmentInfo>();
+		final Set<CodeFragmentInfo> processedBeforeFragments = new HashSet<CodeFragmentInfo>();
+		final Set<CodeFragmentInfo> processedAfterFragments = new HashSet<CodeFragmentInfo>();
 
 		for (final CodeFragmentInfo beforeFragment : beforeFragments) {
 			for (final CodeFragmentInfo afterFragment : afterFragments) {
-				if (processedAfterMethods.contains(afterFragment)) {
+				if (processedAfterFragments.contains(afterFragment)) {
 					continue;
 				}
 				if (crds.get(beforeFragment.getCrdId()).equals(
 						crds.get(afterFragment.getCrdId()))) {
-					result.put(afterFragment, beforeFragment);
-					processedAfterMethods.add(afterFragment);
+					processedBeforeFragments.add(beforeFragment);
+					processedAfterFragments.add(afterFragment);
 				}
 			}
 		}
 
-		return result;
+		beforeFragments.removeAll(processedBeforeFragments);
+		afterFragments.removeAll(processedAfterFragments);
 	}
 
 	/**

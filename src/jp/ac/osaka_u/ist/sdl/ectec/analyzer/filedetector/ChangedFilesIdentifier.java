@@ -70,7 +70,7 @@ public class ChangedFilesIdentifier {
 			throws SQLException {
 		final SortedSet<Long> revisionsAsSet = new TreeSet<Long>();
 		for (final Map.Entry<Long, Commit> entry : commits.entrySet()) {
-			revisionsAsSet.add(entry.getValue().getBeforeRevisionId());
+			revisionsAsSet.add(entry.getValue().getAfterRevisionId());
 		}
 
 		MessagePrinter
