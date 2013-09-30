@@ -5,6 +5,7 @@ import java.util.Map;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.ITargetRevisionDetector;
 import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
 import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CommitRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.RevisionRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
@@ -25,12 +26,19 @@ public class RevisionIdentifier {
 	/**
 	 * the registerer of revisions
 	 */
-	private final RevisionRegisterer registerer;
+	private final RevisionRegisterer revisionRegisterer;
+
+	/**
+	 * the registerer of commits
+	 */
+	private final CommitRegisterer commitRegisterer;
 
 	public RevisionIdentifier(final ITargetRevisionDetector detector,
-			final RevisionRegisterer registerer) {
+			final RevisionRegisterer revisionRegisterer,
+			final CommitRegisterer commitRegisterer) {
 		this.detector = detector;
-		this.registerer = registerer;
+		this.revisionRegisterer = revisionRegisterer;
+		this.commitRegisterer = commitRegisterer;
 	}
 
 	/**
@@ -56,10 +64,16 @@ public class RevisionIdentifier {
 		MessagePrinter.stronglyPrintln();
 
 		MessagePrinter.stronglyPrintln("registering target revisions ... ");
-		registerer.register(targetRevisions.values());
+		revisionRegisterer.register(targetRevisions.values());
 		MessagePrinter.stronglyPrintln("\tOK");
+		
+		MessagePrinter.stronglyPrintln();
 
 		final Map<Long, Commit> commits = detector.getCommits();
+		
+		MessagePrinter.stronglyPrintln("registering target commits ... ");
+		commitRegisterer.register(commits.values());
+		MessagePrinter.stronglyPrintln("\tOK");
 
 		return commits;
 	}

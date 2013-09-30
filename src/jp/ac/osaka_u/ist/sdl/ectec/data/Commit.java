@@ -45,6 +45,16 @@ public class Commit extends AbstractElement implements Comparable<Commit> {
 		this.afterRevisionIdentifier = afterRevisionIdentifier;
 	}
 
+	public Commit(final long id, final long beforeRevisionId,
+			final long afterRevisionId, final String beforeRevisionIdentifier,
+			final String afterRevisionIdentifier) {
+		super(id);
+		this.beforeRevisionId = beforeRevisionId;
+		this.afterRevisionId = afterRevisionId;
+		this.beforeRevisionIdentifier = beforeRevisionIdentifier;
+		this.afterRevisionIdentifier = afterRevisionIdentifier;
+	}
+
 	/**
 	 * get the before revision id
 	 * 

@@ -7,7 +7,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.filedetector.ChangedFilesIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.genealogydetector.FragmentGenealogyIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.linker.CodeFragmentLinkIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.CodeFragmentIdentifier;
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.HashCalculatorCreator;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.RepositoryManagerManager;
 import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
 import jp.ac.osaka_u.ist.sdl.ectec.data.FileInfo;
@@ -201,7 +201,8 @@ public class AnalyzerMain {
 		final RevisionIdentifier identifier = new RevisionIdentifier(
 				repositoryManagerManager.getRepositoryManager()
 						.getTargetRevisionDetector(),
-				dbManager.getRevisionRegisterer());
+				dbManager.getRevisionRegisterer(),
+				dbManager.getCommitRegisterer());
 		final Map<Long, Commit> commits = identifier.detectAndRegister(
 				settings.getLanguage(), settings.getStartRevisionIdentifier(),
 				settings.getEndRevisionIdentifier());
@@ -230,16 +231,16 @@ public class AnalyzerMain {
 		final Collection<RevisionInfo> revisions = dbManager
 				.getRevisionRetriever().retrieveAll().values();
 
-		final IHashCalculator hashCalculatorForClone = settings
-				.getCloneHashCalculateMode().getCalculator();
+		final HashCalculatorCreator blockAnalyzerCreator = new HashCalculatorCreator(
+				settings.getCloneHashCalculateMode());
 
 		final CodeFragmentIdentifier identifier = new CodeFragmentIdentifier(
 				files, revisions, settings.getThreads(),
-				hashCalculatorForClone, dbManager.getCrdRegisterer(),
+				dbManager.getCrdRegisterer(),
 				dbManager.getFragmentRegisterer(),
 				Constants.MAX_ELEMENTS_COUNT,
 				repositoryManagerManager.getRepositoryManager(),
-				settings.getGranularity());
+				settings.getGranularity(), blockAnalyzerCreator);
 
 		identifier.run();
 

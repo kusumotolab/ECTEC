@@ -3,9 +3,9 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd;
 import java.util.ArrayList;
 import java.util.List;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
-import jp.ac.osaka_u.ist.sdl.ectec.settings.Constants;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
@@ -15,7 +15,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
  * @author k-hotta
  * 
  */
-public abstract class AbstractCRDCreator<T extends ASTNode> {
+public abstract class AbstractBlockAnalyzer<T extends ASTNode> {
 
 	/**
 	 * the node to be analyzed
@@ -32,11 +32,35 @@ public abstract class AbstractCRDCreator<T extends ASTNode> {
 	 */
 	protected final BlockType bType;
 
-	public AbstractCRDCreator(final T node, final CRD parent,
-			final BlockType bType) {
+	/**
+	 * the normalized anchor
+	 */
+	protected final IHashCalculator visitor;
+
+	/**
+	 * the crd created as a result of analysis
+	 */
+	private CRD createdCrd;
+
+	/**
+	 * the normalized string created as a result of analysis
+	 */
+	private String stringForCloneDetection;
+
+	public AbstractBlockAnalyzer(final T node, final CRD parent,
+			final BlockType bType, final IHashCalculator visitor) {
 		this.node = node;
 		this.parent = parent;
 		this.bType = bType;
+		this.visitor = visitor;
+	}
+
+	public CRD getCreatedCrd() {
+		return createdCrd;
+	}
+
+	public String getStringForCloneDetection() {
+		return stringForCloneDetection;
 	}
 
 	/**
@@ -44,7 +68,7 @@ public abstract class AbstractCRDCreator<T extends ASTNode> {
 	 * 
 	 * @return
 	 */
-	public CRD createCrd() {
+	public void analyze() {
 		final String head = bType.getHead();
 		final String anchor = getAnchor();
 
@@ -63,9 +87,17 @@ public abstract class AbstractCRDCreator<T extends ASTNode> {
 
 		final String thisCrdStr = getStringCrdForThisBlock(head, anchor, cm);
 		final String fullText = (parent == null) ? thisCrdStr : parent
-				.getFullText() + thisCrdStr;
+				.getFullText() + "\n" + thisCrdStr;
 
-		return new CRD(bType, head, anchor, cm, ancestorIds, fullText);
+		visit();
+
+		createdCrd = new CRD(bType, head, anchor,
+				visitor.getNormalizedAnchor(), cm, ancestorIds, fullText);
+		stringForCloneDetection = visitor.getString();
+	}
+
+	protected void visit() {
+		node.accept(visitor);
 	}
 
 	/**
@@ -82,7 +114,7 @@ public abstract class AbstractCRDCreator<T extends ASTNode> {
 
 		builder.append(head + ",");
 		builder.append(anchor + ",");
-		builder.append(cm + Constants.LINE_SEPARATOR);
+		builder.append(cm + "\n");
 
 		return builder.toString();
 	}

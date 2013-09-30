@@ -2,6 +2,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd;
 
 import java.util.List;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Constants;
@@ -15,10 +16,11 @@ import org.eclipse.jdt.core.dom.TryStatement;
  * @author k-hotta
  * 
  */
-public class TryStatementCRDCreator extends AbstractCRDCreator<TryStatement> {
+public class TryStatementCRDCreator extends AbstractBlockAnalyzer<TryStatement> {
 
-	public TryStatementCRDCreator(TryStatement node, CRD parent) {
-		super(node, parent, BlockType.TRY);
+	public TryStatementCRDCreator(TryStatement node, CRD parent,
+			IHashCalculator visitor) {
+		super(node, parent, BlockType.TRY, visitor);
 	}
 
 	/**

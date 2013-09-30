@@ -1,5 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 
@@ -12,10 +13,11 @@ import org.eclipse.jdt.core.dom.SwitchStatement;
  * 
  */
 public class SwitchStatementCRDCreator extends
-		AbstractCRDCreator<SwitchStatement> {
+		AbstractBlockAnalyzer<SwitchStatement> {
 
-	public SwitchStatementCRDCreator(SwitchStatement node, CRD parent) {
-		super(node, parent, BlockType.SWITCH);
+	public SwitchStatementCRDCreator(SwitchStatement node, CRD parent,
+			IHashCalculator visitor) {
+		super(node, parent, BlockType.SWITCH, visitor);
 	}
 
 	/**

@@ -1,5 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 
@@ -11,10 +12,11 @@ import org.eclipse.jdt.core.dom.ForStatement;
  * @author k-hotta
  * 
  */
-public class ForStatementCRDCreator extends AbstractCRDCreator<ForStatement> {
+public class ForStatementCRDCreator extends AbstractBlockAnalyzer<ForStatement> {
 
-	public ForStatementCRDCreator(ForStatement node, CRD parent) {
-		super(node, parent, BlockType.FOR);
+	public ForStatementCRDCreator(ForStatement node, CRD parent,
+			IHashCalculator visitor) {
+		super(node, parent, BlockType.FOR, visitor);
 	}
 
 	/**

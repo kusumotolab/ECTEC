@@ -13,6 +13,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CloneSetRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CodeFragmentGenealogyRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CodeFragmentLinkRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CodeFragmentRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CommitRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.FileRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.RevisionRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CRDRetriever;
@@ -22,6 +23,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CloneSetRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CodeFragmentGenealogyRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CodeFragmentLinkRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CodeFragmentRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CommitRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.FileRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.RevisionRetriever;
 
@@ -39,6 +41,8 @@ public final class DBConnectionManager {
 	private Connection connection;
 
 	private final RevisionRegisterer revisionRegisterer;
+	
+	private final CommitRegisterer commitRegisterer;
 
 	private final FileRegisterer fileRegisterer;
 
@@ -57,6 +61,8 @@ public final class DBConnectionManager {
 	private final CRDRegisterer crdRegisterer;
 
 	private final RevisionRetriever revisionRetriever;
+	
+	private final CommitRetriever commitRetriever;
 
 	private final FileRetriever fileRetriever;
 
@@ -86,6 +92,7 @@ public final class DBConnectionManager {
 		this.connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
 		this.connection.setAutoCommit(false);
 		this.revisionRegisterer = new RevisionRegisterer(this, maxBatchCount);
+		this.commitRegisterer = new CommitRegisterer(this, maxBatchCount);
 		this.fileRegisterer = new FileRegisterer(this, maxBatchCount);
 		this.fragmentRegisterer = new CodeFragmentRegisterer(this,
 				maxBatchCount);
@@ -100,6 +107,7 @@ public final class DBConnectionManager {
 				this, maxBatchCount);
 		this.crdRegisterer = new CRDRegisterer(this, maxBatchCount);
 		this.revisionRetriever = new RevisionRetriever(this);
+		this.commitRetriever = new CommitRetriever(this);
 		this.fileRetriever = new FileRetriever(this);
 		this.fragmentRetriever = new CodeFragmentRetriever(this);
 		this.cloneRetriever = new CloneSetRetriever(this);
@@ -113,6 +121,10 @@ public final class DBConnectionManager {
 
 	public final RevisionRegisterer getRevisionRegisterer() {
 		return revisionRegisterer;
+	}
+	
+	public final CommitRegisterer getCommitRegisterer() {
+		return commitRegisterer;
 	}
 
 	public final FileRegisterer getFileRegisterer() {
@@ -149,6 +161,10 @@ public final class DBConnectionManager {
 
 	public final RevisionRetriever getRevisionRetriever() {
 		return revisionRetriever;
+	}
+	
+	public final CommitRetriever getComitRetriever() {
+		return commitRetriever;
 	}
 
 	public final FileRetriever getFileRetriever() {

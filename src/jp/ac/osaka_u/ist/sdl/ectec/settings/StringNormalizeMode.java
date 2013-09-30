@@ -12,7 +12,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.SubblockNormaliz
  * @author k-hotta
  * 
  */
-public enum CloneHashCalculateMode {
+public enum StringNormalizeMode {
 
 	/**
 	 * calculate hash values without any normalizations <br>
@@ -42,7 +42,7 @@ public enum CloneHashCalculateMode {
 	 */
 	private final IHashCalculator calculator;
 
-	private CloneHashCalculateMode(final String[] correspondingStrs,
+	private StringNormalizeMode(final String[] correspondingStrs,
 			final IHashCalculator calculator) {
 		this.correspondingStrs = correspondingStrs;
 		this.calculator = calculator;
@@ -61,7 +61,7 @@ public enum CloneHashCalculateMode {
 		return false;
 	}
 
-	public static final CloneHashCalculateMode getCorrespondingMode(
+	public static final StringNormalizeMode getCorrespondingMode(
 			final String str) {
 		if (EXACT.correspond(str)) {
 			return EXACT;

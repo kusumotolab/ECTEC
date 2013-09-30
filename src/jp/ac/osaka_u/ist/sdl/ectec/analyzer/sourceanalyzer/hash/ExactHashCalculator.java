@@ -8,11 +8,18 @@ import org.eclipse.jdt.core.dom.ASTNode;
  * @author k-hotta
  * 
  */
-public class ExactHashCalculator implements IHashCalculator {
+public class ExactHashCalculator extends IHashCalculator {
 
 	@Override
 	public long getHashValue(final ASTNode node) {
-		return (long) node.toString().hashCode();
+		final String str = node.toString();
+		final StringBuilder builder = new StringBuilder();
+
+		for (final String splitStr : str.split("\n")) {
+			builder.append(splitStr.trim() + "\n");
+		}
+
+		return (long) builder.toString().hashCode();
 	}
 
 }

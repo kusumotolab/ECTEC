@@ -2,6 +2,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd;
 
 import java.util.List;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Constants;
@@ -16,10 +17,11 @@ import org.eclipse.jdt.core.dom.TryStatement;
  * @author k-hotta
  * 
  */
-public class FinallyBlockCRDCreator extends AbstractCRDCreator<Block> {
+public class FinallyBlockCRDCreator extends AbstractBlockAnalyzer<Block> {
 
-	public FinallyBlockCRDCreator(Block node, CRD parent) {
-		super(node, parent, BlockType.FINALLY);
+	public FinallyBlockCRDCreator(Block node, CRD parent,
+			IHashCalculator visitor) {
+		super(node, parent, BlockType.FINALLY, visitor);
 	}
 
 	/**
@@ -52,6 +54,11 @@ public class FinallyBlockCRDCreator extends AbstractCRDCreator<Block> {
 		}
 
 		return builder.toString();
+	}
+
+	@Override
+	protected void visit() {
+		visitor.visitFinally(node);
 	}
 
 }

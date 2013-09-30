@@ -27,7 +27,7 @@ public class CRDRegisterer extends AbstractElementRegisterer<CRD> {
 
 	@Override
 	protected String createPreparedStatementQueue() {
-		return "insert into CRD values(?,?,?,?,?,?,?)";
+		return "insert into CRD values(?,?,?,?,?,?,?,?)";
 	}
 
 	@Override
@@ -38,6 +38,7 @@ public class CRDRegisterer extends AbstractElementRegisterer<CRD> {
 		pstmt.setString(++column, element.getType().toString());
 		pstmt.setString(++column, element.getHead());
 		pstmt.setString(++column, element.getAnchor());
+		pstmt.setString(++column, element.getNormalizedAnchor());
 		pstmt.setInt(++column, element.getCm());
 		pstmt.setString(++column,
 				StringUtils.convertListToString(element.getAncestors()));

@@ -3,6 +3,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd;
 import java.util.LinkedList;
 import java.util.List;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Constants;
@@ -17,10 +18,11 @@ import org.eclipse.jdt.core.dom.Statement;
  * @author k-hotta
  * 
  */
-public class ElseStatementCRDCreator extends AbstractCRDCreator<Statement> {
+public class ElseStatementCRDCreator extends AbstractBlockAnalyzer<Statement> {
 
-	public ElseStatementCRDCreator(Statement node, CRD parent) {
-		super(node, parent, BlockType.ELSE);
+	public ElseStatementCRDCreator(Statement node, CRD parent,
+			IHashCalculator visitor) {
+		super(node, parent, BlockType.ELSE, visitor);
 	}
 
 	/**

@@ -33,6 +33,11 @@ public class CRD extends AbstractElement implements Comparable<CRD> {
 	private final String anchor;
 
 	/**
+	 * the anchor with identifiers normalized
+	 */
+	private final String normalizedAnchor;
+
+	/**
 	 * the value of metrics
 	 */
 	private final int cm;
@@ -59,12 +64,13 @@ public class CRD extends AbstractElement implements Comparable<CRD> {
 	 * @param fullText
 	 */
 	public CRD(final long id, final BlockType type, final String head,
-			final String anchor, final int cm, final List<Long> ancestors,
-			final String fullText) {
+			final String anchor, final String normalizedAnchor, final int cm,
+			final List<Long> ancestors, final String fullText) {
 		super(id);
 		this.type = type;
 		this.head = head;
 		this.anchor = anchor;
+		this.normalizedAnchor = normalizedAnchor;
 		this.cm = cm;
 		this.ancestors = ancestors;
 		this.fullText = fullText;
@@ -81,9 +87,10 @@ public class CRD extends AbstractElement implements Comparable<CRD> {
 	 * @param fullText
 	 */
 	public CRD(final BlockType type, final String head, final String anchor,
-			final int cm, final List<Long> ancestors, final String fullText) {
-		this(count.getAndIncrement(), type, head, anchor, cm, ancestors,
-				fullText);
+			final String normalizedAnchor, final int cm,
+			final List<Long> ancestors, final String fullText) {
+		this(count.getAndIncrement(), type, head, anchor, normalizedAnchor, cm,
+				ancestors, fullText);
 	}
 
 	/**
@@ -111,6 +118,15 @@ public class CRD extends AbstractElement implements Comparable<CRD> {
 	 */
 	public final String getAnchor() {
 		return this.anchor;
+	}
+
+	/**
+	 * get the normalized anchor
+	 * 
+	 * @return
+	 */
+	public final String getNormalizedAnchor() {
+		return this.normalizedAnchor;
 	}
 
 	/**

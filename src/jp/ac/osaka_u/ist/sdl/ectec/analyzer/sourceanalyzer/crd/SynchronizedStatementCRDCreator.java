@@ -1,5 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 
@@ -12,11 +13,11 @@ import org.eclipse.jdt.core.dom.SynchronizedStatement;
  * 
  */
 public class SynchronizedStatementCRDCreator extends
-		AbstractCRDCreator<SynchronizedStatement> {
+		AbstractBlockAnalyzer<SynchronizedStatement> {
 
 	public SynchronizedStatementCRDCreator(SynchronizedStatement node,
-			CRD parent) {
-		super(node, parent, BlockType.SYNCHRONIZED);
+			CRD parent, IHashCalculator visitor) {
+		super(node, parent, BlockType.SYNCHRONIZED, visitor);
 	}
 
 	/**

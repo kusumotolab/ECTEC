@@ -2,7 +2,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer;
 
 import jp.ac.osaka_u.ist.sdl.ectec.settings.AnalyzeGranularity;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.CRDSimilarityCalculateMode;
-import jp.ac.osaka_u.ist.sdl.ectec.settings.CloneHashCalculateMode;
+import jp.ac.osaka_u.ist.sdl.ectec.settings.StringNormalizeMode;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.CodeFragmentLinkMode;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrintLevel;
@@ -90,7 +90,7 @@ final class AnalyzerSettings {
 	/**
 	 * the mode to calculate hash values for clone detection
 	 */
-	private final CloneHashCalculateMode cloneHashMode;
+	private final StringNormalizeMode cloneHashMode;
 
 	/**
 	 * the mode to calculate crd similarities
@@ -125,7 +125,7 @@ final class AnalyzerSettings {
 			final MessagePrintLevel verboseLevel,
 			final VersionControlSystem versionControlSystem,
 			final boolean overwriteDb, final int maxBatchCount,
-			final CloneHashCalculateMode cloneHashMode,
+			final StringNormalizeMode cloneHashMode,
 			final CRDSimilarityCalculateMode crdSimilarityMode,
 			final CodeFragmentLinkMode fragmentLinkMode,
 			final double similarityThreshold,
@@ -212,7 +212,7 @@ final class AnalyzerSettings {
 		return propertiesFilePath;
 	}
 
-	final CloneHashCalculateMode getCloneHashCalculateMode() {
+	final StringNormalizeMode getCloneHashCalculateMode() {
 		return cloneHashMode;
 	}
 
@@ -294,7 +294,7 @@ final class AnalyzerSettings {
 		final int maxBatchCount = (cmd.hasOption("mb")) ? Integer.parseInt(cmd
 				.getOptionValue("mb")) : defaultLoader.getMaxBatchCount();
 
-		final CloneHashCalculateMode cloneHashMode = (cmd.hasOption("ch")) ? CloneHashCalculateMode
+		final StringNormalizeMode cloneHashMode = (cmd.hasOption("ch")) ? StringNormalizeMode
 				.getCorrespondingMode(cmd.getOptionValue("ch")) : defaultLoader
 				.getCloneHashCalculateMode();
 

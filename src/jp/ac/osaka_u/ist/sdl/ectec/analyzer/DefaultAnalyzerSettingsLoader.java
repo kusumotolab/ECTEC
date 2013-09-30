@@ -6,7 +6,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.PropertiesKeys;
 import jp.ac.osaka_u.ist.sdl.ectec.PropertiesReader;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.AnalyzeGranularity;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.CRDSimilarityCalculateMode;
-import jp.ac.osaka_u.ist.sdl.ectec.settings.CloneHashCalculateMode;
+import jp.ac.osaka_u.ist.sdl.ectec.settings.StringNormalizeMode;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.CodeFragmentLinkMode;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrintLevel;
@@ -79,7 +79,7 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 	/**
 	 * the mode to calculate hash values for clone detection
 	 */
-	private final CloneHashCalculateMode cloneHashMode;
+	private final StringNormalizeMode cloneHashMode;
 
 	/**
 	 * the mode to calculate crd similarities
@@ -108,7 +108,7 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 			final MessagePrintLevel verboseLevel,
 			final VersionControlSystem versionControlSystem,
 			final boolean overwriteDb, final int maxBatchCount,
-			final CloneHashCalculateMode cloneHashMode,
+			final StringNormalizeMode cloneHashMode,
 			final CRDSimilarityCalculateMode crdSimilarityMode,
 			final CodeFragmentLinkMode fragmentLinkMode,
 			final double similarityThreshold,
@@ -179,7 +179,7 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 		return maxBatchCount;
 	}
 
-	final CloneHashCalculateMode getCloneHashCalculateMode() {
+	final StringNormalizeMode getCloneHashCalculateMode() {
 		return cloneHashMode;
 	}
 
@@ -276,7 +276,7 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 
 		final int maxBatchCount = Integer.parseInt(prop.getProperty(MAX_BATCH));
 
-		final CloneHashCalculateMode cloneHashMode = CloneHashCalculateMode
+		final StringNormalizeMode cloneHashMode = StringNormalizeMode
 				.getCorrespondingMode(prop.getProperty(HASH_FOR_CLONE));
 
 		final CRDSimilarityCalculateMode crdSimilarityMode = CRDSimilarityCalculateMode

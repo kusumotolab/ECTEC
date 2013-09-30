@@ -29,6 +29,7 @@ public class CRDRetriever extends AbstractElementRetriever<CRD> {
 		final String typeStr = rs.getString(++column);
 		final String head = rs.getString(++column);
 		final String anchor = rs.getString(++column);
+		final String normalizedAnchor = rs.getString(++column);
 		final int cm = rs.getInt(++column);
 		final String ancestorsStr = rs.getString(++column);
 		final String fullText = rs.getString(++column);
@@ -37,7 +38,8 @@ public class CRDRetriever extends AbstractElementRetriever<CRD> {
 		final List<Long> ancestors = new ArrayList<Long>();
 		StringUtils.convertStringToCollection(ancestors, ancestorsStr);
 
-		return new CRD(id, type, head, anchor, cm, ancestors, fullText);
+		return new CRD(id, type, head, anchor, normalizedAnchor, cm, ancestors,
+				fullText);
 	}
 
 	@Override

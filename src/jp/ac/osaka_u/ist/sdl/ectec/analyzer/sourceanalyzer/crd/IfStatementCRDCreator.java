@@ -1,5 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 
@@ -11,10 +12,11 @@ import org.eclipse.jdt.core.dom.IfStatement;
  * @author k-hotta
  * 
  */
-public class IfStatementCRDCreator extends AbstractCRDCreator<IfStatement> {
+public class IfStatementCRDCreator extends AbstractBlockAnalyzer<IfStatement> {
 
-	public IfStatementCRDCreator(IfStatement node, CRD parent) {
-		super(node, parent, BlockType.IF);
+	public IfStatementCRDCreator(IfStatement node, CRD parent,
+			IHashCalculator visitor) {
+		super(node, parent, BlockType.IF, visitor);
 	}
 
 	/**

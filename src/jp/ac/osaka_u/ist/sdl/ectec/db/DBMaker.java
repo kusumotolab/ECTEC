@@ -48,6 +48,7 @@ public class DBMaker {
 	 */
 	public void createNewTables() throws Exception {
 		dbManager.executeUpdate(getRevisionTableQuery());
+		dbManager.executeUpdate(getCommitTableQuery());
 		dbManager.executeUpdate(getFileTableQuery());
 		dbManager.executeUpdate(getCodeFragmentTableQuery());
 		dbManager.executeUpdate(getCloneSetTableQuery());
@@ -64,6 +65,12 @@ public class DBMaker {
 	public void dropTables() {
 		try {
 			dbManager.executeUpdate("DROP TABLE REVISION");
+		} catch (Exception e) {
+			// e.printStackTrace();
+		}
+
+		try {
+			dbManager.executeUpdate("DROP TABLE COMMIT");
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
@@ -138,6 +145,25 @@ public class DBMaker {
 		builder.append("create table REVISION(");
 		builder.append("REVISION_ID LONG PRIMARY KEY,");
 		builder.append("REVISION_IDENTIFIER TEXT UNIQUE");
+		builder.append(")");
+
+		return builder.toString();
+	}
+
+	/**
+	 * get the query to create the commit table
+	 * 
+	 * @return
+	 */
+	private String getCommitTableQuery() {
+		final StringBuilder builder = new StringBuilder();
+
+		builder.append("create table VCS_COMMIT(");
+		builder.append("VCS_COMMIT_ID LONG PRIMARY KEY,");
+		builder.append("BEFORE_REVISION_ID LONG,");
+		builder.append("AFTER_REVISION_ID LONG,");
+		builder.append("BEFORE_REVISION_IDENTIFIER TEXT,");
+		builder.append("AFTER_REVISION_IDENTIFIER TEXT");
 		builder.append(")");
 
 		return builder.toString();
@@ -301,6 +327,7 @@ public class DBMaker {
 		builder.append("TYPE TEXT NOT NULL,");
 		builder.append("HEAD TEXT NOT NULL,");
 		builder.append("ANCHOR TEXT NOT NULL,");
+		builder.append("NORMALIZED_ANCHOR TEXT NOT NULL,");
 		builder.append("CM INTEGER,");
 		builder.append("ANCESTORS TEXT NOT NULL,");
 		builder.append("FULL_TEXT TEXT NOT NULL");

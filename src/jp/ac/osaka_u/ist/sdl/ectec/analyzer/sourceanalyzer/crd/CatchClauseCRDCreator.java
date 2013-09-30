@@ -1,5 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.crd;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.hash.IHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
 
@@ -11,10 +12,11 @@ import org.eclipse.jdt.core.dom.CatchClause;
  * @author k-hotta
  * 
  */
-public class CatchClauseCRDCreator extends AbstractCRDCreator<CatchClause> {
+public class CatchClauseCRDCreator extends AbstractBlockAnalyzer<CatchClause> {
 
-	public CatchClauseCRDCreator(CatchClause node, CRD parent) {
-		super(node, parent, BlockType.CATCH);
+	public CatchClauseCRDCreator(CatchClause node, CRD parent,
+			IHashCalculator visitor) {
+		super(node, parent, BlockType.CATCH, visitor);
 	}
 
 	/**
