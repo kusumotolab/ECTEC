@@ -21,7 +21,7 @@ public class NormalizerCreator {
 		case EXACT:
 			return new StringCreateVisitor();
 		case IDENTIFIER_NORMALIZED:
-			return new IdentifierNormalizedBlockVisitor();
+			return new NormalizedStringCreator();
 		case SUBBLOCK_NORMALIZED:
 			return new SubblockNormalizedBlockVisitor();
 		default:

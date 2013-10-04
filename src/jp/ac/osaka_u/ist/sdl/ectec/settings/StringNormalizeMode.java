@@ -1,6 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.settings;
 
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.normalizer.IdentifierNormalizedBlockVisitor;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.normalizer.NormalizedStringCreator;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.normalizer.StringCreateVisitor;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.normalizer.SubblockNormalizedBlockVisitor;
 
@@ -23,7 +23,7 @@ public enum StringNormalizeMode {
 	 * calculate hash values with identifiers are normalized
 	 */
 	IDENTIFIER_NORMALIZED(new String[] { "d", "default", "w", "weak" },
-			new IdentifierNormalizedBlockVisitor()),
+			new NormalizedStringCreator()),
 
 	/**
 	 * calculate hash values with identifiers and sub-blocks are normalized
