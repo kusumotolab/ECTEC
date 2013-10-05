@@ -73,7 +73,7 @@ public class ChangedFilesDetectingThread implements Runnable {
 			MessagePrinter.println("\t[" + (currentIndex + 1) + "/"
 					+ commits.length + "] analyzing commit from revision "
 					+ targetCommit.getBeforeRevisionIdentifier()
-					+ " to revision" + targetRevisionIdentifier);
+					+ " to revision " + targetRevisionIdentifier);
 
 			try {
 				// detect changed files in this revision
