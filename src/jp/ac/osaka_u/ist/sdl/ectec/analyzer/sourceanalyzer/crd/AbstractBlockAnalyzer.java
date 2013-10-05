@@ -94,7 +94,7 @@ public abstract class AbstractBlockAnalyzer<T extends ASTNode> {
 
 		createdCrd = new CRD(bType, head, anchor, normalizedAnchor, cm,
 				ancestorIds, fullText);
-		stringForCloneDetection = visitor.toString();
+		stringForCloneDetection = visitor.getString();
 	}
 
 	/**
