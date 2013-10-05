@@ -1,8 +1,5 @@
 package jp.ac.osaka_u.ist.sdl.ectec.settings;
 
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.normalizer.NormalizedStringCreator;
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.normalizer.StringCreateVisitor;
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.normalizer.SubblockNormalizedBlockVisitor;
 
 /**
  * An enum that represents how to calculate hash values from blocks for clone
@@ -17,38 +14,25 @@ public enum StringNormalizeMode {
 	 * calculate hash values without any normalizations <br>
 	 * (except for white spaces, tabs, and new line characters)
 	 */
-	EXACT(new String[] { "e", "exact" }, new StringCreateVisitor()),
+	EXACT(new String[] { "e", "exact" }),
 
 	/**
 	 * calculate hash values with identifiers are normalized
 	 */
-	IDENTIFIER_NORMALIZED(new String[] { "d", "default", "w", "weak" },
-			new NormalizedStringCreator()),
+	IDENTIFIER_NORMALIZED(new String[] { "d", "default", "w", "weak" }),
 
 	/**
 	 * calculate hash values with identifiers and sub-blocks are normalized
 	 */
-	SUBBLOCK_NORMALIZED(new String[] { "s", "strong", "strict", "subtree" },
-			new SubblockNormalizedBlockVisitor());
+	SUBBLOCK_NORMALIZED(new String[] { "s", "strong", "strict", "subtree", "subblock" });
 
 	/**
 	 * an array of strings which are used to choose this mode
 	 */
 	private final String[] correspondingStrs;
 
-	/**
-	 * the string creator
-	 */
-	private final StringCreateVisitor creator;
-
-	private StringNormalizeMode(final String[] correspondingStrs,
-			final StringCreateVisitor creator) {
+	private StringNormalizeMode(final String[] correspondingStrs) {
 		this.correspondingStrs = correspondingStrs;
-		this.creator = creator;
-	}
-
-	public final StringCreateVisitor getCreator() {
-		return creator;
 	}
 
 	public final boolean correspond(final String str) {
