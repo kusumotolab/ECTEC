@@ -1,6 +1,7 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -189,8 +190,8 @@ public class CodeFragmentIdentifier {
 			}
 
 			if (detectedFragments.size() >= maxElementsCount) {
-				final Collection<CodeFragmentInfo> currentElements = detectedFragments
-						.values();
+				final Collection<CodeFragmentInfo> currentElements = new HashSet<CodeFragmentInfo>();
+				currentElements.addAll(detectedFragments.values());
 				fragmentRegisterer.register(currentElements);
 				MessagePrinter.println("\t" + currentElements.size()
 						+ " fragments have been registered into db");
