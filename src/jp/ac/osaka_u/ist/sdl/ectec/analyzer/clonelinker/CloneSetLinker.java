@@ -43,12 +43,14 @@ public class CloneSetLinker {
 			for (final CloneSetInfo afterClone : afterClones) {
 				final List<Long> relatedLinks = getRelatedFragmentLinks(
 						beforeClone, afterClone, fragmentLinksCopy);
+				final List<Long> unchangedFragmentIds = getUnchangedFragmentIds(
+						beforeClone, afterClone);
 
-				if (!relatedLinks.isEmpty()) {
+				if (!relatedLinks.isEmpty() || !unchangedFragmentIds.isEmpty()) {
 					final CloneSetLinkInfo cloneLink = createLinkInstance(
 							beforeRevisionId, afterRevisionId,
 							fragmentLinksCopy, beforeClone, afterClone,
-							relatedLinks);
+							relatedLinks, unchangedFragmentIds);
 
 					result.put(cloneLink.getId(), cloneLink);
 				}
@@ -91,6 +93,32 @@ public class CloneSetLinker {
 	}
 
 	/**
+	 * get the list of ids of elements that are included both in the before and
+	 * after clones
+	 * 
+	 * @param beforeClone
+	 * @param afterClone
+	 * @return
+	 */
+	private List<Long> getUnchangedFragmentIds(final CloneSetInfo beforeClone,
+			final CloneSetInfo afterClone) {
+		final List<Long> beforeFragments = beforeClone.getElements();
+		final List<Long> afterFragments = afterClone.getElements();
+
+		final List<Long> result = new ArrayList<Long>();
+
+		for (final long beforeFragment : beforeFragments) {
+			for (final long afterFragment : afterFragments) {
+				if (beforeFragment == afterFragment) {
+					result.add(beforeFragment);
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
 	 * create an instance of clone set link
 	 * 
 	 * @param beforeRevisionId
@@ -105,7 +133,7 @@ public class CloneSetLinker {
 			final long afterRevisionId,
 			final Map<Long, CodeFragmentLinkInfo> fragmentLinksCopy,
 			final CloneSetInfo beforeClone, final CloneSetInfo afterClone,
-			final List<Long> relatedLinks) {
+			final List<Long> relatedLinks, final List<Long> unchangedFragments) {
 		int numberOfChangedElements = 0;
 		int numberOfCoChangedElements = 0;
 
@@ -118,9 +146,9 @@ public class CloneSetLinker {
 		}
 
 		final int numberOfAddedElements = afterClone.getElements().size()
-				- relatedLinks.size();
+				- relatedLinks.size() - unchangedFragments.size();
 		final int numberOfDeletedElements = beforeClone.getElements().size()
-				- relatedLinks.size();
+				- relatedLinks.size() - unchangedFragments.size();
 
 		final CloneSetLinkInfo cloneLink = new CloneSetLinkInfo(
 				beforeClone.getId(), afterClone.getId(), beforeRevisionId,
