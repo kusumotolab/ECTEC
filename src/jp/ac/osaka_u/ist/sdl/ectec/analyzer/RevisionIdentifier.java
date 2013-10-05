@@ -47,10 +47,9 @@ public class RevisionIdentifier {
 	 * @param language
 	 * @param startRevisionIdentifier
 	 * @param endRevisionIdentifier
-	 * @return
 	 * @throws Exception
 	 */
-	public Map<Long, Commit> detectAndRegister(final Language language,
+	public void detectAndRegister(final Language language,
 			final String startRevisionIdentifier,
 			final String endRevisionIdentifier) throws Exception {
 		detector.detect(language, startRevisionIdentifier,
@@ -66,15 +65,13 @@ public class RevisionIdentifier {
 		MessagePrinter.stronglyPrintln("registering target revisions ... ");
 		revisionRegisterer.register(targetRevisions.values());
 		MessagePrinter.stronglyPrintln("\tOK");
-		
+
 		MessagePrinter.stronglyPrintln();
 
 		final Map<Long, Commit> commits = detector.getCommits();
-		
+
 		MessagePrinter.stronglyPrintln("registering target commits ... ");
 		commitRegisterer.register(commits.values());
 		MessagePrinter.stronglyPrintln("\tOK");
-
-		return commits;
 	}
 }

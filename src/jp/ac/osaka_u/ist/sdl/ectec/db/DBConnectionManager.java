@@ -163,7 +163,7 @@ public final class DBConnectionManager {
 		return revisionRetriever;
 	}
 	
-	public final CommitRetriever getComitRetriever() {
+	public final CommitRetriever getCommitRetriever() {
 		return commitRetriever;
 	}
 

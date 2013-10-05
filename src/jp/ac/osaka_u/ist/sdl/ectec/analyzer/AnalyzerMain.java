@@ -184,19 +184,18 @@ public class AnalyzerMain {
 				+ settings.getEndRevisionIdentifier());
 		MessagePrinter.stronglyPrintln();
 
-		final Map<Long, Commit> commits = detectAndRegisterTargetRevisions(settings);
+		detectAndRegisterTargetRevisions(settings);
 
-		final Map<Long, FileInfo> files = detectAndRegisterFiles(settings,
-				commits);
+		detectAndRegisterFiles(settings);
 
-		detectAndRegisterFragments(settings, files.values());
+		detectAndRegisterFragments(settings);
 
-		detectAndRegisterFragmentLinks(settings, commits);
+		detectAndRegisterFragmentLinks(settings);
 
 		detectAndRegisterFragmentGenealogies(settings);
 	}
 
-	private static Map<Long, Commit> detectAndRegisterTargetRevisions(
+	private static void detectAndRegisterTargetRevisions(
 			final AnalyzerSettings settings) throws Exception {
 		MessagePrinter.stronglyPrintln("detecting target revisions ... ");
 
@@ -205,30 +204,32 @@ public class AnalyzerMain {
 						.getTargetRevisionDetector(),
 				dbManager.getRevisionRegisterer(),
 				dbManager.getCommitRegisterer());
-		final Map<Long, Commit> commits = identifier.detectAndRegister(
-				settings.getLanguage(), settings.getStartRevisionIdentifier(),
+		identifier.detectAndRegister(settings.getLanguage(),
+				settings.getStartRevisionIdentifier(),
 				settings.getEndRevisionIdentifier());
 
 		MessagePrinter.stronglyPrintln();
 
-		return commits;
 	}
 
-	private static Map<Long, FileInfo> detectAndRegisterFiles(
-			final AnalyzerSettings settings, final Map<Long, Commit> commits)
+	private static void detectAndRegisterFiles(final AnalyzerSettings settings)
 			throws Exception {
+		final Map<Long, Commit> commits = dbManager.getCommitRetriever()
+				.retrieveAll();
 		final ChangedFilesIdentifier identifier = new ChangedFilesIdentifier(
 				repositoryManagerManager.getRepositoryManager(),
 				dbManager.getFileRegisterer(), settings.getLanguage(),
 				settings.getThreads());
-		return identifier.detectAndRegister(commits);
+		identifier.detectAndRegister(commits);
 	}
 
 	private static void detectAndRegisterFragments(
-			final AnalyzerSettings settings, final Collection<FileInfo> files)
-			throws Exception {
+			final AnalyzerSettings settings) throws Exception {
 		MessagePrinter
 				.stronglyPrintln("detecting and registering code fragments and their crds ... ");
+
+		final Collection<FileInfo> files = dbManager.getFileRetriever()
+				.retrieveAll().values();
 
 		final Collection<RevisionInfo> revisions = dbManager
 				.getRevisionRetriever().retrieveAll().values();
@@ -252,10 +253,12 @@ public class AnalyzerMain {
 	}
 
 	private static void detectAndRegisterFragmentLinks(
-			final AnalyzerSettings settings, final Map<Long, Commit> commits)
-			throws Exception {
+			final AnalyzerSettings settings) throws Exception {
 		MessagePrinter
 				.stronglyPrintln("detecting and registering links of code fragments ... ");
+
+		final Map<Long, Commit> commits = dbManager.getCommitRetriever()
+				.retrieveAll();
 
 		final CodeFragmentLinkIdentifier identifier = new CodeFragmentLinkIdentifier(
 				commits, settings.getThreads(),
