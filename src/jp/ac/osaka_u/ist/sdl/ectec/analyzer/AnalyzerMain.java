@@ -3,6 +3,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer;
 import java.util.Collection;
 import java.util.Map;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.clonedetector.BlockBasedCloneIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.filedetector.ChangedFilesIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.genealogydetector.FragmentGenealogyIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.linker.CodeFragmentLinkIdentifier;
@@ -193,6 +194,8 @@ public class AnalyzerMain {
 		detectAndRegisterFragmentLinks(settings);
 
 		detectAndRegisterFragmentGenealogies(settings);
+
+		detectAndRegisterClones(settings);
 	}
 
 	private static void detectAndRegisterTargetRevisions(
@@ -287,6 +290,23 @@ public class AnalyzerMain {
 				dbManager.getFragmentLinkRetriever(),
 				dbManager.getFragmentGenealogyRegisterer());
 		identifier.detectAndRegister();
+
+		MessagePrinter.stronglyPrintln();
+	}
+
+	private static void detectAndRegisterClones(final AnalyzerSettings settings)
+			throws Exception {
+		MessagePrinter
+				.stronglyPrintln("detecting and registering clone sets ... ");
+
+		final Map<Long, RevisionInfo> targetRevisions = dbManager
+				.getRevisionRetriever().retrieveAll();
+
+		final BlockBasedCloneIdentifier identifier = new BlockBasedCloneIdentifier(
+				targetRevisions, settings.getThreads(),
+				dbManager.getFragmentRetriever(),
+				dbManager.getCloneRegisterer(), Constants.MAX_ELEMENTS_COUNT);
+		identifier.run();
 
 		MessagePrinter.stronglyPrintln();
 	}

@@ -59,7 +59,7 @@ public class BlockBasedCloneDetectingThreadMonitor {
 					numberOfClones += currentClones.size();
 
 					for (final CloneSetInfo clone : currentClones) {
-						detectedClones.remove(clone);
+						detectedClones.remove(clone.getId());
 					}
 				}
 

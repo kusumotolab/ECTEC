@@ -84,11 +84,11 @@ public class SingleThreadBlockBasedCloneDetector {
 				numberOfClones += currentClones.size();
 
 				for (final CloneSetInfo clone : currentClones) {
-					detectedClones.remove(clone);
+					detectedClones.remove(clone.getId());
 				}
 			}
 		}
-		
+
 		MessagePrinter.println();
 
 		MessagePrinter.println("\tall threads have finished their work");

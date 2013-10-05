@@ -66,7 +66,7 @@ public class ChangedFilesIdentifier {
 	 * @param targetRevisions
 	 * @throws SQLException
 	 */
-	public Map<Long, FileInfo> detectAndRegister(final Map<Long, Commit> commits)
+	public void detectAndRegister(final Map<Long, Commit> commits)
 			throws SQLException {
 		final SortedSet<Long> revisionsAsSet = new TreeSet<Long>();
 		for (final Map.Entry<Long, Commit> entry : commits.entrySet()) {
@@ -88,8 +88,6 @@ public class ChangedFilesIdentifier {
 		registerer.register(fileInstances.values());
 		MessagePrinter.stronglyPrintln("\tOK");
 		MessagePrinter.stronglyPrintln();
-
-		return fileInstances;
 	}
 
 	/**
