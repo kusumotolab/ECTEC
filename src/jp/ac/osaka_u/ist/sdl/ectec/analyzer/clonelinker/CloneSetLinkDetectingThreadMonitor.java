@@ -60,13 +60,13 @@ public class CloneSetLinkDetectingThreadMonitor {
 			final ConcurrentMap<Long, CloneSetLinkInfo> detectedCloneLinks,
 			final CloneSetLinkRegisterer cloneLinkRegisterer,
 			final ConcurrentMap<Long, Map<Long, CloneSetInfo>> cloneSets,
-			final ConcurrentMap<Long, Commit> processsedCommits,
+			final ConcurrentMap<Long, Commit> processedCommits,
 			final Map<Long, Collection<Long>> revisionAndRelatedCommits,
 			final int maxElementsCount) {
 		this.detectedCloneLinks = detectedCloneLinks;
 		this.cloneLinkRegisterer = cloneLinkRegisterer;
 		this.cloneSets = cloneSets;
-		this.processedCommits = processsedCommits;
+		this.processedCommits = processedCommits;
 		this.revisionAndRelatedCommits = revisionAndRelatedCommits;
 		this.maxElementsCount = maxElementsCount;
 	}
