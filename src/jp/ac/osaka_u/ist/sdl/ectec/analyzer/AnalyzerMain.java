@@ -2,10 +2,12 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.SortedMap;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.clonedetector.BlockBasedCloneIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.clonelinker.CloneSetLinkIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.filedetector.ChangedFilesIdentifier;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.genealogydetector.CloneGenealogyIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.genealogydetector.FragmentGenealogyIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.linker.CodeFragmentLinkIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.CodeFragmentIdentifier;
@@ -199,6 +201,8 @@ public class AnalyzerMain {
 		detectAndRegisterClones(settings);
 
 		detectAndRegisterCloneLinks(settings);
+
+		detectAndRegisterCloneGenealogies(settings);
 	}
 
 	private static void detectAndRegisterTargetRevisions(
@@ -329,6 +333,25 @@ public class AnalyzerMain {
 				dbManager.getCloneLinkRegisterer(),
 				Constants.MAX_ELEMENTS_COUNT);
 		identifier.run();
+
+		MessagePrinter.stronglyPrintln();
+	}
+
+	private static void detectAndRegisterCloneGenealogies(
+			final AnalyzerSettings settings) throws Exception {
+		MessagePrinter
+				.stronglyPrintln("detecting and registering genealogies of clones ... ");
+
+		final SortedMap<Long, RevisionInfo> targetRevisions = dbManager
+				.getRevisionRetriever().retrieveAll();
+		final long lastRevisionId = targetRevisions.lastKey();
+
+		final CloneGenealogyIdentifier identifier = new CloneGenealogyIdentifier(
+				targetRevisions, settings.getThreads(),
+				dbManager.getCloneRetriever(),
+				dbManager.getCloneLinkRetriever(),
+				dbManager.getCloneGenealogyRegisterer(), lastRevisionId);
+		identifier.detectAndRegister();
 
 		MessagePrinter.stronglyPrintln();
 	}
