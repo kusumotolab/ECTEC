@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.clonedetector.BlockBasedCloneIdentifier;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.clonelinker.CloneSetLinkIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.filedetector.ChangedFilesIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.genealogydetector.FragmentGenealogyIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.linker.CodeFragmentLinkIdentifier;
@@ -196,6 +197,8 @@ public class AnalyzerMain {
 		detectAndRegisterFragmentGenealogies(settings);
 
 		detectAndRegisterClones(settings);
+
+		detectAndRegisterCloneLinks(settings);
 	}
 
 	private static void detectAndRegisterTargetRevisions(
@@ -306,6 +309,25 @@ public class AnalyzerMain {
 				targetRevisions, settings.getThreads(),
 				dbManager.getFragmentRetriever(),
 				dbManager.getCloneRegisterer(), Constants.MAX_ELEMENTS_COUNT);
+		identifier.run();
+
+		MessagePrinter.stronglyPrintln();
+	}
+
+	private static void detectAndRegisterCloneLinks(
+			final AnalyzerSettings settings) throws Exception {
+		MessagePrinter
+				.stronglyPrintln("detecting and registering links of clone sets ... ");
+
+		final Map<Long, Commit> commits = dbManager.getCommitRetriever()
+				.retrieveAll();
+
+		final CloneSetLinkIdentifier identifier = new CloneSetLinkIdentifier(
+				commits, settings.getThreads(),
+				dbManager.getFragmentLinkRetriever(),
+				dbManager.getCloneRetriever(),
+				dbManager.getCloneLinkRegisterer(),
+				Constants.MAX_ELEMENTS_COUNT);
 		identifier.run();
 
 		MessagePrinter.stronglyPrintln();
