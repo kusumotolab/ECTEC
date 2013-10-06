@@ -184,6 +184,8 @@ public class AnalyzerMain {
 	 * @throws Exception
 	 */
 	private static void main(final AnalyzerSettings settings) throws Exception {
+		final long start = System.nanoTime();
+
 		MessagePrinter.stronglyPrintln("start main operations");
 		MessagePrinter.stronglyPrintln("\tfrom revision "
 				+ settings.getStartRevisionIdentifier());
@@ -193,19 +195,66 @@ public class AnalyzerMain {
 
 		detectAndRegisterTargetRevisions(settings);
 
+		final long l1 = System.nanoTime();
+
 		detectAndRegisterFiles(settings);
+
+		final long l2 = System.nanoTime();
 
 		detectAndRegisterFragments(settings);
 
+		final long l3 = System.nanoTime();
+
 		detectAndRegisterFragmentLinks(settings);
+
+		final long l4 = System.nanoTime();
 
 		detectAndRegisterFragmentGenealogies(settings);
 
+		final long l5 = System.nanoTime();
+
 		detectAndRegisterClones(settings);
+
+		final long l6 = System.nanoTime();
 
 		detectAndRegisterCloneLinks(settings);
 
+		final long l7 = System.nanoTime();
+
 		detectAndRegisterCloneGenealogies(settings);
+
+		final long end = System.nanoTime();
+
+		final long detectingRevisions = (l1 - start) / 1000000;
+		final long detectingFiles = (l2 - l1) / 1000000;
+		final long detectingFragments = (l3 - l2) / 1000000;
+		final long detectingFragmentLinks = (l4 - l3) / 1000000;
+		final long detectingFragmentGenealogies = (l5 - l4) / 1000000;
+		final long detectingClones = (l6 - l5) / 1000000;
+		final long detectingCloneLinks = (l7 - l6) / 1000000;
+		final long detectingCloneGenealogies = (end - l7) / 1000000;
+		final long total = (end - start) / 1000000000;
+
+		MessagePrinter
+				.stronglyPrintln("all the main processes have been finished");
+		MessagePrinter.stronglyPrintln("\tthe elapsed time");
+		MessagePrinter.stronglyPrintln("\t\tdetecting revisions : "
+				+ detectingRevisions + " [ms]");
+		MessagePrinter.stronglyPrintln("\t\tdetecting files : "
+				+ detectingFiles + " [ms]");
+		MessagePrinter.stronglyPrintln("\t\tdetecting fragments : "
+				+ detectingFragments + " [ms]");
+		MessagePrinter.stronglyPrintln("\t\tdetecting fragment links : "
+				+ detectingFragmentLinks + " [ms]");
+		MessagePrinter.stronglyPrintln("\t\tdetecting fragment genealogies : "
+				+ detectingFragmentGenealogies + " [ms]");
+		MessagePrinter.stronglyPrintln("\t\tdetecting clones : "
+				+ detectingClones + " [ms]");
+		MessagePrinter.stronglyPrintln("\t\tdetecting clone links : "
+				+ detectingCloneLinks + " [ms]");
+		MessagePrinter.stronglyPrintln("\t\tdetecting clone genealogies : "
+				+ detectingCloneGenealogies + " [ms]");
+		MessagePrinter.stronglyPrintln("\t\tTOTAL : " + total + " [s]");
 	}
 
 	private static void detectAndRegisterTargetRevisions(
