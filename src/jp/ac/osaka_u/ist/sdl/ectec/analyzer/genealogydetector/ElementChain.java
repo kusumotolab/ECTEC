@@ -70,7 +70,7 @@ public class ElementChain<L extends ElementLinkInfo> {
 		return revisions.last();
 	}
 
-	public void invite(final L anotherLink) {
+	public synchronized void invite(final L anotherLink) {
 		synchronized (revisions) {
 			this.revisions.add(anotherLink.getBeforeRevisionId());
 			this.revisions.add(anotherLink.getAfterRevisionId());
@@ -85,8 +85,7 @@ public class ElementChain<L extends ElementLinkInfo> {
 	}
 
 	public boolean isFriend(final L targetLink) {
-		if (this.elements.contains(targetLink.getBeforeElementId())
-				|| this.elements.contains(targetLink.getAfterElementId())) {
+		if (this.elements.contains(targetLink.getBeforeElementId())) {
 			return true;
 		} else {
 			return false;

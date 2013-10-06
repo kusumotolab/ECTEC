@@ -27,7 +27,7 @@ public abstract class LinkElementRetriever<T extends ElementLinkInfo> extends
 	 * @return
 	 * @throws SQLException
 	 */
-	public SortedMap<Long, T> retrieveElementsWithBeforeRevision(
+	public synchronized SortedMap<Long, T> retrieveElementsWithBeforeRevision(
 			final long beforeRevisionId) throws SQLException {
 		final String query = "select * from " + getTableName() + " where "
 				+ getBeforeRevisionIdColumnName() + " = " + beforeRevisionId;
@@ -42,7 +42,7 @@ public abstract class LinkElementRetriever<T extends ElementLinkInfo> extends
 	 * @return
 	 * @throws SQLException
 	 */
-	public SortedMap<Long, T> retrieveElementsWithAfterRevision(
+	public synchronized SortedMap<Long, T> retrieveElementsWithAfterRevision(
 			final long afterRevisionId) throws SQLException {
 		final String query = "select * from " + getTableName() + " where "
 				+ getAfterRevisionIdColumnName() + " = " + afterRevisionId;

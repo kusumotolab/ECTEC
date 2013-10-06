@@ -74,12 +74,15 @@ public class ElementChainDetector<L extends ElementLinkInfo> {
 			}
 
 			final Long[] keyArray = beforeLinks.keySet().toArray(new Long[0]);
+			final Set<ElementChain<L>> alreadyProcessedChains = new HashSet<ElementChain<L>>();
+			alreadyProcessedChains.addAll(detectedChains.values());
 			final AtomicInteger index = new AtomicInteger(0);
 
 			final Thread[] threads = new Thread[threadsCount];
 			for (int i = 0; i < threads.length; i++) {
 				threads[i] = new Thread(new GenealogyDetectingThread(keyArray,
-						index, detectedChains, beforeLinks));
+						index, detectedChains, beforeLinks,
+						alreadyProcessedChains));
 				threads[i].start();
 			}
 
@@ -111,14 +114,19 @@ public class ElementChainDetector<L extends ElementLinkInfo> {
 
 		private final ConcurrentMap<Long, L> links;
 
+		private final Set<ElementChain<L>> alreadyProcessedChains;
+
 		private GenealogyDetectingThread(final Long[] keyArray,
 				final AtomicInteger index,
 				final ConcurrentMap<Long, ElementChain<L>> detectedChains,
-				final ConcurrentMap<Long, L> links) {
+				final ConcurrentMap<Long, L> links,
+				final Set<ElementChain<L>> alreadyProcessedChains) {
 			this.keyArray = keyArray;
 			this.index = index;
 			this.detectedChains = detectedChains;
 			this.links = links;
+			this.alreadyProcessedChains = new HashSet<ElementChain<L>>();
+			this.alreadyProcessedChains.addAll(alreadyProcessedChains);
 		}
 
 		@Override
@@ -136,9 +144,7 @@ public class ElementChainDetector<L extends ElementLinkInfo> {
 				// true if
 				// this link has its correspondents in the detected chains
 				boolean invited = false;
-				final Set<ElementChain<L>> chains = new HashSet<ElementChain<L>>();
-				chains.addAll(detectedChains.values());
-				for (final ElementChain<L> chain : chains) {
+				for (final ElementChain<L> chain : alreadyProcessedChains) {
 					if (chain.isFriend(link)) {
 						chain.invite(link);
 						invited = true;

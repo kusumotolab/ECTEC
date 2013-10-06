@@ -138,11 +138,14 @@ public class CodeFragmentLinkDetectingThread implements Runnable {
 				currentCrds.putAll(crds.get(beforeRevisionId));
 				currentCrds.putAll(crds.get(afterRevisionId));
 
-				detectedLinks.putAll(linker.detectFragmentPairs(codeFragments
-						.get(beforeRevisionId).values(),
-						codeFragments.get(afterRevisionId).values(),
-						similarityCalculator, similarityThreshold, currentCrds,
-						beforeRevisionId, afterRevisionId));
+				final Map<Long, CodeFragmentLinkInfo> links = linker
+						.detectFragmentPairs(codeFragments
+								.get(beforeRevisionId).values(), codeFragments
+								.get(afterRevisionId).values(),
+								similarityCalculator, similarityThreshold,
+								currentCrds, beforeRevisionId, afterRevisionId);
+
+				detectedLinks.putAll(links);
 
 			} catch (Exception e) {
 				MessagePrinter

@@ -50,16 +50,18 @@ public class BlockBasedCloneDetectingThreadMonitor {
 			try {
 				Thread.sleep(Constants.MONITORING_INTERVAL);
 
-				if (detectedClones.size() >= maxElementsCount) {
-					final Set<CloneSetInfo> currentClones = new HashSet<CloneSetInfo>();
-					currentClones.addAll(detectedClones.values());
-					registerer.register(currentClones);
-					MessagePrinter.println("\t" + currentClones.size()
-							+ " clone sets have been registered into db");
-					numberOfClones += currentClones.size();
+				synchronized (detectedClones) {
+					if (detectedClones.size() >= maxElementsCount) {
+						final Set<CloneSetInfo> currentClones = new HashSet<CloneSetInfo>();
+						currentClones.addAll(detectedClones.values());
+						registerer.register(currentClones);
+						MessagePrinter.println("\t" + currentClones.size()
+								+ " clone sets have been registered into db");
+						numberOfClones += currentClones.size();
 
-					for (final CloneSetInfo clone : currentClones) {
-						detectedClones.remove(clone.getId());
+						for (final CloneSetInfo clone : currentClones) {
+							detectedClones.remove(clone.getId());
+						}
 					}
 				}
 

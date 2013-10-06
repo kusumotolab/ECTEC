@@ -44,7 +44,7 @@ public abstract class AbstractElementRegisterer<T extends AbstractElement> {
 	 * @param elements
 	 * @throws SQLException
 	 */
-	public void register(final Collection<T> elements) throws SQLException {
+	public synchronized void register(final Collection<T> elements) throws SQLException {
 		final PreparedStatement pstmt = dbManager
 				.createPreparedStatement(createPreparedStatementQueue());
 

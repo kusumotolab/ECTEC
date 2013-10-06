@@ -87,40 +87,48 @@ public class CodeFragmentLinkDetectingThreadMonitor {
 				Thread.sleep(Constants.MONITORING_INTERVAL);
 
 				// checking the number of detected links
-				if (detectedLinks.size() >= maxElementsCount) {
-					final Set<CodeFragmentLinkInfo> currentElements = new HashSet<CodeFragmentLinkInfo>();
-					currentElements.addAll(detectedLinks.values());
-					fragmentLinkRegisterer.register(currentElements);
-					MessagePrinter
-							.println("\t"
-									+ currentElements.size()
-									+ " links of fragments have been registered into db");
-					numberOfLinks += currentElements.size();
+				synchronized (detectedLinks) {
+					if (detectedLinks.size() >= maxElementsCount) {
+						final Set<CodeFragmentLinkInfo> currentElements = new HashSet<CodeFragmentLinkInfo>();
+						currentElements.addAll(detectedLinks.values());
+						fragmentLinkRegisterer.register(currentElements);
+						MessagePrinter
+								.println("\t"
+										+ currentElements.size()
+										+ " links of fragments have been registered into db");
+						numberOfLinks += currentElements.size();
 
-					for (final CodeFragmentLinkInfo link : currentElements) {
-						detectedLinks.remove(link.getId());
+						for (final CodeFragmentLinkInfo link : currentElements) {
+							detectedLinks.remove(link.getId());
+						}
 					}
 				}
 
 				// remove fragments if they are no longer needed
-				final Collection<Long> fragmentRevisionIds = new TreeSet<Long>();
-				fragmentRevisionIds.addAll(codeFragments.keySet());
-				for (final long revisionId : fragmentRevisionIds) {
-					final Collection<Long> relatedCommits = revisionAndRelatedCommits
-							.get(revisionId);
-					if (processedCommits.keySet().containsAll(relatedCommits)) {
-						codeFragments.remove(revisionId);
+				synchronized (codeFragments) {
+					final Collection<Long> fragmentRevisionIds = new TreeSet<Long>();
+					fragmentRevisionIds.addAll(codeFragments.keySet());
+					for (final long revisionId : fragmentRevisionIds) {
+						final Collection<Long> relatedCommits = revisionAndRelatedCommits
+								.get(revisionId);
+						if (processedCommits.keySet().containsAll(
+								relatedCommits)) {
+							codeFragments.remove(revisionId);
+						}
 					}
 				}
 
 				// remove crds if they are no longer needed
-				final Collection<Long> crdRevisionIds = new TreeSet<Long>();
-				fragmentRevisionIds.addAll(crds.keySet());
-				for (final long revisionId : crdRevisionIds) {
-					final Collection<Long> relatedCommits = revisionAndRelatedCommits
-							.get(revisionId);
-					if (processedCommits.keySet().containsAll(relatedCommits)) {
-						crds.remove(revisionId);
+				synchronized (crds) {
+					final Collection<Long> crdRevisionIds = new TreeSet<Long>();
+					crdRevisionIds.addAll(crds.keySet());
+					for (final long revisionId : crdRevisionIds) {
+						final Collection<Long> relatedCommits = revisionAndRelatedCommits
+								.get(revisionId);
+						if (processedCommits.keySet().containsAll(
+								relatedCommits)) {
+							crds.remove(revisionId);
+						}
 					}
 				}
 

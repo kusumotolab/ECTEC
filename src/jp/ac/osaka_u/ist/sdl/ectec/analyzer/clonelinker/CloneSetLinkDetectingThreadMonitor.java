@@ -79,29 +79,34 @@ public class CloneSetLinkDetectingThreadMonitor {
 				Thread.sleep(Constants.MONITORING_INTERVAL);
 
 				// checking the number of detected links
-				if (detectedCloneLinks.size() >= maxElementsCount) {
-					final Set<CloneSetLinkInfo> currentElements = new HashSet<CloneSetLinkInfo>();
-					currentElements.addAll(detectedCloneLinks.values());
-					cloneLinkRegisterer.register(currentElements);
-					MessagePrinter
-							.println("\t"
-									+ currentElements.size()
-									+ " links of fragments have been registered into db");
-					numberOfLinks += currentElements.size();
+				synchronized (detectedCloneLinks) {
+					if (detectedCloneLinks.size() >= maxElementsCount) {
+						final Set<CloneSetLinkInfo> currentElements = new HashSet<CloneSetLinkInfo>();
+						currentElements.addAll(detectedCloneLinks.values());
+						cloneLinkRegisterer.register(currentElements);
+						MessagePrinter
+								.println("\t"
+										+ currentElements.size()
+										+ " links of fragments have been registered into db");
+						numberOfLinks += currentElements.size();
 
-					for (final CloneSetLinkInfo link : currentElements) {
-						detectedCloneLinks.remove(link.getId());
+						for (final CloneSetLinkInfo link : currentElements) {
+							detectedCloneLinks.remove(link.getId());
+						}
 					}
 				}
 
 				// remove clones if they are no longer needed
-				final Collection<Long> cloneRevisionIds = new TreeSet<Long>();
-				cloneRevisionIds.addAll(cloneSets.keySet());
-				for (final long revisionId : cloneRevisionIds) {
-					final Collection<Long> relatedCommits = revisionAndRelatedCommits
-							.get(revisionId);
-					if (processedCommits.keySet().containsAll(relatedCommits)) {
-						cloneSets.remove(revisionId);
+				synchronized (cloneSets) {
+					final Collection<Long> cloneRevisionIds = new TreeSet<Long>();
+					cloneRevisionIds.addAll(cloneSets.keySet());
+					for (final long revisionId : cloneRevisionIds) {
+						final Collection<Long> relatedCommits = revisionAndRelatedCommits
+								.get(revisionId);
+						if (processedCommits.keySet().containsAll(
+								relatedCommits)) {
+							cloneSets.remove(revisionId);
+						}
 					}
 				}
 

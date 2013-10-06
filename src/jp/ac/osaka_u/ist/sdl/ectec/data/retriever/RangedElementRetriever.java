@@ -27,7 +27,7 @@ public abstract class RangedElementRetriever<T extends AbstractElement> extends
 	 * @return
 	 * @throws SQLException
 	 */
-	public SortedMap<Long, T> retrieveElementsInSpecifiedRevision(
+	public synchronized SortedMap<Long, T> retrieveElementsInSpecifiedRevision(
 			final long revisionId) throws SQLException {
 		final String query = "select * from " + getTableName() + " where "
 				+ getStartRevisionIdColumnName() + " <= " + revisionId

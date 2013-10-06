@@ -38,7 +38,7 @@ public abstract class AbstractElementRetriever<T extends AbstractElement> {
 	 * @return
 	 * @throws SQLException
 	 */
-	public SortedMap<Long, T> retrieve(final String query) throws SQLException {
+	public synchronized SortedMap<Long, T> retrieve(final String query) throws SQLException {
 		final SortedMap<Long, T> result = new TreeMap<Long, T>();
 
 		final Statement stmt = dbManager.createStatement();
@@ -61,7 +61,7 @@ public abstract class AbstractElementRetriever<T extends AbstractElement> {
 	 * @return
 	 * @throws SQLException
 	 */
-	public SortedMap<Long, T> retrieveAll() throws SQLException {
+	public synchronized SortedMap<Long, T> retrieveAll() throws SQLException {
 		final String query = "select * from " + getTableName();
 		return retrieve(query);
 	}
@@ -73,7 +73,7 @@ public abstract class AbstractElementRetriever<T extends AbstractElement> {
 	 * @return
 	 * @throws SQLException
 	 */
-	public SortedMap<Long, T> retrieveWithIds(final Collection<Long> ids)
+	public synchronized SortedMap<Long, T> retrieveWithIds(final Collection<Long> ids)
 			throws SQLException {
 		if (ids.isEmpty()) {
 			return new TreeMap<Long, T>();
@@ -99,7 +99,7 @@ public abstract class AbstractElementRetriever<T extends AbstractElement> {
 	 * @return
 	 * @throws SQLException
 	 */
-	public SortedMap<Long, T> retrieveWithIds(long... ids) throws SQLException {
+	public synchronized SortedMap<Long, T> retrieveWithIds(long... ids) throws SQLException {
 		final Set<Long> idSet = new HashSet<Long>();
 		for (final long id : ids) {
 			idSet.add(id);
@@ -115,7 +115,7 @@ public abstract class AbstractElementRetriever<T extends AbstractElement> {
 	 * @return
 	 * @throws SQLException
 	 */
-	public SortedMap<Long, T> retrieveWithoutIds(final Collection<Long> ids)
+	public synchronized SortedMap<Long, T> retrieveWithoutIds(final Collection<Long> ids)
 			throws SQLException {
 		if (ids.isEmpty()) {
 			return new TreeMap<Long, T>();
@@ -141,7 +141,7 @@ public abstract class AbstractElementRetriever<T extends AbstractElement> {
 	 * @return
 	 * @throws SQLException
 	 */
-	public SortedMap<Long, T> retrieveWithoutIds(long... ids)
+	public synchronized SortedMap<Long, T> retrieveWithoutIds(long... ids)
 			throws SQLException {
 		final Set<Long> idSet = new HashSet<Long>();
 		for (final long id : ids) {

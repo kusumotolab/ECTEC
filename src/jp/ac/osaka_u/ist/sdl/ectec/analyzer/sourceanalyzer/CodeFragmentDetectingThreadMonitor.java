@@ -1,6 +1,5 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer;
 
-import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentMap;
@@ -65,32 +64,37 @@ public class CodeFragmentDetectingThreadMonitor {
 		long numberOfFragments = 0;
 
 		while (true) {
+
 			try {
 				Thread.sleep(Constants.MONITORING_INTERVAL);
 
 				if (detectedCrds.size() >= maxElementsCount) {
-					final Set<CRD> currentElements = new TreeSet<CRD>();
-					currentElements.addAll(detectedCrds.values());
-					crdRegisterer.register(currentElements);
-					MessagePrinter.println("\t" + currentElements.size()
-							+ " CRDs have been registered into db");
-					numberOfCrds += currentElements.size();
+					synchronized (detectedCrds) {
+						final Set<CRD> currentElements = new TreeSet<CRD>();
+						currentElements.addAll(detectedCrds.values());
+						crdRegisterer.register(currentElements);
+						MessagePrinter.println("\t" + currentElements.size()
+								+ " CRDs have been registered into db");
+						numberOfCrds += currentElements.size();
 
-					for (final CRD crd : currentElements) {
-						detectedCrds.remove(crd.getId());
+						for (final CRD crd : currentElements) {
+							detectedCrds.remove(crd.getId());
+						}
 					}
 				}
 
 				if (detectedFragments.size() >= maxElementsCount) {
-					final Collection<CodeFragmentInfo> currentElements = detectedFragments
-							.values();
-					fragmentRegisterer.register(currentElements);
-					MessagePrinter.println("\t" + currentElements.size()
-							+ " fragments have been registered into db");
-					numberOfFragments += currentElements.size();
+					synchronized (detectedFragments) {
+						final Set<CodeFragmentInfo> currentElements = new TreeSet<CodeFragmentInfo>();
+						currentElements.addAll(detectedFragments.values());
+						fragmentRegisterer.register(currentElements);
+						MessagePrinter.println("\t" + currentElements.size()
+								+ " fragments have been registered into db");
+						numberOfFragments += currentElements.size();
 
-					for (final CodeFragmentInfo fragment : currentElements) {
-						detectedFragments.remove(fragment.getId());
+						for (final CodeFragmentInfo fragment : currentElements) {
+							detectedFragments.remove(fragment.getId());
+						}
 					}
 				}
 
