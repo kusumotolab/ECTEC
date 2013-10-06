@@ -58,6 +58,11 @@ public class CodeFragmentInfo extends AbstractElement implements
 	private final int endLine;
 
 	/**
+	 * the size of this fragment
+	 */
+	private final int size;
+
+	/**
 	 * the constructor for elements that are retrieved from the db
 	 * 
 	 * @param id
@@ -72,7 +77,7 @@ public class CodeFragmentInfo extends AbstractElement implements
 	public CodeFragmentInfo(final long id, final long ownerFileId,
 			final long crdId, final long startRevisionId,
 			final long endRevisionId, final long hash, final long hashForClone,
-			final int startLine, final int endLine) {
+			final int startLine, final int endLine, final int size) {
 		super(id);
 		this.ownerFileId = ownerFileId;
 		this.crdId = crdId;
@@ -82,6 +87,7 @@ public class CodeFragmentInfo extends AbstractElement implements
 		this.hashForClone = hashForClone;
 		this.startLine = startLine;
 		this.endLine = endLine;
+		this.size = size;
 	}
 
 	/**
@@ -98,9 +104,9 @@ public class CodeFragmentInfo extends AbstractElement implements
 	public CodeFragmentInfo(final long ownerFileId, final long crdId,
 			final long startRevisionId, final long endRevisionId,
 			final long hash, final long hashForClone, final int startLine,
-			final int endLine) {
+			final int endLine, final int size) {
 		this(count.getAndIncrement(), ownerFileId, crdId, startRevisionId,
-				endRevisionId, hash, hashForClone, startLine, endLine);
+				endRevisionId, hash, hashForClone, startLine, endLine, size);
 	}
 
 	/**
@@ -173,6 +179,15 @@ public class CodeFragmentInfo extends AbstractElement implements
 	 */
 	public final int getEndLine() {
 		return this.endLine;
+	}
+
+	/**
+	 * get the size
+	 * 
+	 * @return
+	 */
+	public final int getSize() {
+		return this.size;
 	}
 
 	@Override

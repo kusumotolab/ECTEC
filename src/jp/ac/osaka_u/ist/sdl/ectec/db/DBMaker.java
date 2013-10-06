@@ -204,7 +204,8 @@ public class DBMaker {
 		builder.append("HASH LONG,");
 		builder.append("HASH_FOR_CLONE LONG,");
 		builder.append("START_LINE INTEGER,");
-		builder.append("END_LINE INTEGER");
+		builder.append("END_LINE INTEGER,");
+		builder.append("SIZE INTEGER");
 		builder.append(")");
 
 		return builder.toString();

@@ -197,8 +197,12 @@ public class CodeFragmentDetector extends ASTVisitor {
 		final long hash = hashCalculator.calcHashValue(node.toString());
 		final long hashForClone = hashCalculator.calcHashValue(strForClone);
 
+		final NodeCountVisitor nodeCounter = new NodeCountVisitor();
+		node.accept(nodeCounter);
+		final int size = nodeCounter.getNodeCount();
+
 		return new CodeFragmentInfo(ownerFileId, crdId, startRevisionId,
-				endRevisionId, hash, hashForClone, startLine, endLine);
+				endRevisionId, hash, hashForClone, startLine, endLine, size);
 	}
 
 	/**

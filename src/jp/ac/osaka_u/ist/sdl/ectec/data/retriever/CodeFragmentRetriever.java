@@ -31,9 +31,10 @@ public class CodeFragmentRetriever extends
 		final long hashForClone = rs.getLong(++column);
 		final int startLine = rs.getInt(++column);
 		final int endLine = rs.getInt(++column);
+		final int size = rs.getInt(++column);
 
 		return new CodeFragmentInfo(id, ownerFileId, crdId, startRevisionId,
-				endRevisionId, hash, hashForClone, startLine, endLine);
+				endRevisionId, hash, hashForClone, startLine, endLine, size);
 	}
 
 	@Override
