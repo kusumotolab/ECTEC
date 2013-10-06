@@ -30,6 +30,9 @@ public class CloneSetRetriever extends VolatileElementRetriever<CloneSetInfo> {
 		final List<Long> elements = new ArrayList<Long>();
 		StringUtils.convertStringToCollection(elements, elementsStr);
 
+		// ignoring the third column(#_ELEMENTS)
+		// because it can be calculated from elements
+
 		return new CloneSetInfo(id, revisionId, elements);
 	}
 

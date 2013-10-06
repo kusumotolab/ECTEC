@@ -221,7 +221,8 @@ public class DBMaker {
 		builder.append("create table CLONE_SET(");
 		builder.append("CLONE_SET_ID LONG PRIMARY KEY,");
 		builder.append("OWNER_REVISION_ID LONG,");
-		builder.append("ELEMENTS TEXT NOT NULL");
+		builder.append("ELEMENTS TEXT NOT NULL,");
+		builder.append("NUMBER_OF_ELEMENTS INTEGER");
 		builder.append(")");
 
 		return builder.toString();

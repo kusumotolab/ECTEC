@@ -27,7 +27,7 @@ public class CloneSetRegisterer extends AbstractElementRegisterer<CloneSetInfo> 
 
 	@Override
 	protected String createPreparedStatementQueue() {
-		return "insert into CLONE_SET values (?,?,?)";
+		return "insert into CLONE_SET values (?,?,?,?)";
 	}
 
 	@Override
@@ -38,6 +38,6 @@ public class CloneSetRegisterer extends AbstractElementRegisterer<CloneSetInfo> 
 		pstmt.setLong(++column, element.getRevisionId());
 		pstmt.setString(++column,
 				StringUtils.convertListToString(element.getElements()));
-
+		pstmt.setInt(++column, element.getNumberOfElements());
 	}
 }

@@ -29,6 +29,11 @@ public class CloneSetInfo extends AbstractElement implements
 	private final List<Long> elements;
 
 	/**
+	 * the number of elements
+	 */
+	private final int numberOfElements;
+
+	/**
 	 * the constructor for elements that are retrieved from the db
 	 * 
 	 * @param id
@@ -40,6 +45,7 @@ public class CloneSetInfo extends AbstractElement implements
 		super(id);
 		this.revisionId = revisionId;
 		this.elements = elements;
+		this.numberOfElements = elements.size();
 	}
 
 	/**
@@ -68,6 +74,15 @@ public class CloneSetInfo extends AbstractElement implements
 	 */
 	public final List<Long> getElements() {
 		return Collections.unmodifiableList(elements);
+	}
+
+	/**
+	 * get the number of elements
+	 * 
+	 * @return
+	 */
+	public final int getNumberOfElements() {
+		return this.numberOfElements;
 	}
 
 	@Override
