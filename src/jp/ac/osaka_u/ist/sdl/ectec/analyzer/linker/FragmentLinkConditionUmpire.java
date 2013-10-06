@@ -26,6 +26,14 @@ public class FragmentLinkConditionUmpire {
 
 	public final boolean satisfyAllConditions(final CRD beforeCrd,
 			final CRD afterCrd, final double similarity) {
+		final boolean crdCondition = satisfyCrdConditions(beforeCrd, afterCrd);
+		final boolean similarityCondition = (similarity >= similarityThreshold);
+
+		return crdCondition && similarityCondition;
+	}
+
+	public final boolean satisfyCrdConditions(final CRD beforeCrd,
+			final CRD afterCrd) {
 		// return false if the types of two fragments are not equal
 		if (beforeCrd.getType() != afterCrd.getType()) {
 			return false;
@@ -67,7 +75,7 @@ public class FragmentLinkConditionUmpire {
 			break;
 		}
 
-		return similarity >= similarityThreshold;
+		return true;
 	}
 
 	public final boolean satisfyConditionalBlockConditions(final CRD beforeCrd,
