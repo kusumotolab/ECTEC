@@ -146,7 +146,7 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 			final Table<Long, Long, Double> similarityTable,
 			final Map<CodeFragmentInfo, Queue<CodeFragmentInfo>> wishLists,
 			final ICRDSimilarityCalculator similarityCalculator,
-			FragmentLinkConditionUmpire umpire, final Map<Long, CRD> crds) {
+			final FragmentLinkConditionUmpire umpire, final Map<Long, CRD> crds) {
 		for (final CodeFragmentInfo beforeFragment : beforeFragments) {
 			// fill a row of similarity table
 			final Map<CodeFragmentInfo, Double> similarities = new TreeMap<CodeFragmentInfo, Double>();

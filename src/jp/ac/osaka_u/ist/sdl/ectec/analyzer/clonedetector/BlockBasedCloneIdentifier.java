@@ -43,15 +43,22 @@ public class BlockBasedCloneIdentifier {
 	 */
 	private final int maxElementsCount;
 
+	/**
+	 * the size threshold
+	 */
+	private final int cloneSizeThreshold;
+
 	public BlockBasedCloneIdentifier(final Map<Long, RevisionInfo> revisions,
 			final int threadsCount,
 			final CodeFragmentRetriever fragmentRetriever,
-			final CloneSetRegisterer cloneRegisterer, final int maxElementsCount) {
+			final CloneSetRegisterer cloneRegisterer,
+			final int maxElementsCount, final int cloneSizeThreshold) {
 		this.revisions = revisions;
 		this.threadsCount = threadsCount;
 		this.fragmentRetriever = fragmentRetriever;
 		this.cloneRegisterer = cloneRegisterer;
 		this.maxElementsCount = maxElementsCount;
+		this.cloneSizeThreshold = cloneSizeThreshold;
 	}
 
 	public void run() throws Exception {
@@ -69,7 +76,7 @@ public class BlockBasedCloneIdentifier {
 				new RevisionInfo[0]);
 		final SingleThreadBlockBasedCloneDetector detector = new SingleThreadBlockBasedCloneDetector(
 				revisionsArray, fragmentRetriever, cloneRegisterer,
-				maxElementsCount);
+				maxElementsCount, cloneSizeThreshold);
 		detector.detectAndRegister();
 	}
 
@@ -84,7 +91,8 @@ public class BlockBasedCloneIdentifier {
 		final Thread[] threads = new Thread[threadsCount - 1];
 		for (int i = 0; i < threadsCount - 1; i++) {
 			threads[i] = new Thread(new BlockBasedCloneDetectingThread(
-					revisionsArray, detectedClones, fragmentRetriever, index));
+					revisionsArray, detectedClones, fragmentRetriever, index,
+					cloneSizeThreshold));
 			threads[i].start();
 		}
 

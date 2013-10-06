@@ -42,15 +42,22 @@ public class SingleThreadBlockBasedCloneDetector {
 	 */
 	private final int maxElementsCount;
 
+	/**
+	 * the size threshold
+	 */
+	private final int cloneSizeThreshold;
+
 	public SingleThreadBlockBasedCloneDetector(
 			final RevisionInfo[] targetRevisions,
 			final CodeFragmentRetriever fragmentRetriever,
-			final CloneSetRegisterer cloneRegisterer, final int maxElementsCount) {
+			final CloneSetRegisterer cloneRegisterer,
+			final int maxElementsCount, final int cloneSizeThreshold) {
 		this.targetRevisions = targetRevisions;
 		this.fragmentRetriever = fragmentRetriever;
 		this.cloneRegisterer = cloneRegisterer;
 		this.detectedClones = new TreeMap<Long, CloneSetInfo>();
 		this.maxElementsCount = maxElementsCount;
+		this.cloneSizeThreshold = cloneSizeThreshold;
 	}
 
 	/**
@@ -71,7 +78,7 @@ public class SingleThreadBlockBasedCloneDetector {
 			final Map<Long, CodeFragmentInfo> codeFragments = fragmentRetriever
 					.retrieveElementsInSpecifiedRevision(targetRevision.getId());
 			final BlockBasedCloneDetector detector = new BlockBasedCloneDetector(
-					targetRevision.getId());
+					targetRevision.getId(), cloneSizeThreshold);
 			detectedClones.putAll(detector.detectClones(codeFragments));
 
 			// register clones if the number of clones exceeds the threshold

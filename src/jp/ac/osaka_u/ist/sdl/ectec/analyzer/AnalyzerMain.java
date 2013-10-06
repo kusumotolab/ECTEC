@@ -128,6 +128,9 @@ public class AnalyzerMain {
 				+ settings.getFragmentLinkMode().toString());
 		MessagePrinter.println("\tthe granularity of the analysis: "
 				+ settings.getGranularity().toString());
+		MessagePrinter
+				.println("\tthe threshold for sizes of clones to be detected: "
+						+ settings.getCloneSizeThreshold());
 
 		MessagePrinter.stronglyPrintln();
 	}
@@ -312,7 +315,8 @@ public class AnalyzerMain {
 		final BlockBasedCloneIdentifier identifier = new BlockBasedCloneIdentifier(
 				targetRevisions, settings.getThreads(),
 				dbManager.getFragmentRetriever(),
-				dbManager.getCloneRegisterer(), Constants.MAX_ELEMENTS_COUNT);
+				dbManager.getCloneRegisterer(), Constants.MAX_ELEMENTS_COUNT,
+				settings.getCloneSizeThreshold());
 		identifier.run();
 
 		MessagePrinter.stronglyPrintln();

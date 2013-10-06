@@ -38,13 +38,20 @@ public class BlockBasedCloneDetectingThread implements Runnable {
 	 */
 	private final AtomicInteger index;
 
+	/**
+	 * the size threshold
+	 */
+	private final int cloneSizeThreshold;
+
 	public BlockBasedCloneDetectingThread(final RevisionInfo[] targetRevisions,
 			final ConcurrentMap<Long, CloneSetInfo> detectedClones,
-			final CodeFragmentRetriever retriever, final AtomicInteger index) {
+			final CodeFragmentRetriever retriever, final AtomicInteger index,
+			final int cloneSizeThreshold) {
 		this.targetRevisions = targetRevisions;
 		this.detectedClones = detectedClones;
 		this.retriever = retriever;
 		this.index = index;
+		this.cloneSizeThreshold = cloneSizeThreshold;
 	}
 
 	@Override
@@ -67,7 +74,7 @@ public class BlockBasedCloneDetectingThread implements Runnable {
 						.retrieveElementsInSpecifiedRevision(targetRevision
 								.getId());
 				final BlockBasedCloneDetector detector = new BlockBasedCloneDetector(
-						targetRevision.getId());
+						targetRevision.getId(), cloneSizeThreshold);
 				detectedClones.putAll(detector.detectClones(codeFragments));
 			} catch (Exception e) {
 				MessagePrinter

@@ -113,6 +113,11 @@ final class AnalyzerSettings {
 	private final AnalyzeGranularity granularity;
 
 	/**
+	 * the threshold for sizes of clones
+	 */
+	private final int cloneSizeThreshold;
+
+	/**
 	 * the path of the properties file
 	 */
 	private final String propertiesFilePath;
@@ -129,7 +134,7 @@ final class AnalyzerSettings {
 			final CRDSimilarityCalculateMode crdSimilarityMode,
 			final CodeFragmentLinkMode fragmentLinkMode,
 			final double similarityThreshold,
-			final AnalyzeGranularity granularity,
+			final AnalyzeGranularity granularity, final int cloneSizeThreshold,
 			final String propertiesFilePath) {
 		this.repositoryPath = repositoryPath;
 		this.dbPath = dbPath;
@@ -146,10 +151,11 @@ final class AnalyzerSettings {
 		this.maxBatchCount = maxBatchCount;
 		this.cloneHashMode = cloneHashMode;
 		this.crdSimilarityMode = crdSimilarityMode;
-		this.propertiesFilePath = propertiesFilePath;
 		this.similarityThreshold = similarityThreshold;
 		this.granularity = granularity;
+		this.cloneSizeThreshold = cloneSizeThreshold;
 		this.fragmentLinkMode = fragmentLinkMode;
+		this.propertiesFilePath = propertiesFilePath;
 	}
 
 	/*
@@ -230,6 +236,10 @@ final class AnalyzerSettings {
 
 	final AnalyzeGranularity getGranularity() {
 		return granularity;
+	}
+
+	final int getCloneSizeThreshold() {
+		return cloneSizeThreshold;
 	}
 
 	final void setStartRevisionIdentifier(final String startRevisionIdentifier) {
@@ -315,12 +325,16 @@ final class AnalyzerSettings {
 				.getCorrespondingGranularity(cmd.getOptionValue("g"))
 				: defaultLoader.getGranularity();
 
+		final int cloneSizeThreshold = (cmd.hasOption("cst")) ? Integer
+				.parseInt(cmd.getOptionValue("cst")) : defaultLoader
+				.getCloneSizeThreshold();
+
 		return new AnalyzerSettings(repositoryPath, dbPath, additionalPath,
 				language, threads, userName, passwd, startRevisionIdentifier,
 				endRevisionIdentifier, verboseLevel, versionControlSystem,
 				overwriteDb, maxBatchCount, cloneHashMode, crdSimilarityMode,
 				fragmentLinkMode, similarityThreshold, granularity,
-				propertiesFilePath);
+				cloneSizeThreshold, propertiesFilePath);
 	}
 
 	/**
@@ -465,6 +479,14 @@ final class AnalyzerSettings {
 			g.setArgs(1);
 			g.setRequired(false);
 			options.addOption(g);
+		}
+
+		{
+			final Option cst = new Option("cst", "clone-size-threshold", true,
+					"the threshold for sizes of clones");
+			cst.setArgs(1);
+			cst.setRequired(false);
+			options.addOption(cst);
 		}
 
 		{

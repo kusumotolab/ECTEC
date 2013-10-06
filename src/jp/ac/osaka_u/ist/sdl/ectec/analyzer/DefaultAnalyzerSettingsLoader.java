@@ -101,6 +101,11 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 	 */
 	private final AnalyzeGranularity granularity;
 
+	/**
+	 * the threshold for sizes of clones
+	 */
+	private final int cloneSizeThreshold;
+
 	private DefaultAnalyzerSettingsLoader(final String additionalPath,
 			final Language language, final int threads, final String userName,
 			final String passwd, final String startRevisionIdentifier,
@@ -112,7 +117,7 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 			final CRDSimilarityCalculateMode crdSimilarityMode,
 			final CodeFragmentLinkMode fragmentLinkMode,
 			final double similarityThreshold,
-			final AnalyzeGranularity granularity) {
+			final AnalyzeGranularity granularity, final int cloneSizeThreshold) {
 		this.additionalPath = additionalPath;
 		this.language = language;
 		this.threads = threads;
@@ -129,6 +134,7 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 		this.fragmentLinkMode = fragmentLinkMode;
 		this.similarityThreshold = similarityThreshold;
 		this.granularity = granularity;
+		this.cloneSizeThreshold = cloneSizeThreshold;
 	}
 
 	/*
@@ -197,6 +203,10 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 
 	final AnalyzeGranularity getGranularity() {
 		return granularity;
+	}
+
+	final int getCloneSizeThreshold() {
+		return cloneSizeThreshold;
 	}
 
 	/*
@@ -291,10 +301,14 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 		final AnalyzeGranularity granularity = AnalyzeGranularity
 				.getCorrespondingGranularity(prop.getProperty(GRANULARITY));
 
+		final int cloneSizeThreshold = Integer.parseInt(prop
+				.getProperty(CLONE_SIZE_THRESHOLD));
+
 		return new DefaultAnalyzerSettingsLoader(additionalPath, language,
 				threads, userName, passwd, startRevisionIdentifier,
 				endRevisionIdentifier, verboseLevel, versionControlSystem,
 				overwriteDb, maxBatchCount, cloneHashMode, crdSimilarityMode,
-				fragmentLinkMode, similarityThreshold, granularity);
+				fragmentLinkMode, similarityThreshold, granularity,
+				cloneSizeThreshold);
 	}
 }

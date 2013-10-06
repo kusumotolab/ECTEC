@@ -25,8 +25,15 @@ public class BlockBasedCloneDetector {
 	 */
 	private final long revisionId;
 
-	public BlockBasedCloneDetector(final long revisionId) {
+	/**
+	 * the threshold of the size of clones
+	 */
+	private final int sizeThreshold;
+
+	public BlockBasedCloneDetector(final long revisionId,
+			final int sizeThreshold) {
 		this.revisionId = revisionId;
+		this.sizeThreshold = sizeThreshold;
 	}
 
 	/**
@@ -61,11 +68,16 @@ public class BlockBasedCloneDetector {
 			if (fragmentsSet.size() > 1) {
 				final List<Long> elements = new ArrayList<Long>();
 				for (final CodeFragmentInfo element : fragmentsSet) {
-					elements.add(element.getId());
+					if (element.getSize() >= sizeThreshold) {
+						elements.add(element.getId());
+					}
 				}
-				final CloneSetInfo cloneSet = new CloneSetInfo(revisionId,
-						elements);
-				result.put(cloneSet.getId(), cloneSet);
+
+				if (elements.size() > 1) {
+					final CloneSetInfo cloneSet = new CloneSetInfo(revisionId,
+							elements);
+					result.put(cloneSet.getId(), cloneSet);
+				}
 			}
 		}
 

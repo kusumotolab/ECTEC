@@ -39,5 +39,7 @@ public interface PropertiesKeys {
 	public static final String SIMILARITY_THRESHOLD = "ectec.similarity-threshold";
 	
 	public static final String GRANULARITY = "ectec.granularity";
+	
+	public static final String CLONE_SIZE_THRESHOLD = "ectec.clone-size";
 
 }
