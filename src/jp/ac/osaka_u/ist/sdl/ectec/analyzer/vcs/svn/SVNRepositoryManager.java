@@ -124,6 +124,15 @@ public class SVNRepositoryManager implements IRepositoryManager {
 	}
 
 	/**
+	 * get the additional url
+	 * 
+	 * @return
+	 */
+	public String getAdditionalUrl() {
+		return additionalUrl;
+	}
+
+	/**
 	 * get the first revision number (always equals to 1)
 	 */
 	@Override
@@ -178,7 +187,15 @@ public class SVNRepositoryManager implements IRepositoryManager {
 			final String path) throws SVNException {
 		final StringBuilder builder = new StringBuilder();
 		final String normalizedPath = (path == null) ? "" : path;
-		final SVNURL target = this.url.appendPath(normalizedPath, false);
+
+		String targetPath = null;
+		if (path != null && this.additionalUrl != null) {
+			targetPath = normalizedPath.substring(this.additionalUrl.length());
+		} else {
+			targetPath = path;
+		}
+
+		final SVNURL target = this.url.appendPath(targetPath, false);
 		final SVNWCClient wcClient = SVNClientManager.newInstance(null,
 				this.userName, this.passwd).getWCClient();
 		wcClient.doGetFileContents(target, SVNRevision.create(revisionNum),

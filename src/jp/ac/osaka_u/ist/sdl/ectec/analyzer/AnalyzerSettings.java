@@ -136,9 +136,17 @@ final class AnalyzerSettings {
 			final double similarityThreshold,
 			final AnalyzeGranularity granularity, final int cloneSizeThreshold,
 			final String propertiesFilePath) {
-		this.repositoryPath = repositoryPath;
+		if (repositoryPath.endsWith("/")) {
+			this.repositoryPath = repositoryPath;
+		} else {
+			this.repositoryPath = repositoryPath + "/";
+		}
 		this.dbPath = dbPath;
-		this.additionalPath = additionalPath;
+		if (additionalPath.startsWith("/")) {
+			this.additionalPath = additionalPath.substring(1);
+		} else {
+			this.additionalPath = additionalPath;
+		}
 		this.language = language;
 		this.threads = threads;
 		this.userName = userName;
