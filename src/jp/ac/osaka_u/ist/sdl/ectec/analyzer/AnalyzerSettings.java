@@ -142,7 +142,7 @@ final class AnalyzerSettings {
 			this.repositoryPath = repositoryPath + "/";
 		}
 		this.dbPath = dbPath;
-		if (additionalPath.startsWith("/")) {
+		if (additionalPath != null && additionalPath.startsWith("/")) {
 			this.additionalPath = additionalPath.substring(1);
 		} else {
 			this.additionalPath = additionalPath;

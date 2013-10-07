@@ -10,6 +10,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.vcs.ITargetRevisionDetector;
 import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
 import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
+import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 
 import org.tmatesoft.svn.core.ISVNLogEntryHandler;
 import org.tmatesoft.svn.core.SVNException;
@@ -75,6 +76,10 @@ public class SVNTargetRevisionDetector implements ITargetRevisionDetector {
 							if (language.isTarget(entry.getKey())) {
 								final long revision = logEntry.getRevision();
 								revisions.add(revision);
+								MessagePrinter
+										.println("\trevision "
+												+ revision
+												+ " was identified as a target revision");
 								break;
 							}
 
@@ -83,6 +88,10 @@ public class SVNTargetRevisionDetector implements ITargetRevisionDetector {
 									|| ('R' == entry.getValue().getType())) {
 								final long revision = logEntry.getRevision();
 								revisions.add(revision);
+								MessagePrinter
+										.println("\trevision "
+												+ revision
+												+ " was identified as a target revision");
 								break;
 							}
 						}
