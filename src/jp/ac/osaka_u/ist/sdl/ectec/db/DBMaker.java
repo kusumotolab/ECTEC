@@ -37,6 +37,8 @@ public class DBMaker {
 		}
 
 		createNewTables();
+		
+		createIndexes();
 
 		dbManager.setAutoCommit(false);
 	}
@@ -130,6 +132,19 @@ public class DBMaker {
 		}
 	}
 
+	public void createIndexes() throws Exception {
+		createRevisionTableIndexes();
+		createCommitTableIndexes();
+		createFileTableIndexes();
+		createCodeFragmentTableIndexes();
+		createCloneSetTableIndexes();
+		createCodeFragmentLinkTableIndexes();
+		createCloneSetLinkTableIndexes();
+		createCloneGenealogyTableIndexes();
+		createCodeFragmentGenealogyTableIndexes();
+		createCrdTableIndexes();
+	}
+
 	/*
 	 * definitions of each table follow
 	 */
@@ -148,6 +163,16 @@ public class DBMaker {
 		builder.append(")");
 
 		return builder.toString();
+	}
+
+	/**
+	 * create indexes on the revision table
+	 * 
+	 * @throws Exception
+	 */
+	private void createRevisionTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("create index REVISION_ID_INDEX_REVISION on REVISION(REVISION_ID)");
 	}
 
 	/**
@@ -170,6 +195,20 @@ public class DBMaker {
 	}
 
 	/**
+	 * create indexes on the commit table
+	 * 
+	 * @throws Exception
+	 */
+	private void createCommitTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("create index VCS_COMMIT_ID_INDEX_VCS_COMMIT on VCS_COMMIT(VCS_COMMIT_ID)");
+		dbManager
+				.executeUpdate("create index BEFORE_REVISION_ID_INDEX_VCS_COMMIT on VCS_COMMIT(BEFORE_REVISION_ID)");
+		dbManager
+				.executeUpdate("create index AFTER_REVISION_ID_INDEX_VCS_COMMIT on VCS_COMMIT(AFTER_REVISION_ID)");
+	}
+
+	/**
 	 * get the query to create the file table
 	 * 
 	 * @return
@@ -185,6 +224,20 @@ public class DBMaker {
 		builder.append(")");
 
 		return builder.toString();
+	}
+
+	/**
+	 * create indexes on the file table
+	 * 
+	 * @throws Exception
+	 */
+	private void createFileTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("create index FILE_ID_INDEX_FILE on FILE(FILE_ID)");
+		dbManager
+				.executeUpdate("create index START_REVISION_ID_INDEX_FILE on FILE(START_REVISION_ID)");
+		dbManager
+				.executeUpdate("create index END_REVISION_ID_INDEX_FILE on FILE(END_REVISION_ID)");
 	}
 
 	/**
@@ -212,6 +265,32 @@ public class DBMaker {
 	}
 
 	/**
+	 * create indexes on the code fragment table
+	 * 
+	 * @throws Exception
+	 */
+	private void createCodeFragmentTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("create index CODE_FRAGMENT_ID_INDEX_CODE_FRAGMENT on CODE_FRAGMENT(CODE_FRAGMENT_ID)");
+		dbManager
+				.executeUpdate("create index START_REVISION_ID_INDEX_CODE_FRAGMENT on CODE_FRAGMENT(START_REVISION_ID)");
+		dbManager
+				.executeUpdate("create index END_REVISION_ID_INDEX_CODE_FRAGMENT on CODE_FRAGMENT(END_REVISION_ID)");
+		dbManager
+				.executeUpdate("create index HASH_INDEX_CODE_FRAGMENT on CODE_FRAGMENT(HASH)");
+		dbManager
+				.executeUpdate("create index HASH_FOR_CLONE_INDEX_CODE_FRAGMENT on CODE_FRAGMENT(HASH_FOR_CLONE)");
+		dbManager
+				.executeUpdate("create index START_LINE_INDEX_CODE_FRAGMENT on CODE_FRAGMENT(START_LINE)");
+		dbManager
+				.executeUpdate("create index END_LINE_INDEX_CODE_FRAGMENT on CODE_FRAGMENT(END_LINE)");
+		dbManager
+				.executeUpdate("create index SIZE_INDEX_CODE_FRAGMENT on CODE_FRAGMENT(SIZE)");
+		dbManager
+				.executeUpdate("create index START_END_REVISION_ID_INDEX_CODE_FRAGMENT on CODE_FRAGMENT(START_REVISION_ID,END_REVISION_ID)");
+	}
+
+	/**
 	 * get the query to create the clone set table
 	 * 
 	 * @return
@@ -227,6 +306,20 @@ public class DBMaker {
 		builder.append(")");
 
 		return builder.toString();
+	}
+
+	/**
+	 * create indexes on the clone set table
+	 * 
+	 * @throws Exception
+	 */
+	private void createCloneSetTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("create index CLONE_SET_ID_INDEX_CLONE_SET on CLONE_SET(CLONE_SET_ID)");
+		dbManager
+				.executeUpdate("create index OWNER_REVISION_ID_INDEX_CLONE_SET on CLONE_SET(OWNER_REVISION_ID)");
+		dbManager
+				.executeUpdate("create index NUMBER_OF_ELEMENTS_INDEX_CLONE_SET on CLONE_SET(NUMVER_OF_ELEMENTS)");
 	}
 
 	/**
@@ -247,6 +340,26 @@ public class DBMaker {
 		builder.append(")");
 
 		return builder.toString();
+	}
+
+	/**
+	 * create indexes on the fragment link table
+	 * 
+	 * @throws Exception
+	 */
+	private void createCodeFragmentLinkTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("create index CODE_FRAGMENT_LINK_ID_INDEX_CODE_FRAGMENT_LINK on CODE_FRAGMENT_LINK(CODE_FRAGMENT_LINK_ID)");
+		dbManager
+				.executeUpdate("create index BEFORE_ELEMENT_ID_INDEX_CODE_FRAGMENT_LINK on CODE_FRAGMENT_LINK(BEFORE_ELEMENT_ID)");
+		dbManager
+				.executeUpdate("create index AFTER_ELEMENT_ID_INDEX_CODE_FRAGMENT_LINK on CODE_FRAGMENT_LINK(AFTER_ELEMENT_ID)");
+		dbManager
+				.executeUpdate("create index BEFORE_REVISION_ID_INDEX_CODE_FRAGMENT_LINK on CODE_FRAGMENT_LINK(BEFORE_REVISION_ID)");
+		dbManager
+				.executeUpdate("create index AFTER_REVISION_ID_INDEX_CODE_FRAGMENT_LINK on CODE_FRAGMENT_LINK(AFTER_REVISION_ID)");
+		dbManager
+				.executeUpdate("create index CHANGED_INDEX_CODE_FRAGMENT_LINK on CODE_FRAGMENT_LINK(CHANGED)");
 	}
 
 	/**
@@ -274,6 +387,32 @@ public class DBMaker {
 	}
 
 	/**
+	 * create indexes on the clone link table
+	 * 
+	 * @throws Exception
+	 */
+	private void createCloneSetLinkTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("create index CLONE_SET_LINK_ID_INDEX_CLONE_SET_LINK on CLONE_SET_LINK(CLONE_SET_LINK_ID)");
+		dbManager
+				.executeUpdate("create index BEFORE_ELEMENT_ID_INDEX_CLONE_SET_LINK on CLONE_SET_LINK(BEFORE_ELEMENT_ID)");
+		dbManager
+				.executeUpdate("create index AFTER_ELEMENT_ID_INDEX_CLONE_SET_LINK on CLONE_SET_LINK(AFTER_ELEMENT_ID)");
+		dbManager
+				.executeUpdate("create index BEFORE_REVISION_ID_INDEX_CLONE_SET_LINK on CLONE_SET_LINK(BEFORE_REVISION_ID)");
+		dbManager
+				.executeUpdate("create index AFTER_REVISION_ID_INDEX_CLONE_SET_LINK on CLONE_SET_LINK(AFTER_REVISION_ID)");
+		dbManager
+				.executeUpdate("create index CHANGED_ELEMENTS_INDEX_CLONE_SET_LINK on CLONE_SET_LINK(CHANGED_ELEMENTS)");
+		dbManager
+				.executeUpdate("create index ADDED_ELEMENTS_INDEX_CLONE_SET_LINK on CLONE_SET_LINK(ADDED_ELEMENTS)");
+		dbManager
+				.executeUpdate("create index DELETED_ELEMENTS_INDEX_CLONE_SET_LINK on CLONE_SET_LINK(DELETED_ELEMENTS)");
+		dbManager
+				.executeUpdate("create index CO_CHANGED_ELEMENTS_INDEX_CLONE_SET_LINK on CLONE_SET_LINK(CO_CHANGED_ELEMENTS)");
+	}
+
+	/**
 	 * get the query to create the table for genealogies of clones
 	 * 
 	 * @return
@@ -297,6 +436,30 @@ public class DBMaker {
 	}
 
 	/**
+	 * create indexes on the clone genealogy table
+	 * 
+	 * @throws Exception
+	 */
+	private void createCloneGenealogyTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("create index CLONE_GENEALOGY_ID_INDEX_CLONE_GENEALOGY on CLONE_GENEALOGY(CLONE_GENEALOGY_ID)");
+		dbManager
+				.executeUpdate("create index START_REVISION_ID_INDEX_CLONE_GENEALOGY on CLONE_GENEALOGY(START_REVISION_ID)");
+		dbManager
+				.executeUpdate("create index END_REVISION_ID_INDEX_CLONE_GENEALOGY on CLONE_GENEALOGY(END_REVISION_ID)");
+		dbManager
+				.executeUpdate("create index CHANGES_INDEX_CLONE_GENEALOGY on CLONE_GENEALOGY(CHANGES)");
+		dbManager
+				.executeUpdate("create index ADDITIONS_INDEX_CLONE_GENEALOGY on CLONE_GENEALOGY(ADDITIONS)");
+		dbManager
+				.executeUpdate("create index DELETIONS_INDEX_CLONE_GENEALOGY on CLONE_GENEALOGY(DELETIONS)");
+		dbManager
+				.executeUpdate("create index DEAD_INDEX_CLONE_GENEALOGY on CLONE_GENEALOGY(DEAD)");
+		dbManager
+				.executeUpdate("create index START_END_REVISION_ID_INDEX_CLONE_GENEALOGY on CLONE_GENEALOGY(START_REVISION_ID,END_REVISION_ID)");
+	}
+
+	/**
 	 * get the query to create the table for genealogies of code fragments
 	 * 
 	 * @return
@@ -314,6 +477,24 @@ public class DBMaker {
 		builder.append(")");
 
 		return builder.toString();
+	}
+
+	/**
+	 * create indexes on the fragment genealogy table
+	 * 
+	 * @throws Exception
+	 */
+	private void createCodeFragmentGenealogyTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("create index CODE_FRAGMENT_GENEALOGY_ID_INDEX_CODE_FRAGMENT_GENEALOGY on CODE_FRAGMENT_GENEALOGY(CODE_FRAGMENT_GENEALOGY_ID)");
+		dbManager
+				.executeUpdate("create index START_REVISION_ID_INDEX_CODE_FRAGMENT_GENEALOGY on CODE_FRAGMENT_GENEALOGY(START_REVISION_ID)");
+		dbManager
+				.executeUpdate("create index END_REVISION_ID_INDEX_CODE_FRAGMENT_GENEALOGY on CODE_FRAGMENT_GENEALOGY(END_REVISION_ID)");
+		dbManager
+				.executeUpdate("create index CHANGES_INDEX_CODE_FRAGMENT_GENEALOGY on CODE_FRAGMENT_GENEALOGY(CHANGES)");
+		dbManager
+				.executeUpdate("create index START_END_REVISION_ID_INDEX_CODE_FRAGMENT_GENEALOGY on CODE_FRAGMENT_GENEALOGY(START_REVISION_ID,END_REVISION_ID)");
 	}
 
 	/**
@@ -336,6 +517,16 @@ public class DBMaker {
 		builder.append(")");
 
 		return builder.toString();
+	}
+
+	/**
+	 * create indexes on the crd table
+	 * 
+	 * @throws Exception
+	 */
+	private void createCrdTableIndexes() throws Exception {
+		dbManager.executeUpdate("create index CRD_ID_INDEX_CRD on CRD(CRD_ID)");
+		dbManager.executeUpdate("create index CM_INDEX_CRD on CRD(CM)");
 	}
 
 }
