@@ -64,8 +64,8 @@ public class FragmentChainFinalizer
 		final CodeFragmentInfo endElement = elementsMap.get(endLink
 				.getAfterElementId());
 
-		return new CodeFragmentGenealogyInfo(startElement.getId(),
-				endElement.getId(), elements, links, changedCount);
+		return new CodeFragmentGenealogyInfo(startElement.getStartRevisionId(),
+				endElement.getEndRevisionId(), elements, links, changedCount);
 	}
 
 	@Override

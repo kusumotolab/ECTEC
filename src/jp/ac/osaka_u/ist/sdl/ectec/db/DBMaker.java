@@ -319,7 +319,7 @@ public class DBMaker {
 		dbManager
 				.executeUpdate("create index OWNER_REVISION_ID_INDEX_CLONE_SET on CLONE_SET(OWNER_REVISION_ID)");
 		dbManager
-				.executeUpdate("create index NUMBER_OF_ELEMENTS_INDEX_CLONE_SET on CLONE_SET(NUMVER_OF_ELEMENTS)");
+				.executeUpdate("create index NUMBER_OF_ELEMENTS_INDEX_CLONE_SET on CLONE_SET(NUMBER_OF_ELEMENTS)");
 	}
 
 	/**
