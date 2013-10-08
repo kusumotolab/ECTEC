@@ -11,7 +11,7 @@ public abstract class AbstractElement {
 	/**
 	 * the id
 	 */
-	private final long id;
+	protected final long id;
 
 	public AbstractElement(final long id) {
 		this.id = id;
