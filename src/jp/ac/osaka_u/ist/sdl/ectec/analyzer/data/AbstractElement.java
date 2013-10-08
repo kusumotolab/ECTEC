@@ -26,4 +26,15 @@ public abstract class AbstractElement {
 		return id;
 	}
 
+	@Override
+	public boolean equals(final Object obj) {
+		if (this.getClass() != obj.getClass()) {
+			return false;
+		}
+
+		final AbstractElement another = (AbstractElement) obj;
+
+		return this.id == another.getId();
+	}
+
 }
