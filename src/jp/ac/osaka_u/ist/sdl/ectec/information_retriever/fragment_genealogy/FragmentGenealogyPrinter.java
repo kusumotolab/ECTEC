@@ -18,8 +18,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 
 public class FragmentGenealogyPrinter {
 
-	private static final String LINE_SEPARATOR = System
-			.getProperty("line.separator");
+	private static final String LINE_SEPARATOR = "\n";
 
 	public static void main(final String[] args) {
 		DBConnectionManager dbManager = null;
@@ -32,6 +31,8 @@ public class FragmentGenealogyPrinter {
 					args[1]))));
 			final String repositoryPath = args[2];
 			final String workingDir = args[3];
+
+			final int threshold = Integer.parseInt(args[4]);
 
 			repoManager = new SVNRepositoryManager(repositoryPath, null, null,
 					null);
@@ -93,6 +94,8 @@ public class FragmentGenealogyPrinter {
 				final int bStart = startFragment.getStartLine();
 				final int bEnd = startFragment.getEndLine();
 
+				final int bSize = startFragment.getSize();
+
 				final String aRev = revisions.get(endRevisionId)
 						.getIdentifier();
 				final String aFile = files.get(endFragment.getOwnerFileId())
@@ -103,6 +106,12 @@ public class FragmentGenealogyPrinter {
 						aMethod.indexOf("("));
 				final int aStart = endFragment.getStartLine();
 				final int aEnd = endFragment.getEndLine();
+
+				final int aSize = endFragment.getSize();
+
+				if (aSize <= bSize || bSize < threshold) {
+					continue;
+				}
 
 				pw.println(index + "," + bRev + "," + bFile + "," + bMethodName
 						+ "," + bStart + "," + bEnd + "," + aRev + "," + aFile
