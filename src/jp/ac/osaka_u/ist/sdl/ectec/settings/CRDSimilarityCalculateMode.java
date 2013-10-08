@@ -1,7 +1,7 @@
 package jp.ac.osaka_u.ist.sdl.ectec.settings;
 
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.similarity.ICRDSimilarityCalculator;
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.sourceanalyzer.similarity.LevenshteinBasedCRDSimilarityCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.similarity.ICRDSimilarityCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.similarity.LevenshteinBasedCRDSimilarityCalculator;
 
 /**
  * An enum that represents how to calculate crd similarities

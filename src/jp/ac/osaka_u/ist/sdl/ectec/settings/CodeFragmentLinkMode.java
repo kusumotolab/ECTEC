@@ -1,8 +1,8 @@
 package jp.ac.osaka_u.ist.sdl.ectec.settings;
 
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.linker.ICodeFragmentLinker;
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.linker.MultipleCodeFragmentLinker;
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.linker.SingleCodeFragmentLinker;
+import jp.ac.osaka_u.ist.sdl.ectec.detector.linker.ICodeFragmentLinker;
+import jp.ac.osaka_u.ist.sdl.ectec.detector.linker.MultipleCodeFragmentLinker;
+import jp.ac.osaka_u.ist.sdl.ectec.detector.linker.SingleCodeFragmentLinker;
 
 /**
  * An enum that represents how to detect pairs of code fragments
