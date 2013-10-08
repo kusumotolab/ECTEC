@@ -1,16 +1,15 @@
-package jp.ac.osaka_u.ist.sdl.ectec.analyzer;
+package jp.ac.osaka_u.ist.sdl.ectec.detector;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 
-import jp.ac.osaka_u.ist.sdl.ectec.detector.AnalyzerSettings;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrintLevel;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.VersionControlSystem;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class AnalyzerSettingsTest {
