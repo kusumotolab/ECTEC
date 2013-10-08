@@ -6,7 +6,7 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.vcs.IChangedFilesDetector;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
@@ -39,7 +39,7 @@ public class ChangedFilesDetectingThread implements Runnable {
 	/**
 	 * the target commits as array
 	 */
-	private final Commit[] commits;
+	private final DBCommitInfo[] commits;
 
 	/**
 	 * the counter that points which revision is the next target
@@ -48,7 +48,7 @@ public class ChangedFilesDetectingThread implements Runnable {
 
 	public ChangedFilesDetectingThread(final IChangedFilesDetector detector,
 			final ConcurrentMap<String, SortedSet<ChangeOnFile>> changedFiles,
-			final Language language, final Commit[] commits,
+			final Language language, final DBCommitInfo[] commits,
 			final AtomicInteger index) {
 		this.detector = detector;
 		this.changedFiles = changedFiles;
@@ -66,7 +66,7 @@ public class ChangedFilesDetectingThread implements Runnable {
 				break;
 			}
 
-			final Commit targetCommit = commits[currentIndex];
+			final DBCommitInfo targetCommit = commits[currentIndex];
 			final String targetRevisionIdentifier = targetCommit
 					.getAfterRevisionIdentifier();
 

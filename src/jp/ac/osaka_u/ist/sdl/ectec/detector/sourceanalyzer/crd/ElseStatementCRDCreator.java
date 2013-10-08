@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.BlockType;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.normalizer.NormalizedStringCreator;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.normalizer.StringCreateVisitor;
 
@@ -21,7 +21,7 @@ import org.eclipse.jdt.core.dom.Statement;
  */
 public class ElseStatementCRDCreator extends AbstractBlockAnalyzer<Statement> {
 
-	public ElseStatementCRDCreator(Statement node, CRD parent,
+	public ElseStatementCRDCreator(Statement node, DBCrdInfo parent,
 			StringCreateVisitor visitor) {
 		super(node, parent, BlockType.ELSE, visitor);
 	}

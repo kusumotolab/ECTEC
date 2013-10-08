@@ -8,12 +8,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.CloneSetInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CloneSetLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CloneSetLinkRegisterer;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CloneSetRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CodeFragmentLinkRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CloneSetLinkRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CloneSetRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentLinkRetriever;
 
 /**
  * A class for managing clone set link detectors
@@ -26,7 +26,7 @@ public class CloneSetLinkIdentifier {
 	/**
 	 * the target commits
 	 */
-	private final Map<Long, Commit> commits;
+	private final Map<Long, DBCommitInfo> commits;
 
 	/**
 	 * the number of threads
@@ -53,7 +53,7 @@ public class CloneSetLinkIdentifier {
 	 */
 	private final int maxElementsCount;
 
-	public CloneSetLinkIdentifier(final Map<Long, Commit> commits,
+	public CloneSetLinkIdentifier(final Map<Long, DBCommitInfo> commits,
 			final int threadsCount,
 			final CodeFragmentLinkRetriever fragmentLinkRetriever,
 			final CloneSetRetriever cloneRetriever,
@@ -79,7 +79,7 @@ public class CloneSetLinkIdentifier {
 		assert threadsCount == 1;
 
 		final Map<Long, Collection<Long>> revisionAndRelatedCommits = detectRevisionAndRelatedCommits();
-		final Commit[] commitsArray = commits.values().toArray(new Commit[0]);
+		final DBCommitInfo[] commitsArray = commits.values().toArray(new DBCommitInfo[0]);
 
 		final SingleThreadCloneSetLinkDetector detector = new SingleThreadCloneSetLinkDetector(
 				commitsArray, fragmentLinkRetriever, cloneRetriever,
@@ -91,12 +91,12 @@ public class CloneSetLinkIdentifier {
 	private void runWithMultipleThread() throws Exception {
 		assert threadsCount > 1;
 
-		final Commit[] commitsArray = commits.values().toArray(new Commit[0]);
+		final DBCommitInfo[] commitsArray = commits.values().toArray(new DBCommitInfo[0]);
 		final Map<Long, Collection<Long>> revisionAndRelatedCommits = detectRevisionAndRelatedCommits();
 
-		final ConcurrentMap<Long, CloneSetLinkInfo> detectedCloneLinks = new ConcurrentHashMap<Long, CloneSetLinkInfo>();
-		final ConcurrentMap<Long, Map<Long, CloneSetInfo>> cloneSets = new ConcurrentHashMap<Long, Map<Long, CloneSetInfo>>();
-		final ConcurrentMap<Long, Commit> processedCommits = new ConcurrentHashMap<Long, Commit>();
+		final ConcurrentMap<Long, DBCloneSetLinkInfo> detectedCloneLinks = new ConcurrentHashMap<Long, DBCloneSetLinkInfo>();
+		final ConcurrentMap<Long, Map<Long, DBCloneSetInfo>> cloneSets = new ConcurrentHashMap<Long, Map<Long, DBCloneSetInfo>>();
+		final ConcurrentMap<Long, DBCommitInfo> processedCommits = new ConcurrentHashMap<Long, DBCommitInfo>();
 		final AtomicInteger index = new AtomicInteger(0);
 
 		final Thread[] threads = new Thread[threadsCount - 1];
@@ -116,8 +116,8 @@ public class CloneSetLinkIdentifier {
 
 	private Map<Long, Collection<Long>> detectRevisionAndRelatedCommits() {
 		final Map<Long, Collection<Long>> result = new TreeMap<Long, Collection<Long>>();
-		for (final Map.Entry<Long, Commit> entry : commits.entrySet()) {
-			final Commit commit = entry.getValue();
+		for (final Map.Entry<Long, DBCommitInfo> entry : commits.entrySet()) {
+			final DBCommitInfo commit = entry.getValue();
 
 			final long beforeRevisionId = commit.getBeforeRevisionId();
 			if (result.containsKey(beforeRevisionId)) {

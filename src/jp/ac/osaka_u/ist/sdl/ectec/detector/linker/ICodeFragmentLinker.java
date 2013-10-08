@@ -3,9 +3,9 @@ package jp.ac.osaka_u.ist.sdl.ectec.detector.linker;
 import java.util.Collection;
 import java.util.Map;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.similarity.ICRDSimilarityCalculator;
 
 /**
@@ -29,10 +29,10 @@ public interface ICodeFragmentLinker {
 	 * @param afterRevisionId
 	 * @return
 	 */
-	public Map<Long, CodeFragmentLinkInfo> detectFragmentPairs(
-			final Collection<CodeFragmentInfo> beforeBlocks,
-			final Collection<CodeFragmentInfo> afterBlocks,
+	public Map<Long, DBCodeFragmentLinkInfo> detectFragmentPairs(
+			final Collection<DBCodeFragmentInfo> beforeBlocks,
+			final Collection<DBCodeFragmentInfo> afterBlocks,
 			final ICRDSimilarityCalculator similarityCalculator,
-			final double similarityThreshold, final Map<Long, CRD> crds,
+			final double similarityThreshold, final Map<Long, DBCrdInfo> crds,
 			final long beforeRevisionId, final long afterRevisionId);
 }

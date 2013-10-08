@@ -4,11 +4,11 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.SortedMap;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
-import jp.ac.osaka_u.ist.sdl.ectec.data.FileInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBMaker;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.clonedetector.BlockBasedCloneIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.clonelinker.CloneSetLinkIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.filedetector.ChangedFilesIdentifier;
@@ -276,7 +276,7 @@ public class AnalyzerMain {
 
 	private static void detectAndRegisterFiles(final AnalyzerSettings settings)
 			throws Exception {
-		final Map<Long, Commit> commits = dbManager.getCommitRetriever()
+		final Map<Long, DBCommitInfo> commits = dbManager.getCommitRetriever()
 				.retrieveAll();
 		final ChangedFilesIdentifier identifier = new ChangedFilesIdentifier(
 				repositoryManagerManager.getRepositoryManager(),
@@ -290,10 +290,10 @@ public class AnalyzerMain {
 		MessagePrinter
 				.stronglyPrintln("detecting and registering code fragments and their crds ... ");
 
-		final Collection<FileInfo> files = dbManager.getFileRetriever()
+		final Collection<DBFileInfo> files = dbManager.getFileRetriever()
 				.retrieveAll().values();
 
-		final Collection<RevisionInfo> revisions = dbManager
+		final Collection<DBRevisionInfo> revisions = dbManager
 				.getRevisionRetriever().retrieveAll().values();
 
 		final NormalizerCreator blockAnalyzerCreator = new NormalizerCreator(
@@ -319,7 +319,7 @@ public class AnalyzerMain {
 		MessagePrinter
 				.stronglyPrintln("detecting and registering links of code fragments ... ");
 
-		final Map<Long, Commit> commits = dbManager.getCommitRetriever()
+		final Map<Long, DBCommitInfo> commits = dbManager.getCommitRetriever()
 				.retrieveAll();
 
 		final CodeFragmentLinkIdentifier identifier = new CodeFragmentLinkIdentifier(
@@ -340,7 +340,7 @@ public class AnalyzerMain {
 		MessagePrinter
 				.stronglyPrintln("detecting and registering genealogies of code fragments ... ");
 
-		final Map<Long, RevisionInfo> targetRevisions = dbManager
+		final Map<Long, DBRevisionInfo> targetRevisions = dbManager
 				.getRevisionRetriever().retrieveAll();
 
 		final FragmentGenealogyIdentifier identifier = new FragmentGenealogyIdentifier(
@@ -358,7 +358,7 @@ public class AnalyzerMain {
 		MessagePrinter
 				.stronglyPrintln("detecting and registering clone sets ... ");
 
-		final Map<Long, RevisionInfo> targetRevisions = dbManager
+		final Map<Long, DBRevisionInfo> targetRevisions = dbManager
 				.getRevisionRetriever().retrieveAll();
 
 		final BlockBasedCloneIdentifier identifier = new BlockBasedCloneIdentifier(
@@ -376,7 +376,7 @@ public class AnalyzerMain {
 		MessagePrinter
 				.stronglyPrintln("detecting and registering links of clone sets ... ");
 
-		final Map<Long, Commit> commits = dbManager.getCommitRetriever()
+		final Map<Long, DBCommitInfo> commits = dbManager.getCommitRetriever()
 				.retrieveAll();
 
 		final CloneSetLinkIdentifier identifier = new CloneSetLinkIdentifier(
@@ -395,7 +395,7 @@ public class AnalyzerMain {
 		MessagePrinter
 				.stronglyPrintln("detecting and registering genealogies of clones ... ");
 
-		final SortedMap<Long, RevisionInfo> targetRevisions = dbManager
+		final SortedMap<Long, DBRevisionInfo> targetRevisions = dbManager
 				.getRevisionRetriever().retrieveAll();
 		final long lastRevisionId = targetRevisions.lastKey();
 

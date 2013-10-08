@@ -3,9 +3,9 @@ package jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.FileInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.hash.IHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.normalizer.NormalizerCreator;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.vcs.IRepositoryManager;
@@ -25,17 +25,17 @@ public class CodeFragmentDetectingThread implements Runnable {
 	/**
 	 * a map having detected crds
 	 */
-	private final ConcurrentMap<Long, CRD> detectedCrds;
+	private final ConcurrentMap<Long, DBCrdInfo> detectedCrds;
 
 	/**
 	 * a map having detected fragments
 	 */
-	private final ConcurrentMap<Long, CodeFragmentInfo> detectedFragments;
+	private final ConcurrentMap<Long, DBCodeFragmentInfo> detectedFragments;
 
 	/**
 	 * a array of target files
 	 */
-	private final FileInfo[] targetFiles;
+	private final DBFileInfo[] targetFiles;
 
 	/**
 	 * a counter that points the current state of the processing
@@ -68,9 +68,9 @@ public class CodeFragmentDetectingThread implements Runnable {
 	private final IHashCalculator hashCalculator;
 
 	public CodeFragmentDetectingThread(
-			final ConcurrentMap<Long, CRD> detectedCrds,
-			final ConcurrentMap<Long, CodeFragmentInfo> detectedFragments,
-			final FileInfo[] targetFiles, final AtomicInteger index,
+			final ConcurrentMap<Long, DBCrdInfo> detectedCrds,
+			final ConcurrentMap<Long, DBCodeFragmentInfo> detectedFragments,
+			final DBFileInfo[] targetFiles, final AtomicInteger index,
 			final IRepositoryManager manager,
 			final ConcurrentMap<Long, String> revisions,
 			final AnalyzeGranularity granularity,
@@ -96,7 +96,7 @@ public class CodeFragmentDetectingThread implements Runnable {
 				break;
 			}
 
-			final FileInfo targetFile = targetFiles[currentIndex];
+			final DBFileInfo targetFile = targetFiles[currentIndex];
 			MessagePrinter.println("\t[" + (currentIndex + 1) + "/"
 					+ targetFiles.length + "] processing "
 					+ targetFile.getPath());

@@ -10,13 +10,13 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CodeFragmentLinkRegisterer;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CRDRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CodeFragmentRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CodeFragmentLinkRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CRDRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.similarity.ICRDSimilarityCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 
@@ -28,12 +28,12 @@ import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
  */
 public class CodeFragmentLinkDetector {
 
-	private final Map<Long, CodeFragmentLinkInfo> detectedLinks;
+	private final Map<Long, DBCodeFragmentLinkInfo> detectedLinks;
 
 	/**
 	 * the target commits
 	 */
-	private final Commit[] targetCommits;
+	private final DBCommitInfo[] targetCommits;
 
 	/**
 	 * the registerer for links of code fragments
@@ -53,17 +53,17 @@ public class CodeFragmentLinkDetector {
 	/**
 	 * the map between revision id and code fragments included in the revision
 	 */
-	private final Map<Long, Map<Long, CodeFragmentInfo>> codeFragments;
+	private final Map<Long, Map<Long, DBCodeFragmentInfo>> codeFragments;
 
 	/**
 	 * the map between revision id and crds included in the revision
 	 */
-	private final Map<Long, Map<Long, CRD>> crds;
+	private final Map<Long, Map<Long, DBCrdInfo>> crds;
 
 	/**
 	 * already processed commits
 	 */
-	private final Map<Long, Commit> processedCommits;
+	private final Map<Long, DBCommitInfo> processedCommits;
 
 	/**
 	 * id of a revision and a collection of ids of commits that relates to the
@@ -91,7 +91,7 @@ public class CodeFragmentLinkDetector {
 	 */
 	private final int maxElementsCount;
 
-	public CodeFragmentLinkDetector(final Commit[] targetCommits,
+	public CodeFragmentLinkDetector(final DBCommitInfo[] targetCommits,
 			final CodeFragmentLinkRegisterer fragmentLinkRegisterer,
 			final CodeFragmentRetriever fragmentRetriever,
 			final CRDRetriever crdRetriever,
@@ -99,14 +99,14 @@ public class CodeFragmentLinkDetector {
 			final ICodeFragmentLinker linker, final double similarityThreshold,
 			final ICRDSimilarityCalculator similarityCalculator,
 			final int maxElementsCount) {
-		this.detectedLinks = new TreeMap<Long, CodeFragmentLinkInfo>();
+		this.detectedLinks = new TreeMap<Long, DBCodeFragmentLinkInfo>();
 		this.targetCommits = targetCommits;
 		this.fragmentLinkRegisterer = fragmentLinkRegisterer;
 		this.fragmentRetriever = fragmentRetriever;
 		this.crdRetriever = crdRetriever;
-		this.codeFragments = new TreeMap<Long, Map<Long, CodeFragmentInfo>>();
-		this.crds = new TreeMap<Long, Map<Long, CRD>>();
-		this.processedCommits = new TreeMap<Long, Commit>();
+		this.codeFragments = new TreeMap<Long, Map<Long, DBCodeFragmentInfo>>();
+		this.crds = new TreeMap<Long, Map<Long, DBCrdInfo>>();
+		this.processedCommits = new TreeMap<Long, DBCommitInfo>();
 		this.revisionAndRelatedCommits = revisionAndRelatedCommits;
 		this.linker = linker;
 		this.similarityThreshold = similarityThreshold;
@@ -123,7 +123,7 @@ public class CodeFragmentLinkDetector {
 		int numberOfLinks = 0;
 
 		for (int i = 0; i < targetCommits.length; i++) {
-			final Commit targetCommit = targetCommits[i];
+			final DBCommitInfo targetCommit = targetCommits[i];
 
 			final long beforeRevisionId = targetCommit.getBeforeRevisionId();
 			if (beforeRevisionId == -1) {
@@ -141,11 +141,11 @@ public class CodeFragmentLinkDetector {
 			retrieveElements(beforeRevisionId);
 			retrieveElements(afterRevisionId);
 
-			final Map<Long, CRD> currentCrds = new TreeMap<Long, CRD>();
+			final Map<Long, DBCrdInfo> currentCrds = new TreeMap<Long, DBCrdInfo>();
 			currentCrds.putAll(crds.get(beforeRevisionId));
 			currentCrds.putAll(crds.get(afterRevisionId));
 
-			final Map<Long, CodeFragmentLinkInfo> links = linker
+			final Map<Long, DBCodeFragmentLinkInfo> links = linker
 					.detectFragmentPairs(codeFragments.get(beforeRevisionId)
 							.values(), codeFragments.get(afterRevisionId)
 							.values(), similarityCalculator,
@@ -163,14 +163,14 @@ public class CodeFragmentLinkDetector {
 					+ targetCommit.getAfterRevisionIdentifier());
 
 			if (detectedLinks.size() >= maxElementsCount) {
-				final Set<CodeFragmentLinkInfo> currentElements = new HashSet<CodeFragmentLinkInfo>();
+				final Set<DBCodeFragmentLinkInfo> currentElements = new HashSet<DBCodeFragmentLinkInfo>();
 				currentElements.addAll(detectedLinks.values());
 				fragmentLinkRegisterer.register(currentElements);
 				MessagePrinter.println("\t" + currentElements.size()
 						+ " links of fragments have been registered into db");
 				numberOfLinks += currentElements.size();
 
-				for (final CodeFragmentLinkInfo link : currentElements) {
+				for (final DBCodeFragmentLinkInfo link : currentElements) {
 					detectedLinks.remove(link.getId());
 				}
 			}
@@ -222,21 +222,21 @@ public class CodeFragmentLinkDetector {
 	 */
 	protected void retrieveElements(final long revisionId) throws SQLException {
 		if (!codeFragments.containsKey(revisionId)) {
-			final Map<Long, CodeFragmentInfo> retrievedFragments = fragmentRetriever
+			final Map<Long, DBCodeFragmentInfo> retrievedFragments = fragmentRetriever
 					.retrieveElementsInSpecifiedRevision(revisionId);
 			codeFragments.put(revisionId, retrievedFragments);
 		}
 
 		if (!crds.containsKey(revisionId)) {
-			final Map<Long, CodeFragmentInfo> fragments = codeFragments
+			final Map<Long, DBCodeFragmentInfo> fragments = codeFragments
 					.get(revisionId);
 			final List<Long> crdIds = new ArrayList<Long>();
-			for (final Map.Entry<Long, CodeFragmentInfo> entry : fragments
+			for (final Map.Entry<Long, DBCodeFragmentInfo> entry : fragments
 					.entrySet()) {
 				crdIds.add(entry.getValue().getCrdId());
 			}
 
-			final Map<Long, CRD> retrievedCrds = crdRetriever
+			final Map<Long, DBCrdInfo> retrievedCrds = crdRetriever
 					.retrieveWithIds(crdIds);
 			crds.put(revisionId, retrievedCrds);
 		}

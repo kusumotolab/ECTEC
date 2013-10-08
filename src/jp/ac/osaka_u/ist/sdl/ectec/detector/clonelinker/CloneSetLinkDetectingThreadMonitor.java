@@ -7,10 +7,10 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentMap;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.CloneSetInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CloneSetLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CloneSetLinkRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CloneSetLinkRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Constants;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 
@@ -25,7 +25,7 @@ public class CloneSetLinkDetectingThreadMonitor {
 	/**
 	 * a map having detected links of clones
 	 */
-	private final ConcurrentMap<Long, CloneSetLinkInfo> detectedCloneLinks;
+	private final ConcurrentMap<Long, DBCloneSetLinkInfo> detectedCloneLinks;
 
 	/**
 	 * the registerer for clone sets
@@ -35,12 +35,12 @@ public class CloneSetLinkDetectingThreadMonitor {
 	/**
 	 * the map between revision id and clone sets including in the revision
 	 */
-	private final ConcurrentMap<Long, Map<Long, CloneSetInfo>> cloneSets;
+	private final ConcurrentMap<Long, Map<Long, DBCloneSetInfo>> cloneSets;
 
 	/**
 	 * already processed commits
 	 */
-	private final ConcurrentMap<Long, Commit> processedCommits;
+	private final ConcurrentMap<Long, DBCommitInfo> processedCommits;
 
 	/**
 	 * id of a revision and a collection of ids of commits that relates to the
@@ -57,10 +57,10 @@ public class CloneSetLinkDetectingThreadMonitor {
 	private final int maxElementsCount;
 
 	public CloneSetLinkDetectingThreadMonitor(
-			final ConcurrentMap<Long, CloneSetLinkInfo> detectedCloneLinks,
+			final ConcurrentMap<Long, DBCloneSetLinkInfo> detectedCloneLinks,
 			final CloneSetLinkRegisterer cloneLinkRegisterer,
-			final ConcurrentMap<Long, Map<Long, CloneSetInfo>> cloneSets,
-			final ConcurrentMap<Long, Commit> processedCommits,
+			final ConcurrentMap<Long, Map<Long, DBCloneSetInfo>> cloneSets,
+			final ConcurrentMap<Long, DBCommitInfo> processedCommits,
 			final Map<Long, Collection<Long>> revisionAndRelatedCommits,
 			final int maxElementsCount) {
 		this.detectedCloneLinks = detectedCloneLinks;
@@ -81,7 +81,7 @@ public class CloneSetLinkDetectingThreadMonitor {
 				// checking the number of detected links
 				synchronized (detectedCloneLinks) {
 					if (detectedCloneLinks.size() >= maxElementsCount) {
-						final Set<CloneSetLinkInfo> currentElements = new HashSet<CloneSetLinkInfo>();
+						final Set<DBCloneSetLinkInfo> currentElements = new HashSet<DBCloneSetLinkInfo>();
 						currentElements.addAll(detectedCloneLinks.values());
 						cloneLinkRegisterer.register(currentElements);
 						MessagePrinter
@@ -90,7 +90,7 @@ public class CloneSetLinkDetectingThreadMonitor {
 										+ " links of fragments have been registered into db");
 						numberOfLinks += currentElements.size();
 
-						for (final CloneSetLinkInfo link : currentElements) {
+						for (final DBCloneSetLinkInfo link : currentElements) {
 							detectedCloneLinks.remove(link.getId());
 						}
 					}

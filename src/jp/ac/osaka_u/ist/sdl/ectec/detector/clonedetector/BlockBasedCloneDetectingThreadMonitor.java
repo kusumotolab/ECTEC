@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.CloneSetInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CloneSetRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CloneSetRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Constants;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 
@@ -20,7 +20,7 @@ public class BlockBasedCloneDetectingThreadMonitor {
 	/**
 	 * a map having detected clones
 	 */
-	private final ConcurrentMap<Long, CloneSetInfo> detectedClones;
+	private final ConcurrentMap<Long, DBCloneSetInfo> detectedClones;
 
 	/**
 	 * the registerer for clone sets
@@ -36,7 +36,7 @@ public class BlockBasedCloneDetectingThreadMonitor {
 	private final int maxElementsCount;
 
 	public BlockBasedCloneDetectingThreadMonitor(
-			final ConcurrentMap<Long, CloneSetInfo> detectedClones,
+			final ConcurrentMap<Long, DBCloneSetInfo> detectedClones,
 			final CloneSetRegisterer registerer, final int maxElementsCount) {
 		this.detectedClones = detectedClones;
 		this.registerer = registerer;
@@ -52,14 +52,14 @@ public class BlockBasedCloneDetectingThreadMonitor {
 
 				synchronized (detectedClones) {
 					if (detectedClones.size() >= maxElementsCount) {
-						final Set<CloneSetInfo> currentClones = new HashSet<CloneSetInfo>();
+						final Set<DBCloneSetInfo> currentClones = new HashSet<DBCloneSetInfo>();
 						currentClones.addAll(detectedClones.values());
 						registerer.register(currentClones);
 						MessagePrinter.println("\t" + currentClones.size()
 								+ " clone sets have been registered into db");
 						numberOfClones += currentClones.size();
 
-						for (final CloneSetInfo clone : currentClones) {
+						for (final DBCloneSetInfo clone : currentClones) {
 							detectedClones.remove(clone.getId());
 						}
 					}

@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.vcs.IChangedFilesDetector;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 
@@ -35,7 +35,7 @@ public class SVNChangedFilesDetector implements IChangedFilesDetector {
 	}
 
 	@Override
-	public Map<String, Character> detectChangedFiles(final Commit commit,
+	public Map<String, Character> detectChangedFiles(final DBCommitInfo commit,
 			final Language language) throws Exception {
 		final long revision = Long.parseLong(commit
 				.getAfterRevisionIdentifier());

@@ -6,8 +6,8 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
-import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.vcs.ITargetRevisionDetector;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
@@ -34,17 +34,17 @@ public class SVNTargetRevisionDetector implements ITargetRevisionDetector {
 	/**
 	 * detected target revisions
 	 */
-	private final Map<Long, RevisionInfo> targetRevisions;
+	private final Map<Long, DBRevisionInfo> targetRevisions;
 
 	/**
 	 * detected commits
 	 */
-	private final Map<Long, Commit> commits;
+	private final Map<Long, DBCommitInfo> commits;
 
 	public SVNTargetRevisionDetector(final SVNRepositoryManager manager) {
 		this.manager = manager;
-		this.targetRevisions = new TreeMap<Long, RevisionInfo>();
-		this.commits = new TreeMap<Long, Commit>();
+		this.targetRevisions = new TreeMap<Long, DBRevisionInfo>();
+		this.commits = new TreeMap<Long, DBCommitInfo>();
 	}
 
 	@Override
@@ -98,13 +98,13 @@ public class SVNTargetRevisionDetector implements ITargetRevisionDetector {
 					}
 				});
 
-		RevisionInfo previousRevision = new RevisionInfo(-1, "INITIAL");
+		DBRevisionInfo previousRevision = new DBRevisionInfo(-1, "INITIAL");
 		for (final long revision : revisions) {
-			final RevisionInfo newRevision = new RevisionInfo(
+			final DBRevisionInfo newRevision = new DBRevisionInfo(
 					((Long) revision).toString());
 			targetRevisions.put(newRevision.getId(), newRevision);
 
-			final Commit commit = new Commit(previousRevision.getId(),
+			final DBCommitInfo commit = new DBCommitInfo(previousRevision.getId(),
 					newRevision.getId(), previousRevision.getIdentifier(),
 					newRevision.getIdentifier());
 			commits.put(commit.getId(), commit);
@@ -115,12 +115,12 @@ public class SVNTargetRevisionDetector implements ITargetRevisionDetector {
 	}
 
 	@Override
-	public Map<Long, RevisionInfo> getTargetRevisions() {
+	public Map<Long, DBRevisionInfo> getTargetRevisions() {
 		return Collections.unmodifiableMap(targetRevisions);
 	}
 
 	@Override
-	public Map<Long, Commit> getCommits() {
+	public Map<Long, DBCommitInfo> getCommits() {
 		return Collections.unmodifiableMap(commits);
 	}
 }

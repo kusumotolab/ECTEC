@@ -4,10 +4,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.CloneSetInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CodeFragmentRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 
 /**
@@ -21,12 +21,12 @@ public class BlockBasedCloneDetectingThread implements Runnable {
 	/**
 	 * the target revisions
 	 */
-	private final RevisionInfo[] targetRevisions;
+	private final DBRevisionInfo[] targetRevisions;
 
 	/**
 	 * a map having detected clones
 	 */
-	private final ConcurrentMap<Long, CloneSetInfo> detectedClones;
+	private final ConcurrentMap<Long, DBCloneSetInfo> detectedClones;
 
 	/**
 	 * the retriever for code fragments
@@ -43,8 +43,8 @@ public class BlockBasedCloneDetectingThread implements Runnable {
 	 */
 	private final int cloneSizeThreshold;
 
-	public BlockBasedCloneDetectingThread(final RevisionInfo[] targetRevisions,
-			final ConcurrentMap<Long, CloneSetInfo> detectedClones,
+	public BlockBasedCloneDetectingThread(final DBRevisionInfo[] targetRevisions,
+			final ConcurrentMap<Long, DBCloneSetInfo> detectedClones,
 			final CodeFragmentRetriever retriever, final AtomicInteger index,
 			final int cloneSizeThreshold) {
 		this.targetRevisions = targetRevisions;
@@ -63,14 +63,14 @@ public class BlockBasedCloneDetectingThread implements Runnable {
 				break;
 			}
 
-			final RevisionInfo targetRevision = targetRevisions[currentIndex];
+			final DBRevisionInfo targetRevision = targetRevisions[currentIndex];
 
 			MessagePrinter.println("\t[" + currentIndex + "/"
 					+ targetRevisions.length + "] analyzing revision "
 					+ targetRevision.getIdentifier());
 
 			try {
-				final Map<Long, CodeFragmentInfo> codeFragments = retriever
+				final Map<Long, DBCodeFragmentInfo> codeFragments = retriever
 						.retrieveElementsInSpecifiedRevision(targetRevision
 								.getId());
 				final BlockBasedCloneDetector detector = new BlockBasedCloneDetector(

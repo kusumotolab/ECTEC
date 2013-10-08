@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentGenealogyInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.AbstractElementRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.LinkElementRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentGenealogyInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.AbstractElementRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.LinkElementRetriever;
 
 /**
  * A class to create instances of code fragment genealogies from the given
@@ -19,17 +19,17 @@ import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.LinkElementRetriever;
  */
 public class FragmentChainFinalizer
 		extends
-		ElementChainFinalizer<CodeFragmentInfo, CodeFragmentLinkInfo, CodeFragmentGenealogyInfo> {
+		ElementChainFinalizer<DBCodeFragmentInfo, DBCodeFragmentLinkInfo, DBCodeFragmentGenealogyInfo> {
 
 	public FragmentChainFinalizer(
-			AbstractElementRetriever<CodeFragmentInfo> elementRetriever,
-			LinkElementRetriever<CodeFragmentLinkInfo> linkRetriever) {
+			AbstractElementRetriever<DBCodeFragmentInfo> elementRetriever,
+			LinkElementRetriever<DBCodeFragmentLinkInfo> linkRetriever) {
 		super(elementRetriever, linkRetriever);
 	}
 
 	@Override
-	protected CodeFragmentGenealogyInfo createInstanceFromChain(
-			ElementChain<CodeFragmentLinkInfo> chain) throws Exception {
+	protected DBCodeFragmentGenealogyInfo createInstanceFromChain(
+			ElementChain<DBCodeFragmentLinkInfo> chain) throws Exception {
 		final long startRevisionId = chain.getFirstRevision();
 		final long endRevisionId = chain.getLastRevision();
 		final List<Long> elements = new ArrayList<Long>();
@@ -38,13 +38,13 @@ public class FragmentChainFinalizer
 		elements.addAll(chain.getElements());
 		links.addAll(chain.getLinks());
 
-		final Map<Long, CodeFragmentLinkInfo> linksMap = linkRetriever
+		final Map<Long, DBCodeFragmentLinkInfo> linksMap = linkRetriever
 				.retrieveWithIds(links);
 		int changedCount = 0;
-		CodeFragmentLinkInfo startLink = null;
-		CodeFragmentLinkInfo endLink = null;
+		DBCodeFragmentLinkInfo startLink = null;
+		DBCodeFragmentLinkInfo endLink = null;
 
-		for (final CodeFragmentLinkInfo link : linksMap.values()) {
+		for (final DBCodeFragmentLinkInfo link : linksMap.values()) {
 			if (link.isChanged()) {
 				changedCount++;
 			}
@@ -56,21 +56,21 @@ public class FragmentChainFinalizer
 			}
 		}
 
-		final Map<Long, CodeFragmentInfo> elementsMap = elementRetriever
+		final Map<Long, DBCodeFragmentInfo> elementsMap = elementRetriever
 				.retrieveWithIds(startLink.getBeforeElementId(),
 						endLink.getAfterElementId());
-		final CodeFragmentInfo startElement = elementsMap.get(startLink
+		final DBCodeFragmentInfo startElement = elementsMap.get(startLink
 				.getBeforeElementId());
-		final CodeFragmentInfo endElement = elementsMap.get(endLink
+		final DBCodeFragmentInfo endElement = elementsMap.get(endLink
 				.getAfterElementId());
 
-		return new CodeFragmentGenealogyInfo(startElement.getStartRevisionId(),
+		return new DBCodeFragmentGenealogyInfo(startElement.getStartRevisionId(),
 				endElement.getEndRevisionId(), elements, links, changedCount);
 	}
 
 	@Override
-	protected CodeFragmentGenealogyInfo createInstanceFromElement(
-			CodeFragmentInfo element) {
+	protected DBCodeFragmentGenealogyInfo createInstanceFromElement(
+			DBCodeFragmentInfo element) {
 		final long startRevisionId = element.getStartRevisionId();
 		final long endRevisionId = element.getEndRevisionId();
 		final List<Long> elements = new ArrayList<Long>();
@@ -78,7 +78,7 @@ public class FragmentChainFinalizer
 		elements.add(element.getId());
 		final int changedCount = 0;
 
-		return new CodeFragmentGenealogyInfo(startRevisionId, endRevisionId,
+		return new DBCodeFragmentGenealogyInfo(startRevisionId, endRevisionId,
 				elements, links, changedCount);
 	}
 

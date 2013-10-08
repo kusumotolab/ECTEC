@@ -8,13 +8,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CodeFragmentLinkRegisterer;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CRDRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CodeFragmentRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CodeFragmentLinkRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CRDRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.similarity.ICRDSimilarityCalculator;
 
 /**
@@ -28,7 +28,7 @@ public class CodeFragmentLinkIdentifier {
 	/**
 	 * the target commits
 	 */
-	private final Map<Long, Commit> commits;
+	private final Map<Long, DBCommitInfo> commits;
 
 	/**
 	 * the number of threads
@@ -70,7 +70,7 @@ public class CodeFragmentLinkIdentifier {
 	 */
 	private final int maxElementsCount;
 
-	public CodeFragmentLinkIdentifier(final Map<Long, Commit> commits,
+	public CodeFragmentLinkIdentifier(final Map<Long, DBCommitInfo> commits,
 			final int threadsCount,
 			final CodeFragmentLinkRegisterer fragmentLinkRegisterer,
 			final CodeFragmentRetriever fragmentRetriever,
@@ -99,8 +99,8 @@ public class CodeFragmentLinkIdentifier {
 
 	private Map<Long, Collection<Long>> detectRevisionAndRelatedCommits() {
 		final Map<Long, Collection<Long>> result = new TreeMap<Long, Collection<Long>>();
-		for (final Map.Entry<Long, Commit> entry : commits.entrySet()) {
-			final Commit commit = entry.getValue();
+		for (final Map.Entry<Long, DBCommitInfo> entry : commits.entrySet()) {
+			final DBCommitInfo commit = entry.getValue();
 
 			final long beforeRevisionId = commit.getBeforeRevisionId();
 			if (result.containsKey(beforeRevisionId)) {
@@ -127,7 +127,7 @@ public class CodeFragmentLinkIdentifier {
 		assert threadsCount == 1;
 
 		final Map<Long, Collection<Long>> revisionAndRelatedCommits = detectRevisionAndRelatedCommits();
-		final Commit[] commitsArray = commits.values().toArray(new Commit[0]);
+		final DBCommitInfo[] commitsArray = commits.values().toArray(new DBCommitInfo[0]);
 
 		final CodeFragmentLinkDetector detector = new CodeFragmentLinkDetector(
 				commitsArray, fragmentLinkRegisterer, fragmentRetriever,
@@ -139,13 +139,13 @@ public class CodeFragmentLinkIdentifier {
 	private void runWithMultiThread() throws Exception {
 		assert threadsCount > 1;
 
-		final Commit[] commitsArray = commits.values().toArray(new Commit[0]);
+		final DBCommitInfo[] commitsArray = commits.values().toArray(new DBCommitInfo[0]);
 		final Map<Long, Collection<Long>> revisionAndRelatedCommits = detectRevisionAndRelatedCommits();
 
-		final ConcurrentMap<Long, CodeFragmentLinkInfo> detectedLinks = new ConcurrentHashMap<Long, CodeFragmentLinkInfo>();
-		final ConcurrentMap<Long, Map<Long, CodeFragmentInfo>> codeFragments = new ConcurrentHashMap<Long, Map<Long, CodeFragmentInfo>>();
-		final ConcurrentMap<Long, Map<Long, CRD>> crds = new ConcurrentHashMap<Long, Map<Long, CRD>>();
-		final ConcurrentMap<Long, Commit> processedCommits = new ConcurrentHashMap<Long, Commit>();
+		final ConcurrentMap<Long, DBCodeFragmentLinkInfo> detectedLinks = new ConcurrentHashMap<Long, DBCodeFragmentLinkInfo>();
+		final ConcurrentMap<Long, Map<Long, DBCodeFragmentInfo>> codeFragments = new ConcurrentHashMap<Long, Map<Long, DBCodeFragmentInfo>>();
+		final ConcurrentMap<Long, Map<Long, DBCrdInfo>> crds = new ConcurrentHashMap<Long, Map<Long, DBCrdInfo>>();
+		final ConcurrentMap<Long, DBCommitInfo> processedCommits = new ConcurrentHashMap<Long, DBCommitInfo>();
 		final AtomicInteger index = new AtomicInteger(0);
 
 		final Thread[] threads = new Thread[threadsCount - 1];

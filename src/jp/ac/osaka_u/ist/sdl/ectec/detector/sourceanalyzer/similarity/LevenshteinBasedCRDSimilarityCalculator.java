@@ -1,6 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.similarity;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.util.StringUtils;
 
 /**
@@ -13,7 +13,7 @@ public class LevenshteinBasedCRDSimilarityCalculator implements
 		ICRDSimilarityCalculator {
 
 	@Override
-	public double calcSimilarity(CRD crd, CRD anotherCrd) {
+	public double calcSimilarity(DBCrdInfo crd, DBCrdInfo anotherCrd) {
 		return StringUtils.calcLebenshteinDistanceBasedSimilarity(
 				crd.getFullText(), anotherCrd.getFullText());
 	}

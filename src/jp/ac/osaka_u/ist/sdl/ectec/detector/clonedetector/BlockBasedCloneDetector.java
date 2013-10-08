@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.CloneSetInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
 
 /**
  * A class to detect code clones
@@ -42,39 +42,39 @@ public class BlockBasedCloneDetector {
 	 * @param codeFragments
 	 * @return
 	 */
-	public Map<Long, CloneSetInfo> detectClones(
-			final Map<Long, CodeFragmentInfo> codeFragments) {
+	public Map<Long, DBCloneSetInfo> detectClones(
+			final Map<Long, DBCodeFragmentInfo> codeFragments) {
 		// sort fragments with their hash values
-		final Map<Long, Set<CodeFragmentInfo>> codeFragmentsSortedByHash = new HashMap<Long, Set<CodeFragmentInfo>>();
-		for (final Map.Entry<Long, CodeFragmentInfo> entry : codeFragments
+		final Map<Long, Set<DBCodeFragmentInfo>> codeFragmentsSortedByHash = new HashMap<Long, Set<DBCodeFragmentInfo>>();
+		for (final Map.Entry<Long, DBCodeFragmentInfo> entry : codeFragments
 				.entrySet()) {
-			final CodeFragmentInfo codeFragment = entry.getValue();
+			final DBCodeFragmentInfo codeFragment = entry.getValue();
 			final long hash = codeFragment.getHashForClone();
 			if (codeFragmentsSortedByHash.containsKey(hash)) {
 				codeFragmentsSortedByHash.get(hash).add(codeFragment);
 			} else {
-				final Set<CodeFragmentInfo> newSet = new HashSet<CodeFragmentInfo>();
+				final Set<DBCodeFragmentInfo> newSet = new HashSet<DBCodeFragmentInfo>();
 				newSet.add(codeFragment);
 				codeFragmentsSortedByHash.put(hash, newSet);
 			}
 		}
 
 		// create instances of clone sets
-		final Map<Long, CloneSetInfo> result = new TreeMap<Long, CloneSetInfo>();
+		final Map<Long, DBCloneSetInfo> result = new TreeMap<Long, DBCloneSetInfo>();
 
-		for (final Map.Entry<Long, Set<CodeFragmentInfo>> entry : codeFragmentsSortedByHash
+		for (final Map.Entry<Long, Set<DBCodeFragmentInfo>> entry : codeFragmentsSortedByHash
 				.entrySet()) {
-			final Set<CodeFragmentInfo> fragmentsSet = entry.getValue();
+			final Set<DBCodeFragmentInfo> fragmentsSet = entry.getValue();
 			if (fragmentsSet.size() > 1) {
 				final List<Long> elements = new ArrayList<Long>();
-				for (final CodeFragmentInfo element : fragmentsSet) {
+				for (final DBCodeFragmentInfo element : fragmentsSet) {
 					if (element.getSize() >= sizeThreshold) {
 						elements.add(element.getId());
 					}
 				}
 
 				if (elements.size() > 1) {
-					final CloneSetInfo cloneSet = new CloneSetInfo(revisionId,
+					final DBCloneSetInfo cloneSet = new DBCloneSetInfo(revisionId,
 							elements);
 					result.put(cloneSet.getId(), cloneSet);
 				}

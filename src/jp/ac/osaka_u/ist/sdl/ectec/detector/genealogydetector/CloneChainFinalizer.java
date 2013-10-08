@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.CloneGenealogyInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CloneSetInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CloneSetLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.AbstractElementRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.LinkElementRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneGenealogyInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.AbstractElementRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.LinkElementRetriever;
 
 public class CloneChainFinalizer
 		extends
-		ElementChainFinalizer<CloneSetInfo, CloneSetLinkInfo, CloneGenealogyInfo> {
+		ElementChainFinalizer<DBCloneSetInfo, DBCloneSetLinkInfo, DBCloneGenealogyInfo> {
 
 	/**
 	 * the last revision id
@@ -20,16 +20,16 @@ public class CloneChainFinalizer
 	private final long lastRevisionId;
 
 	public CloneChainFinalizer(
-			AbstractElementRetriever<CloneSetInfo> elementRetriever,
-			LinkElementRetriever<CloneSetLinkInfo> linkRetriever,
+			AbstractElementRetriever<DBCloneSetInfo> elementRetriever,
+			LinkElementRetriever<DBCloneSetLinkInfo> linkRetriever,
 			final long lastRevisionId) {
 		super(elementRetriever, linkRetriever);
 		this.lastRevisionId = lastRevisionId;
 	}
 
 	@Override
-	protected CloneGenealogyInfo createInstanceFromChain(
-			ElementChain<CloneSetLinkInfo> chain) throws Exception {
+	protected DBCloneGenealogyInfo createInstanceFromChain(
+			ElementChain<DBCloneSetLinkInfo> chain) throws Exception {
 		final long startRevisionId = chain.getFirstRevision();
 		final long endRevisionId = chain.getLastRevision();
 		final List<Long> elements = new ArrayList<Long>();
@@ -37,13 +37,13 @@ public class CloneChainFinalizer
 		final List<Long> links = new ArrayList<Long>();
 		links.addAll(chain.getLinks());
 
-		final Map<Long, CloneSetLinkInfo> linksMap = linkRetriever
+		final Map<Long, DBCloneSetLinkInfo> linksMap = linkRetriever
 				.retrieveWithIds(links);
 		int numberOfChanges = 0;
 		int numberOfAdditions = 0;
 		int numberOfDeletions = 0;
 
-		for (final CloneSetLinkInfo link : linksMap.values()) {
+		for (final DBCloneSetLinkInfo link : linksMap.values()) {
 			if (link.getNumberOfChangedElements() > 0) {
 				numberOfChanges++;
 			}
@@ -57,13 +57,13 @@ public class CloneChainFinalizer
 
 		final boolean dead = (endRevisionId == lastRevisionId);
 
-		return new CloneGenealogyInfo(startRevisionId, endRevisionId, elements,
+		return new DBCloneGenealogyInfo(startRevisionId, endRevisionId, elements,
 				links, numberOfChanges, numberOfAdditions, numberOfDeletions,
 				dead);
 	}
 
 	@Override
-	protected CloneGenealogyInfo createInstanceFromElement(CloneSetInfo element) {
+	protected DBCloneGenealogyInfo createInstanceFromElement(DBCloneSetInfo element) {
 		final long startRevisionId = element.getRevisionId();
 		final long endRevisionId = element.getRevisionId();
 		final List<Long> elements = new ArrayList<Long>();
@@ -76,7 +76,7 @@ public class CloneChainFinalizer
 
 		final boolean dead = (endRevisionId == lastRevisionId);
 
-		return new CloneGenealogyInfo(startRevisionId, endRevisionId, elements,
+		return new DBCloneGenealogyInfo(startRevisionId, endRevisionId, elements,
 				links, numberOfChanges, numberOfAdditions, numberOfDeletions,
 				dead);
 	}

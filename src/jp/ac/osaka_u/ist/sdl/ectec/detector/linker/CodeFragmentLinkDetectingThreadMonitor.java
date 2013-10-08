@@ -7,11 +7,11 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentMap;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CodeFragmentLinkRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CodeFragmentLinkRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Constants;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 
@@ -26,7 +26,7 @@ public class CodeFragmentLinkDetectingThreadMonitor {
 	/**
 	 * a map having detected links
 	 */
-	private final ConcurrentMap<Long, CodeFragmentLinkInfo> detectedLinks;
+	private final ConcurrentMap<Long, DBCodeFragmentLinkInfo> detectedLinks;
 
 	/**
 	 * the registerer for links of code fragments
@@ -36,17 +36,17 @@ public class CodeFragmentLinkDetectingThreadMonitor {
 	/**
 	 * the map between revision id and code fragments included in the revision
 	 */
-	private final ConcurrentMap<Long, Map<Long, CodeFragmentInfo>> codeFragments;
+	private final ConcurrentMap<Long, Map<Long, DBCodeFragmentInfo>> codeFragments;
 
 	/**
 	 * the map between revision id and crds included in the revision
 	 */
-	private final ConcurrentMap<Long, Map<Long, CRD>> crds;
+	private final ConcurrentMap<Long, Map<Long, DBCrdInfo>> crds;
 
 	/**
 	 * already processed commits
 	 */
-	private final ConcurrentMap<Long, Commit> processedCommits;
+	private final ConcurrentMap<Long, DBCommitInfo> processedCommits;
 
 	/**
 	 * id of a revision and a collection of ids of commits that relates to the
@@ -63,11 +63,11 @@ public class CodeFragmentLinkDetectingThreadMonitor {
 	private final int maxElementsCount;
 
 	public CodeFragmentLinkDetectingThreadMonitor(
-			final ConcurrentMap<Long, CodeFragmentLinkInfo> detectedLinks,
+			final ConcurrentMap<Long, DBCodeFragmentLinkInfo> detectedLinks,
 			final CodeFragmentLinkRegisterer fragmentLinkRegisterer,
-			final ConcurrentMap<Long, Map<Long, CodeFragmentInfo>> codeFragments,
-			final ConcurrentMap<Long, Map<Long, CRD>> crds,
-			final ConcurrentMap<Long, Commit> processedCommits,
+			final ConcurrentMap<Long, Map<Long, DBCodeFragmentInfo>> codeFragments,
+			final ConcurrentMap<Long, Map<Long, DBCrdInfo>> crds,
+			final ConcurrentMap<Long, DBCommitInfo> processedCommits,
 			final Map<Long, Collection<Long>> revisionAndRelatedCommits,
 			final int maxElementsCount) {
 		this.detectedLinks = detectedLinks;
@@ -89,7 +89,7 @@ public class CodeFragmentLinkDetectingThreadMonitor {
 				// checking the number of detected links
 				synchronized (detectedLinks) {
 					if (detectedLinks.size() >= maxElementsCount) {
-						final Set<CodeFragmentLinkInfo> currentElements = new HashSet<CodeFragmentLinkInfo>();
+						final Set<DBCodeFragmentLinkInfo> currentElements = new HashSet<DBCodeFragmentLinkInfo>();
 						currentElements.addAll(detectedLinks.values());
 						fragmentLinkRegisterer.register(currentElements);
 						MessagePrinter
@@ -98,7 +98,7 @@ public class CodeFragmentLinkDetectingThreadMonitor {
 										+ " links of fragments have been registered into db");
 						numberOfLinks += currentElements.size();
 
-						for (final CodeFragmentLinkInfo link : currentElements) {
+						for (final DBCodeFragmentLinkInfo link : currentElements) {
 							detectedLinks.remove(link.getId());
 						}
 					}

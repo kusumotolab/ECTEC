@@ -2,7 +2,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.detector.vcs;
 
 import java.util.Map;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 
 /**
@@ -22,7 +22,7 @@ public interface IChangedFilesDetector {
 	 * @throws Exception
 	 */
 	public Map<String, Character> detectChangedFiles(
-			final Commit commit, final Language language)
+			final DBCommitInfo commit, final Language language)
 			throws Exception;
 
 }

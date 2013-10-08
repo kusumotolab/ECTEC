@@ -8,13 +8,13 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.CloneSetInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CloneSetLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CloneSetLinkRegisterer;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CloneSetRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CodeFragmentLinkRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CloneSetLinkRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CloneSetRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentLinkRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 
 /**
@@ -28,17 +28,17 @@ public class SingleThreadCloneSetLinkDetector {
 	/**
 	 * the target commits
 	 */
-	private final Commit[] targetCommits;
+	private final DBCommitInfo[] targetCommits;
 
 	/**
 	 * a map having detected links of clones
 	 */
-	private final Map<Long, CloneSetLinkInfo> detectedCloneLinks;
+	private final Map<Long, DBCloneSetLinkInfo> detectedCloneLinks;
 
 	/**
 	 * the map between revision id and clone sets including in the revision
 	 */
-	private final Map<Long, Map<Long, CloneSetInfo>> cloneSets;
+	private final Map<Long, Map<Long, DBCloneSetInfo>> cloneSets;
 
 	/**
 	 * the retriever for links of code fragments
@@ -58,7 +58,7 @@ public class SingleThreadCloneSetLinkDetector {
 	/**
 	 * already processed commits
 	 */
-	private final Map<Long, Commit> processedCommits;
+	private final Map<Long, DBCommitInfo> processedCommits;
 
 	/**
 	 * id of a revision and a collection of ids of commits that relates to the
@@ -74,19 +74,19 @@ public class SingleThreadCloneSetLinkDetector {
 	 */
 	private final int maxElementsCount;
 
-	public SingleThreadCloneSetLinkDetector(final Commit[] targetCommits,
+	public SingleThreadCloneSetLinkDetector(final DBCommitInfo[] targetCommits,
 			final CodeFragmentLinkRetriever fragmentLinkRetriever,
 			final CloneSetRetriever cloneRetriever,
 			final CloneSetLinkRegisterer cloneLinkRegisterer,
 			final Map<Long, Collection<Long>> revisionAndRelatedCommits,
 			final int maxElementsCount) {
 		this.targetCommits = targetCommits;
-		this.detectedCloneLinks = new TreeMap<Long, CloneSetLinkInfo>();
-		this.cloneSets = new TreeMap<Long, Map<Long, CloneSetInfo>>();
+		this.detectedCloneLinks = new TreeMap<Long, DBCloneSetLinkInfo>();
+		this.cloneSets = new TreeMap<Long, Map<Long, DBCloneSetInfo>>();
 		this.fragmentLinkRetriever = fragmentLinkRetriever;
 		this.cloneRetriever = cloneRetriever;
 		this.cloneLinkRegisterer = cloneLinkRegisterer;
-		this.processedCommits = new TreeMap<Long, Commit>();
+		this.processedCommits = new TreeMap<Long, DBCommitInfo>();
 		this.revisionAndRelatedCommits = revisionAndRelatedCommits;
 		this.maxElementsCount = maxElementsCount;
 	}
@@ -95,7 +95,7 @@ public class SingleThreadCloneSetLinkDetector {
 		int numberOfLinks = 0;
 
 		for (int i = 0; i < targetCommits.length; i++) {
-			final Commit targetCommit = targetCommits[i];
+			final DBCommitInfo targetCommit = targetCommits[i];
 
 			final long beforeRevisionId = targetCommit.getBeforeRevisionId();
 			if (beforeRevisionId == -1) {
@@ -114,7 +114,7 @@ public class SingleThreadCloneSetLinkDetector {
 			retrieveElements(beforeRevisionId);
 			retrieveElements(afterRevisionId);
 
-			final Map<Long, CodeFragmentLinkInfo> fragmentLinks = fragmentLinkRetriever
+			final Map<Long, DBCodeFragmentLinkInfo> fragmentLinks = fragmentLinkRetriever
 					.retrieveElementsWithBeforeRevision(beforeRevisionId);
 
 			final CloneSetLinker linker = new CloneSetLinker();
@@ -132,14 +132,14 @@ public class SingleThreadCloneSetLinkDetector {
 					+ targetCommit.getAfterRevisionIdentifier());
 
 			if (detectedCloneLinks.size() >= maxElementsCount) {
-				final Set<CloneSetLinkInfo> currentElements = new HashSet<CloneSetLinkInfo>();
+				final Set<DBCloneSetLinkInfo> currentElements = new HashSet<DBCloneSetLinkInfo>();
 				currentElements.addAll(detectedCloneLinks.values());
 				cloneLinkRegisterer.register(currentElements);
 				MessagePrinter.println("\t" + currentElements.size()
 						+ " links of fragments have been registered into db");
 				numberOfLinks += currentElements.size();
 
-				for (final CloneSetLinkInfo link : currentElements) {
+				for (final DBCloneSetLinkInfo link : currentElements) {
 					detectedCloneLinks.remove(link.getId());
 				}
 			}
@@ -180,7 +180,7 @@ public class SingleThreadCloneSetLinkDetector {
 	 */
 	private void retrieveElements(final long revisionId) throws Exception {
 		if (!cloneSets.containsKey(revisionId)) {
-			final Map<Long, CloneSetInfo> retrievedClones = cloneRetriever
+			final Map<Long, DBCloneSetInfo> retrievedClones = cloneRetriever
 					.retrieveElementsInSpecifiedRevision(revisionId);
 			cloneSets.put(revisionId, retrievedClones);
 		}

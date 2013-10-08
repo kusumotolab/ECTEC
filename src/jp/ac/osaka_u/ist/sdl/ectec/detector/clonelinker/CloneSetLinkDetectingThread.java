@@ -6,12 +6,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.CloneSetInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CloneSetLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CloneSetRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CodeFragmentLinkRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CloneSetRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentLinkRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 
 /**
@@ -25,17 +25,17 @@ public class CloneSetLinkDetectingThread implements Runnable {
 	/**
 	 * the target commits
 	 */
-	private final Commit[] targetCommits;
+	private final DBCommitInfo[] targetCommits;
 
 	/**
 	 * a map having detected links of clones
 	 */
-	private final ConcurrentMap<Long, CloneSetLinkInfo> detectedCloneLinks;
+	private final ConcurrentMap<Long, DBCloneSetLinkInfo> detectedCloneLinks;
 
 	/**
 	 * the map between revision id and clone sets including in the revision
 	 */
-	private final ConcurrentMap<Long, Map<Long, CloneSetInfo>> cloneSets;
+	private final ConcurrentMap<Long, Map<Long, DBCloneSetInfo>> cloneSets;
 
 	/**
 	 * the retriever for code fragment links
@@ -50,19 +50,19 @@ public class CloneSetLinkDetectingThread implements Runnable {
 	/**
 	 * already processed commits
 	 */
-	private final ConcurrentMap<Long, Commit> processedCommits;
+	private final ConcurrentMap<Long, DBCommitInfo> processedCommits;
 
 	/**
 	 * a counter that points the current state of the processing
 	 */
 	private final AtomicInteger index;
 
-	public CloneSetLinkDetectingThread(final Commit[] targetCommits,
-			final ConcurrentMap<Long, CloneSetLinkInfo> detectedCloneLinks,
-			final ConcurrentMap<Long, Map<Long, CloneSetInfo>> cloneSets,
+	public CloneSetLinkDetectingThread(final DBCommitInfo[] targetCommits,
+			final ConcurrentMap<Long, DBCloneSetLinkInfo> detectedCloneLinks,
+			final ConcurrentMap<Long, Map<Long, DBCloneSetInfo>> cloneSets,
 			final CodeFragmentLinkRetriever fragmentLinkRetriever,
 			final CloneSetRetriever cloneRetriever,
-			final ConcurrentMap<Long, Commit> processedCommits,
+			final ConcurrentMap<Long, DBCommitInfo> processedCommits,
 			final AtomicInteger index) {
 		this.targetCommits = targetCommits;
 		this.detectedCloneLinks = detectedCloneLinks;
@@ -82,7 +82,7 @@ public class CloneSetLinkDetectingThread implements Runnable {
 				break;
 			}
 
-			final Commit targetCommit = targetCommits[currentIndex];
+			final DBCommitInfo targetCommit = targetCommits[currentIndex];
 
 			final long beforeRevisionId = targetCommit.getBeforeRevisionId();
 			if (beforeRevisionId == -1) {
@@ -102,7 +102,7 @@ public class CloneSetLinkDetectingThread implements Runnable {
 				retrieveElements(beforeRevisionId);
 				retrieveElements(afterRevisionId);
 
-				final Map<Long, CodeFragmentLinkInfo> fragmentLinks = fragmentLinkRetriever
+				final Map<Long, DBCodeFragmentLinkInfo> fragmentLinks = fragmentLinkRetriever
 						.retrieveElementsWithBeforeRevision(beforeRevisionId);
 
 				final CloneSetLinker linker = new CloneSetLinker();
@@ -138,9 +138,9 @@ public class CloneSetLinkDetectingThread implements Runnable {
 	private void retrieveElements(final long revisionId) throws Exception {
 		synchronized (cloneSets) {
 			if (!cloneSets.containsKey(revisionId)) {
-				final Map<Long, CloneSetInfo> retrievedClones = cloneRetriever
+				final Map<Long, DBCloneSetInfo> retrievedClones = cloneRetriever
 						.retrieveElementsInSpecifiedRevision(revisionId);
-				final Map<Long, CloneSetInfo> concurrentRetrievedClones = new ConcurrentHashMap<Long, CloneSetInfo>();
+				final Map<Long, DBCloneSetInfo> concurrentRetrievedClones = new ConcurrentHashMap<Long, DBCloneSetInfo>();
 				concurrentRetrievedClones.putAll(retrievedClones);
 				cloneSets.put(revisionId, concurrentRetrievedClones);
 			}

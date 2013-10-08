@@ -9,9 +9,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
-import jp.ac.osaka_u.ist.sdl.ectec.data.FileInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.FileRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.FileRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.vcs.IRepositoryManager;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
@@ -66,10 +66,10 @@ public class ChangedFilesIdentifier {
 	 * @param targetRevisions
 	 * @throws SQLException
 	 */
-	public void detectAndRegister(final Map<Long, Commit> commits)
+	public void detectAndRegister(final Map<Long, DBCommitInfo> commits)
 			throws SQLException {
 		final SortedSet<Long> revisionsAsSet = new TreeSet<Long>();
-		for (final Map.Entry<Long, Commit> entry : commits.entrySet()) {
+		for (final Map.Entry<Long, DBCommitInfo> entry : commits.entrySet()) {
 			revisionsAsSet.add(entry.getValue().getAfterRevisionId());
 		}
 
@@ -80,7 +80,7 @@ public class ChangedFilesIdentifier {
 		MessagePrinter.stronglyPrintln();
 
 		MessagePrinter.stronglyPrintln("creating  instances of files ... ");
-		final ConcurrentMap<Long, FileInfo> fileInstances = createFileInstances(
+		final ConcurrentMap<Long, DBFileInfo> fileInstances = createFileInstances(
 				changedFiles, revisionsAsSet.last(), commits);
 		MessagePrinter.stronglyPrintln();
 
@@ -97,13 +97,13 @@ public class ChangedFilesIdentifier {
 	 * @return
 	 */
 	private ConcurrentMap<String, SortedSet<ChangeOnFile>> detectChangedFiles(
-			final Collection<Commit> commits) {
+			final Collection<DBCommitInfo> commits) {
 		final Thread[] threads = new Thread[threadsCount];
 
 		final ConcurrentMap<String, SortedSet<ChangeOnFile>> changedFiles = new ConcurrentHashMap<String, SortedSet<ChangeOnFile>>();
 		final AtomicInteger index = new AtomicInteger(0);
 
-		final Commit[] commitsAsArray = commits.toArray(new Commit[0]);
+		final DBCommitInfo[] commitsAsArray = commits.toArray(new DBCommitInfo[0]);
 
 		for (int i = 0; i < threadsCount; i++) {
 			threads[i] = new Thread(new ChangedFilesDetectingThread(
@@ -130,18 +130,18 @@ public class ChangedFilesIdentifier {
 	 * @param lastRevisionId
 	 * @return
 	 */
-	private ConcurrentMap<Long, FileInfo> createFileInstances(
+	private ConcurrentMap<Long, DBFileInfo> createFileInstances(
 			final ConcurrentMap<String, SortedSet<ChangeOnFile>> changes,
-			final long lastRevisionId, final Map<Long, Commit> commits) {
+			final long lastRevisionId, final Map<Long, DBCommitInfo> commits) {
 		final Thread[] threads = new Thread[threadsCount];
 
-		final ConcurrentMap<Long, FileInfo> fileInstances = new ConcurrentHashMap<Long, FileInfo>();
+		final ConcurrentMap<Long, DBFileInfo> fileInstances = new ConcurrentHashMap<Long, DBFileInfo>();
 		final AtomicInteger index = new AtomicInteger(0);
 
 		final String[] targetPathsAsArray = changes.keySet().toArray(
 				new String[0]);
 
-		final ConcurrentMap<Long, Commit> concurrentCommits = new ConcurrentHashMap<Long, Commit>();
+		final ConcurrentMap<Long, DBCommitInfo> concurrentCommits = new ConcurrentHashMap<Long, DBCommitInfo>();
 		concurrentCommits.putAll(commits);
 
 		for (int i = 0; i < threadsCount; i++) {

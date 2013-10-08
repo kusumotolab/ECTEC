@@ -10,12 +10,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.FileInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CRDRegisterer;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CodeFragmentRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CRDRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CodeFragmentRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.hash.IHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.normalizer.NormalizerCreator;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.vcs.IRepositoryManager;
@@ -35,12 +35,12 @@ public class CodeFragmentIdentifier {
 	/**
 	 * target files
 	 */
-	private final Collection<FileInfo> targetFiles;
+	private final Collection<DBFileInfo> targetFiles;
 
 	/**
 	 * target revisions
 	 */
-	private final Collection<RevisionInfo> revisions;
+	private final Collection<DBRevisionInfo> revisions;
 
 	/**
 	 * the number of threads
@@ -82,8 +82,8 @@ public class CodeFragmentIdentifier {
 	 */
 	private final IHashCalculator hashCalculator;
 
-	public CodeFragmentIdentifier(final Collection<FileInfo> targetFiles,
-			final Collection<RevisionInfo> revisions, final int threadsCount,
+	public CodeFragmentIdentifier(final Collection<DBFileInfo> targetFiles,
+			final Collection<DBRevisionInfo> revisions, final int threadsCount,
 			final CRDRegisterer crdRegisterer,
 			final CodeFragmentRegisterer fragmentRegisterer,
 			final int maxElementsCount,
@@ -106,11 +106,11 @@ public class CodeFragmentIdentifier {
 	public void run() throws Exception {
 		// creating a map between revision id and revision identifier
 		final ConcurrentMap<Long, String> revisionIdentifiers = new ConcurrentHashMap<Long, String>();
-		for (final RevisionInfo revision : revisions) {
+		for (final DBRevisionInfo revision : revisions) {
 			revisionIdentifiers.put(revision.getId(), revision.getIdentifier());
 		}
 
-		final FileInfo[] filesArray = targetFiles.toArray(new FileInfo[0]);
+		final DBFileInfo[] filesArray = targetFiles.toArray(new DBFileInfo[0]);
 
 		if (threadsCount == 1) {
 			runWithSingleThread(revisionIdentifiers, filesArray);
@@ -121,13 +121,13 @@ public class CodeFragmentIdentifier {
 
 	private final void runWithMultipleThreads(
 			final ConcurrentMap<Long, String> revisionIdentifiers,
-			final FileInfo[] filesArray) throws Exception {
+			final DBFileInfo[] filesArray) throws Exception {
 		assert threadsCount > 1;
 
 		final Thread[] threads = new Thread[threadsCount - 1];
 
-		final ConcurrentMap<Long, CRD> detectedCrds = new ConcurrentHashMap<Long, CRD>();
-		final ConcurrentMap<Long, CodeFragmentInfo> detectedFragments = new ConcurrentHashMap<Long, CodeFragmentInfo>();
+		final ConcurrentMap<Long, DBCrdInfo> detectedCrds = new ConcurrentHashMap<Long, DBCrdInfo>();
+		final ConcurrentMap<Long, DBCodeFragmentInfo> detectedFragments = new ConcurrentHashMap<Long, DBCodeFragmentInfo>();
 
 		final AtomicInteger index = new AtomicInteger(0);
 
@@ -147,15 +147,15 @@ public class CodeFragmentIdentifier {
 
 	private final void runWithSingleThread(
 			final ConcurrentMap<Long, String> revisionIdentifiers,
-			final FileInfo[] filesArray) throws Exception {
-		final Map<Long, CRD> detectedCrds = new TreeMap<Long, CRD>();
-		final Map<Long, CodeFragmentInfo> detectedFragments = new TreeMap<Long, CodeFragmentInfo>();
+			final DBFileInfo[] filesArray) throws Exception {
+		final Map<Long, DBCrdInfo> detectedCrds = new TreeMap<Long, DBCrdInfo>();
+		final Map<Long, DBCodeFragmentInfo> detectedFragments = new TreeMap<Long, DBCodeFragmentInfo>();
 
 		long numberOfCrds = 0;
 		long numberOfFragments = 0;
 
 		for (int i = 0; i < filesArray.length; i++) {
-			final FileInfo file = filesArray[i];
+			final DBFileInfo file = filesArray[i];
 			MessagePrinter.println("\t[" + (i + 1) + "/" + filesArray.length
 					+ "] processing " + file.getPath());
 
@@ -177,27 +177,27 @@ public class CodeFragmentIdentifier {
 			detectedFragments.putAll(detector.getDetectedFragments());
 
 			if (detectedCrds.size() >= maxElementsCount) {
-				final Set<CRD> currentElements = new TreeSet<CRD>();
+				final Set<DBCrdInfo> currentElements = new TreeSet<DBCrdInfo>();
 				currentElements.addAll(detectedCrds.values());
 				crdRegisterer.register(currentElements);
 				MessagePrinter.println("\t" + currentElements.size()
 						+ " CRDs have been registered into db");
 				numberOfCrds += currentElements.size();
 
-				for (final CRD crd : currentElements) {
+				for (final DBCrdInfo crd : currentElements) {
 					detectedCrds.remove(crd.getId());
 				}
 			}
 
 			if (detectedFragments.size() >= maxElementsCount) {
-				final Collection<CodeFragmentInfo> currentElements = new HashSet<CodeFragmentInfo>();
+				final Collection<DBCodeFragmentInfo> currentElements = new HashSet<DBCodeFragmentInfo>();
 				currentElements.addAll(detectedFragments.values());
 				fragmentRegisterer.register(currentElements);
 				MessagePrinter.println("\t" + currentElements.size()
 						+ " fragments have been registered into db");
 				numberOfFragments += currentElements.size();
 
-				for (final CodeFragmentInfo fragment : currentElements) {
+				for (final DBCodeFragmentInfo fragment : currentElements) {
 					detectedFragments.remove(fragment.getId());
 				}
 			}

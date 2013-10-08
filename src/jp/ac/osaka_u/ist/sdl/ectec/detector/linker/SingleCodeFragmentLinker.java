@@ -11,9 +11,9 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.similarity.ICRDSimilarityCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.util.Table;
 
@@ -26,15 +26,15 @@ import jp.ac.osaka_u.ist.sdl.ectec.util.Table;
 public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 
 	@Override
-	public Map<Long, CodeFragmentLinkInfo> detectFragmentPairs(
-			Collection<CodeFragmentInfo> beforeFragments,
-			Collection<CodeFragmentInfo> afterFragments,
+	public Map<Long, DBCodeFragmentLinkInfo> detectFragmentPairs(
+			Collection<DBCodeFragmentInfo> beforeFragments,
+			Collection<DBCodeFragmentInfo> afterFragments,
 			ICRDSimilarityCalculator similarityCalculator,
-			double similarityThreshold, Map<Long, CRD> crds,
+			double similarityThreshold, Map<Long, DBCrdInfo> crds,
 			long beforeRevisionId, long afterRevisionId) {
 		final FragmentLinkConditionUmpire umpire = new FragmentLinkConditionUmpire(
 				similarityThreshold);
-		final Map<CodeFragmentInfo, CodeFragmentInfo> pairs = detectPairs(
+		final Map<DBCodeFragmentInfo, DBCodeFragmentInfo> pairs = detectPairs(
 				beforeFragments, afterFragments, similarityCalculator, umpire,
 				crds);
 
@@ -49,19 +49,19 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 	 * @param afterRevisionId
 	 * @return
 	 */
-	private final Map<Long, CodeFragmentLinkInfo> makeLinkInstances(
-			final Map<CodeFragmentInfo, CodeFragmentInfo> pairs,
+	private final Map<Long, DBCodeFragmentLinkInfo> makeLinkInstances(
+			final Map<DBCodeFragmentInfo, DBCodeFragmentInfo> pairs,
 			final long beforeRevisionId, final long afterRevisionId) {
-		final Map<Long, CodeFragmentLinkInfo> result = new TreeMap<Long, CodeFragmentLinkInfo>();
-		for (final Map.Entry<CodeFragmentInfo, CodeFragmentInfo> entry : pairs
+		final Map<Long, DBCodeFragmentLinkInfo> result = new TreeMap<Long, DBCodeFragmentLinkInfo>();
+		for (final Map.Entry<DBCodeFragmentInfo, DBCodeFragmentInfo> entry : pairs
 				.entrySet()) {
-			final CodeFragmentInfo beforeFragment = entry.getKey();
-			final CodeFragmentInfo afterFragment = entry.getValue();
+			final DBCodeFragmentInfo beforeFragment = entry.getKey();
+			final DBCodeFragmentInfo afterFragment = entry.getValue();
 
 			final boolean changed = beforeFragment.getHash() != afterFragment
 					.getHash();
 
-			final CodeFragmentLinkInfo link = new CodeFragmentLinkInfo(
+			final DBCodeFragmentLinkInfo link = new DBCodeFragmentLinkInfo(
 					beforeFragment.getId(), afterFragment.getId(),
 					beforeRevisionId, afterRevisionId, changed);
 			result.put(link.getId(), link);
@@ -79,19 +79,19 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 	 * @param crds
 	 * @return
 	 */
-	private Map<CodeFragmentInfo, CodeFragmentInfo> detectPairs(
-			Collection<CodeFragmentInfo> beforeFragments,
-			Collection<CodeFragmentInfo> afterFragments,
+	private Map<DBCodeFragmentInfo, DBCodeFragmentInfo> detectPairs(
+			Collection<DBCodeFragmentInfo> beforeFragments,
+			Collection<DBCodeFragmentInfo> afterFragments,
 			ICRDSimilarityCalculator similarityCalculator,
-			FragmentLinkConditionUmpire umpire, Map<Long, CRD> crds) {
+			FragmentLinkConditionUmpire umpire, Map<Long, DBCrdInfo> crds) {
 		// the result (detected pairs of fragments) with the shuffled
 		// the key is an AFTER fragment and the value is a BEFORE fragment
-		final Map<CodeFragmentInfo, CodeFragmentInfo> reversedResult = new TreeMap<CodeFragmentInfo, CodeFragmentInfo>();
+		final Map<DBCodeFragmentInfo, DBCodeFragmentInfo> reversedResult = new TreeMap<DBCodeFragmentInfo, DBCodeFragmentInfo>();
 
 		// evacuate the original collections
-		final Set<CodeFragmentInfo> beforeFragmentsSet = new HashSet<CodeFragmentInfo>();
+		final Set<DBCodeFragmentInfo> beforeFragmentsSet = new HashSet<DBCodeFragmentInfo>();
 		beforeFragmentsSet.addAll(beforeFragments);
-		final Set<CodeFragmentInfo> afterFragmentsSet = new HashSet<CodeFragmentInfo>();
+		final Set<DBCodeFragmentInfo> afterFragmentsSet = new HashSet<DBCodeFragmentInfo>();
 		afterFragmentsSet.addAll(afterFragments);
 
 		// detect pairs of fragments whose crds are equal to each other
@@ -103,12 +103,12 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 		 * before fragments
 		 */
 		final Table<Long, Long, Double> similarityTable = new Table<Long, Long, Double>();
-		final Map<CodeFragmentInfo, Queue<CodeFragmentInfo>> wishLists = new TreeMap<CodeFragmentInfo, Queue<CodeFragmentInfo>>();
+		final Map<DBCodeFragmentInfo, Queue<DBCodeFragmentInfo>> wishLists = new TreeMap<DBCodeFragmentInfo, Queue<DBCodeFragmentInfo>>();
 
 		fillSimilarityTableAndWishList(beforeFragmentsSet, afterFragmentsSet,
 				similarityTable, wishLists, similarityCalculator, umpire, crds);
 
-		final List<CodeFragmentInfo> unmarriedBeforeFragments = new ArrayList<CodeFragmentInfo>();
+		final List<DBCodeFragmentInfo> unmarriedBeforeFragments = new ArrayList<DBCodeFragmentInfo>();
 		unmarriedBeforeFragments.addAll(beforeFragmentsSet);
 
 		while (true) {
@@ -124,7 +124,7 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 
 		}
 
-		final Map<CodeFragmentInfo, CodeFragmentInfo> result = tailorReversedMap(reversedResult);
+		final Map<DBCodeFragmentInfo, DBCodeFragmentInfo> result = tailorReversedMap(reversedResult);
 		return result;
 	}
 
@@ -141,19 +141,19 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 	 * @param crds
 	 */
 	private void fillSimilarityTableAndWishList(
-			final Collection<CodeFragmentInfo> beforeFragments,
-			final Collection<CodeFragmentInfo> afterFragments,
+			final Collection<DBCodeFragmentInfo> beforeFragments,
+			final Collection<DBCodeFragmentInfo> afterFragments,
 			final Table<Long, Long, Double> similarityTable,
-			final Map<CodeFragmentInfo, Queue<CodeFragmentInfo>> wishLists,
+			final Map<DBCodeFragmentInfo, Queue<DBCodeFragmentInfo>> wishLists,
 			final ICRDSimilarityCalculator similarityCalculator,
-			final FragmentLinkConditionUmpire umpire, final Map<Long, CRD> crds) {
-		for (final CodeFragmentInfo beforeFragment : beforeFragments) {
+			final FragmentLinkConditionUmpire umpire, final Map<Long, DBCrdInfo> crds) {
+		for (final DBCodeFragmentInfo beforeFragment : beforeFragments) {
 			// fill a row of similarity table
-			final Map<CodeFragmentInfo, Double> similarities = new TreeMap<CodeFragmentInfo, Double>();
-			final CRD beforeCrd = crds.get(beforeFragment.getCrdId());
+			final Map<DBCodeFragmentInfo, Double> similarities = new TreeMap<DBCodeFragmentInfo, Double>();
+			final DBCrdInfo beforeCrd = crds.get(beforeFragment.getCrdId());
 
-			for (final CodeFragmentInfo afterFragment : afterFragments) {
-				final CRD afterCrd = crds.get(afterFragment.getCrdId());
+			for (final DBCodeFragmentInfo afterFragment : afterFragments) {
+				final DBCrdInfo afterCrd = crds.get(afterFragment.getCrdId());
 				final double similarity = similarityCalculator.calcSimilarity(
 						beforeCrd, afterCrd);
 
@@ -168,7 +168,7 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 			}
 
 			// fill a wish list for the fragment under processing
-			final Queue<CodeFragmentInfo> wishList = sortWithValues(similarities);
+			final Queue<DBCodeFragmentInfo> wishList = sortWithValues(similarities);
 			wishLists.put(beforeFragment, wishList);
 		}
 	}
@@ -180,18 +180,18 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 	 * @param target
 	 * @return
 	 */
-	private Queue<CodeFragmentInfo> sortWithValues(
-			final Map<CodeFragmentInfo, Double> target) {
-		final Queue<CodeFragmentInfo> result = new LinkedList<CodeFragmentInfo>();
+	private Queue<DBCodeFragmentInfo> sortWithValues(
+			final Map<DBCodeFragmentInfo, Double> target) {
+		final Queue<DBCodeFragmentInfo> result = new LinkedList<DBCodeFragmentInfo>();
 		final int targetSize = target.size();
 
 		while (result.size() < targetSize) {
 			double maxValue = -1.0;
-			CodeFragmentInfo keyHasMaxValue = null;
+			DBCodeFragmentInfo keyHasMaxValue = null;
 
-			for (final Map.Entry<CodeFragmentInfo, Double> entry : target
+			for (final Map.Entry<DBCodeFragmentInfo, Double> entry : target
 					.entrySet()) {
-				final CodeFragmentInfo key = entry.getKey();
+				final DBCodeFragmentInfo key = entry.getKey();
 				final double value = entry.getValue();
 
 				if (result.contains(key)) {
@@ -211,14 +211,14 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 	}
 
 	private void removeSameCrdFragmentPairs(
-			final Collection<CodeFragmentInfo> beforeFragments,
-			final Collection<CodeFragmentInfo> afterFragments,
-			final Map<Long, CRD> crds) {
-		final Set<CodeFragmentInfo> processedBeforeFragments = new HashSet<CodeFragmentInfo>();
-		final Set<CodeFragmentInfo> processedAfterFragments = new HashSet<CodeFragmentInfo>();
+			final Collection<DBCodeFragmentInfo> beforeFragments,
+			final Collection<DBCodeFragmentInfo> afterFragments,
+			final Map<Long, DBCrdInfo> crds) {
+		final Set<DBCodeFragmentInfo> processedBeforeFragments = new HashSet<DBCodeFragmentInfo>();
+		final Set<DBCodeFragmentInfo> processedAfterFragments = new HashSet<DBCodeFragmentInfo>();
 
-		for (final CodeFragmentInfo beforeFragment : beforeFragments) {
-			for (final CodeFragmentInfo afterFragment : afterFragments) {
+		for (final DBCodeFragmentInfo beforeFragment : beforeFragments) {
+			for (final DBCodeFragmentInfo afterFragment : afterFragments) {
 				if (processedAfterFragments.contains(afterFragment)) {
 					continue;
 				}
@@ -244,16 +244,16 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 	 * @return
 	 */
 	private boolean processAllProposes(
-			final Map<CodeFragmentInfo, CodeFragmentInfo> reversedResult,
-			final List<CodeFragmentInfo> unmarriedBeforeFragments,
+			final Map<DBCodeFragmentInfo, DBCodeFragmentInfo> reversedResult,
+			final List<DBCodeFragmentInfo> unmarriedBeforeFragments,
 			final Table<Long, Long, Double> similarityTable,
-			final Map<CodeFragmentInfo, Queue<CodeFragmentInfo>> wishLists) {
+			final Map<DBCodeFragmentInfo, Queue<DBCodeFragmentInfo>> wishLists) {
 		// the set of code fragments which detect their partners in this loop
-		final Set<CodeFragmentInfo> marriedBeforeFragments = new HashSet<CodeFragmentInfo>();
+		final Set<DBCodeFragmentInfo> marriedBeforeFragments = new HashSet<DBCodeFragmentInfo>();
 
 		// the set of code fragments which are said good-bye by their partners
 		// in this loop
-		final Set<CodeFragmentInfo> dumpedBeforeFragments = new HashSet<CodeFragmentInfo>();
+		final Set<DBCodeFragmentInfo> dumpedBeforeFragments = new HashSet<DBCodeFragmentInfo>();
 
 		// whether any of before fragments make a propose
 		// if this value is false in the tail of this method,
@@ -263,10 +263,10 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 		/*
 		 * make propose
 		 */
-		for (final CodeFragmentInfo proposingFragment : unmarriedBeforeFragments) {
+		for (final DBCodeFragmentInfo proposingFragment : unmarriedBeforeFragments) {
 
 			// propose to the most favorite after fragment
-			final CodeFragmentInfo proposedMethod = wishLists.get(
+			final DBCodeFragmentInfo proposedMethod = wishLists.get(
 					proposingFragment).poll();
 
 			// there are no candidate fragments that this fragment can propose
@@ -291,7 +291,7 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 				// otherwise, the propose will fail
 
 				// the fiance, the rival
-				final CodeFragmentInfo rivalMethod = reversedResult
+				final DBCodeFragmentInfo rivalMethod = reversedResult
 						.get(proposedMethod);
 
 				// similarities
@@ -341,11 +341,11 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 	 * @param target
 	 * @return
 	 */
-	private Map<CodeFragmentInfo, CodeFragmentInfo> tailorReversedMap(
-			final Map<CodeFragmentInfo, CodeFragmentInfo> target) {
-		final Map<CodeFragmentInfo, CodeFragmentInfo> result = new TreeMap<CodeFragmentInfo, CodeFragmentInfo>();
+	private Map<DBCodeFragmentInfo, DBCodeFragmentInfo> tailorReversedMap(
+			final Map<DBCodeFragmentInfo, DBCodeFragmentInfo> target) {
+		final Map<DBCodeFragmentInfo, DBCodeFragmentInfo> result = new TreeMap<DBCodeFragmentInfo, DBCodeFragmentInfo>();
 
-		for (final Map.Entry<CodeFragmentInfo, CodeFragmentInfo> entry : target
+		for (final Map.Entry<DBCodeFragmentInfo, DBCodeFragmentInfo> entry : target
 				.entrySet()) {
 			result.put(entry.getValue(), entry.getKey());
 		}

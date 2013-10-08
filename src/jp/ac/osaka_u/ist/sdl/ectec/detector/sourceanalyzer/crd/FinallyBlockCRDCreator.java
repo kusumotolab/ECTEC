@@ -2,8 +2,8 @@ package jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.crd;
 
 import java.util.List;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.BlockType;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.normalizer.StringCreateVisitor;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Constants;
 
@@ -19,7 +19,7 @@ import org.eclipse.jdt.core.dom.TryStatement;
  */
 public class FinallyBlockCRDCreator extends AbstractBlockAnalyzer<Block> {
 
-	public FinallyBlockCRDCreator(Block node, CRD parent,
+	public FinallyBlockCRDCreator(Block node, DBCrdInfo parent,
 			StringCreateVisitor visitor) {
 		super(node, parent, BlockType.FINALLY, visitor);
 	}

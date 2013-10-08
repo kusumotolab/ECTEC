@@ -1,6 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.similarity;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
 
 /**
  * An interface for calculating similarities between two crds
@@ -18,6 +18,6 @@ public interface ICRDSimilarityCalculator {
 	 * @param anotherCrd
 	 * @return
 	 */
-	public double calcSimilarity(final CRD crd, final CRD anotherCrd);
+	public double calcSimilarity(final DBCrdInfo crd, final DBCrdInfo anotherCrd);
 
 }

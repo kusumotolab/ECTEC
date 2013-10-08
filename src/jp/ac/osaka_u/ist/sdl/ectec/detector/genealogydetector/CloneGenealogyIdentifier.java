@@ -3,12 +3,12 @@ package jp.ac.osaka_u.ist.sdl.ectec.detector.genealogydetector;
 import java.util.Collection;
 import java.util.Map;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.CloneGenealogyInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CloneSetLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CloneGenealogyRegisterer;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CloneSetLinkRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CloneSetRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneGenealogyInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CloneGenealogyRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CloneSetLinkRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CloneSetRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 
 /**
@@ -22,7 +22,7 @@ public class CloneGenealogyIdentifier {
 	/**
 	 * target revisions
 	 */
-	private final Map<Long, RevisionInfo> targetRevisions;
+	private final Map<Long, DBRevisionInfo> targetRevisions;
 
 	/**
 	 * the number of threads
@@ -50,7 +50,7 @@ public class CloneGenealogyIdentifier {
 	private final long lastRevisionId;
 
 	public CloneGenealogyIdentifier(
-			final Map<Long, RevisionInfo> targetRevisions,
+			final Map<Long, DBRevisionInfo> targetRevisions,
 			final int threadsCount, final CloneSetRetriever elementRetriever,
 			final CloneSetLinkRetriever elementLinkRetriever,
 			final CloneGenealogyRegisterer registerer, final long lastRevisionId) {
@@ -63,14 +63,14 @@ public class CloneGenealogyIdentifier {
 	}
 
 	public void detectAndRegister() throws Exception {
-		final ElementChainDetector<CloneSetLinkInfo> chainDetector = new ElementChainDetector<CloneSetLinkInfo>(
+		final ElementChainDetector<DBCloneSetLinkInfo> chainDetector = new ElementChainDetector<DBCloneSetLinkInfo>(
 				targetRevisions, elementLinkRetriever, threadsCount);
-		final Collection<ElementChain<CloneSetLinkInfo>> chains = chainDetector
+		final Collection<ElementChain<DBCloneSetLinkInfo>> chains = chainDetector
 				.detect();
 
 		final CloneChainFinalizer finalizer = new CloneChainFinalizer(
 				elementRetriever, elementLinkRetriever, lastRevisionId);
-		final Map<Long, CloneGenealogyInfo> genealogies = finalizer
+		final Map<Long, DBCloneGenealogyInfo> genealogies = finalizer
 				.finalize(chains);
 
 		MessagePrinter.println();

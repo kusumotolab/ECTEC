@@ -5,9 +5,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicLong;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.ElementLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBElementLinkInfo;
 
-public class ElementChain<L extends ElementLinkInfo> {
+public class ElementChain<L extends DBElementLinkInfo> {
 
 	/**
 	 * the counter to have the number of created elements

@@ -5,10 +5,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.CloneSetInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CloneSetRegisterer;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CodeFragmentRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CloneSetRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentRetriever;
 
 /**
  * A class for managing threads that detect clones
@@ -21,7 +21,7 @@ public class BlockBasedCloneIdentifier {
 	/**
 	 * the target revisions
 	 */
-	private final Map<Long, RevisionInfo> revisions;
+	private final Map<Long, DBRevisionInfo> revisions;
 
 	/**
 	 * the number of threads
@@ -48,7 +48,7 @@ public class BlockBasedCloneIdentifier {
 	 */
 	private final int cloneSizeThreshold;
 
-	public BlockBasedCloneIdentifier(final Map<Long, RevisionInfo> revisions,
+	public BlockBasedCloneIdentifier(final Map<Long, DBRevisionInfo> revisions,
 			final int threadsCount,
 			final CodeFragmentRetriever fragmentRetriever,
 			final CloneSetRegisterer cloneRegisterer,
@@ -72,8 +72,8 @@ public class BlockBasedCloneIdentifier {
 	private void runWithSingleThread() throws Exception {
 		assert threadsCount == 1;
 
-		final RevisionInfo[] revisionsArray = revisions.values().toArray(
-				new RevisionInfo[0]);
+		final DBRevisionInfo[] revisionsArray = revisions.values().toArray(
+				new DBRevisionInfo[0]);
 		final SingleThreadBlockBasedCloneDetector detector = new SingleThreadBlockBasedCloneDetector(
 				revisionsArray, fragmentRetriever, cloneRegisterer,
 				maxElementsCount, cloneSizeThreshold);
@@ -83,9 +83,9 @@ public class BlockBasedCloneIdentifier {
 	private void runWithMultipleThreads() throws Exception {
 		assert threadsCount > 1;
 
-		final RevisionInfo[] revisionsArray = revisions.values().toArray(
-				new RevisionInfo[0]);
-		final ConcurrentMap<Long, CloneSetInfo> detectedClones = new ConcurrentHashMap<Long, CloneSetInfo>();
+		final DBRevisionInfo[] revisionsArray = revisions.values().toArray(
+				new DBRevisionInfo[0]);
+		final ConcurrentMap<Long, DBCloneSetInfo> detectedClones = new ConcurrentHashMap<Long, DBCloneSetInfo>();
 		final AtomicInteger index = new AtomicInteger(0);
 
 		final Thread[] threads = new Thread[threadsCount - 1];

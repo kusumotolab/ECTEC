@@ -2,10 +2,10 @@ package jp.ac.osaka_u.ist.sdl.ectec.detector;
 
 import java.util.Map;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
-import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CommitRegisterer;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.RevisionRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CommitRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.RevisionRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.vcs.ITargetRevisionDetector;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
@@ -54,7 +54,7 @@ public class RevisionIdentifier {
 			final String endRevisionIdentifier) throws Exception {
 		detector.detect(language, startRevisionIdentifier,
 				endRevisionIdentifier);
-		final Map<Long, RevisionInfo> targetRevisions = detector
+		final Map<Long, DBRevisionInfo> targetRevisions = detector
 				.getTargetRevisions();
 
 		MessagePrinter.stronglyPrintln("\t" + targetRevisions.size()
@@ -68,7 +68,7 @@ public class RevisionIdentifier {
 
 		MessagePrinter.stronglyPrintln();
 
-		final Map<Long, Commit> commits = detector.getCommits();
+		final Map<Long, DBCommitInfo> commits = detector.getCommits();
 
 		MessagePrinter.stronglyPrintln("registering target commits ... ");
 		commitRegisterer.register(commits.values());

@@ -4,8 +4,8 @@ import java.util.SortedSet;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
-import jp.ac.osaka_u.ist.sdl.ectec.data.FileInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 
 /**
@@ -25,12 +25,12 @@ public class FileInfoInstancesCreatingThread implements Runnable {
 	 * the key is the id of a revision and the value is the id of the previous
 	 * revision of the key revision
 	 */
-	private final ConcurrentMap<Long, Commit> commits;
+	private final ConcurrentMap<Long, DBCommitInfo> commits;
 
 	/**
 	 * the instances of FileInfo
 	 */
-	private final ConcurrentMap<Long, FileInfo> files;
+	private final ConcurrentMap<Long, DBFileInfo> files;
 
 	/**
 	 * the file paths to be analyzed
@@ -49,8 +49,8 @@ public class FileInfoInstancesCreatingThread implements Runnable {
 
 	public FileInfoInstancesCreatingThread(
 			final ConcurrentMap<String, SortedSet<ChangeOnFile>> changedFiles,
-			final ConcurrentMap<Long, Commit> commits,
-			final ConcurrentMap<Long, FileInfo> files,
+			final ConcurrentMap<Long, DBCommitInfo> commits,
+			final ConcurrentMap<Long, DBFileInfo> files,
 			final String[] targetPaths, final AtomicInteger index,
 			final long lastRevisionId) {
 		this.changedFiles = changedFiles;
@@ -92,10 +92,10 @@ public class FileInfoInstancesCreatingThread implements Runnable {
 					continue;
 				}
 
-				final Commit currentChangeCommit = commits.get(currentChange
+				final DBCommitInfo currentChangeCommit = commits.get(currentChange
 						.getChagnedCommitId());
 
-				final Commit nextChangeCommit = commits.get(nextChange
+				final DBCommitInfo nextChangeCommit = commits.get(nextChange
 						.getChagnedCommitId());
 
 				final long previousRevision = nextChangeCommit
@@ -103,14 +103,14 @@ public class FileInfoInstancesCreatingThread implements Runnable {
 
 				switch (currentChange.getChangeType()) {
 				case ADD:
-					final FileInfo addedFile = new FileInfo(path,
+					final DBFileInfo addedFile = new DBFileInfo(path,
 							currentChangeCommit.getAfterRevisionId(),
 							previousRevision);
 					files.put(addedFile.getId(), addedFile);
 					break;
 
 				case CHANGE:
-					final FileInfo changedFile = new FileInfo(path,
+					final DBFileInfo changedFile = new DBFileInfo(path,
 							currentChangeCommit.getAfterRevisionId(),
 							previousRevision);
 					files.put(changedFile.getId(), changedFile);
@@ -124,20 +124,20 @@ public class FileInfoInstancesCreatingThread implements Runnable {
 
 			}
 
-			final Commit currentChangeCommit = commits.get(currentChange
+			final DBCommitInfo currentChangeCommit = commits.get(currentChange
 					.getChagnedCommitId());
 
 			// treat the last change
 			switch (currentChange.getChangeType()) {
 			case ADD:
-				final FileInfo addedFile = new FileInfo(path,
+				final DBFileInfo addedFile = new DBFileInfo(path,
 						currentChangeCommit.getAfterRevisionId(),
 						lastRevisionId);
 				files.put(addedFile.getId(), addedFile);
 				break;
 
 			case CHANGE:
-				final FileInfo changedFile = new FileInfo(path,
+				final DBFileInfo changedFile = new DBFileInfo(path,
 						currentChangeCommit.getAfterRevisionId(),
 						lastRevisionId);
 				files.put(changedFile.getId(), changedFile);

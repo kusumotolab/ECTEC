@@ -4,10 +4,10 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentMap;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CRDRegisterer;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CodeFragmentRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CRDRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CodeFragmentRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Constants;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 
@@ -22,12 +22,12 @@ public class CodeFragmentDetectingThreadMonitor {
 	/**
 	 * a map having detected crds
 	 */
-	private final ConcurrentMap<Long, CRD> detectedCrds;
+	private final ConcurrentMap<Long, DBCrdInfo> detectedCrds;
 
 	/**
 	 * a map having detected fragments
 	 */
-	private final ConcurrentMap<Long, CodeFragmentInfo> detectedFragments;
+	private final ConcurrentMap<Long, DBCodeFragmentInfo> detectedFragments;
 
 	/**
 	 * the threshold for elements <br>
@@ -48,8 +48,8 @@ public class CodeFragmentDetectingThreadMonitor {
 	private final CodeFragmentRegisterer fragmentRegisterer;
 
 	public CodeFragmentDetectingThreadMonitor(
-			final ConcurrentMap<Long, CRD> detectedCrds,
-			final ConcurrentMap<Long, CodeFragmentInfo> detectedFragments,
+			final ConcurrentMap<Long, DBCrdInfo> detectedCrds,
+			final ConcurrentMap<Long, DBCodeFragmentInfo> detectedFragments,
 			final int maximumElementsCount, final CRDRegisterer crdRegisterer,
 			final CodeFragmentRegisterer fragmentRegisterer) {
 		this.detectedCrds = detectedCrds;
@@ -70,14 +70,14 @@ public class CodeFragmentDetectingThreadMonitor {
 
 				if (detectedCrds.size() >= maxElementsCount) {
 					synchronized (detectedCrds) {
-						final Set<CRD> currentElements = new TreeSet<CRD>();
+						final Set<DBCrdInfo> currentElements = new TreeSet<DBCrdInfo>();
 						currentElements.addAll(detectedCrds.values());
 						crdRegisterer.register(currentElements);
 						MessagePrinter.println("\t" + currentElements.size()
 								+ " CRDs have been registered into db");
 						numberOfCrds += currentElements.size();
 
-						for (final CRD crd : currentElements) {
+						for (final DBCrdInfo crd : currentElements) {
 							detectedCrds.remove(crd.getId());
 						}
 					}
@@ -85,14 +85,14 @@ public class CodeFragmentDetectingThreadMonitor {
 
 				if (detectedFragments.size() >= maxElementsCount) {
 					synchronized (detectedFragments) {
-						final Set<CodeFragmentInfo> currentElements = new TreeSet<CodeFragmentInfo>();
+						final Set<DBCodeFragmentInfo> currentElements = new TreeSet<DBCodeFragmentInfo>();
 						currentElements.addAll(detectedFragments.values());
 						fragmentRegisterer.register(currentElements);
 						MessagePrinter.println("\t" + currentElements.size()
 								+ " fragments have been registered into db");
 						numberOfFragments += currentElements.size();
 
-						for (final CodeFragmentInfo fragment : currentElements) {
+						for (final DBCodeFragmentInfo fragment : currentElements) {
 							detectedFragments.remove(fragment.getId());
 						}
 					}

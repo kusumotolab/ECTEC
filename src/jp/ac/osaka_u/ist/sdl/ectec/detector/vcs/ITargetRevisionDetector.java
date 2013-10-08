@@ -2,8 +2,8 @@ package jp.ac.osaka_u.ist.sdl.ectec.detector.vcs;
 
 import java.util.Map;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
-import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 
 /**
@@ -33,7 +33,7 @@ public interface ITargetRevisionDetector {
 	 * 
 	 * @return
 	 */
-	public Map<Long, RevisionInfo> getTargetRevisions();
+	public Map<Long, DBRevisionInfo> getTargetRevisions();
 
 	/**
 	 * get the detected target commits <br>
@@ -42,6 +42,6 @@ public interface ITargetRevisionDetector {
 	 * 
 	 * @return
 	 */
-	public Map<Long, Commit> getCommits();
+	public Map<Long, DBCommitInfo> getCommits();
 
 }

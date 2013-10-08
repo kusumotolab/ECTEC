@@ -7,47 +7,47 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.similarity.ICRDSimilarityCalculator;
 
 public class MultipleCodeFragmentLinker implements ICodeFragmentLinker {
 
 	@Override
-	public Map<Long, CodeFragmentLinkInfo> detectFragmentPairs(
-			Collection<CodeFragmentInfo> beforeFragments,
-			Collection<CodeFragmentInfo> afterFragments,
+	public Map<Long, DBCodeFragmentLinkInfo> detectFragmentPairs(
+			Collection<DBCodeFragmentInfo> beforeFragments,
+			Collection<DBCodeFragmentInfo> afterFragments,
 			ICRDSimilarityCalculator similarityCalculator,
-			double similarityThreshold, Map<Long, CRD> crds,
+			double similarityThreshold, Map<Long, DBCrdInfo> crds,
 			long beforeRevisionId, long afterRevisionId) {
 		final FragmentLinkConditionUmpire umpire = new FragmentLinkConditionUmpire(
 				similarityThreshold);
-		final Map<CodeFragmentInfo, CodeFragmentInfo> pairs = detectPairs(
+		final Map<DBCodeFragmentInfo, DBCodeFragmentInfo> pairs = detectPairs(
 				beforeFragments, afterFragments, similarityCalculator, umpire,
 				crds);
 
 		return makeLinkInstances(pairs, beforeRevisionId, afterRevisionId);
 	}
 
-	private Map<CodeFragmentInfo, CodeFragmentInfo> detectPairs(
-			Collection<CodeFragmentInfo> beforeFragments,
-			Collection<CodeFragmentInfo> afterFragments,
+	private Map<DBCodeFragmentInfo, DBCodeFragmentInfo> detectPairs(
+			Collection<DBCodeFragmentInfo> beforeFragments,
+			Collection<DBCodeFragmentInfo> afterFragments,
 			ICRDSimilarityCalculator similarityCalculator,
-			FragmentLinkConditionUmpire umpire, Map<Long, CRD> crds) {
-		final Map<CodeFragmentInfo, CodeFragmentInfo> result = new TreeMap<CodeFragmentInfo, CodeFragmentInfo>();
+			FragmentLinkConditionUmpire umpire, Map<Long, DBCrdInfo> crds) {
+		final Map<DBCodeFragmentInfo, DBCodeFragmentInfo> result = new TreeMap<DBCodeFragmentInfo, DBCodeFragmentInfo>();
 
 		// evacuate the original collections
-		final Set<CodeFragmentInfo> beforeFragmentsSet = new HashSet<CodeFragmentInfo>();
+		final Set<DBCodeFragmentInfo> beforeFragmentsSet = new HashSet<DBCodeFragmentInfo>();
 		beforeFragmentsSet.addAll(beforeFragments);
-		final Set<CodeFragmentInfo> afterFragmentsSet = new HashSet<CodeFragmentInfo>();
+		final Set<DBCodeFragmentInfo> afterFragmentsSet = new HashSet<DBCodeFragmentInfo>();
 		afterFragmentsSet.addAll(afterFragments);
 
-		for (final CodeFragmentInfo beforeFragment : beforeFragmentsSet) {
-			final CRD beforeCrd = crds.get(beforeFragment.getCrdId());
+		for (final DBCodeFragmentInfo beforeFragment : beforeFragmentsSet) {
+			final DBCrdInfo beforeCrd = crds.get(beforeFragment.getCrdId());
 
-			for (final CodeFragmentInfo afterFragment : afterFragmentsSet) {
-				final CRD afterCrd = crds.get(afterFragment.getCrdId());
+			for (final DBCodeFragmentInfo afterFragment : afterFragmentsSet) {
+				final DBCrdInfo afterCrd = crds.get(afterFragment.getCrdId());
 
 				if (beforeCrd.equals(afterCrd)) {
 					continue;
@@ -78,19 +78,19 @@ public class MultipleCodeFragmentLinker implements ICodeFragmentLinker {
 	 * @param afterRevisionId
 	 * @return
 	 */
-	private final Map<Long, CodeFragmentLinkInfo> makeLinkInstances(
-			final Map<CodeFragmentInfo, CodeFragmentInfo> pairs,
+	private final Map<Long, DBCodeFragmentLinkInfo> makeLinkInstances(
+			final Map<DBCodeFragmentInfo, DBCodeFragmentInfo> pairs,
 			final long beforeRevisionId, final long afterRevisionId) {
-		final Map<Long, CodeFragmentLinkInfo> result = new TreeMap<Long, CodeFragmentLinkInfo>();
-		for (final Map.Entry<CodeFragmentInfo, CodeFragmentInfo> entry : pairs
+		final Map<Long, DBCodeFragmentLinkInfo> result = new TreeMap<Long, DBCodeFragmentLinkInfo>();
+		for (final Map.Entry<DBCodeFragmentInfo, DBCodeFragmentInfo> entry : pairs
 				.entrySet()) {
-			final CodeFragmentInfo beforeFragment = entry.getKey();
-			final CodeFragmentInfo afterFragment = entry.getValue();
+			final DBCodeFragmentInfo beforeFragment = entry.getKey();
+			final DBCodeFragmentInfo afterFragment = entry.getValue();
 
 			final boolean changed = beforeFragment.getHash() != afterFragment
 					.getHash();
 
-			final CodeFragmentLinkInfo link = new CodeFragmentLinkInfo(
+			final DBCodeFragmentLinkInfo link = new DBCodeFragmentLinkInfo(
 					beforeFragment.getId(), afterFragment.getId(),
 					beforeRevisionId, afterRevisionId, changed);
 			result.put(link.getId(), link);

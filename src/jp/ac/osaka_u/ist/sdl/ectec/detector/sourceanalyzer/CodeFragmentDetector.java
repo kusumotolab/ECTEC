@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.TreeMap;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.BlockType;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.crd.AbstractBlockAnalyzer;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.crd.CatchClauseCRDCreator;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.crd.ClassCRDCreator;
@@ -56,12 +56,12 @@ public class CodeFragmentDetector extends ASTVisitor {
 	/**
 	 * detected crds
 	 */
-	private final Map<Long, CRD> detectedCrds;
+	private final Map<Long, DBCrdInfo> detectedCrds;
 
 	/**
 	 * detected fragments
 	 */
-	private final Map<Long, CodeFragmentInfo> detectedFragments;
+	private final Map<Long, DBCodeFragmentInfo> detectedFragments;
 
 	/**
 	 * the id of the owner file
@@ -81,7 +81,7 @@ public class CodeFragmentDetector extends ASTVisitor {
 	/**
 	 * crds for out blocks of the current block under processed
 	 */
-	private final Stack<CRD> parentCrds;
+	private final Stack<DBCrdInfo> parentCrds;
 
 	/**
 	 * the root node of the processed ast
@@ -118,12 +118,12 @@ public class CodeFragmentDetector extends ASTVisitor {
 			final IHashCalculator hashCalculator, final CompilationUnit root,
 			final AnalyzeGranularity granularity,
 			final NormalizerCreator cloneHashCalculatorCreator) {
-		this.detectedCrds = new TreeMap<Long, CRD>();
-		this.detectedFragments = new TreeMap<Long, CodeFragmentInfo>();
+		this.detectedCrds = new TreeMap<Long, DBCrdInfo>();
+		this.detectedFragments = new TreeMap<Long, DBCodeFragmentInfo>();
 		this.ownerFileId = ownerFileId;
 		this.startRevisionId = startRevisionId;
 		this.endRevisionId = endRevisionId;
-		this.parentCrds = new Stack<CRD>();
+		this.parentCrds = new Stack<DBCrdInfo>();
 		this.root = root;
 		this.optionalFinallyBlocks = new HashMap<TryStatement, Block>();
 		this.optionalElseBlocks = new HashMap<IfStatement, Block>();
@@ -137,7 +137,7 @@ public class CodeFragmentDetector extends ASTVisitor {
 	 * 
 	 * @return
 	 */
-	public final Map<Long, CRD> getDetectedCrds() {
+	public final Map<Long, DBCrdInfo> getDetectedCrds() {
 		return Collections.unmodifiableMap(detectedCrds);
 	}
 
@@ -146,7 +146,7 @@ public class CodeFragmentDetector extends ASTVisitor {
 	 * 
 	 * @return
 	 */
-	public final Map<Long, CodeFragmentInfo> getDetectedFragments() {
+	public final Map<Long, DBCodeFragmentInfo> getDetectedFragments() {
 		return Collections.unmodifiableMap(detectedFragments);
 	}
 
@@ -175,7 +175,7 @@ public class CodeFragmentDetector extends ASTVisitor {
 	 * 
 	 * @return the top element on the stack, null if the stack is empty
 	 */
-	private final CRD peekCrdStack() {
+	private final DBCrdInfo peekCrdStack() {
 		if (parentCrds.isEmpty()) {
 			return null;
 		} else {
@@ -190,7 +190,7 @@ public class CodeFragmentDetector extends ASTVisitor {
 	 * @param crdId
 	 * @return
 	 */
-	private final CodeFragmentInfo createCodeFragment(final ASTNode node,
+	private final DBCodeFragmentInfo createCodeFragment(final ASTNode node,
 			final long crdId, final String strForClone) {
 		final int startLine = getStartLine(node);
 		final int endLine = getEndLine(node);
@@ -201,7 +201,7 @@ public class CodeFragmentDetector extends ASTVisitor {
 		node.accept(nodeCounter);
 		final int size = nodeCounter.getNodeCount();
 
-		return new CodeFragmentInfo(ownerFileId, crdId, startRevisionId,
+		return new DBCodeFragmentInfo(ownerFileId, crdId, startRevisionId,
 				endRevisionId, hash, hashForClone, startLine, endLine, size);
 	}
 
@@ -212,15 +212,15 @@ public class CodeFragmentDetector extends ASTVisitor {
 	 * @param analyzer
 	 * @return the crd
 	 */
-	private final CRD detectCrd(final ASTNode node,
+	private final DBCrdInfo detectCrd(final ASTNode node,
 			final AbstractBlockAnalyzer<?> analyzer) {
 		analyzer.analyze();
-		final CRD crd = analyzer.getCreatedCrd();
+		final DBCrdInfo crd = analyzer.getCreatedCrd();
 		detectedCrds.put(crd.getId(), crd);
 
 		final BlockType bType = crd.getType();
 		if (bType.isInterested(granularity)) {
-			final CodeFragmentInfo fragment = createCodeFragment(node,
+			final DBCodeFragmentInfo fragment = createCodeFragment(node,
 					crd.getId(), analyzer.getStringForCloneDetection());
 			detectedFragments.put(fragment.getId(), fragment);
 		}
@@ -236,7 +236,7 @@ public class CodeFragmentDetector extends ASTVisitor {
 			return false;
 		}
 
-		final CRD crd = detectCrd(node,
+		final DBCrdInfo crd = detectCrd(node,
 				new ClassCRDCreator(node, peekCrdStack(),
 						cloneHashCalculatorCreator.createNewCalculator()));
 		parentCrds.push(crd);
@@ -247,7 +247,7 @@ public class CodeFragmentDetector extends ASTVisitor {
 
 	@Override
 	public boolean visit(MethodDeclaration node) {
-		final CRD crd = detectCrd(node,
+		final DBCrdInfo crd = detectCrd(node,
 				new MethodCRDCreator(node, peekCrdStack(),
 						cloneHashCalculatorCreator.createNewCalculator()));
 		parentCrds.push(crd);
@@ -263,7 +263,7 @@ public class CodeFragmentDetector extends ASTVisitor {
 
 	@Override
 	public boolean visit(EnhancedForStatement node) {
-		final CRD crd = detectCrd(node,
+		final DBCrdInfo crd = detectCrd(node,
 				new EnhancedForStatementCRDCreator(node, peekCrdStack(),
 						cloneHashCalculatorCreator.createNewCalculator()));
 		parentCrds.push(crd);
@@ -279,7 +279,7 @@ public class CodeFragmentDetector extends ASTVisitor {
 
 	@Override
 	public boolean visit(ForStatement node) {
-		final CRD crd = detectCrd(node,
+		final DBCrdInfo crd = detectCrd(node,
 				new ForStatementCRDCreator(node, peekCrdStack(),
 						cloneHashCalculatorCreator.createNewCalculator()));
 		parentCrds.push(crd);
@@ -295,7 +295,7 @@ public class CodeFragmentDetector extends ASTVisitor {
 
 	@Override
 	public boolean visit(WhileStatement node) {
-		final CRD crd = detectCrd(node,
+		final DBCrdInfo crd = detectCrd(node,
 				new WhileStatementCRDCreator(node, peekCrdStack(),
 						cloneHashCalculatorCreator.createNewCalculator()));
 		parentCrds.push(crd);
@@ -311,7 +311,7 @@ public class CodeFragmentDetector extends ASTVisitor {
 
 	@Override
 	public boolean visit(DoStatement node) {
-		final CRD crd = detectCrd(node,
+		final DBCrdInfo crd = detectCrd(node,
 				new DoStatementCRDCreator(node, peekCrdStack(),
 						cloneHashCalculatorCreator.createNewCalculator()));
 		parentCrds.push(crd);
@@ -327,7 +327,7 @@ public class CodeFragmentDetector extends ASTVisitor {
 
 	@Override
 	public boolean visit(SwitchStatement node) {
-		final CRD crd = detectCrd(node,
+		final DBCrdInfo crd = detectCrd(node,
 				new SwitchStatementCRDCreator(node, peekCrdStack(),
 						cloneHashCalculatorCreator.createNewCalculator()));
 		parentCrds.push(crd);
@@ -343,7 +343,7 @@ public class CodeFragmentDetector extends ASTVisitor {
 
 	@Override
 	public boolean visit(SynchronizedStatement node) {
-		final CRD crd = detectCrd(node,
+		final DBCrdInfo crd = detectCrd(node,
 				new SynchronizedStatementCRDCreator(node, peekCrdStack(),
 						cloneHashCalculatorCreator.createNewCalculator()));
 		parentCrds.push(crd);
@@ -359,7 +359,7 @@ public class CodeFragmentDetector extends ASTVisitor {
 
 	@Override
 	public boolean visit(TryStatement node) {
-		final CRD crd = detectCrd(node,
+		final DBCrdInfo crd = detectCrd(node,
 				new TryStatementCRDCreator(node, peekCrdStack(),
 						cloneHashCalculatorCreator.createNewCalculator()));
 		parentCrds.push(crd);
@@ -386,7 +386,7 @@ public class CodeFragmentDetector extends ASTVisitor {
 
 	@Override
 	public boolean visit(CatchClause node) {
-		final CRD crd = detectCrd(node,
+		final DBCrdInfo crd = detectCrd(node,
 				new CatchClauseCRDCreator(node, peekCrdStack(),
 						cloneHashCalculatorCreator.createNewCalculator()));
 		parentCrds.push(crd);
@@ -402,7 +402,7 @@ public class CodeFragmentDetector extends ASTVisitor {
 
 	@Override
 	public boolean visit(IfStatement node) {
-		final CRD crd = detectCrd(node,
+		final DBCrdInfo crd = detectCrd(node,
 				new IfStatementCRDCreator(node, peekCrdStack(),
 						cloneHashCalculatorCreator.createNewCalculator()));
 		parentCrds.push(crd);
@@ -439,7 +439,7 @@ public class CodeFragmentDetector extends ASTVisitor {
 	public boolean visit(Block node) {
 		// finally 節
 		if (this.optionalFinallyBlocks.containsValue(node)) {
-			final CRD crd = detectCrd(node,
+			final DBCrdInfo crd = detectCrd(node,
 					new FinallyBlockCRDCreator(node, peekCrdStack(),
 							cloneHashCalculatorCreator.createNewCalculator()));
 			parentCrds.push(crd);
@@ -447,7 +447,7 @@ public class CodeFragmentDetector extends ASTVisitor {
 
 		// else 節
 		else if (this.optionalElseBlocks.containsValue(node)) {
-			final CRD crd = detectCrd(node,
+			final DBCrdInfo crd = detectCrd(node,
 					new ElseStatementCRDCreator(node, peekCrdStack(),
 							cloneHashCalculatorCreator.createNewCalculator()));
 			parentCrds.push(crd);

@@ -9,12 +9,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.Commit;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CRDRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CodeFragmentRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CRDRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.similarity.ICRDSimilarityCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 
@@ -29,12 +29,12 @@ public class CodeFragmentLinkDetectingThread implements Runnable {
 	/**
 	 * a map having detected links
 	 */
-	private final ConcurrentMap<Long, CodeFragmentLinkInfo> detectedLinks;
+	private final ConcurrentMap<Long, DBCodeFragmentLinkInfo> detectedLinks;
 
 	/**
 	 * the target commits
 	 */
-	private final Commit[] targetCommits;
+	private final DBCommitInfo[] targetCommits;
 
 	/**
 	 * the retriever for code fragments
@@ -49,17 +49,17 @@ public class CodeFragmentLinkDetectingThread implements Runnable {
 	/**
 	 * the map between revision id and code fragments included in the revision
 	 */
-	private final ConcurrentMap<Long, Map<Long, CodeFragmentInfo>> codeFragments;
+	private final ConcurrentMap<Long, Map<Long, DBCodeFragmentInfo>> codeFragments;
 
 	/**
 	 * the map between revision id and crds included in the revision
 	 */
-	private final ConcurrentMap<Long, Map<Long, CRD>> crds;
+	private final ConcurrentMap<Long, Map<Long, DBCrdInfo>> crds;
 
 	/**
 	 * already processed commits
 	 */
-	private final ConcurrentMap<Long, Commit> processedCommits;
+	private final ConcurrentMap<Long, DBCommitInfo> processedCommits;
 
 	/**
 	 * a counter that points the current state of the processing
@@ -82,13 +82,13 @@ public class CodeFragmentLinkDetectingThread implements Runnable {
 	private final ICRDSimilarityCalculator similarityCalculator;
 
 	public CodeFragmentLinkDetectingThread(
-			final ConcurrentMap<Long, CodeFragmentLinkInfo> detectedLinks,
-			final Commit[] targetCommits,
+			final ConcurrentMap<Long, DBCodeFragmentLinkInfo> detectedLinks,
+			final DBCommitInfo[] targetCommits,
 			final CodeFragmentRetriever fragmentRetriever,
 			final CRDRetriever crdRetriever,
-			final ConcurrentMap<Long, Map<Long, CodeFragmentInfo>> codeFragments,
-			final ConcurrentMap<Long, Map<Long, CRD>> crds,
-			final ConcurrentMap<Long, Commit> processedCommits,
+			final ConcurrentMap<Long, Map<Long, DBCodeFragmentInfo>> codeFragments,
+			final ConcurrentMap<Long, Map<Long, DBCrdInfo>> crds,
+			final ConcurrentMap<Long, DBCommitInfo> processedCommits,
 			final AtomicInteger index, final ICodeFragmentLinker linker,
 			final double similarityThreshold,
 			final ICRDSimilarityCalculator similarityCalculator) {
@@ -114,7 +114,7 @@ public class CodeFragmentLinkDetectingThread implements Runnable {
 				break;
 			}
 
-			final Commit targetCommit = targetCommits[currentIndex];
+			final DBCommitInfo targetCommit = targetCommits[currentIndex];
 
 			final long beforeRevisionId = targetCommit.getBeforeRevisionId();
 			if (beforeRevisionId == -1) {
@@ -134,11 +134,11 @@ public class CodeFragmentLinkDetectingThread implements Runnable {
 				retrieveElements(beforeRevisionId);
 				retrieveElements(afterRevisionId);
 
-				final Map<Long, CRD> currentCrds = new TreeMap<Long, CRD>();
+				final Map<Long, DBCrdInfo> currentCrds = new TreeMap<Long, DBCrdInfo>();
 				currentCrds.putAll(crds.get(beforeRevisionId));
 				currentCrds.putAll(crds.get(afterRevisionId));
 
-				final Map<Long, CodeFragmentLinkInfo> links = linker
+				final Map<Long, DBCodeFragmentLinkInfo> links = linker
 						.detectFragmentPairs(codeFragments
 								.get(beforeRevisionId).values(), codeFragments
 								.get(afterRevisionId).values(),
@@ -174,9 +174,9 @@ public class CodeFragmentLinkDetectingThread implements Runnable {
 	protected void retrieveElements(final long revisionId) throws SQLException {
 		synchronized (codeFragments) {
 			if (!codeFragments.containsKey(revisionId)) {
-				final Map<Long, CodeFragmentInfo> retrievedFragments = fragmentRetriever
+				final Map<Long, DBCodeFragmentInfo> retrievedFragments = fragmentRetriever
 						.retrieveElementsInSpecifiedRevision(revisionId);
-				final Map<Long, CodeFragmentInfo> concurrentRetrievedFragments = new ConcurrentHashMap<Long, CodeFragmentInfo>();
+				final Map<Long, DBCodeFragmentInfo> concurrentRetrievedFragments = new ConcurrentHashMap<Long, DBCodeFragmentInfo>();
 				concurrentRetrievedFragments.putAll(retrievedFragments);
 				codeFragments.put(revisionId, concurrentRetrievedFragments);
 			}
@@ -184,17 +184,17 @@ public class CodeFragmentLinkDetectingThread implements Runnable {
 
 		synchronized (crds) {
 			if (!crds.containsKey(revisionId)) {
-				final Map<Long, CodeFragmentInfo> fragments = codeFragments
+				final Map<Long, DBCodeFragmentInfo> fragments = codeFragments
 						.get(revisionId);
 				final List<Long> crdIds = new ArrayList<Long>();
-				for (final Map.Entry<Long, CodeFragmentInfo> entry : fragments
+				for (final Map.Entry<Long, DBCodeFragmentInfo> entry : fragments
 						.entrySet()) {
 					crdIds.add(entry.getValue().getCrdId());
 				}
 
-				final Map<Long, CRD> retrievedCrds = crdRetriever
+				final Map<Long, DBCrdInfo> retrievedCrds = crdRetriever
 						.retrieveWithIds(crdIds);
-				final Map<Long, CRD> concurrentRetrievedCrds = new ConcurrentHashMap<Long, CRD>();
+				final Map<Long, DBCrdInfo> concurrentRetrievedCrds = new ConcurrentHashMap<Long, DBCrdInfo>();
 				concurrentRetrievedCrds.putAll(retrievedCrds);
 				crds.put(revisionId, concurrentRetrievedCrds);
 			}

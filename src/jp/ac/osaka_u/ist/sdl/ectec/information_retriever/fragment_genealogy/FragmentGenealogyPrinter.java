@@ -8,12 +8,12 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentGenealogyInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CodeFragmentInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.FileInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.data.RevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentGenealogyInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.vcs.svn.SVNRepositoryManager;
 
 public class FragmentGenealogyPrinter {
@@ -41,14 +41,14 @@ public class FragmentGenealogyPrinter {
 
 			dbManager = new DBConnectionManager(dbPath, 10000);
 
-			final Map<Long, CodeFragmentGenealogyInfo> fragmentGenealogies = dbManager
+			final Map<Long, DBCodeFragmentGenealogyInfo> fragmentGenealogies = dbManager
 					.getFragmentGenealogyRetriever().retrieveAll();
 
 			int index = 1;
 
-			for (final Map.Entry<Long, CodeFragmentGenealogyInfo> entry : fragmentGenealogies
+			for (final Map.Entry<Long, DBCodeFragmentGenealogyInfo> entry : fragmentGenealogies
 					.entrySet()) {
-				final CodeFragmentGenealogyInfo genealogy = entry.getValue();
+				final DBCodeFragmentGenealogyInfo genealogy = entry.getValue();
 
 				if (genealogy.getChangedCount() == 0) {
 					continue;
@@ -57,17 +57,17 @@ public class FragmentGenealogyPrinter {
 				final long startRevisionId = genealogy.getStartRevisionId();
 				final long endRevisionId = genealogy.getEndRevisionId();
 
-				final Map<Long, RevisionInfo> revisions = dbManager
+				final Map<Long, DBRevisionInfo> revisions = dbManager
 						.getRevisionRetriever().retrieveWithIds(
 
 						startRevisionId, endRevisionId);
-				final Map<Long, CodeFragmentInfo> fragments = dbManager
+				final Map<Long, DBCodeFragmentInfo> fragments = dbManager
 						.getFragmentRetriever().retrieveWithIds(
 								genealogy.getElements());
 
-				CodeFragmentInfo startFragment = null;
-				CodeFragmentInfo endFragment = null;
-				for (final CodeFragmentInfo fragment : fragments.values()) {
+				DBCodeFragmentInfo startFragment = null;
+				DBCodeFragmentInfo endFragment = null;
+				for (final DBCodeFragmentInfo fragment : fragments.values()) {
 					if (fragment.getStartRevisionId() == startRevisionId) {
 						startFragment = fragment;
 					}
@@ -76,10 +76,10 @@ public class FragmentGenealogyPrinter {
 					}
 				}
 
-				final Map<Long, FileInfo> files = dbManager.getFileRetriever()
+				final Map<Long, DBFileInfo> files = dbManager.getFileRetriever()
 						.retrieveWithIds(startFragment.getOwnerFileId(),
 								endFragment.getOwnerFileId());
-				final Map<Long, CRD> crds = dbManager.getCrdRetriever()
+				final Map<Long, DBCrdInfo> crds = dbManager.getCrdRetriever()
 						.retrieveWithIds(startFragment.getCrdId(),
 								endFragment.getCrdId());
 

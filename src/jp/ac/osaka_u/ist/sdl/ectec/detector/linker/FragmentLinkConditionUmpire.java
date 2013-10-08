@@ -3,8 +3,8 @@ package jp.ac.osaka_u.ist.sdl.ectec.detector.linker;
 import java.util.HashMap;
 import java.util.Map;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.BlockType;
-import jp.ac.osaka_u.ist.sdl.ectec.data.CRD;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.BlockType;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
 
 /**
  * A class that judges whether two code fragments satisfy the conditions to be
@@ -24,16 +24,16 @@ public class FragmentLinkConditionUmpire {
 		this.similarityThreshold = similarityThreshold;
 	}
 
-	public final boolean satisfyAllConditions(final CRD beforeCrd,
-			final CRD afterCrd, final double similarity) {
+	public final boolean satisfyAllConditions(final DBCrdInfo beforeCrd,
+			final DBCrdInfo afterCrd, final double similarity) {
 		final boolean crdCondition = satisfyCrdConditions(beforeCrd, afterCrd);
 		final boolean similarityCondition = (similarity >= similarityThreshold);
 
 		return crdCondition && similarityCondition;
 	}
 
-	public final boolean satisfyCrdConditions(final CRD beforeCrd,
-			final CRD afterCrd) {
+	public final boolean satisfyCrdConditions(final DBCrdInfo beforeCrd,
+			final DBCrdInfo afterCrd) {
 		// return false if the types of two fragments are not equal
 		if (beforeCrd.getType() != afterCrd.getType()) {
 			return false;
@@ -78,8 +78,8 @@ public class FragmentLinkConditionUmpire {
 		return true;
 	}
 
-	public final boolean satisfyConditionalBlockConditions(final CRD beforeCrd,
-			final CRD afterCrd) {
+	public final boolean satisfyConditionalBlockConditions(final DBCrdInfo beforeCrd,
+			final DBCrdInfo afterCrd) {
 		final BlockType beforeType = beforeCrd.getType();
 		final BlockType afterType = afterCrd.getType();
 		final String beforeNormalizedAnchor = beforeCrd.getNormalizedAnchor();
@@ -98,8 +98,8 @@ public class FragmentLinkConditionUmpire {
 	 * @param afterCrd
 	 * @return
 	 */
-	public final boolean satisfyMethodConditions(final CRD beforeCrd,
-			final CRD afterCrd) {
+	public final boolean satisfyMethodConditions(final DBCrdInfo beforeCrd,
+			final DBCrdInfo afterCrd) {
 		final String beforeAnchor = beforeCrd.getAnchor();
 		final String afterAnchor = afterCrd.getAnchor();
 		final int beforeLeftParenIndex = beforeAnchor.indexOf("(");

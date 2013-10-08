@@ -6,26 +6,26 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CRDRegisterer;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CloneGenealogyRegisterer;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CloneSetLinkRegisterer;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CloneSetRegisterer;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CodeFragmentGenealogyRegisterer;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CodeFragmentLinkRegisterer;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CodeFragmentRegisterer;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.CommitRegisterer;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.FileRegisterer;
-import jp.ac.osaka_u.ist.sdl.ectec.data.registerer.RevisionRegisterer;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CRDRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CloneGenealogyRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CloneSetLinkRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CloneSetRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CodeFragmentGenealogyRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CodeFragmentLinkRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CodeFragmentRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.CommitRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.FileRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.data.retriever.RevisionRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CRDRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CloneGenealogyRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CloneSetLinkRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CloneSetRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CodeFragmentGenealogyRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CodeFragmentLinkRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CodeFragmentRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CommitRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.FileRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.RevisionRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CRDRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CloneGenealogyRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CloneSetLinkRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CloneSetRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentGenealogyRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentLinkRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CommitRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.FileRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.RevisionRetriever;
 
 /**
  * A class to manage the connection between the db
