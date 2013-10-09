@@ -3,6 +3,12 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer.data;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * A class that represents genealogies of clones
+ * 
+ * @author k-hotta
+ * 
+ */
 public class CodeFragmentGenealogyInfo extends AbstractElement implements
 		Comparable<CodeFragmentGenealogyInfo> {
 
