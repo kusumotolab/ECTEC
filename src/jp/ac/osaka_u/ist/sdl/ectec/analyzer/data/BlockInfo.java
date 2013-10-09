@@ -10,19 +10,26 @@ import org.eclipse.jdt.core.dom.ASTNode;
  * @author k-hotta
  * 
  */
-public abstract class BlockInfo extends CodeFragmentInfo {
+public abstract class BlockInfo<T extends ASTNode> extends CodeFragmentInfo {
 
 	/**
 	 * the type of this block
 	 */
 	protected final BlockType blockType;
 
+	/**
+	 * the root node of ast for this block
+	 */
+	protected final T node;
+
 	public BlockInfo(long id, FileInfo ownerFile, final CRD crd,
 			RevisionInfo startRevision, RevisionInfo endRevision,
-			int startLine, int endLine, int size, final BlockType blockType) {
+			int startLine, int endLine, int size, final BlockType blockType,
+			final T node) {
 		super(id, ownerFile, crd, startRevision, endRevision, startLine,
 				endLine, size);
 		this.blockType = blockType;
+		this.node = node;
 	}
 
 	/**
@@ -39,6 +46,8 @@ public abstract class BlockInfo extends CodeFragmentInfo {
 	 * 
 	 * @return
 	 */
-	public abstract ASTNode getNode();
+	public T getNode() {
+		return node;
+	}
 
 }
