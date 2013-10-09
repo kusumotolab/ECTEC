@@ -20,7 +20,7 @@ import org.apache.commons.cli.PosixParser;
  * @author k-hotta
  * 
  */
-final class AnalyzerSettings {
+final class DetectorSettings {
 
 	/**
 	 * the path of the repository to be analyzed
@@ -122,7 +122,7 @@ final class AnalyzerSettings {
 	 */
 	private final String propertiesFilePath;
 
-	private AnalyzerSettings(final String repositoryPath, final String dbPath,
+	private DetectorSettings(final String repositoryPath, final String dbPath,
 			final String additionalPath, final Language language,
 			final int threads, final String userName, final String passwd,
 			final String startRevisionIdentifier,
@@ -258,7 +258,7 @@ final class AnalyzerSettings {
 		this.endRevisionIdentifier = endRevisionIdentifier;
 	}
 
-	static AnalyzerSettings parseArgs(final String[] args) throws Exception {
+	static DetectorSettings parseArgs(final String[] args) throws Exception {
 		final Options options = defineOptions();
 
 		final CommandLineParser parser = new PosixParser();
@@ -266,8 +266,8 @@ final class AnalyzerSettings {
 
 		final String propertiesFilePath = (cmd.hasOption("p")) ? cmd
 				.getOptionValue("p") : null;
-		final DefaultAnalyzerSettingsLoader defaultLoader = (propertiesFilePath == null) ? DefaultAnalyzerSettingsLoader
-				.load() : DefaultAnalyzerSettingsLoader
+		final DefaultDetectorSettingsLoader defaultLoader = (propertiesFilePath == null) ? DefaultDetectorSettingsLoader
+				.load() : DefaultDetectorSettingsLoader
 				.load(propertiesFilePath);
 
 		final String repositoryPath = cmd.getOptionValue("r");
@@ -337,7 +337,7 @@ final class AnalyzerSettings {
 				.parseInt(cmd.getOptionValue("cst")) : defaultLoader
 				.getCloneSizeThreshold();
 
-		return new AnalyzerSettings(repositoryPath, dbPath, additionalPath,
+		return new DetectorSettings(repositoryPath, dbPath, additionalPath,
 				language, threads, userName, passwd, startRevisionIdentifier,
 				endRevisionIdentifier, verboseLevel, versionControlSystem,
 				overwriteDb, maxBatchCount, cloneHashMode, crdSimilarityMode,

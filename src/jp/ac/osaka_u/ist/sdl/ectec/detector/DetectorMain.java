@@ -29,7 +29,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
  * @author k-hotta
  * 
  */
-public class AnalyzerMain {
+public class DetectorMain {
 
 	/**
 	 * the manager of the repository manager
@@ -43,7 +43,7 @@ public class AnalyzerMain {
 
 	public static void main(String[] args) {
 		try {
-			final AnalyzerSettings settings = AnalyzerSettings.parseArgs(args);
+			final DetectorSettings settings = DetectorSettings.parseArgs(args);
 
 			preprocess(settings);
 
@@ -60,7 +60,7 @@ public class AnalyzerMain {
 	 * preprocessors follow
 	 */
 
-	private static void preprocess(final AnalyzerSettings settings)
+	private static void preprocess(final DetectorSettings settings)
 			throws Exception {
 		// set the level of verbose output
 		MessagePrinter.setLevel(settings.getVerboseLevel());
@@ -78,7 +78,7 @@ public class AnalyzerMain {
 		resetRevisionIdentifiers(settings);
 	}
 
-	private static void initialPrint(final AnalyzerSettings settings) {
+	private static void initialPrint(final DetectorSettings settings) {
 		MessagePrinter.stronglyPrint("operations start");
 		MessagePrinter.print(" with the configurations below");
 		MessagePrinter.stronglyPrintln();
@@ -135,7 +135,7 @@ public class AnalyzerMain {
 		MessagePrinter.stronglyPrintln();
 	}
 
-	private static void initializeRepository(final AnalyzerSettings settings)
+	private static void initializeRepository(final DetectorSettings settings)
 			throws Exception {
 		MessagePrinter.stronglyPrintln("initializing the repository ... ");
 		repositoryManagerManager = new RepositoryManagerManager(
@@ -146,7 +146,7 @@ public class AnalyzerMain {
 		MessagePrinter.stronglyPrintln();
 	}
 
-	private static void initializeDb(final AnalyzerSettings settings)
+	private static void initializeDb(final DetectorSettings settings)
 			throws Exception {
 		MessagePrinter.stronglyPrintln("initializing the database ... ");
 		dbManager = new DBConnectionManager(settings.getDbPath(),
@@ -157,7 +157,7 @@ public class AnalyzerMain {
 		MessagePrinter.stronglyPrintln();
 	}
 
-	private static void resetRevisionIdentifiers(final AnalyzerSettings settings)
+	private static void resetRevisionIdentifiers(final DetectorSettings settings)
 			throws Exception {
 		if (settings.getStartRevisionIdentifier() == null) {
 			settings.setStartRevisionIdentifier(repositoryManagerManager
@@ -183,7 +183,7 @@ public class AnalyzerMain {
 	 * @param settings
 	 * @throws Exception
 	 */
-	private static void main(final AnalyzerSettings settings) throws Exception {
+	private static void main(final DetectorSettings settings) throws Exception {
 		final long start = System.nanoTime();
 
 		MessagePrinter.stronglyPrintln("start main operations");
@@ -258,7 +258,7 @@ public class AnalyzerMain {
 	}
 
 	private static void detectAndRegisterTargetRevisions(
-			final AnalyzerSettings settings) throws Exception {
+			final DetectorSettings settings) throws Exception {
 		MessagePrinter.stronglyPrintln("detecting target revisions ... ");
 
 		final RevisionIdentifier identifier = new RevisionIdentifier(
@@ -274,7 +274,7 @@ public class AnalyzerMain {
 
 	}
 
-	private static void detectAndRegisterFiles(final AnalyzerSettings settings)
+	private static void detectAndRegisterFiles(final DetectorSettings settings)
 			throws Exception {
 		final Map<Long, DBCommitInfo> commits = dbManager.getCommitRetriever()
 				.retrieveAll();
@@ -286,7 +286,7 @@ public class AnalyzerMain {
 	}
 
 	private static void detectAndRegisterFragments(
-			final AnalyzerSettings settings) throws Exception {
+			final DetectorSettings settings) throws Exception {
 		MessagePrinter
 				.stronglyPrintln("detecting and registering code fragments and their crds ... ");
 
@@ -315,7 +315,7 @@ public class AnalyzerMain {
 	}
 
 	private static void detectAndRegisterFragmentLinks(
-			final AnalyzerSettings settings) throws Exception {
+			final DetectorSettings settings) throws Exception {
 		MessagePrinter
 				.stronglyPrintln("detecting and registering links of code fragments ... ");
 
@@ -336,7 +336,7 @@ public class AnalyzerMain {
 	}
 
 	private static void detectAndRegisterFragmentGenealogies(
-			final AnalyzerSettings settings) throws Exception {
+			final DetectorSettings settings) throws Exception {
 		MessagePrinter
 				.stronglyPrintln("detecting and registering genealogies of code fragments ... ");
 
@@ -353,7 +353,7 @@ public class AnalyzerMain {
 		MessagePrinter.stronglyPrintln();
 	}
 
-	private static void detectAndRegisterClones(final AnalyzerSettings settings)
+	private static void detectAndRegisterClones(final DetectorSettings settings)
 			throws Exception {
 		MessagePrinter
 				.stronglyPrintln("detecting and registering clone sets ... ");
@@ -372,7 +372,7 @@ public class AnalyzerMain {
 	}
 
 	private static void detectAndRegisterCloneLinks(
-			final AnalyzerSettings settings) throws Exception {
+			final DetectorSettings settings) throws Exception {
 		MessagePrinter
 				.stronglyPrintln("detecting and registering links of clone sets ... ");
 
@@ -391,7 +391,7 @@ public class AnalyzerMain {
 	}
 
 	private static void detectAndRegisterCloneGenealogies(
-			final AnalyzerSettings settings) throws Exception {
+			final DetectorSettings settings) throws Exception {
 		MessagePrinter
 				.stronglyPrintln("detecting and registering genealogies of clones ... ");
 

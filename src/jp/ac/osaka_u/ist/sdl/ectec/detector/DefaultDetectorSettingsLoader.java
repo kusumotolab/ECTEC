@@ -19,7 +19,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.settings.VersionControlSystem;
  * @author k-hotta
  * 
  */
-final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
+final class DefaultDetectorSettingsLoader implements PropertiesKeys {
 
 	/**
 	 * the additional path for analyzing a part of the repository
@@ -106,7 +106,7 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 	 */
 	private final int cloneSizeThreshold;
 
-	private DefaultAnalyzerSettingsLoader(final String additionalPath,
+	private DefaultDetectorSettingsLoader(final String additionalPath,
 			final Language language, final int threads, final String userName,
 			final String passwd, final String startRevisionIdentifier,
 			final String endRevisionIdentifier,
@@ -220,7 +220,7 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 	 * @return
 	 * @throws Exception
 	 */
-	final static DefaultAnalyzerSettingsLoader load(
+	final static DefaultDetectorSettingsLoader load(
 			final String propertiesFilePath) throws Exception {
 		final PropertiesReader reader = new PropertiesReader(propertiesFilePath);
 		final Properties prop = reader.read();
@@ -234,7 +234,7 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 	 * @return
 	 * @throws Exception
 	 */
-	final static DefaultAnalyzerSettingsLoader load() throws Exception {
+	final static DefaultDetectorSettingsLoader load() throws Exception {
 		final PropertiesReader reader = new PropertiesReader();
 		final Properties prop = reader.read();
 
@@ -248,7 +248,7 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 	 * @return
 	 * @throws Exception
 	 */
-	private static DefaultAnalyzerSettingsLoader load(final Properties prop)
+	private static DefaultDetectorSettingsLoader load(final Properties prop)
 			throws Exception {
 		final String additionalPath = (prop.getProperty(ADDITIONAL_PATH)
 				.equalsIgnoreCase("none")) ? null : prop
@@ -304,7 +304,7 @@ final class DefaultAnalyzerSettingsLoader implements PropertiesKeys {
 		final int cloneSizeThreshold = Integer.parseInt(prop
 				.getProperty(CLONE_SIZE_THRESHOLD));
 
-		return new DefaultAnalyzerSettingsLoader(additionalPath, language,
+		return new DefaultDetectorSettingsLoader(additionalPath, language,
 				threads, userName, passwd, startRevisionIdentifier,
 				endRevisionIdentifier, verboseLevel, versionControlSystem,
 				overwriteDb, maxBatchCount, cloneHashMode, crdSimilarityMode,

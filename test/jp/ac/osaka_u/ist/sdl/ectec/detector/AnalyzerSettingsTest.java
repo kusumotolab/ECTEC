@@ -19,7 +19,7 @@ public class AnalyzerSettingsTest {
 		final String[] args = new String[] {};
 		boolean catchException = false;
 		try {
-			final AnalyzerSettings settings = AnalyzerSettings.parseArgs(args);
+			final DetectorSettings settings = DetectorSettings.parseArgs(args);
 		} catch (Exception e) {
 			catchException = true;
 		}
@@ -32,7 +32,7 @@ public class AnalyzerSettingsTest {
 		final String[] args = new String[] { "-r", "test", "-d", "test.db" };
 		boolean catchException = false;
 		try {
-			final AnalyzerSettings settings = AnalyzerSettings.parseArgs(args);
+			final DetectorSettings settings = DetectorSettings.parseArgs(args);
 		} catch (Exception e) {
 			catchException = true;
 		}
@@ -44,7 +44,7 @@ public class AnalyzerSettingsTest {
 	public void test3() {
 		final String[] args = new String[] { "-r", "test", "-d", "test.db" };
 		try {
-			final AnalyzerSettings settings = AnalyzerSettings.parseArgs(args);
+			final DetectorSettings settings = DetectorSettings.parseArgs(args);
 			assertTrue(settings.getLanguage() == Language.JAVA);
 		} catch (Exception e) {
 			fail();
@@ -55,7 +55,7 @@ public class AnalyzerSettingsTest {
 	public void test4() {
 		final String[] args = new String[] { "-r", "test", "-d", "test.db" };
 		try {
-			final AnalyzerSettings settings = AnalyzerSettings.parseArgs(args);
+			final DetectorSettings settings = DetectorSettings.parseArgs(args);
 			assertTrue(settings.getAdditionalPath() == null);
 		} catch (Exception e) {
 			fail();
@@ -66,7 +66,7 @@ public class AnalyzerSettingsTest {
 	public void test5() {
 		final String[] args = new String[] { "-r", "test", "-d", "test.db" };
 		try {
-			final AnalyzerSettings settings = AnalyzerSettings.parseArgs(args);
+			final DetectorSettings settings = DetectorSettings.parseArgs(args);
 			assertTrue(settings.getThreads() == 1);
 		} catch (Exception e) {
 			fail();
@@ -77,7 +77,7 @@ public class AnalyzerSettingsTest {
 	public void test6() {
 		final String[] args = new String[] { "-r", "test", "-d", "test.db" };
 		try {
-			final AnalyzerSettings settings = AnalyzerSettings.parseArgs(args);
+			final DetectorSettings settings = DetectorSettings.parseArgs(args);
 			assertTrue(settings.getUserName() == null);
 		} catch (Exception e) {
 			fail();
@@ -88,7 +88,7 @@ public class AnalyzerSettingsTest {
 	public void test7() {
 		final String[] args = new String[] { "-r", "test", "-d", "test.db" };
 		try {
-			final AnalyzerSettings settings = AnalyzerSettings.parseArgs(args);
+			final DetectorSettings settings = DetectorSettings.parseArgs(args);
 			assertTrue(settings.getPasswd() == null);
 		} catch (Exception e) {
 			fail();
@@ -99,7 +99,7 @@ public class AnalyzerSettingsTest {
 	public void test8() {
 		final String[] args = new String[] { "-r", "test", "-d", "test.db" };
 		try {
-			final AnalyzerSettings settings = AnalyzerSettings.parseArgs(args);
+			final DetectorSettings settings = DetectorSettings.parseArgs(args);
 			assertTrue(settings.getStartRevisionIdentifier() == null);
 		} catch (Exception e) {
 			fail();
@@ -110,7 +110,7 @@ public class AnalyzerSettingsTest {
 	public void test9() {
 		final String[] args = new String[] { "-r", "test", "-d", "test.db" };
 		try {
-			final AnalyzerSettings settings = AnalyzerSettings.parseArgs(args);
+			final DetectorSettings settings = DetectorSettings.parseArgs(args);
 			assertTrue(settings.getEndRevisionIdentifier() == null);
 		} catch (Exception e) {
 			fail();
@@ -121,7 +121,7 @@ public class AnalyzerSettingsTest {
 	public void test10() {
 		final String[] args = new String[] { "-r", "test", "-d", "test.db" };
 		try {
-			final AnalyzerSettings settings = AnalyzerSettings.parseArgs(args);
+			final DetectorSettings settings = DetectorSettings.parseArgs(args);
 			assertTrue(settings.getVerboseLevel() == MessagePrintLevel.VERBOSE);
 		} catch (Exception e) {
 			fail();
@@ -132,7 +132,7 @@ public class AnalyzerSettingsTest {
 	public void test11() {
 		final String[] args = new String[] { "-r", "test", "-d", "test.db" };
 		try {
-			final AnalyzerSettings settings = AnalyzerSettings.parseArgs(args);
+			final DetectorSettings settings = DetectorSettings.parseArgs(args);
 			assertTrue(settings.getVersionControlSystem() == VersionControlSystem.SVN);
 		} catch (Exception e) {
 			fail();
@@ -150,7 +150,7 @@ public class AnalyzerSettingsTest {
 				"test-resources" + File.separator + "properties"
 						+ File.separator + "test.properties" };
 		try {
-			final AnalyzerSettings settings = AnalyzerSettings.parseArgs(args);
+			final DetectorSettings settings = DetectorSettings.parseArgs(args);
 			assertTrue(settings.getAdditionalPath().equals("trunk/"));
 		} catch (Exception e) {
 			fail();
@@ -168,7 +168,7 @@ public class AnalyzerSettingsTest {
 				"test-resources" + File.separator + "properties"
 						+ File.separator + "test.properties" };
 		try {
-			final AnalyzerSettings settings = AnalyzerSettings.parseArgs(args);
+			final DetectorSettings settings = DetectorSettings.parseArgs(args);
 			assertTrue(settings.getPasswd().equals("hogehoge"));
 		} catch (Exception e) {
 			fail();
@@ -186,7 +186,7 @@ public class AnalyzerSettingsTest {
 				"test-resources" + File.separator + "properties"
 						+ File.separator + "test.properties" };
 		try {
-			final AnalyzerSettings settings = AnalyzerSettings.parseArgs(args);
+			final DetectorSettings settings = DetectorSettings.parseArgs(args);
 			assertTrue(settings.getThreads() == 100);
 		} catch (Exception e) {
 			fail();
@@ -197,7 +197,7 @@ public class AnalyzerSettingsTest {
 	public void test15() {
 		final String[] args = new String[] { "-r", "test", "-d", "test.db", "-a", "hoge" };
 		try {
-			final AnalyzerSettings settings = AnalyzerSettings.parseArgs(args);
+			final DetectorSettings settings = DetectorSettings.parseArgs(args);
 			assertTrue(settings.getAdditionalPath().equals("hoge"));
 		} catch (Exception e) {
 			fail();
@@ -208,7 +208,7 @@ public class AnalyzerSettingsTest {
 	public void test16() {
 		final String[] args = new String[] { "-r", "test", "-d", "test.db", "-th", "24" };
 		try {
-			final AnalyzerSettings settings = AnalyzerSettings.parseArgs(args);
+			final DetectorSettings settings = DetectorSettings.parseArgs(args);
 			assertTrue(settings.getThreads() == 24);
 		} catch (Exception e) {
 			fail();
