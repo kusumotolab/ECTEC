@@ -29,16 +29,22 @@ public class CodeFragmentLinkInfo extends AbstractElement implements
 	 */
 	private final CodeFragmentInfo afterFragment;
 
+	/**
+	 * true if the code fragment was changed
+	 */
+	private final boolean changed;
+
 	public CodeFragmentLinkInfo(final long id,
 			final RevisionInfo beforeRevision,
 			final RevisionInfo afterRevision,
 			final CodeFragmentInfo beforeFragment,
-			final CodeFragmentInfo afterFragment) {
+			final CodeFragmentInfo afterFragment, final boolean changed) {
 		super(id);
 		this.beforeRevision = beforeRevision;
 		this.afterRevision = afterRevision;
 		this.beforeFragment = beforeFragment;
 		this.afterFragment = afterFragment;
+		this.changed = changed;
 	}
 
 	/**
@@ -75,6 +81,15 @@ public class CodeFragmentLinkInfo extends AbstractElement implements
 	 */
 	public final CodeFragmentInfo getAfterFragment() {
 		return afterFragment;
+	}
+
+	/**
+	 * is the fragment was changed?
+	 * 
+	 * @return
+	 */
+	public final boolean isChanged() {
+		return changed;
 	}
 
 	@Override
