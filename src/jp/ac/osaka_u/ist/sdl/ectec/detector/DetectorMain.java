@@ -103,11 +103,11 @@ public class DetectorMain {
 						: "*********"));
 		MessagePrinter
 				.println("\tstart revision: "
-						+ ((settings.getUserName() == null) ? "nothing is specified, will start at the earliest revision"
+						+ ((settings.getStartRevisionIdentifier() == null) ? "nothing is specified, will start at the earliest revision"
 								: settings.getStartRevisionIdentifier()));
 		MessagePrinter
 				.println("\tend revision: "
-						+ ((settings.getUserName() == null) ? "nothing is specified, will end at the latest revision"
+						+ ((settings.getEndRevisionIdentifier() == null) ? "nothing is specified, will end at the latest revision"
 								: settings.getStartRevisionIdentifier()));
 		MessagePrinter.println("\tversion control system targeted: "
 				+ settings.getVersionControlSystem().toString());
