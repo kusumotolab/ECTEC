@@ -14,7 +14,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
  * @author k-hotta
  * 
  */
-public class RevisionInfoConcretizer {
+public final class RevisionInfoConcretizer {
 
 	/**
 	 * concretize a revision
@@ -22,7 +22,7 @@ public class RevisionInfoConcretizer {
 	 * @param dbRevision
 	 * @return
 	 */
-	public static RevisionInfo concretize(final DBRevisionInfo dbRevision) {
+	public RevisionInfo concretize(final DBRevisionInfo dbRevision) {
 		final long id = dbRevision.getId();
 		final String identifier = dbRevision.getIdentifier();
 
@@ -35,7 +35,7 @@ public class RevisionInfoConcretizer {
 	 * @param dbRevisions
 	 * @return
 	 */
-	public static Map<Long, RevisionInfo> concretizeAll(
+	public Map<Long, RevisionInfo> concretizeAll(
 			final Collection<DBRevisionInfo> dbRevisions) {
 		final Map<Long, RevisionInfo> result = new TreeMap<Long, RevisionInfo>();
 
@@ -53,7 +53,7 @@ public class RevisionInfoConcretizer {
 	 * @param dbRevisions
 	 * @return
 	 */
-	public static Map<Long, RevisionInfo> concretizeAll(
+	public Map<Long, RevisionInfo> concretizeAll(
 			final Map<Long, DBRevisionInfo> dbRevisions) {
 		return concretizeAll(dbRevisions.values());
 	}
