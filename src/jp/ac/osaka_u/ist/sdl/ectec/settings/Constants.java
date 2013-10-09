@@ -16,5 +16,7 @@ public interface Constants {
 	public static long MONITORING_INTERVAL = 1000;
 
 	public static int MAX_ELEMENTS_COUNT = 10000;
+	
+	public static int MAX_BATCH_COUNT = 10000;
 
 }
