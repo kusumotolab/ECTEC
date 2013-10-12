@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.TreeMap;
 
+import jp.ac.osaka_u.ist.sdl.ectec.ast.NodeCountVisitor;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;

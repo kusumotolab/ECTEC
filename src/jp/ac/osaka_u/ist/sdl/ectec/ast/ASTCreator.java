@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer;
+package jp.ac.osaka_u.ist.sdl.ectec.ast;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.dom.AST;
