@@ -31,11 +31,11 @@ import jp.ac.osaka_u.ist.sdl.ectec.cdt.Lexer;
   StringBuffer string = new StringBuffer();
 
   private Token createToken(String str, Symbol sym) {
-  	return new Token(str, sym, yyline+1, yycolumn+1);
+  	return new Token(str, sym, yyline+1, yycolumn+1, yychar+1);
   }
   
   private Token createToken(Symbol sym) {
-  	return new Token(sym.getStr(), sym, yyline+1, yycolumn+1);
+  	return new Token(sym.getStr(), sym, yyline+1, yycolumn+1, yychar+1);
   }
   
   public List<Token> runLexicalAnalysis() {
