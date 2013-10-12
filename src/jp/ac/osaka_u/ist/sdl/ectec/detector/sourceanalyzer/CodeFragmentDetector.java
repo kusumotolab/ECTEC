@@ -438,7 +438,7 @@ public class CodeFragmentDetector extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(Block node) {
-		// finally 節
+		// finally
 		if (this.optionalFinallyBlocks.containsValue(node)) {
 			final DBCrdInfo crd = detectCrd(node,
 					new FinallyBlockCRDCreator(node, peekCrdStack(),
@@ -446,7 +446,7 @@ public class CodeFragmentDetector extends ASTVisitor {
 			parentCrds.push(crd);
 		}
 
-		// else 節
+		// else
 		else if (this.optionalElseBlocks.containsValue(node)) {
 			final DBCrdInfo crd = detectCrd(node,
 					new ElseStatementCRDCreator(node, peekCrdStack(),
@@ -459,12 +459,12 @@ public class CodeFragmentDetector extends ASTVisitor {
 
 	@Override
 	public void endVisit(Block node) {
-		// finally 節
+		// finally
 		if (this.optionalFinallyBlocks.containsValue(node)) {
 			parentCrds.pop();
 		}
 
-		// else 節
+		// else
 		else if (this.optionalElseBlocks.containsValue(node)) {
 			parentCrds.pop();
 		}

@@ -16,12 +16,15 @@ public class Token {
 
 	private final int column;
 
+	private final int position;
+	
 	public Token(final String str, final Symbol symbol, final int line,
-			final int column) {
+			final int column, final int position) {
 		this.str = str;
 		this.symbol = symbol;
 		this.line = line;
 		this.column = column;
+		this.position = position;
 	}
 
 	public final String getStr() {
@@ -38,6 +41,10 @@ public class Token {
 
 	public final int getColumn() {
 		return column;
+	}
+	
+	public final int getPosition() {
+		return position;
 	}
 
 	@Override
