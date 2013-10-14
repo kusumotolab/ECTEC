@@ -20,15 +20,18 @@ public class InstantCodeFragmentInfo {
 
 	private final long hash;
 
+	private final int size;
+
 	public InstantCodeFragmentInfo(final String filePath, final int startLine,
 			final int startColumn, final int endLine, final int endColumn,
-			final long hash) {
+			final long hash, final int size) {
 		this.filePath = filePath;
 		this.startLine = startLine;
 		this.startColumn = startColumn;
 		this.endLine = endLine;
 		this.endColumn = endColumn;
 		this.hash = hash;
+		this.size = size;
 	}
 
 	public final String getFilePath() {
@@ -38,7 +41,7 @@ public class InstantCodeFragmentInfo {
 	public final int getStartLine() {
 		return startLine;
 	}
-	
+
 	public final int getStartColumn() {
 		return startColumn;
 	}
@@ -46,13 +49,17 @@ public class InstantCodeFragmentInfo {
 	public final int getEndLine() {
 		return endLine;
 	}
-	
+
 	public final int getEndColumn() {
 		return endColumn;
 	}
 
 	public final long getHash() {
 		return hash;
+	}
+
+	public final int getSize() {
+		return size;
 	}
 
 }

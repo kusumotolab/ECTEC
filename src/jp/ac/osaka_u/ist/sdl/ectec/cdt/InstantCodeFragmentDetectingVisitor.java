@@ -45,15 +45,18 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 
 	private final Set<Block> processedBlocks;
 
+	private final int threshold;
+
 	public InstantCodeFragmentDetectingVisitor(final List<Token> tokens,
 			final String filePath, final IHashCalculator hashCalculator,
-			final NormalizerCreator normalizerCreator) {
+			final NormalizerCreator normalizerCreator, final int threshold) {
 		this.detectedFragments = new ArrayList<InstantCodeFragmentInfo>();
 		this.tokens = tokens;
 		this.filePath = filePath;
 		this.hashCalculator = hashCalculator;
 		this.normalizerCreator = normalizerCreator;
 		this.processedBlocks = new HashSet<Block>();
+		this.threshold = threshold;
 	}
 
 	/**
@@ -153,10 +156,17 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 		final Token tailToken = getTailToken(node.getStartPosition()
 				+ node.getLength());
 
+		final int size = tokens.indexOf(tailToken) - tokens.indexOf(headToken)
+				+ 1;
+
 		if (headToken == null || tailToken == null) {
 			MessagePrinter.ePrintln("cannot find corresponding token to "
 					+ node.getClass().getName() + " in position "
 					+ node.getStartPosition() + " of " + filePath);
+			return null;
+		}
+
+		if (size < threshold) {
 			return null;
 		}
 
@@ -168,7 +178,7 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 		return new InstantCodeFragmentInfo(filePath, headToken.getLine(),
 				headToken.getColumn(), tailToken.getLine(),
 				tailToken.getColumn(),
-				hashCalculator.calcHashValue(normalizedStr));
+				hashCalculator.calcHashValue(normalizedStr), size);
 	}
 
 	private void register(final InstantCodeFragmentInfo fragment) {
@@ -228,10 +238,17 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 		final Token tailToken = getTailToken(node.getStartPosition()
 				+ node.getThenStatement().getLength());
 
+		final int size = tokens.indexOf(tailToken) - tokens.indexOf(headToken)
+				+ 1;
+
 		if (headToken == null || tailToken == null) {
 			MessagePrinter.ePrintln("cannot find corresponding token to "
 					+ node.getClass().getName() + " in position "
 					+ node.getStartPosition() + " of " + filePath);
+			return true;
+		}
+
+		if (size < threshold) {
 			return true;
 		}
 
@@ -246,7 +263,7 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 		final InstantCodeFragmentInfo fragment = new InstantCodeFragmentInfo(
 				filePath, headToken.getLine(), headToken.getColumn(),
 				tailToken.getLine(), tailToken.getColumn(),
-				hashCalculator.calcHashValue(normalizedStr));
+				hashCalculator.calcHashValue(normalizedStr), size);
 
 		register(fragment);
 
@@ -281,6 +298,13 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 			return true;
 		}
 
+		final int size = tokens.indexOf(tailToken) - tokens.indexOf(headToken)
+				+ 1;
+
+		if (size < threshold) {
+			return true;
+		}
+
 		final StringCreateVisitor normalizer = normalizerCreator
 				.createNewCalculator();
 		normalizer.getBuffer().append("try ");
@@ -290,7 +314,7 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 		final InstantCodeFragmentInfo fragment = new InstantCodeFragmentInfo(
 				filePath, headToken.getLine(), headToken.getColumn(),
 				tailToken.getLine(), tailToken.getColumn(),
-				hashCalculator.calcHashValue(normalizedStr));
+				hashCalculator.calcHashValue(normalizedStr), size);
 
 		register(fragment);
 
