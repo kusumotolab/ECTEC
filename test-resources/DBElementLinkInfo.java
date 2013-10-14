@@ -71,7 +71,13 @@ public abstract class DBElementLinkInfo extends AbstractDBElement {
 	 * @return
 	 */
 	public final long getBeforeRevisionId() {
-		return this.beforeRevisionId;
+		try {
+			return this.beforeRevisionId;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			System.out.println();
+		}
 	}
 
 	/**
@@ -80,6 +86,14 @@ public abstract class DBElementLinkInfo extends AbstractDBElement {
 	 * @return
 	 */
 	public final long getAfterRevisionId() {
+		int a = 1;
+		if (a == 0) {
+			System.out.println("then");
+		} else if (a == 1) {
+			System.out.println("else if");
+		} else {
+			System.out.println("else");
+		}
 		return this.afterRevisionId;
 	}
 
