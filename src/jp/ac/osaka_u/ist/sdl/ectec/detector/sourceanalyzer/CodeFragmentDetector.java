@@ -191,19 +191,26 @@ public class CodeFragmentDetector extends ASTVisitor {
 	 * @param crdId
 	 * @return
 	 */
-	private final DBCodeFragmentInfo createCodeFragment(final ASTNode node,
+	private final DBCodeFragmentInfo createCodeFragment(final int startLine,
+			final int endLine, final String rawStr, final int size,
 			final long crdId, final String strForClone) {
-		final int startLine = getStartLine(node);
-		final int endLine = getEndLine(node);
-		final long hash = hashCalculator.calcHashValue(node.toString());
+		final long hash = hashCalculator.calcHashValue(rawStr.toString());
 		final long hashForClone = hashCalculator.calcHashValue(strForClone);
-
-		final NodeCountVisitor nodeCounter = new NodeCountVisitor();
-		node.accept(nodeCounter);
-		final int size = nodeCounter.getNodeCount();
 
 		return new DBCodeFragmentInfo(ownerFileId, crdId, startRevisionId,
 				endRevisionId, hash, hashForClone, startLine, endLine, size);
+	}
+
+	/**
+	 * get the number of nodes in the subtree of the given node
+	 * 
+	 * @param node
+	 * @return
+	 */
+	private int countSize(final ASTNode node) {
+		final NodeCountVisitor visitor = new NodeCountVisitor();
+		node.accept(visitor);
+		return visitor.getNodeCount();
 	}
 
 	/**
@@ -213,7 +220,8 @@ public class CodeFragmentDetector extends ASTVisitor {
 	 * @param analyzer
 	 * @return the crd
 	 */
-	private final DBCrdInfo detectCrd(final ASTNode node,
+	private final DBCrdInfo detectCrd(final int startLine, final int endLine,
+			final String rawStr, final int size,
 			final AbstractBlockAnalyzer<?> analyzer) {
 		analyzer.analyze();
 		final DBCrdInfo crd = analyzer.getCreatedCrd();
@@ -221,8 +229,9 @@ public class CodeFragmentDetector extends ASTVisitor {
 
 		final BlockType bType = crd.getType();
 		if (bType.isInterested(granularity)) {
-			final DBCodeFragmentInfo fragment = createCodeFragment(node,
-					crd.getId(), analyzer.getStringForCloneDetection());
+			final DBCodeFragmentInfo fragment = createCodeFragment(startLine,
+					endLine, rawStr, size, crd.getId(),
+					analyzer.getStringForCloneDetection());
 			detectedFragments.put(fragment.getId(), fragment);
 		}
 
@@ -237,7 +246,8 @@ public class CodeFragmentDetector extends ASTVisitor {
 			return false;
 		}
 
-		final DBCrdInfo crd = detectCrd(node,
+		final DBCrdInfo crd = detectCrd(getStartLine(node), getEndLine(node),
+				node.toString(), countSize(node),
 				new ClassCRDCreator(node, peekCrdStack(),
 						cloneHashCalculatorCreator.createNewCalculator()));
 		parentCrds.push(crd);
@@ -248,7 +258,8 @@ public class CodeFragmentDetector extends ASTVisitor {
 
 	@Override
 	public boolean visit(MethodDeclaration node) {
-		final DBCrdInfo crd = detectCrd(node,
+		final DBCrdInfo crd = detectCrd(getStartLine(node), getEndLine(node),
+				node.toString(), countSize(node),
 				new MethodCRDCreator(node, peekCrdStack(),
 						cloneHashCalculatorCreator.createNewCalculator()));
 		parentCrds.push(crd);
@@ -264,7 +275,8 @@ public class CodeFragmentDetector extends ASTVisitor {
 
 	@Override
 	public boolean visit(EnhancedForStatement node) {
-		final DBCrdInfo crd = detectCrd(node,
+		final DBCrdInfo crd = detectCrd(getStartLine(node), getEndLine(node),
+				node.toString(), countSize(node),
 				new EnhancedForStatementCRDCreator(node, peekCrdStack(),
 						cloneHashCalculatorCreator.createNewCalculator()));
 		parentCrds.push(crd);
@@ -280,7 +292,8 @@ public class CodeFragmentDetector extends ASTVisitor {
 
 	@Override
 	public boolean visit(ForStatement node) {
-		final DBCrdInfo crd = detectCrd(node,
+		final DBCrdInfo crd = detectCrd(getStartLine(node), getEndLine(node),
+				node.toString(), countSize(node),
 				new ForStatementCRDCreator(node, peekCrdStack(),
 						cloneHashCalculatorCreator.createNewCalculator()));
 		parentCrds.push(crd);
@@ -296,7 +309,8 @@ public class CodeFragmentDetector extends ASTVisitor {
 
 	@Override
 	public boolean visit(WhileStatement node) {
-		final DBCrdInfo crd = detectCrd(node,
+		final DBCrdInfo crd = detectCrd(getStartLine(node), getEndLine(node),
+				node.toString(), countSize(node),
 				new WhileStatementCRDCreator(node, peekCrdStack(),
 						cloneHashCalculatorCreator.createNewCalculator()));
 		parentCrds.push(crd);
@@ -312,7 +326,8 @@ public class CodeFragmentDetector extends ASTVisitor {
 
 	@Override
 	public boolean visit(DoStatement node) {
-		final DBCrdInfo crd = detectCrd(node,
+		final DBCrdInfo crd = detectCrd(getStartLine(node), getEndLine(node),
+				node.toString(), countSize(node),
 				new DoStatementCRDCreator(node, peekCrdStack(),
 						cloneHashCalculatorCreator.createNewCalculator()));
 		parentCrds.push(crd);
@@ -328,7 +343,8 @@ public class CodeFragmentDetector extends ASTVisitor {
 
 	@Override
 	public boolean visit(SwitchStatement node) {
-		final DBCrdInfo crd = detectCrd(node,
+		final DBCrdInfo crd = detectCrd(getStartLine(node), getEndLine(node),
+				node.toString(), countSize(node),
 				new SwitchStatementCRDCreator(node, peekCrdStack(),
 						cloneHashCalculatorCreator.createNewCalculator()));
 		parentCrds.push(crd);
@@ -344,7 +360,8 @@ public class CodeFragmentDetector extends ASTVisitor {
 
 	@Override
 	public boolean visit(SynchronizedStatement node) {
-		final DBCrdInfo crd = detectCrd(node,
+		final DBCrdInfo crd = detectCrd(getStartLine(node), getEndLine(node),
+				node.toString(), countSize(node),
 				new SynchronizedStatementCRDCreator(node, peekCrdStack(),
 						cloneHashCalculatorCreator.createNewCalculator()));
 		parentCrds.push(crd);
@@ -360,7 +377,10 @@ public class CodeFragmentDetector extends ASTVisitor {
 
 	@Override
 	public boolean visit(TryStatement node) {
-		final DBCrdInfo crd = detectCrd(node,
+		// +1 for the size goes to "try" itself
+		final DBCrdInfo crd = detectCrd(getStartLine(node),
+				getEndLine(node.getBody()), node.getBody().toString(),
+				countSize(node.getBody()) + 1,
 				new TryStatementCRDCreator(node, peekCrdStack(),
 						cloneHashCalculatorCreator.createNewCalculator()));
 		parentCrds.push(crd);
@@ -387,7 +407,8 @@ public class CodeFragmentDetector extends ASTVisitor {
 
 	@Override
 	public boolean visit(CatchClause node) {
-		final DBCrdInfo crd = detectCrd(node,
+		final DBCrdInfo crd = detectCrd(getStartLine(node), getEndLine(node),
+				node.toString(), countSize(node),
 				new CatchClauseCRDCreator(node, peekCrdStack(),
 						cloneHashCalculatorCreator.createNewCalculator()));
 		parentCrds.push(crd);
@@ -403,7 +424,13 @@ public class CodeFragmentDetector extends ASTVisitor {
 
 	@Override
 	public boolean visit(IfStatement node) {
-		final DBCrdInfo crd = detectCrd(node,
+		// +1 for the size goes to "try" itself
+		final DBCrdInfo crd = detectCrd(
+				getStartLine(node),
+				getEndLine(node.getThenStatement()),
+				node.toString(),
+				countSize(node.getThenStatement())
+						+ countSize(node.getExpression()) + 1,
 				new IfStatementCRDCreator(node, peekCrdStack(),
 						cloneHashCalculatorCreator.createNewCalculator()));
 		parentCrds.push(crd);
@@ -440,7 +467,8 @@ public class CodeFragmentDetector extends ASTVisitor {
 	public boolean visit(Block node) {
 		// finally
 		if (this.optionalFinallyBlocks.containsValue(node)) {
-			final DBCrdInfo crd = detectCrd(node,
+			final DBCrdInfo crd = detectCrd(getStartLine(node),
+					getEndLine(node), node.toString(), countSize(node),
 					new FinallyBlockCRDCreator(node, peekCrdStack(),
 							cloneHashCalculatorCreator.createNewCalculator()));
 			parentCrds.push(crd);
@@ -448,7 +476,8 @@ public class CodeFragmentDetector extends ASTVisitor {
 
 		// else
 		else if (this.optionalElseBlocks.containsValue(node)) {
-			final DBCrdInfo crd = detectCrd(node,
+			final DBCrdInfo crd = detectCrd(getStartLine(node),
+					getEndLine(node), node.toString(), countSize(node),
 					new ElseStatementCRDCreator(node, peekCrdStack(),
 							cloneHashCalculatorCreator.createNewCalculator()));
 			parentCrds.push(crd);

@@ -40,12 +40,12 @@ public abstract class AbstractBlockAnalyzer<T extends ASTNode> {
 	/**
 	 * the crd created as a result of analysis
 	 */
-	private DBCrdInfo createdCrd;
+	protected DBCrdInfo createdCrd;
 
 	/**
 	 * the normalized string created as a result of analysis
 	 */
-	private String stringForCloneDetection;
+	protected String stringForCloneDetection;
 
 	public AbstractBlockAnalyzer(final T node, final DBCrdInfo parent,
 			final BlockType bType, final StringCreateVisitor visitor) {
@@ -105,7 +105,7 @@ public abstract class AbstractBlockAnalyzer<T extends ASTNode> {
 	 * @param cm
 	 * @return
 	 */
-	private String getStringCrdForThisBlock(final String head,
+	protected String getStringCrdForThisBlock(final String head,
 			final String anchor, final int cm) {
 		final StringBuilder builder = new StringBuilder();
 
