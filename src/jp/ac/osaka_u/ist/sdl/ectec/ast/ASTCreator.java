@@ -26,7 +26,7 @@ public class ASTCreator {
 		return (CompilationUnit) parser.createAST(new NullProgressMonitor());
 	}
 
-	public static CompilationUnit creatAST(final File file) {
+	public static CompilationUnit createAST(final File file) {
 		BufferedReader reader = null;
 		
 		try {
