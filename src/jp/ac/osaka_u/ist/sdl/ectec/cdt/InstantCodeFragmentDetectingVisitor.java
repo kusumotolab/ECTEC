@@ -10,6 +10,7 @@ import java.util.Set;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.hash.IHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.normalizer.NormalizerCreator;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.normalizer.StringCreateVisitor;
+import jp.ac.osaka_u.ist.sdl.ectec.settings.AnalyzeGranularity;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -47,9 +48,12 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 
 	private final int threshold;
 
+	private final AnalyzeGranularity granularity;
+
 	public InstantCodeFragmentDetectingVisitor(final List<Token> tokens,
 			final String filePath, final IHashCalculator hashCalculator,
-			final NormalizerCreator normalizerCreator, final int threshold) {
+			final NormalizerCreator normalizerCreator, final int threshold,
+			final AnalyzeGranularity granularity) {
 		this.detectedFragments = new ArrayList<InstantCodeFragmentInfo>();
 		this.tokens = tokens;
 		this.filePath = filePath;
@@ -57,6 +61,7 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 		this.normalizerCreator = normalizerCreator;
 		this.processedBlocks = new HashSet<Block>();
 		this.threshold = threshold;
+		this.granularity = granularity;
 	}
 
 	/**
@@ -187,12 +192,20 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeDeclaration node) {
+		if (granularity == AnalyzeGranularity.METHOD) {
+			return true;
+		}
+
 		processBlock(node);
 		return true;
 	}
 
 	@Override
 	public boolean visit(MethodDeclaration node) {
+		if (granularity == AnalyzeGranularity.CLASS) {
+			return true;
+		}
+
 		processBlock(node);
 		processedBlocks.add(node.getBody());
 		return true;
@@ -200,6 +213,10 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(CatchClause node) {
+		if (granularity != AnalyzeGranularity.ALL) {
+			return true;
+		}
+
 		processBlock(node);
 		processedBlocks.add(node.getBody());
 		return true;
@@ -207,6 +224,10 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(DoStatement node) {
+		if (granularity != AnalyzeGranularity.ALL) {
+			return true;
+		}
+
 		processBlock(node);
 		if (node.getBody() instanceof Block) {
 			processedBlocks.add((Block) node.getBody());
@@ -216,6 +237,10 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(EnhancedForStatement node) {
+		if (granularity != AnalyzeGranularity.ALL) {
+			return true;
+		}
+
 		processBlock(node);
 		if (node.getBody() instanceof Block) {
 			processedBlocks.add((Block) node.getBody());
@@ -225,6 +250,10 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(ForStatement node) {
+		if (granularity != AnalyzeGranularity.ALL) {
+			return true;
+		}
+
 		processBlock(node);
 		if (node.getBody() instanceof Block) {
 			processedBlocks.add((Block) node.getBody());
@@ -234,6 +263,10 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(IfStatement node) {
+		if (granularity != AnalyzeGranularity.ALL) {
+			return true;
+		}
+
 		final Token headToken = getHeadToken(node.getStartPosition());
 		final Token tailToken = getTailToken(node.getStartPosition()
 				+ node.getThenStatement().getLength());
@@ -275,6 +308,10 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(SwitchStatement node) {
+		if (granularity != AnalyzeGranularity.ALL) {
+			return true;
+		}
+
 		processBlock(node);
 		for (Object obj : node.statements()) {
 			final Statement statement = (Statement) obj;
@@ -287,6 +324,10 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(TryStatement node) {
+		if (granularity != AnalyzeGranularity.ALL) {
+			return true;
+		}
+
 		final Token headToken = getHeadToken(node.getStartPosition());
 		final Token tailToken = getTailToken(node.getStartPosition()
 				+ node.getBody().getLength());
@@ -324,6 +365,10 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(SynchronizedStatement node) {
+		if (granularity != AnalyzeGranularity.ALL) {
+			return true;
+		}
+
 		processBlock(node);
 		processedBlocks.add(node.getBody());
 		return true;
@@ -331,10 +376,28 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(WhileStatement node) {
+		if (granularity != AnalyzeGranularity.ALL) {
+			return true;
+		}
+
 		processBlock(node);
 		if (node.getBody() instanceof Block) {
 			processedBlocks.add((Block) node.getBody());
 		}
+		return true;
+	}
+
+	@Override
+	public boolean visit(Block node) {
+		if (processedBlocks.contains(node)) {
+			return true;
+		}
+		if (granularity != AnalyzeGranularity.ALL) {
+			return true;
+		}
+
+		processBlock(node);
+		processedBlocks.add(node);
 		return true;
 	}
 
