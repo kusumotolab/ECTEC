@@ -33,23 +33,27 @@ public class InstantCodeFragmentDetectingThread implements Runnable {
 
 	private final NormalizerCreator normalizerCreator;
 
-	private final int threshold;
+	private final int tokenThreshold;
 
 	private final AnalyzeGranularity granularity;
+
+	private final int lineThreshold;
 
 	public InstantCodeFragmentDetectingThread(
 			final String[] filePaths,
 			final ConcurrentMap<String, List<InstantCodeFragmentInfo>> fragments,
 			final AtomicInteger index, final IHashCalculator hashCalculator,
-			final NormalizerCreator normalizerCreator, final int threshold,
-			final AnalyzeGranularity granularity) {
+			final NormalizerCreator normalizerCreator,
+			final int tokenThreshold, final AnalyzeGranularity granularity,
+			final int lineThreshold) {
 		this.filePaths = filePaths;
 		this.fragments = fragments;
 		this.index = index;
 		this.hashCalculator = hashCalculator;
 		this.normalizerCreator = normalizerCreator;
-		this.threshold = threshold;
+		this.tokenThreshold = tokenThreshold;
 		this.granularity = granularity;
+		this.lineThreshold = lineThreshold;
 	}
 
 	@Override
@@ -78,7 +82,7 @@ public class InstantCodeFragmentDetectingThread implements Runnable {
 
 				final InstantCodeFragmentDetectingVisitor visitor = new InstantCodeFragmentDetectingVisitor(
 						tokens, filePath, hashCalculator, normalizerCreator,
-						threshold, granularity);
+						tokenThreshold, granularity, lineThreshold);
 
 				root.accept(visitor);
 

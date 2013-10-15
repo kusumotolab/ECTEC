@@ -23,20 +23,24 @@ public class InstantCodeFragmentDetector {
 
 	private final NormalizerCreator normalizerCreator;
 
-	private final int threshold;
+	private final int tokenThreshold;
 
 	private final AnalyzeGranularity granularity;
 
 	private final int threadsCount;
 
+	private final int lineThreshold;
+
 	public InstantCodeFragmentDetector(final IHashCalculator hashCalculator,
-			final NormalizerCreator normalizerCreator, final int threshold,
-			final AnalyzeGranularity granularity, final int threadsCount) {
+			final NormalizerCreator normalizerCreator,
+			final int tokenThreshold, final AnalyzeGranularity granularity,
+			final int threadsCount, final int lineThreshold) {
 		this.hashCalculator = hashCalculator;
 		this.normalizerCreator = normalizerCreator;
-		this.threshold = threshold;
+		this.tokenThreshold = tokenThreshold;
 		this.granularity = granularity;
 		this.threadsCount = threadsCount;
+		this.lineThreshold = lineThreshold;
 	}
 
 	public Map<String, List<InstantCodeFragmentInfo>> detectFragments(
@@ -50,7 +54,8 @@ public class InstantCodeFragmentDetector {
 		for (int i = 0; i < threads.length; i++) {
 			threads[i] = new Thread(new InstantCodeFragmentDetectingThread(
 					filePathsArray, result, index, hashCalculator,
-					normalizerCreator, threshold, granularity));
+					normalizerCreator, tokenThreshold, granularity,
+					lineThreshold));
 			threads[i].start();
 		}
 

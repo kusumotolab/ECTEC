@@ -46,22 +46,26 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 
 	private final Set<Block> processedBlocks;
 
-	private final int threshold;
+	private final int tokenThreshold;
 
 	private final AnalyzeGranularity granularity;
 
+	private final int lineThreshold;
+
 	public InstantCodeFragmentDetectingVisitor(final List<Token> tokens,
 			final String filePath, final IHashCalculator hashCalculator,
-			final NormalizerCreator normalizerCreator, final int threshold,
-			final AnalyzeGranularity granularity) {
+			final NormalizerCreator normalizerCreator,
+			final int tokenThreshold, final AnalyzeGranularity granularity,
+			final int lineThreshold) {
 		this.detectedFragments = new ArrayList<InstantCodeFragmentInfo>();
 		this.tokens = tokens;
 		this.filePath = filePath;
 		this.hashCalculator = hashCalculator;
 		this.normalizerCreator = normalizerCreator;
 		this.processedBlocks = new HashSet<Block>();
-		this.threshold = threshold;
+		this.tokenThreshold = tokenThreshold;
 		this.granularity = granularity;
+		this.lineThreshold = lineThreshold;
 	}
 
 	/**
@@ -161,9 +165,6 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 		final Token tailToken = getTailToken(node.getStartPosition()
 				+ node.getLength());
 
-		final int size = tokens.indexOf(tailToken) - tokens.indexOf(headToken)
-				+ 1;
-
 		if (headToken == null || tailToken == null) {
 			MessagePrinter.ePrintln("cannot find corresponding token to "
 					+ node.getClass().getName() + " in position "
@@ -171,7 +172,15 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 			return null;
 		}
 
-		if (size < threshold) {
+		final int size = tokens.indexOf(tailToken) - tokens.indexOf(headToken)
+				+ 1;
+
+		if (size < tokenThreshold) {
+			return null;
+		}
+
+		final int lines = tailToken.getLine() - headToken.getLine() + 1;
+		if (lines < lineThreshold) {
 			return null;
 		}
 
@@ -271,9 +280,6 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 		final Token tailToken = getTailToken(node.getStartPosition()
 				+ node.getThenStatement().getLength());
 
-		final int size = tokens.indexOf(tailToken) - tokens.indexOf(headToken)
-				+ 1;
-
 		if (headToken == null || tailToken == null) {
 			MessagePrinter.ePrintln("cannot find corresponding token to "
 					+ node.getClass().getName() + " in position "
@@ -281,7 +287,15 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 			return true;
 		}
 
-		if (size < threshold) {
+		final int size = tokens.indexOf(tailToken) - tokens.indexOf(headToken)
+				+ 1;
+
+		if (size < tokenThreshold) {
+			return true;
+		}
+
+		final int lines = tailToken.getLine() - headToken.getLine() + 1;
+		if (lines < lineThreshold) {
 			return true;
 		}
 
@@ -342,7 +356,12 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 		final int size = tokens.indexOf(tailToken) - tokens.indexOf(headToken)
 				+ 1;
 
-		if (size < threshold) {
+		if (size < tokenThreshold) {
+			return true;
+		}
+
+		final int lines = tailToken.getLine() - headToken.getLine() + 1;
+		if (lines < lineThreshold) {
 			return true;
 		}
 

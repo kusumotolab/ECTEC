@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.cdtbenchmark;
+package jp.ac.osaka_u.ist.sdl.ectec.cdt.benchmark;
 
 public class MetricsCalculator {
 
