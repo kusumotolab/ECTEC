@@ -1,21 +1,18 @@
 package jp.ac.osaka_u.ist.sdl.ectec.cdtbenchmark;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ReferenceCandidateMapper {
 
-	private final double threshold;
-
-	public ReferenceCandidateMapper(final double threshold) {
-		this.threshold = threshold;
-	}
-
-	public Map<CloneCandidate, CloneReference> detectMap(
+	public List<ReferenceCandidateMap> detectMap(
 			final Collection<CloneCandidate> candidates,
 			final Collection<CloneReference> references) {
-		final Map<CloneCandidate, CloneReference> result = new HashMap<CloneCandidate, CloneReference>();
+		final List<ReferenceCandidateMap> result = new ArrayList<ReferenceCandidateMap>();
+		final Map<CloneCandidate, ReferenceCandidateMap> map = new HashMap<CloneCandidate, ReferenceCandidateMap>();
 
 		for (final CloneReference reference : references) {
 			double okMax = -1.0;
@@ -26,12 +23,10 @@ public class ReferenceCandidateMapper {
 				final double good = MetricsCalculator.calcGood(reference,
 						candidate);
 
-				if (good >= threshold && good > goodMax) {
-					change(candidate, reference, result);
+				if (good > goodMax) {
+					change(candidate, reference, good, ok, map, result);
 				} else if (good == goodMax && ok > okMax) {
-					change(candidate, reference, result);
-				} else if (ok >= threshold && okMax < threshold) {
-					change(candidate, reference, result);
+					change(candidate, reference, good, ok, map, result);
 				}
 			}
 		}
@@ -40,12 +35,19 @@ public class ReferenceCandidateMapper {
 	}
 
 	private void change(final CloneCandidate candidate,
-			final CloneReference reference,
-			final Map<CloneCandidate, CloneReference> result) {
-		if (result.containsKey(candidate)) {
-			result.remove(candidate);
+			final CloneReference reference, final double good, final double ok,
+			final Map<CloneCandidate, ReferenceCandidateMap> map,
+			final List<ReferenceCandidateMap> result) {
+		if (map.containsKey(candidate)) {
+			final ReferenceCandidateMap toBeRemoved = map.get(candidate);
+			map.remove(candidate);
+			result.remove(toBeRemoved);
 		}
-		result.put(candidate, reference);
+
+		final ReferenceCandidateMap newMapping = new ReferenceCandidateMap(
+				reference, candidate, ok, good);
+		map.put(candidate, newMapping);
+		result.add(newMapping);
 	}
 
 }
