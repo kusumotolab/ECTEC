@@ -1,5 +1,8 @@
 package jp.ac.osaka_u.ist.sdl.ectec.cdt.benchmark;
 
+import jp.ac.osaka_u.ist.sdl.ectec.cdt.CloneFragment;
+import jp.ac.osaka_u.ist.sdl.ectec.cdt.ClonePair;
+
 public class MetricsCalculator {
 
 	public static double calcOverlap(final CloneFragment fragment,

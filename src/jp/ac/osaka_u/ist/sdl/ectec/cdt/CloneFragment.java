@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.cdt.benchmark;
+package jp.ac.osaka_u.ist.sdl.ectec.cdt;
 
 public class CloneFragment implements Comparable<CloneFragment> {
 

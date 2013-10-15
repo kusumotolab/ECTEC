@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import jp.ac.osaka_u.ist.sdl.ectec.cdt.CloneFragment;
+import jp.ac.osaka_u.ist.sdl.ectec.cdt.ClonePair;
+
 public abstract class CloneDataLoader<T extends ClonePair> {
 
 	public List<T> load(final String file) throws Exception {
