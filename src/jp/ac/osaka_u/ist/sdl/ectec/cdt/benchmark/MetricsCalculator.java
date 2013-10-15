@@ -1,11 +1,13 @@
 package jp.ac.osaka_u.ist.sdl.ectec.cdt.benchmark;
 
+import jp.ac.osaka_u.ist.sdl.ectec.util.StringUtils;
 
 public class MetricsCalculator {
 
 	public static double calcOverlap(final BenchmarkCloneFragment fragment,
 			final BenchmarkCloneFragment anotherFragment) {
-		if (fragment.getOwnerFile().equals(anotherFragment.getOwnerFile())) {
+		if (!StringUtils.judgeEqual(anotherFragment.getOwnerFile(),
+				fragment.getOwnerFile())) {
 			return 0;
 		}
 
@@ -14,12 +16,15 @@ public class MetricsCalculator {
 		final int lines = fragment.getEndLine() - fragment.getStartLine() + 1;
 		final int anotherLines = anotherFragment.getEndLine()
 				- anotherFragment.getStartLine() + 1;
+		
+		final int totalLines = lines + anotherLines - overlappedLines;
 
 		return ((double) overlappedLines)
-				/ (((double) lines) + ((double) anotherLines));
+				/ ((double) totalLines);
 	}
 
-	public static int calcOverlappedLines(final BenchmarkCloneFragment fragment,
+	public static int calcOverlappedLines(
+			final BenchmarkCloneFragment fragment,
 			final BenchmarkCloneFragment anotherFragment) {
 		int result = 0;
 
@@ -37,7 +42,8 @@ public class MetricsCalculator {
 
 	public static double calcContain(final BenchmarkCloneFragment fragment,
 			final BenchmarkCloneFragment anotherFragment) {
-		if (fragment.getOwnerFile().equals(anotherFragment.getOwnerFile())) {
+		if (!StringUtils.judgeEqual(anotherFragment.getOwnerFile(),
+				fragment.getOwnerFile())) {
 			return 0;
 		}
 

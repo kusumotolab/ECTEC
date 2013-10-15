@@ -22,6 +22,10 @@ public class ReferenceCandidateMapper {
 						.calcOK(reference, candidate);
 				final double good = MetricsCalculator.calcGood(reference,
 						candidate);
+				
+				if (good == 0 && ok == 0) {
+					continue;
+				}
 
 				if (good > goodMax) {
 					change(candidate, reference, good, ok, map, result);

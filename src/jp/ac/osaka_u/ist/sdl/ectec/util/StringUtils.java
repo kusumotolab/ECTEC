@@ -1,5 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.util;
 
+import java.io.File;
 import java.util.Collection;
 
 /**
@@ -126,6 +127,42 @@ public class StringUtils {
 
 		return ((double) 1) - (((double) ld) * 2)
 				/ (((double) str1.length()) + ((double) str2.length()));
+	}
+
+	/**
+	 * judge whether the given two paths equal to each other except for
+	 * differences of abstarct path and full path
+	 * 
+	 * @param fullPath
+	 * @param abstractPath
+	 * @return
+	 */
+	public static boolean judgeEqual(final String fullPath,
+			final String abstractPath) {
+		final String[] splitFull = fullPath.split("\\\\");
+		final String[] splitAbstract = abstractPath.split("/");
+
+		final String[] reversedSplitFull = reverse(splitFull);
+		final String[] reversedSplitAbstract = reverse(splitAbstract);
+
+		for (int i = 0; i < reversedSplitAbstract.length; i++) {
+			if (!reversedSplitFull[i].equals(reversedSplitAbstract[i])) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	public static String[] reverse(final String[] array) {
+		final String[] result = new String[array.length];
+
+		int count = 0;
+		for (int i = array.length - 1; i >= 0; i--) {
+			result[count++] = array[i];
+		}
+
+		return result;
 	}
 
 }
