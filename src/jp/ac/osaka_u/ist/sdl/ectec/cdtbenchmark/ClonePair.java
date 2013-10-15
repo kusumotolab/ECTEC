@@ -3,6 +3,11 @@ package jp.ac.osaka_u.ist.sdl.ectec.cdtbenchmark;
 public abstract class ClonePair {
 
 	/**
+	 * the id
+	 */
+	private final int id;
+
+	/**
 	 * A fragment
 	 */
 	private final CloneFragment fragment1;
@@ -12,8 +17,10 @@ public abstract class ClonePair {
 	 */
 	private final CloneFragment fragment2;
 
-	public ClonePair(final CloneFragment fragment,
+	public ClonePair(final int id, final CloneFragment fragment,
 			final CloneFragment anotherFragment) {
+		this.id = id;
+
 		if (fragment.compareTo(anotherFragment) < 0) {
 			this.fragment1 = fragment;
 			this.fragment2 = anotherFragment;
@@ -21,6 +28,10 @@ public abstract class ClonePair {
 			this.fragment1 = anotherFragment;
 			this.fragment2 = fragment;
 		}
+	}
+
+	public final int getId() {
+		return id;
 	}
 
 	public final CloneFragment getFragment1() {
