@@ -1,6 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.cdt.benchmark;
 
-public abstract class ClonePair {
+public class ClonePair {
 
 	/**
 	 * the id
