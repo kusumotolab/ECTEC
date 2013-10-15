@@ -28,5 +28,12 @@ public class Evaluator {
 				+ underThresholdMapping.size();
 		return ((double) underThresholdMapping.size()) / ((double) oracled);
 	}
+	
+	public static double calcFMeaasure(final double precision, final double recall) {
+		final double times = 2 * precision * recall;
+		final double plus = precision + recall;
+		
+		return times / plus;
+	}
 
 }

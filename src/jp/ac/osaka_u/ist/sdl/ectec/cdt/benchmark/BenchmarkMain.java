@@ -31,26 +31,39 @@ public class BenchmarkMain {
 
 		final PrintWriter pw = new PrintWriter(new BufferedWriter(
 				new FileWriter(new File(outputPath))));
-		
-		pw.println(" ,#REF,#CAND,#REF_DETECTED,#ORACLED,RECALL,PRECISION,REJECTED");
-		
+
+		pw.println(" ,#REF,#CAND,#REF_DETECTED,#ORACLED,RECALL,PRECISION,REJECTED,F_MEASURE");
+
+		final double goodRecall = Evaluator.calcRecall(references, candidates,
+				goodOverThreshold);
+		final double goodPrecision = Evaluator.calcPrecision(references,
+				candidates, goodOverThreshold);
+
 		pw.print("good,");
 		pw.print(references.size() + ",");
 		pw.print(candidates.size() + ",");
 		pw.print(goodOverThreshold.size() + ",");
 		pw.print((goodOverThreshold.size() + goodUnderThreshold.size()) + ",");
-		pw.print(Evaluator.calcRecall(references, candidates, goodOverThreshold) + ",");
-		pw.print(Evaluator.calcPrecision(references, candidates, goodOverThreshold) + ",");
-		pw.println(Evaluator.calcRejected(goodOverThreshold, goodUnderThreshold));
+		pw.print(goodRecall + ",");
+		pw.print(goodPrecision + ",");
+		pw.print(Evaluator.calcRejected(goodOverThreshold, goodUnderThreshold)
+				+ ",");
+		pw.println(Evaluator.calcFMeaasure(goodPrecision, goodRecall));
+
+		final double okRecall = Evaluator.calcRecall(references, candidates,
+				okOverThreshold);
+		final double okPrecision = Evaluator.calcPrecision(references, candidates,
+				okOverThreshold);
 		
 		pw.print("ok,");
 		pw.print(references.size() + ",");
 		pw.print(candidates.size() + ",");
 		pw.print(okOverThreshold.size() + ",");
 		pw.print((okOverThreshold.size() + okUnderThreshold.size()) + ",");
-		pw.print(Evaluator.calcRecall(references, candidates, okOverThreshold) + ",");
-		pw.print(Evaluator.calcPrecision(references, candidates, okOverThreshold) + ",");
-		pw.println(Evaluator.calcRejected(okOverThreshold, okUnderThreshold));
+		pw.print(okRecall + ",");
+		pw.print(okPrecision + ",");
+		pw.print(Evaluator.calcRejected(okOverThreshold, okUnderThreshold) + ",");
+		pw.println(Evaluator.calcFMeaasure(okPrecision, okRecall));
 		
 		pw.close();
 	}
