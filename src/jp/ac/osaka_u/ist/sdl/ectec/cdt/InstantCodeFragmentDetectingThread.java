@@ -66,7 +66,7 @@ public class InstantCodeFragmentDetectingThread implements Runnable {
 			}
 
 			final String filePath = filePaths[currentIndex];
-			MessagePrinter.println("\t[" + currentIndex + "/"
+			MessagePrinter.println("\t[" + (currentIndex + 1) + "/"
 					+ filePaths.length + "] analyzing " + filePath + "...");
 
 			final File file = new File(filePath);

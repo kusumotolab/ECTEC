@@ -21,15 +21,15 @@ public abstract class CloneDataLoader<T extends BenchmarkClonePair> {
 
 			final int id = Integer.parseInt(split[0]);
 
-			final String path1 = split[2];
-			final int start1 = Integer.parseInt(split[3]);
-			final int end1 = Integer.parseInt(split[4]);
+			final String path1 = split[1];
+			final int start1 = Integer.parseInt(split[2]);
+			final int end1 = Integer.parseInt(split[3]);
 			final BenchmarkCloneFragment fragment1 = new BenchmarkCloneFragment(path1, start1,
 					end1);
 
-			final String path2 = split[5];
-			final int start2 = Integer.parseInt(split[6]);
-			final int end2 = Integer.parseInt(split[7]);
+			final String path2 = split[4];
+			final int start2 = Integer.parseInt(split[5]);
+			final int end2 = Integer.parseInt(split[6]);
 			final BenchmarkCloneFragment fragment2 = new BenchmarkCloneFragment(path2, start2,
 					end2);
 
