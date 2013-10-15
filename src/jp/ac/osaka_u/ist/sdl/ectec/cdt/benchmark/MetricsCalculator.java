@@ -1,12 +1,10 @@
 package jp.ac.osaka_u.ist.sdl.ectec.cdt.benchmark;
 
-import jp.ac.osaka_u.ist.sdl.ectec.cdt.CloneFragment;
-import jp.ac.osaka_u.ist.sdl.ectec.cdt.ClonePair;
 
 public class MetricsCalculator {
 
-	public static double calcOverlap(final CloneFragment fragment,
-			final CloneFragment anotherFragment) {
+	public static double calcOverlap(final BenchmarkCloneFragment fragment,
+			final BenchmarkCloneFragment anotherFragment) {
 		if (fragment.getOwnerFile().equals(anotherFragment.getOwnerFile())) {
 			return 0;
 		}
@@ -21,8 +19,8 @@ public class MetricsCalculator {
 				/ (((double) lines) + ((double) anotherLines));
 	}
 
-	public static int calcOverlappedLines(final CloneFragment fragment,
-			final CloneFragment anotherFragment) {
+	public static int calcOverlappedLines(final BenchmarkCloneFragment fragment,
+			final BenchmarkCloneFragment anotherFragment) {
 		int result = 0;
 
 		final int anotherStart = anotherFragment.getStartLine();
@@ -37,8 +35,8 @@ public class MetricsCalculator {
 		return result;
 	}
 
-	public static double calcContain(final CloneFragment fragment,
-			final CloneFragment anotherFragment) {
+	public static double calcContain(final BenchmarkCloneFragment fragment,
+			final BenchmarkCloneFragment anotherFragment) {
 		if (fragment.getOwnerFile().equals(anotherFragment.getOwnerFile())) {
 			return 0;
 		}
@@ -50,8 +48,8 @@ public class MetricsCalculator {
 		return ((double) overlappedLines) / ((double) lines);
 	}
 
-	public static double calcGood(final ClonePair pair,
-			final ClonePair anotherPair) {
+	public static double calcGood(final BenchmarkClonePair pair,
+			final BenchmarkClonePair anotherPair) {
 		final double overlap1 = calcOverlap(pair.getFragment1(),
 				anotherPair.getFragment1());
 		final double overlap2 = calcOverlap(pair.getFragment2(),
@@ -60,8 +58,8 @@ public class MetricsCalculator {
 		return Math.min(overlap1, overlap2);
 	}
 
-	public static double calcOK(final ClonePair pair,
-			final ClonePair anotherPair) {
+	public static double calcOK(final BenchmarkClonePair pair,
+			final BenchmarkClonePair anotherPair) {
 		final double contain11 = calcContain(pair.getFragment1(),
 				anotherPair.getFragment1());
 		final double contain12 = calcContain(anotherPair.getFragment1(),

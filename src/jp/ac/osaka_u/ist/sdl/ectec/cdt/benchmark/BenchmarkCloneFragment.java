@@ -1,6 +1,6 @@
-package jp.ac.osaka_u.ist.sdl.ectec.cdt;
+package jp.ac.osaka_u.ist.sdl.ectec.cdt.benchmark;
 
-public class CloneFragment implements Comparable<CloneFragment> {
+public class BenchmarkCloneFragment implements Comparable<BenchmarkCloneFragment> {
 
 	private final String ownerFile;
 
@@ -8,7 +8,7 @@ public class CloneFragment implements Comparable<CloneFragment> {
 
 	private final int endLine;
 
-	public CloneFragment(final String ownerFile, final int startLine,
+	public BenchmarkCloneFragment(final String ownerFile, final int startLine,
 			final int endLine) {
 		this.ownerFile = ownerFile;
 		this.startLine = startLine;
@@ -28,7 +28,7 @@ public class CloneFragment implements Comparable<CloneFragment> {
 	}
 
 	@Override
-	public int compareTo(final CloneFragment another) {
+	public int compareTo(final BenchmarkCloneFragment another) {
 		final int compareWithPath = this.ownerFile.compareTo(another
 				.getOwnerFile());
 		if (compareWithPath != 0) {

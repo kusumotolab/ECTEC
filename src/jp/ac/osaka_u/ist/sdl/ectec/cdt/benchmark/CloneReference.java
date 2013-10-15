@@ -1,12 +1,10 @@
 package jp.ac.osaka_u.ist.sdl.ectec.cdt.benchmark;
 
-import jp.ac.osaka_u.ist.sdl.ectec.cdt.CloneFragment;
-import jp.ac.osaka_u.ist.sdl.ectec.cdt.ClonePair;
 
-public class CloneReference extends ClonePair {
+public class CloneReference extends BenchmarkClonePair {
 
-	public CloneReference(int id, CloneFragment fragment,
-			CloneFragment anotherFragment) {
+	public CloneReference(int id, BenchmarkCloneFragment fragment,
+			BenchmarkCloneFragment anotherFragment) {
 		super(id, fragment, anotherFragment);
 	}
 

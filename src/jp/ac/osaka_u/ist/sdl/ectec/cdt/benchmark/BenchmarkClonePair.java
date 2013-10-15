@@ -1,6 +1,6 @@
-package jp.ac.osaka_u.ist.sdl.ectec.cdt;
+package jp.ac.osaka_u.ist.sdl.ectec.cdt.benchmark;
 
-public class ClonePair {
+public class BenchmarkClonePair {
 
 	/**
 	 * the id
@@ -10,15 +10,15 @@ public class ClonePair {
 	/**
 	 * A fragment
 	 */
-	private final CloneFragment fragment1;
+	private final BenchmarkCloneFragment fragment1;
 
 	/**
 	 * The other fragment (fragment1 < fragment2 must be satisfied)
 	 */
-	private final CloneFragment fragment2;
+	private final BenchmarkCloneFragment fragment2;
 
-	public ClonePair(final int id, final CloneFragment fragment,
-			final CloneFragment anotherFragment) {
+	public BenchmarkClonePair(final int id, final BenchmarkCloneFragment fragment,
+			final BenchmarkCloneFragment anotherFragment) {
 		this.id = id;
 
 		if (fragment.compareTo(anotherFragment) < 0) {
@@ -34,11 +34,11 @@ public class ClonePair {
 		return id;
 	}
 
-	public final CloneFragment getFragment1() {
+	public final BenchmarkCloneFragment getFragment1() {
 		return fragment1;
 	}
 
-	public final CloneFragment getFragment2() {
+	public final BenchmarkCloneFragment getFragment2() {
 		return fragment2;
 	}
 

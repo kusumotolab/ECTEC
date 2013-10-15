@@ -7,10 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import jp.ac.osaka_u.ist.sdl.ectec.cdt.CloneFragment;
-import jp.ac.osaka_u.ist.sdl.ectec.cdt.ClonePair;
-
-public abstract class CloneDataLoader<T extends ClonePair> {
+public abstract class CloneDataLoader<T extends BenchmarkClonePair> {
 
 	public List<T> load(final String file) throws Exception {
 		final List<T> result = new ArrayList<T>();
@@ -27,13 +24,13 @@ public abstract class CloneDataLoader<T extends ClonePair> {
 			final String path1 = split[2];
 			final int start1 = Integer.parseInt(split[3]);
 			final int end1 = Integer.parseInt(split[4]);
-			final CloneFragment fragment1 = new CloneFragment(path1, start1,
+			final BenchmarkCloneFragment fragment1 = new BenchmarkCloneFragment(path1, start1,
 					end1);
 
 			final String path2 = split[5];
 			final int start2 = Integer.parseInt(split[6]);
 			final int end2 = Integer.parseInt(split[7]);
-			final CloneFragment fragment2 = new CloneFragment(path2, start2,
+			final BenchmarkCloneFragment fragment2 = new BenchmarkCloneFragment(path2, start2,
 					end2);
 
 			final T pair = createInstance(id, fragment1, fragment2);
@@ -46,5 +43,5 @@ public abstract class CloneDataLoader<T extends ClonePair> {
 	}
 
 	protected abstract T createInstance(final int id,
-			final CloneFragment fragment1, final CloneFragment fragment2);
+			final BenchmarkCloneFragment fragment1, final BenchmarkCloneFragment fragment2);
 }
