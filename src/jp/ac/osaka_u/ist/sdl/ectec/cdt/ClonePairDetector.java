@@ -2,6 +2,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.cdt;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ public class ClonePairDetector {
 		final Map<Long, Set<InstantCodeFragmentInfo>> fragmentsCategorizedByHash = categorizeFragments(fragments);
 
 		final List<ClonePair> result = new ArrayList<ClonePair>();
+		final Map<String, Set<ClonePair>> clonePairsCategorizedByPath = new HashMap<String, Set<ClonePair>>();
 
 		for (final Map.Entry<Long, Set<InstantCodeFragmentInfo>> entry : fragmentsCategorizedByHash
 				.entrySet()) {
@@ -47,7 +49,77 @@ public class ClonePairDetector {
 
 					final ClonePair clonePair = new ClonePair(fragment1,
 							fragment2);
-					result.add(clonePair);
+					final Set<ClonePair> subsumedPairs = new HashSet<ClonePair>();
+					boolean subsumed = false;
+
+					if (clonePairsCategorizedByPath.containsKey(fragment1
+							.getFilePath())) {
+						final Set<ClonePair> tmpPairs = clonePairsCategorizedByPath
+								.get(fragment1.getFilePath());
+
+						for (final ClonePair tmpPair : tmpPairs) {
+							if (tmpPair.subsume(clonePair)) {
+								subsumed = true;
+								break;
+							}
+							if (clonePair.subsume(tmpPair)) {
+								subsumedPairs.add(tmpPair);
+							}
+						}
+					}
+
+					if (clonePairsCategorizedByPath.containsKey(fragment2
+							.getFilePath())) {
+						final Set<ClonePair> tmpPairs = clonePairsCategorizedByPath
+								.get(fragment2.getFilePath());
+
+						for (final ClonePair tmpPair : tmpPairs) {
+							if (tmpPair.subsume(clonePair)) {
+								subsumed = true;
+								break;
+							}
+							if (clonePair.subsume(tmpPair)) {
+								subsumedPairs.add(tmpPair);
+							}
+						}
+					}
+
+					if (!subsumed) {
+						result.add(clonePair);
+
+						if (clonePairsCategorizedByPath.containsKey(fragment1
+								.getFilePath())) {
+							clonePairsCategorizedByPath.get(
+									fragment1.getFilePath()).add(clonePair);
+						} else {
+							final Set<ClonePair> newSet = new HashSet<ClonePair>();
+							newSet.add(clonePair);
+							clonePairsCategorizedByPath.put(
+									fragment1.getFilePath(), newSet);
+						}
+
+						if (clonePairsCategorizedByPath.containsKey(fragment2
+								.getFilePath())) {
+							clonePairsCategorizedByPath.get(
+									fragment2.getFilePath()).add(clonePair);
+						} else {
+							final Set<ClonePair> newSet = new HashSet<ClonePair>();
+							newSet.add(clonePair);
+							clonePairsCategorizedByPath.put(
+									fragment2.getFilePath(), newSet);
+						}
+					}
+
+					for (final ClonePair subsumedPair : subsumedPairs) {
+						result.remove(subsumedPair);
+						clonePairsCategorizedByPath.get(
+								subsumedPair.getFragment1().getFilePath())
+								.remove(subsumedPair);
+						clonePairsCategorizedByPath.get(
+								subsumedPair.getFragment2().getFilePath())
+								.remove(subsumedPair);
+					}
+
 				}
 				processed.add(fragment1);
 			}

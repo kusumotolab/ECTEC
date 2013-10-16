@@ -31,4 +31,10 @@ public class ClonePair {
 		return fragment2;
 	}
 
+	public final boolean subsume(final ClonePair another) {
+		return (this.fragment1.subsume(another.getFragment1()) && this.fragment2
+				.subsume(another.getFragment2()))
+				|| (this.fragment1.subsume(another.getFragment2()) && this.fragment2
+						.subsume(another.getFragment1()));
+	}
 }

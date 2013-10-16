@@ -62,4 +62,14 @@ public class InstantCodeFragmentInfo {
 		return size;
 	}
 
+	public final boolean subsume(final InstantCodeFragmentInfo another) {
+		if (!this.filePath.equals(another.getFilePath())) {
+			return false;
+		}
+
+		return this.startLine <= another.getStartLine()
+				&& this.endLine >= another.getEndLine();
+
+	}
+
 }
