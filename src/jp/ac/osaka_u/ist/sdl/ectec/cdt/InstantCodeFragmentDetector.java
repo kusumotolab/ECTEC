@@ -1,6 +1,7 @@
 package jp.ac.osaka_u.ist.sdl.ectec.cdt;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,6 +32,10 @@ public class InstantCodeFragmentDetector {
 
 	private final int lineThreshold;
 
+	private final ConcurrentMap<String, List<InstantCodeFragmentInfo>> fragments;
+
+	private final ConcurrentMap<Long, InstantFileInfo> files;
+
 	public InstantCodeFragmentDetector(final IHashCalculator hashCalculator,
 			final NormalizerCreator normalizerCreator,
 			final int tokenThreshold, final AnalyzeGranularity granularity,
@@ -41,11 +46,19 @@ public class InstantCodeFragmentDetector {
 		this.granularity = granularity;
 		this.threadsCount = threadsCount;
 		this.lineThreshold = lineThreshold;
+		this.fragments = new ConcurrentHashMap<String, List<InstantCodeFragmentInfo>>();
+		this.files = new ConcurrentHashMap<Long, InstantFileInfo>();
 	}
 
-	public Map<String, List<InstantCodeFragmentInfo>> detectFragments(
-			final Collection<String> filePaths) {
-		final ConcurrentMap<String, List<InstantCodeFragmentInfo>> result = new ConcurrentHashMap<String, List<InstantCodeFragmentInfo>>();
+	public final Map<String, List<InstantCodeFragmentInfo>> getDetectedFragments() {
+		return Collections.unmodifiableMap(fragments);
+	}
+
+	public final Map<Long, InstantFileInfo> getDetectedFiles() {
+		return Collections.unmodifiableMap(files);
+	}
+
+	public void analyzeFiles(final Collection<String> filePaths) {
 		final AtomicInteger index = new AtomicInteger(0);
 
 		final String[] filePathsArray = filePaths.toArray(new String[0]);
@@ -53,7 +66,7 @@ public class InstantCodeFragmentDetector {
 		final Thread[] threads = new Thread[threadsCount];
 		for (int i = 0; i < threads.length; i++) {
 			threads[i] = new Thread(new InstantCodeFragmentDetectingThread(
-					filePathsArray, result, index, hashCalculator,
+					filePathsArray, fragments, files, index, hashCalculator,
 					normalizerCreator, tokenThreshold, granularity,
 					lineThreshold));
 			threads[i].start();
@@ -66,8 +79,6 @@ public class InstantCodeFragmentDetector {
 				e.printStackTrace();
 			}
 		}
-
-		return result;
 	}
 
 }

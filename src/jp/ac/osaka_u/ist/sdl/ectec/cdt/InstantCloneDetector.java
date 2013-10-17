@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -52,6 +53,7 @@ public class InstantCloneDetector {
 			final FilePathDetector pathDetector = new FilePathDetector(language);
 			final List<String> paths = pathDetector.detectFiles(new File(
 					inputDir));
+
 			MessagePrinter.println("\t" + paths.size()
 					+ " files have been detected");
 			MessagePrinter.println();
@@ -60,8 +62,11 @@ public class InstantCloneDetector {
 			final InstantCodeFragmentDetector fragmentDetector = new InstantCodeFragmentDetector(
 					new DefaultHashCalculator(), normalizerCreator,
 					tokenThreshold, granularity, threadsCount, lineThreshold);
+			fragmentDetector.analyzeFiles(paths);
 			final Map<String, List<InstantCodeFragmentInfo>> fragments = fragmentDetector
-					.detectFragments(paths);
+					.getDetectedFragments();
+			final Map<Long, InstantFileInfo> files = fragmentDetector
+					.getDetectedFiles();
 			MessagePrinter.println();
 
 			if (pairWriter != null) {
@@ -69,11 +74,12 @@ public class InstantCloneDetector {
 				final ClonePairDetector detector = new ClonePairDetector();
 				final List<ClonePair> clonePairs = detector
 						.detectClonePairs(fragments);
-				MessagePrinter.println("\t" + clonePairs.size() + " clone pairs have been detected");
+				MessagePrinter.println("\t" + clonePairs.size()
+						+ " clone pairs have been detected");
 				MessagePrinter.println();
-				
+
 				MessagePrinter.println("writing the results ...");
-				pairWriter.write(clonePairs);
+				pairWriter.write(clonePairs, files);
 				MessagePrinter.println("\tcomplete");
 			}
 
@@ -91,6 +97,7 @@ public class InstantCloneDetector {
 
 		inputDir = cmd.getOptionValue("i");
 		outputFile = cmd.getOptionValue("o");
+		language = Language.getCorrespondingLanguage(cmd.getOptionValue("l"));
 
 		final String write = cmd.getOptionValue("w");
 		if (write != null) {
@@ -98,6 +105,10 @@ public class InstantCloneDetector {
 				pairWriter = new ClonePairForEvaluationWriter(
 						new PrintWriter(new BufferedWriter(new FileWriter(
 								new File(outputFile)))));
+			} else if (write.equals("pair-ccfinder")) {
+				pairWriter = new CCFinderClonePairWriter(
+						new PrintWriter(new BufferedWriter(new FileWriter(
+								new File(outputFile)))), language);
 			} else {
 				// default
 				pairWriter = new ClonePairForEvaluationWriter(
@@ -109,8 +120,6 @@ public class InstantCloneDetector {
 			pairWriter = new ClonePairForEvaluationWriter(new PrintWriter(
 					new BufferedWriter(new FileWriter(new File(outputFile)))));
 		}
-
-		language = Language.getCorrespondingLanguage(cmd.getOptionValue("l"));
 
 		tokenThreshold = 0;
 		lineThreshold = 0;

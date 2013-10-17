@@ -2,6 +2,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.cdt;
 
 import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.Map;
 
 public class ClonePairForEvaluationWriter implements IClonePairWriter {
 
@@ -12,7 +13,8 @@ public class ClonePairForEvaluationWriter implements IClonePairWriter {
 	}
 
 	@Override
-	public void write(Collection<ClonePair> clonePairs) throws Exception {
+	public void write(Collection<ClonePair> clonePairs,
+			Map<Long, InstantFileInfo> files) throws Exception {
 		for (final ClonePair clonePair : clonePairs) {
 			pw.print(clonePair.getId() + "\t");
 			pw.print(clonePair.getFragment1().getFilePath() + "\t");

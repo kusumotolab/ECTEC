@@ -27,6 +27,8 @@ public class InstantCodeFragmentDetectingThread implements Runnable {
 
 	private final ConcurrentMap<String, List<InstantCodeFragmentInfo>> fragments;
 
+	private final ConcurrentMap<Long, InstantFileInfo> files;
+
 	private final AtomicInteger index;
 
 	private final IHashCalculator hashCalculator;
@@ -42,12 +44,14 @@ public class InstantCodeFragmentDetectingThread implements Runnable {
 	public InstantCodeFragmentDetectingThread(
 			final String[] filePaths,
 			final ConcurrentMap<String, List<InstantCodeFragmentInfo>> fragments,
+			final ConcurrentMap<Long, InstantFileInfo> files,
 			final AtomicInteger index, final IHashCalculator hashCalculator,
 			final NormalizerCreator normalizerCreator,
 			final int tokenThreshold, final AnalyzeGranularity granularity,
 			final int lineThreshold) {
 		this.filePaths = filePaths;
 		this.fragments = fragments;
+		this.files = files;
 		this.index = index;
 		this.hashCalculator = hashCalculator;
 		this.normalizerCreator = normalizerCreator;
@@ -81,12 +85,20 @@ public class InstantCodeFragmentDetectingThread implements Runnable {
 				final List<Token> tokens = lexer.runLexicalAnalysis();
 
 				final InstantCodeFragmentDetectingVisitor visitor = new InstantCodeFragmentDetectingVisitor(
-						tokens, filePath, hashCalculator, normalizerCreator,
-						tokenThreshold, granularity, lineThreshold);
+						tokens, filePath, currentIndex, hashCalculator,
+						normalizerCreator, tokenThreshold, granularity,
+						lineThreshold);
 
 				root.accept(visitor);
 
 				this.fragments.put(filePath, visitor.getDetectedFragments());
+
+				final int lineCount = root.getLineNumber(root.getLength() - 1);
+				final int tokenCount = tokens.size();
+
+				final InstantFileInfo fileInfo = new InstantFileInfo(
+						currentIndex, filePath, tokenCount, lineCount);
+				files.put((long) currentIndex, fileInfo);
 
 			} catch (Exception e) {
 				e.printStackTrace();

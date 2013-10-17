@@ -38,6 +38,8 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 
 	private final String filePath;
 
+	private final long fileId;
+
 	private CompilationUnit root = null;
 
 	private final IHashCalculator hashCalculator;
@@ -53,13 +55,15 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 	private final int lineThreshold;
 
 	public InstantCodeFragmentDetectingVisitor(final List<Token> tokens,
-			final String filePath, final IHashCalculator hashCalculator,
+			final String filePath, final long fileId,
+			final IHashCalculator hashCalculator,
 			final NormalizerCreator normalizerCreator,
 			final int tokenThreshold, final AnalyzeGranularity granularity,
 			final int lineThreshold) {
 		this.detectedFragments = new ArrayList<InstantCodeFragmentInfo>();
 		this.tokens = tokens;
 		this.filePath = filePath;
+		this.fileId = fileId;
 		this.hashCalculator = hashCalculator;
 		this.normalizerCreator = normalizerCreator;
 		this.processedBlocks = new HashSet<Block>();
@@ -189,9 +193,9 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 		node.accept(normalizer);
 		final String normalizedStr = normalizer.getResult();
 
-		return new InstantCodeFragmentInfo(filePath, headToken.getLine(),
-				headToken.getColumn(), tailToken.getLine(),
-				tailToken.getColumn(),
+		return new InstantCodeFragmentInfo(filePath, fileId,
+				headToken.getLine(), headToken.getColumn(),
+				tailToken.getLine(), tailToken.getColumn(),
 				hashCalculator.calcHashValue(normalizedStr), size);
 	}
 
@@ -277,8 +281,8 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 		}
 
 		final Token headToken = getHeadToken(node.getStartPosition());
-		final Token tailToken = getTailToken(node.getStartPosition()
-				+ node.getThenStatement().getLength());
+		final Token tailToken = getTailToken(node.getThenStatement()
+				.getStartPosition() + node.getThenStatement().getLength());
 
 		if (headToken == null || tailToken == null) {
 			MessagePrinter.ePrintln("cannot find corresponding token to "
@@ -308,7 +312,7 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 		final String normalizedStr = normalizer.getResult();
 
 		final InstantCodeFragmentInfo fragment = new InstantCodeFragmentInfo(
-				filePath, headToken.getLine(), headToken.getColumn(),
+				filePath, fileId, headToken.getLine(), headToken.getColumn(),
 				tailToken.getLine(), tailToken.getColumn(),
 				hashCalculator.calcHashValue(normalizedStr), size);
 
@@ -343,7 +347,7 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 		}
 
 		final Token headToken = getHeadToken(node.getStartPosition());
-		final Token tailToken = getTailToken(node.getStartPosition()
+		final Token tailToken = getTailToken(node.getBody().getStartPosition()
 				+ node.getBody().getLength());
 
 		if (headToken == null || tailToken == null) {
@@ -372,7 +376,7 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 		final String normalizedStr = normalizer.getResult();
 
 		final InstantCodeFragmentInfo fragment = new InstantCodeFragmentInfo(
-				filePath, headToken.getLine(), headToken.getColumn(),
+				filePath, fileId, headToken.getLine(), headToken.getColumn(),
 				tailToken.getLine(), tailToken.getColumn(),
 				hashCalculator.calcHashValue(normalizedStr), size);
 
