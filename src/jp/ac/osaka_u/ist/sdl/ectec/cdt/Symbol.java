@@ -8,33 +8,355 @@ package jp.ac.osaka_u.ist.sdl.ectec.cdt;
  */
 public enum Symbol {
 
-	BYTE("byte"), CHAR("char"), SHORT("short"), INT("int"), LONG("long"), FLOAT(
-			"float"), DOUBLE("double"), BOOLEAN("boolean"), TRUE("true"), FALSE(
-			"false"), VOID("void"), IF("if"), ELSE("else"), SWITCH("switch"), CASE(
-			"case"), DEFAULT("default"), FOR("for"), WHILE("while"), DO("do"), CONTINUE(
-			"continue"), BREAK("break"), RETURN("return"), PACKAGE("package"), IMPORT(
-			"import"), CLASS("class"), INTERFACE("interface"), EXTENDS(
-			"extends"), IMPLEMENTS("implements"), THIS("this"), SUPER("super"), NEW(
-			"new"), NULL("null"), INSTANCEOF("instanceof"), PUBLIC("public"), PROTECTED(
-			"protected"), PRIVATE("private"), FINAL("final"), STATIC("static"), ABSTRACT(
-			"abstract"), NATIVE("native"), SYNCHRONIZED("synchronized"), VOLATILE(
-			"volatile"), TRANSIENT("transient"), TRY("try"), CATCH("catch"), FINALLY(
-			"finally"), THROW("throw"), THROWS("throws"), ASSERT("assert"), ENUM(
-			"enum"), LPAREN("("), RPAREN(")"), LBRACE("{"), RBRACE("}"), LBLACKET(
-			"["), RBLACKET("]"), SEMICOLON(";"), COMMA(","), EQUAL("="), EQUALEQUAL(
-			"=="), PLUS("+"), PLUSEQUAL("+="), GREATER(">"), GREATEREQUAL(">="), LESS(
-			"<"), LESSEQUAL("<="), MINUS("-"), MINUSEQUAL("-="), ASTERISK("*"), ASTERISKEQUAL(
-			"*="), NOT("!"), NOTEQUAL("!="), SLASH("/"), SLASHEQUAL("/="), TILDE(
-			"~"), ANDAND("&&"), AND("&"), ANDEQUAL("&="), QUESTIONMARK("?"), OR(
-			"||"), VERTICALVAR("|"), VERTICALVAREQUAL("|="), COLON(":"), PLUSPLUS(
-			"++"), CIRCUMFLEX("^"), CIRCUMFLEXEQUAL("^="), MINUSMINUS("--"), PERCENT(
-			"%"), PERCENTEQUAL("%="), LDOUBLEANGLEBRACKET("<<"), LDOUBLEANGLEBRACKETEQUAL(
-			"<<="), RDOUBLEANGLEBRACKET(">>"), RDOUBLEANGLEBRACKETEQUAL(">>="), RTRIPLEANGLEBRACKET(
-			">>>"), RTRIPLEANGLEBRACKETEQUAL(">>>="), IDENTIFIER("IDENTIFIER"), STRINGLITERAL(
-			"STRING_LITERAL"), INTEGERLITERAL("INTEGER_LITERAL"), HEXINTEGERLITERAL(
-			"HEX_INTEGER_LITERAL"), OCTALINTEGERLITERAL("OCTAL_INTEGER_LITERAL"), FLOATINGPOINTLITERAL(
-			"FLOATING_POINT_LITERAL"), CHARACTERLITERAL("CHARACTER_LITERAL"), DOT(
-			"."), UNKNOWN("UNKNOWN");
+	/*
+	 * key words
+	 */
+
+	ABSTRACT("abstract"),
+	
+	ALIGNAS("alignas"),
+
+	ALIGNOF("alignof"),
+	
+	ASM("asm"),
+
+	ASSERT("assert"),
+
+	AUTO("auto"),
+
+	BOOL("bool"),
+
+	BOOLEAN("boolean"),
+
+	BREAK("break"),
+
+	BYTE("byte"),
+
+	CASE("case"),
+
+	CATCH("catch"),
+
+	CHAR("char"),
+
+	CHAR16_T("char16_t"),
+
+	CHAR32_T("char32_t"),
+
+	CLASS("class"),
+
+	CONST("const"),
+
+	CONST_CAST("const_cast"),
+
+	CONSTEXPR("constexpr"),
+
+	CONTINUE("continue"),
+
+	DECLTYPE("decltype"),
+
+	DEFAULT("default"),
+	
+	DEFINE("define"),
+
+	DELETE("delete"),
+
+	DO("do"),
+
+	DOUBLE("double"),
+
+	DYNAMIC_CAST("dynamic_cast"),
+
+	ELIF("elif"),
+	
+	ELSE("else"),
+
+	ENUM("enum"),
+	
+	ERROR("error"),
+
+	EXPLICIT("explicit"),
+
+	EXPORT("export"),
+
+	EXTENDS("extends"),
+
+	EXTERN("extern"),
+
+	FALSE("false"),
+
+	FINAL("final"),
+
+	FINALLY("finally"),
+
+	FLOAT("float"),
+
+	FOR("for"),
+
+	FRIEND("friend"),
+
+	GOTO("goto"),
+
+	IF("if"),
+	
+	IFDEF("ifdef"),
+	
+	IFNDEF("ifndef"),
+
+	IMPLEMENTS("implements"),
+
+	IMPORT("import"),
+	
+	INCLUDE("include"),
+
+	INLINE("inline"),
+
+	INT("int"),
+
+	INSTANCEOF("instanceof"),
+
+	INTERFACE("interface"),
+	
+	LINE("line"),
+
+	LONG("long"),
+
+	MUTABLE("mutable"),
+
+	NEW("new"),
+
+	NAMESPACE("namespace"),
+
+	NATIVE("native"),
+
+	NULL("null"),
+
+	NULLPTR("nullptr"),
+
+	OPERATOR("operator"),
+	
+	OVERRIDE("override"),
+
+	PACKAGE("package"),
+	
+	PRAGMA("pragma"),
+
+	PRIVATE("private"),
+
+	PROTECTED("protected"),
+
+	PUBLIC("public"),
+
+	REGISTER("register"),
+
+	RETURN("return"),
+
+	REINTERPRET_CAST("reinterpret_cast"),
+
+	SHORT("short"),
+
+	SIGNED("signed"),
+
+	SIZEOF("sizeof"),
+
+	STATIC("static"),
+
+	STATIC_ASSERT("static_assert"),
+
+	STATIC_CAST("static_cast"),
+
+	STRUCT("struct"),
+
+	SUPER("super"),
+
+	SWITCH("switch"),
+
+	SYNCHRONIZED("synchronized"),
+
+	TEMPLATE("template"),
+
+	THIS("this"),
+
+	THREAD_LOCAL("thread_local"),
+
+	THROW("throw"),
+
+	THROWS("throws"),
+
+	TRANSIENT("transient"),
+
+	TRUE("true"),
+
+	TRY("try"),
+
+	TYPEID("typeid"),
+
+	TYPENAME("typename"),
+
+	TYPE_DEF("type_def"),
+	
+	UNDEF("undef"),
+
+	UNION("union"),
+
+	UNSIGNED("unsigned"),
+
+	USING("using"),
+
+	VIRTUAL("virtual"),
+
+	VOID("void"),
+
+	VOLATILE("volatile"),
+
+	WCHAR_T("wchar_t"),
+
+	WHILE("while"),
+
+	/*
+	 * Symbolic characters
+	 */
+
+	LPAREN("("),
+
+	RPAREN(")"),
+
+	LBRACE("{"),
+
+	RBRACE("}"),
+
+	LBLACKET("["),
+
+	RBLACKET("]"),
+
+	SEMICOLON(";"),
+
+	COMMA(","),
+
+	EQUAL("="),
+
+	EQUALEQUAL("=="),
+
+	PLUS("+"),
+
+	PLUSEQUAL("+="),
+
+	GREATER(">"),
+
+	GREATEREQUAL(">="),
+
+	LESS("<"),
+
+	LESSEQUAL("<="),
+
+	MINUS("-"),
+
+	MINUSEQUAL("-="),
+
+	ASTERISK("*"),
+
+	ASTERISKEQUAL("*="),
+
+	NOT("!"),
+
+	NOTEQUAL("!="),
+
+	SLASH("/"),
+
+	SLASHEQUAL("/="),
+
+	TILDE("~"),
+
+	ANDAND("&&"),
+
+	AND("&"),
+
+	ANDEQUAL("&="),
+
+	QUESTIONMARK("?"),
+
+	OR("||"),
+
+	VERTICALVAR("|"),
+
+	VERTICALVAREQUAL("|="),
+
+	COLON(":"),
+
+	COLONCOLON("::"),
+	
+	PLUSPLUS("++"),
+
+	CIRCUMFLEX("^"),
+
+	CIRCUMFLEXEQUAL("^="),
+
+	MINUSMINUS("--"),
+
+	PERCENT("%"),
+
+	PERCENTEQUAL("%="),
+	
+	PERCENTCOLON("%:"),
+	
+	DOUBLEPERCENTCOLON("%:%:"),
+
+	LBRACKETCOLON("<:"),
+	
+	LBRACKETPERCENT("<%"),
+	
+	LDOUBLEANGLEBRACKET("<<"),
+
+	LDOUBLEANGLEBRACKETEQUAL("<<="),
+
+	RDOUBLEANGLEBRACKET(">>"),
+
+	RDOUBLEANGLEBRACKETEQUAL(">>="),
+
+	RTRIPLEANGLEBRACKET(">>>"),
+
+	RTRIPLEANGLEBRACKETEQUAL(">>>="),
+	
+	COLONRBRACKET(":>"),
+	
+	PERCENTRBRACKET("%>"),
+	
+	RIGHTARROW("->"),
+	
+	RIGHTARROWASTERISK("->*"),
+
+	IDENTIFIER("IDENTIFIER"),
+
+	STRINGLITERAL("STRING_LITERAL"),
+
+	INTEGERLITERAL("INTEGER_LITERAL"),
+
+	HEXINTEGERLITERAL("HEX_INTEGER_LITERAL"),
+
+	OCTALINTEGERLITERAL("OCTAL_INTEGER_LITERAL"),
+
+	FLOATINGPOINTLITERAL("FLOATING_POINT_LITERAL"),
+
+	CHARACTERLITERAL("CHARACTER_LITERAL"),
+
+	DOT("."),
+	
+	DOTASTERISK(".*"),
+	
+	LDOTS("..."),
+	
+	SHARP("#"),
+	
+	SHARPSHARP("##"),
+
+	/*
+	 * unknown token
+	 */
+
+	UNKNOWN("UNKNOWN");
+
+	/*
+	 * definitions of methods follow
+	 */
 
 	private final String str;
 
