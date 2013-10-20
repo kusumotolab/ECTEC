@@ -26,6 +26,10 @@ public class WhileStatementCRDCreator extends
 	 */
 	@Override
 	protected String getAnchor() {
+		return getAnchor(node);
+	}
+
+	public static String getAnchor(final WhileStatement node) {
 		return node.getExpression().toString();
 	}
 

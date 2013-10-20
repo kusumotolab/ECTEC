@@ -25,6 +25,10 @@ public class ForStatementCRDCreator extends AbstractBlockAnalyzer<ForStatement> 
 	 */
 	@Override
 	protected String getAnchor() {
+		return getAnchor(node);
+	}
+
+	public static String getAnchor(final ForStatement node) {
 		return (node.getExpression() == null) ? " " : node.getExpression()
 				.toString();
 	}

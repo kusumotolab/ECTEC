@@ -30,6 +30,10 @@ public class FinallyBlockCRDCreator extends AbstractBlockAnalyzer<Block> {
 	 */
 	@Override
 	protected String getAnchor() {
+		return getAnchor(node);
+	}
+
+	public static String getAnchor(final Block node) {
 		final StringBuilder builder = new StringBuilder();
 
 		final TryStatement parentTryStatement = (TryStatement) node.getParent();

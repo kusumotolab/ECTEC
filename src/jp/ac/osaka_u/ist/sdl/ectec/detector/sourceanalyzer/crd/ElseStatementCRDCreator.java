@@ -32,6 +32,10 @@ public class ElseStatementCRDCreator extends AbstractBlockAnalyzer<Statement> {
 	 */
 	@Override
 	protected String getAnchor() {
+		return getAnchor(node);
+	}
+
+	public static String getAnchor(final Statement node) {
 		return detectElsePredicates(node);
 	}
 
@@ -40,14 +44,14 @@ public class ElseStatementCRDCreator extends AbstractBlockAnalyzer<Statement> {
 		return detectNormalizedElsePredicates(node);
 	}
 
-	private String detectElsePredicates(Statement elseStatement) {
+	private static String detectElsePredicates(Statement elseStatement) {
 		List<String> predicates = new LinkedList<String>();
 		detectPredicates(elseStatement.getParent(), predicates);
 
 		return convert(predicates);
 	}
 
-	private void detectPredicates(ASTNode node, List<String> predicates) {
+	private static void detectPredicates(ASTNode node, List<String> predicates) {
 		if (!(node instanceof IfStatement)) {
 			return;
 		}
@@ -58,7 +62,7 @@ public class ElseStatementCRDCreator extends AbstractBlockAnalyzer<Statement> {
 		predicates.add(ifStatement.getExpression().toString());
 	}
 
-	private String convert(final List<String> predicates) {
+	private static String convert(final List<String> predicates) {
 		final StringBuilder builder = new StringBuilder();
 		if (!predicates.isEmpty()) {
 			builder.append("!(");

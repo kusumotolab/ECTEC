@@ -25,6 +25,10 @@ public class DoStatementCRDCreator extends AbstractBlockAnalyzer<DoStatement> {
 	 */
 	@Override
 	protected String getAnchor() {
+		return getAnchor(node);
+	}
+
+	public static String getAnchor(final DoStatement node) {
 		return node.getExpression().toString();
 	}
 

@@ -29,13 +29,18 @@ public class ClassCRDCreator extends AbstractBlockAnalyzer<TypeDeclaration> {
 		return getFullyQualifiedName(node);
 	}
 
-	private final String getFullyQualifiedName(ASTNode node) {
+	public static String getAnchor(final TypeDeclaration node) {
+		return getFullyQualifiedName(node);
+	}
+
+	private static final String getFullyQualifiedName(ASTNode node) {
 		final StringBuilder builder = new StringBuilder();
 		detectFullyQualifiedName(node, builder);
 		return builder.toString();
 	}
 
-	private void detectFullyQualifiedName(ASTNode node, StringBuilder builder) {
+	private static void detectFullyQualifiedName(ASTNode node,
+			StringBuilder builder) {
 		if (node instanceof TypeDeclaration) {
 			detectFullyQualifiedName((TypeDeclaration) node, builder);
 		} else if (node instanceof CompilationUnit) {
@@ -45,13 +50,13 @@ public class ClassCRDCreator extends AbstractBlockAnalyzer<TypeDeclaration> {
 		}
 	}
 
-	private void detectFullyQualifiedName(TypeDeclaration node,
+	private static void detectFullyQualifiedName(TypeDeclaration node,
 			StringBuilder builder) {
 		builder.insert(0, node.getName());
 		detectFullyQualifiedName(node.getParent(), builder);
 	}
 
-	private void detectFullyQualifiedName(CompilationUnit node,
+	private static void detectFullyQualifiedName(CompilationUnit node,
 			StringBuilder builder) {
 		if (node.getPackage() != null) {
 			builder.insert(0, node.getPackage().getName() + ".");

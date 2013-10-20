@@ -24,12 +24,16 @@ public class CatchClauseCRDCreator extends AbstractBlockAnalyzer<CatchClause> {
 	 */
 	@Override
 	protected String getAnchor() {
+		return getAnchor(node);
+	}
+
+	public static String getAnchor(final CatchClause node) {
 		return node.getException().getType().toString();
 	}
 
 	@Override
 	protected String getNormalizedAnchor() {
-		return node.getException().getType().toString();
+		return getAnchor(node);
 	}
 
 }

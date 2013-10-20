@@ -26,6 +26,10 @@ public class SynchronizedStatementCRDCreator extends
 	 */
 	@Override
 	protected String getAnchor() {
+		return getAnchor(node);
+	}
+
+	public static String getAnchor(final SynchronizedStatement node) {
 		return node.getExpression().toString();
 	}
 

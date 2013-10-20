@@ -26,6 +26,10 @@ public class EnhancedForStatementCRDCreator extends
 	 */
 	@Override
 	protected String getAnchor() {
+		return getAnchor(node);
+	}
+
+	public static String getAnchor(final EnhancedForStatement node) {
 		return node.getExpression().toString();
 	}
 

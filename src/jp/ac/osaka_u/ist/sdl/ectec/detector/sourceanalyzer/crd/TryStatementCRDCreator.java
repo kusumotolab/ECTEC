@@ -29,6 +29,10 @@ public class TryStatementCRDCreator extends AbstractBlockAnalyzer<TryStatement> 
 	 */
 	@Override
 	protected String getAnchor() {
+		return getAnchor(node);
+	}
+
+	public static String getAnchor(final TryStatement node) {
 		final StringBuilder builder = new StringBuilder();
 
 		@SuppressWarnings("rawtypes")
@@ -57,7 +61,7 @@ public class TryStatementCRDCreator extends AbstractBlockAnalyzer<TryStatement> 
 	protected String getNormalizedAnchor() {
 		return getAnchor();
 	}
-	
+
 	@Override
 	public void analyze() {
 		final String head = bType.getHead();

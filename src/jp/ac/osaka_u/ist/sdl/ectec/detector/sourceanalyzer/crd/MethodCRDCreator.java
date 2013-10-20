@@ -27,8 +27,12 @@ public class MethodCRDCreator extends AbstractBlockAnalyzer<MethodDeclaration> {
 	protected String getAnchor() {
 		return detectCanonicalSignature(node);
 	}
+	
+	public static String getAnchor(final MethodDeclaration node) {
+		return detectCanonicalSignature(node);
+	}
 
-	private String detectCanonicalSignature(MethodDeclaration node) {
+	private static String detectCanonicalSignature(MethodDeclaration node) {
 		StringBuilder builder = new StringBuilder();
 
 		builder.append(node.getName().toString());

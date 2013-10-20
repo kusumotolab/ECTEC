@@ -26,6 +26,10 @@ public class SwitchStatementCRDCreator extends
 	 */
 	@Override
 	protected String getAnchor() {
+		return getAnchor(node);
+	}
+
+	public static String getAnchor(final SwitchStatement node) {
 		return node.getExpression().toString();
 	}
 

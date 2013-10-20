@@ -28,6 +28,10 @@ public class IfStatementCRDCreator extends AbstractBlockAnalyzer<IfStatement> {
 	 */
 	@Override
 	protected String getAnchor() {
+		return getAnchor(node);
+	}
+
+	public static String getAnchor(final IfStatement node) {
 		return node.getExpression().toString();
 	}
 
@@ -56,7 +60,7 @@ public class IfStatementCRDCreator extends AbstractBlockAnalyzer<IfStatement> {
 		final MetricsCalculator cmCalculator = new MetricsCalculator();
 		node.getThenStatement().accept(cmCalculator);
 		node.getExpression().accept(cmCalculator);
-		
+
 		final int cm = cmCalculator.getCC() + cmCalculator.getFO();
 
 		final String thisCrdStr = getStringCrdForThisBlock(head, anchor, cm);
