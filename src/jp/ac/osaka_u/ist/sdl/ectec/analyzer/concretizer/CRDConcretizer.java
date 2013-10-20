@@ -11,7 +11,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
 
 /**
- * A class for concretize crds
+ * A class for concretizing crds
  * 
  * @author k-hotta
  * 
