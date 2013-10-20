@@ -1,5 +1,11 @@
 package jp.ac.osaka_u.ist.sdl.ectec.settings;
 
+import java.io.InputStream;
+
+import jp.ac.osaka_u.ist.sdl.ectec.cdt.CPPLexer;
+import jp.ac.osaka_u.ist.sdl.ectec.cdt.JavaLexer;
+import jp.ac.osaka_u.ist.sdl.ectec.cdt.Lexer;
+
 /**
  * An enum that represents target programming languages
  * 
@@ -9,6 +15,8 @@ package jp.ac.osaka_u.ist.sdl.ectec.settings;
 public enum Language {
 
 	JAVA("java", new String[] { ".java" }),
+
+	CPP("cpp", new String[] { ".c", ".cpp", ".h", "hpp" }),
 
 	OTHER("n/a", new String[] {});
 
@@ -59,6 +67,22 @@ public enum Language {
 		}
 
 		return false;
+	}
+
+	/**
+	 * create a new lexer
+	 * 
+	 * @param in
+	 * @return
+	 */
+	public Lexer createLexer(final InputStream in) {
+		if (this == JAVA) {
+			return new JavaLexer(in);
+		} else if (this == CPP) {
+			return new CPPLexer(in);
+		} else {
+			return null;
+		}
 	}
 
 }
