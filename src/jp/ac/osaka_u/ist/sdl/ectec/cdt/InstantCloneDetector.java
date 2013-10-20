@@ -98,13 +98,18 @@ public class InstantCloneDetector {
 		inputDir = cmd.getOptionValue("i");
 		outputFile = cmd.getOptionValue("o");
 		language = Language.getCorrespondingLanguage(cmd.getOptionValue("l"));
+		
+		String rootDir = inputDir;
+		if (cmd.hasOption("r")) {
+			rootDir = cmd.getOptionValue("r");
+		}
 
 		final String write = cmd.getOptionValue("w");
 		if (write != null) {
 			if (write.equals("pair-evaluation")) {
 				pairWriter = new ClonePairForEvaluationWriter(
 						new PrintWriter(new BufferedWriter(new FileWriter(
-								new File(outputFile)))));
+								new File(outputFile)))), rootDir);
 			} else if (write.equals("pair-ccfinder")) {
 				pairWriter = new CCFinderClonePairWriter(
 						new PrintWriter(new BufferedWriter(new FileWriter(
@@ -113,12 +118,13 @@ public class InstantCloneDetector {
 				// default
 				pairWriter = new ClonePairForEvaluationWriter(
 						new PrintWriter(new BufferedWriter(new FileWriter(
-								new File(outputFile)))));
+								new File(outputFile)))), rootDir);
 			}
 		} else {
 			// default
-			pairWriter = new ClonePairForEvaluationWriter(new PrintWriter(
-					new BufferedWriter(new FileWriter(new File(outputFile)))));
+			pairWriter = new ClonePairForEvaluationWriter(
+					new PrintWriter(new BufferedWriter(new FileWriter(
+							new File(outputFile)))), rootDir);
 		}
 
 		tokenThreshold = 0;
@@ -153,6 +159,14 @@ public class InstantCloneDetector {
 			i.setArgs(1);
 			i.setRequired(true);
 			options.addOption(i);
+		}
+
+		{
+			final Option r = new Option("r", "root", true,
+					"root of input directory");
+			r.setArgs(1);
+			r.setRequired(false);
+			options.addOption(r);
 		}
 
 		{

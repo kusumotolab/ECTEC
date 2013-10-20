@@ -12,7 +12,7 @@ public class ReferenceCandidateMapper {
 			final Collection<CloneCandidate> candidates,
 			final Collection<CloneReference> references) {
 		final List<ReferenceCandidateMap> result = new ArrayList<ReferenceCandidateMap>();
-		final Map<CloneCandidate, ReferenceCandidateMap> map = new HashMap<CloneCandidate, ReferenceCandidateMap>();
+		final Map<CloneCandidate, CloneReference> bestReferenceOf = new HashMap<CloneCandidate, CloneReference>();
 
 		for (final CloneReference reference : references) {
 			double okMax = -1.0;
@@ -22,36 +22,35 @@ public class ReferenceCandidateMapper {
 						.calcOK(reference, candidate);
 				final double good = MetricsCalculator.calcGood(reference,
 						candidate);
-				
+
 				if (good == 0 && ok == 0) {
 					continue;
 				}
 
 				if (good > goodMax) {
-					change(candidate, reference, good, ok, map, result);
+					bestReferenceOf.put(candidate, reference);
+					goodMax = good;
+					okMax = ok;
 				} else if (good == goodMax && ok > okMax) {
-					change(candidate, reference, good, ok, map, result);
+					bestReferenceOf.put(candidate, reference);
+					goodMax = good;
+					okMax = ok;
 				}
 			}
 		}
 
-		return result;
-	}
-
-	private void change(final CloneCandidate candidate,
-			final CloneReference reference, final double good, final double ok,
-			final Map<CloneCandidate, ReferenceCandidateMap> map,
-			final List<ReferenceCandidateMap> result) {
-		if (map.containsKey(candidate)) {
-			final ReferenceCandidateMap toBeRemoved = map.get(candidate);
-			map.remove(candidate);
-			result.remove(toBeRemoved);
+		for (Map.Entry<CloneCandidate, CloneReference> entry : bestReferenceOf
+				.entrySet()) {
+			final CloneReference reference = entry.getValue();
+			final CloneCandidate candidate = entry.getKey();
+			final ReferenceCandidateMap newMapping = new ReferenceCandidateMap(
+					reference, candidate, MetricsCalculator.calcOK(reference,
+							candidate), MetricsCalculator.calcGood(reference,
+							candidate));
+			result.add(newMapping);
 		}
 
-		final ReferenceCandidateMap newMapping = new ReferenceCandidateMap(
-				reference, candidate, ok, good);
-		map.put(candidate, newMapping);
-		result.add(newMapping);
+		return result;
 	}
 
 }

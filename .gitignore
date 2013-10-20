@@ -1,3 +1,4 @@
 bin/*
 *.class
 ectec.properties
+/bin

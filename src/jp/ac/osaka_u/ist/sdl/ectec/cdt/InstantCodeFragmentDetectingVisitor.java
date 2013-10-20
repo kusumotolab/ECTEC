@@ -281,6 +281,8 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 		}
 
 		final Token headToken = getHeadToken(node.getStartPosition());
+//		final Token tailToken = getTailToken(node
+//				.getStartPosition() + node.getThenStatement().getLength());
 		final Token tailToken = getTailToken(node.getThenStatement()
 				.getStartPosition() + node.getThenStatement().getLength());
 
@@ -347,6 +349,8 @@ public class InstantCodeFragmentDetectingVisitor extends ASTVisitor {
 		}
 
 		final Token headToken = getHeadToken(node.getStartPosition());
+//		final Token tailToken = getTailToken(node.getStartPosition()
+//				+ node.getBody().getLength());
 		final Token tailToken = getTailToken(node.getBody().getStartPosition()
 				+ node.getBody().getLength());
 

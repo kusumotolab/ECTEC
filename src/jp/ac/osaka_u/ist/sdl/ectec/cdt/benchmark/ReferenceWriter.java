@@ -25,10 +25,8 @@ public class ReferenceWriter {
 			while ((line = reader.readLine()) != null) {
 				final String[] split = line.split("\t");
 				if (split[2].startsWith(project + "/")) {
-					for (int i = 0; i < split.length - 1; i++) {
-						if (i != 1) {
-							pw.print(split[i] + "\t");
-						}
+					for (int i = 2; i < split.length - 1; i++) {
+						pw.print(split[i] + "\t");
 					}
 					pw.println(split[split.length - 1]);
 				}

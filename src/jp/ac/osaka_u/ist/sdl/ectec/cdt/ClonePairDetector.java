@@ -43,7 +43,7 @@ public class ClonePairDetector {
 					if (fragment1 == fragment2) {
 						continue;
 					}
-					if (processed.contains(fragment1)) {
+					if (processed.contains(fragment2)) {
 						continue;
 					}
 
@@ -56,22 +56,6 @@ public class ClonePairDetector {
 							.getFilePath())) {
 						final Set<ClonePair> tmpPairs = clonePairsCategorizedByPath
 								.get(fragment1.getFilePath());
-
-						for (final ClonePair tmpPair : tmpPairs) {
-							if (tmpPair.subsume(clonePair)) {
-								subsumed = true;
-								break;
-							}
-							if (clonePair.subsume(tmpPair)) {
-								subsumedPairs.add(tmpPair);
-							}
-						}
-					}
-
-					if (clonePairsCategorizedByPath.containsKey(fragment2
-							.getFilePath())) {
-						final Set<ClonePair> tmpPairs = clonePairsCategorizedByPath
-								.get(fragment2.getFilePath());
 
 						for (final ClonePair tmpPair : tmpPairs) {
 							if (tmpPair.subsume(clonePair)) {

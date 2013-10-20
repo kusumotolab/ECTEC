@@ -165,4 +165,12 @@ public class StringUtils {
 		return result;
 	}
 
+	public static String translateToCpf(final String path, final String rootPath) {
+		final String fixedRootPath = rootPath + File.separator;
+		final String replacedPath = path.replaceAll("\\\\", "/");
+		final String replacedRootPath = fixedRootPath.replaceAll("\\\\", "/");
+
+		return replacedPath.substring(replacedRootPath.length());
+	}
+
 }

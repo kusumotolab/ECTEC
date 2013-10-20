@@ -15,23 +15,32 @@ public abstract class CloneDataLoader<T extends BenchmarkClonePair> {
 		final BufferedReader br = new BufferedReader(new FileReader(new File(
 				file)));
 
+		int count = 0;
 		String line;
 		while ((line = br.readLine()) != null) {
 			final String[] split = line.split("\t");
 
-			final int id = Integer.parseInt(split[0]);
+			final int id = count++;
 
-			final String path1 = split[1];
-			final int start1 = Integer.parseInt(split[2]);
-			final int end1 = Integer.parseInt(split[3]);
+			final String path1 = split[0];
+			final int start1 = Integer.parseInt(split[1]);
+			final int end1 = Integer.parseInt(split[2]);
 			final BenchmarkCloneFragment fragment1 = new BenchmarkCloneFragment(path1, start1,
 					end1);
 
-			final String path2 = split[4];
-			final int start2 = Integer.parseInt(split[5]);
-			final int end2 = Integer.parseInt(split[6]);
+			if ((end1 - start1 + 1) < 6) {
+				continue;
+			}
+			
+			final String path2 = split[3];
+			final int start2 = Integer.parseInt(split[4]);
+			final int end2 = Integer.parseInt(split[5]);
 			final BenchmarkCloneFragment fragment2 = new BenchmarkCloneFragment(path2, start2,
 					end2);
+			
+			if ((end2 - start2 + 1) < 6) {
+				continue;
+			}
 
 			final T pair = createInstance(id, fragment1, fragment2);
 			result.add(pair);
