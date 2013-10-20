@@ -13,11 +13,11 @@ public enum Symbol {
 	 */
 
 	ABSTRACT("abstract"),
-	
+
 	ALIGNAS("alignas"),
 
 	ALIGNOF("alignof"),
-	
+
 	ASM("asm"),
 
 	ASSERT("assert"),
@@ -55,7 +55,7 @@ public enum Symbol {
 	DECLTYPE("decltype"),
 
 	DEFAULT("default"),
-	
+
 	DEFINE("define"),
 
 	DELETE("delete"),
@@ -66,12 +66,14 @@ public enum Symbol {
 
 	DYNAMIC_CAST("dynamic_cast"),
 
+	ENDIF("endif"),
+
 	ELIF("elif"),
-	
+
 	ELSE("else"),
 
 	ENUM("enum"),
-	
+
 	ERROR("error"),
 
 	EXPLICIT("explicit"),
@@ -97,15 +99,15 @@ public enum Symbol {
 	GOTO("goto"),
 
 	IF("if"),
-	
+
 	IFDEF("ifdef"),
-	
+
 	IFNDEF("ifndef"),
 
 	IMPLEMENTS("implements"),
 
 	IMPORT("import"),
-	
+
 	INCLUDE("include"),
 
 	INLINE("inline"),
@@ -115,7 +117,7 @@ public enum Symbol {
 	INSTANCEOF("instanceof"),
 
 	INTERFACE("interface"),
-	
+
 	LINE("line"),
 
 	LONG("long"),
@@ -133,11 +135,11 @@ public enum Symbol {
 	NULLPTR("nullptr"),
 
 	OPERATOR("operator"),
-	
+
 	OVERRIDE("override"),
 
 	PACKAGE("package"),
-	
+
 	PRAGMA("pragma"),
 
 	PRIVATE("private"),
@@ -193,7 +195,7 @@ public enum Symbol {
 	TYPENAME("typename"),
 
 	TYPE_DEF("type_def"),
-	
+
 	UNDEF("undef"),
 
 	UNION("union"),
@@ -283,7 +285,7 @@ public enum Symbol {
 	COLON(":"),
 
 	COLONCOLON("::"),
-	
+
 	PLUSPLUS("++"),
 
 	CIRCUMFLEX("^"),
@@ -295,15 +297,15 @@ public enum Symbol {
 	PERCENT("%"),
 
 	PERCENTEQUAL("%="),
-	
+
 	PERCENTCOLON("%:"),
-	
+
 	DOUBLEPERCENTCOLON("%:%:"),
 
 	LBRACKETCOLON("<:"),
-	
+
 	LBRACKETPERCENT("<%"),
-	
+
 	LDOUBLEANGLEBRACKET("<<"),
 
 	LDOUBLEANGLEBRACKETEQUAL("<<="),
@@ -315,13 +317,13 @@ public enum Symbol {
 	RTRIPLEANGLEBRACKET(">>>"),
 
 	RTRIPLEANGLEBRACKETEQUAL(">>>="),
-	
+
 	COLONRBRACKET(":>"),
-	
+
 	PERCENTRBRACKET("%>"),
-	
+
 	RIGHTARROW("->"),
-	
+
 	RIGHTARROWASTERISK("->*"),
 
 	IDENTIFIER("IDENTIFIER"),
@@ -339,13 +341,13 @@ public enum Symbol {
 	CHARACTERLITERAL("CHARACTER_LITERAL"),
 
 	DOT("."),
-	
+
 	DOTASTERISK(".*"),
-	
+
 	LDOTS("..."),
-	
+
 	SHARP("#"),
-	
+
 	SHARPSHARP("##"),
 
 	/*

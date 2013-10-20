@@ -23,10 +23,6 @@ import jp.ac.osaka_u.ist.sdl.ectec.cdt.Lexer;
 
 %{
 
-  public JavaLexer(java.io.Reader in) {
-    this.zzReader = in;
-  }
-
   StringBuffer string = new StringBuffer();
 
   private Token createToken(String str, Symbol sym) {
@@ -66,7 +62,7 @@ EndOfLineComment     = "//" {InputCharacter}* {LineTerminator}
 CommentContent       = ( [^*] | \*+ [^/*] )*
 
 /* identifier */
-Identifier = {SingleCharacter}{SingleCharacter}*
+Identifier = {IdentifierHeadCharacter}{IdentifierInCharacter}*
 
 /* numerical literals */
 DecIntegerLiteral = 0 ("l"|"L")? | [1-9][0-9]* ("l"|"L")?
@@ -90,6 +86,8 @@ FloatingPointLiteral = {FloatingPointLiteral1} | {FloatingPointLiteral2} | {Floa
 
 /* character literal */
 CharacterLiteral = "'" ({SingleCharacter}|{EscapeSequence}) "'"
+IdentifierHeadCharacter = [a-z] | [A-Z] | "_"
+IdentifierInCharacter = [a-z] | [A-Z] | "_" | [0-9]
 SingleCharacter = [^\r\n'\\] | {UnicodeCharacter}
 UnicodeCharacter = \\ u+ {HexDigit} {HexDigit} {HexDigit} {HexDigit}
 EscapeSequence = \\b | \\t | \\n | \\f | \\r | \\ \" | \\ ' | \\ \\ | {OctalEscape}
@@ -194,6 +192,7 @@ OctalEscape = {OctalEscape1} | {OctalEscape2}
 <YYINITIAL> "ifdef"		{ return createToken(Symbol.IFDEF); }
 <YYINITIAL> "ifndef"		{ return createToken(Symbol.IFNDEF); }
 <YYINITIAL> "elif"		{ return createToken(Symbol.ELIF); }
+<YYINITIAL> "endif"		{ return createToken(Symbol.ENDIF); }
 
 /* other keywords */
 <YYINITIAL> "namespace"		{ return createToken(Symbol.NAMESPACE); }
