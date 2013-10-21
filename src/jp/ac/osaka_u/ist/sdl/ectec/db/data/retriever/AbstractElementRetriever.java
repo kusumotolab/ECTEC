@@ -38,7 +38,8 @@ public abstract class AbstractElementRetriever<T extends AbstractDBElement> {
 	 * @return
 	 * @throws SQLException
 	 */
-	public synchronized SortedMap<Long, T> retrieve(final String query) throws SQLException {
+	public synchronized SortedMap<Long, T> retrieve(final String query)
+			throws SQLException {
 		final SortedMap<Long, T> result = new TreeMap<Long, T>();
 
 		final Statement stmt = dbManager.createStatement();
@@ -73,8 +74,8 @@ public abstract class AbstractElementRetriever<T extends AbstractDBElement> {
 	 * @return
 	 * @throws SQLException
 	 */
-	public synchronized SortedMap<Long, T> retrieveWithIds(final Collection<Long> ids)
-			throws SQLException {
+	public synchronized SortedMap<Long, T> retrieveWithIds(
+			final Collection<Long> ids) throws SQLException {
 		if (ids.isEmpty()) {
 			return new TreeMap<Long, T>();
 		}
@@ -99,7 +100,8 @@ public abstract class AbstractElementRetriever<T extends AbstractDBElement> {
 	 * @return
 	 * @throws SQLException
 	 */
-	public synchronized SortedMap<Long, T> retrieveWithIds(long... ids) throws SQLException {
+	public synchronized SortedMap<Long, T> retrieveWithIds(long... ids)
+			throws SQLException {
 		final Set<Long> idSet = new HashSet<Long>();
 		for (final long id : ids) {
 			idSet.add(id);
@@ -115,8 +117,8 @@ public abstract class AbstractElementRetriever<T extends AbstractDBElement> {
 	 * @return
 	 * @throws SQLException
 	 */
-	public synchronized SortedMap<Long, T> retrieveWithoutIds(final Collection<Long> ids)
-			throws SQLException {
+	public synchronized SortedMap<Long, T> retrieveWithoutIds(
+			final Collection<Long> ids) throws SQLException {
 		if (ids.isEmpty()) {
 			return new TreeMap<Long, T>();
 		}
