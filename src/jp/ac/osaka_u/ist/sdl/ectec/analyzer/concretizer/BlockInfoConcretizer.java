@@ -221,11 +221,11 @@ public class BlockInfoConcretizer {
 				return false;
 			}
 
-			if (cm == targetCm) {
+			if (cm != targetCm) {
 				return false;
 			}
 
-			if (anchor.equals(targetAnchor)) {
+			if (!anchor.equals(targetAnchor)) {
 				return false;
 			}
 

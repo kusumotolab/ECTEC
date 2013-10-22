@@ -333,15 +333,22 @@ public class Concretizer {
 	 */
 	private Map<Long, DBCrdInfo> retrieveCrds(final Collection<Long> crdIds)
 			throws SQLException {
-		final List<Long> crdIdsToBeRetrieved = new ArrayList<Long>();
+		final Set<Long> crdIdsToBeRetrieved = new HashSet<Long>();
 		final DBDataManager<DBCrdInfo> dbCrdManager = dbDataManagerManager
 				.getDbCrdManager();
+
 		for (final long crdId : crdIds) {
 			if (!dbCrdManager.contains(crdId)) {
 				crdIdsToBeRetrieved.add(crdId);
 			}
 		}
 		final CRDRetriever retriever = dbManager.getCrdRetriever();
+		final Map<Long, DBCrdInfo> retrievedCrds = retriever
+				.retrieveWithIds(crdIdsToBeRetrieved);
+
+		for (final DBCrdInfo crd : retrievedCrds.values()) {
+			crdIdsToBeRetrieved.addAll(crd.getAncestors());
+		}
 
 		return retriever.retrieveWithIds(crdIdsToBeRetrieved);
 	}
@@ -511,8 +518,16 @@ public class Concretizer {
 				.entrySet()) {
 			final long crdId = entry.getValue().getCrdId();
 			if (!dbCrds.containsKey(crdId)) {
-				dbCrds.put(crdId, dbDataManagerManager.getDbCrdManager()
-						.getElement(crdId));
+				final DBCrdInfo crd = dbDataManagerManager.getDbCrdManager()
+						.getElement(crdId);
+				dbCrds.put(crdId, crd);
+
+				for (final long ancestor : crd.getAncestors()) {
+					if (!dbCrds.containsKey(ancestor)) {
+						dbCrds.put(ancestor, dbDataManagerManager
+								.getDbCrdManager().getElement(ancestor));
+					}
+				}
 			}
 		}
 		return dbCrds;

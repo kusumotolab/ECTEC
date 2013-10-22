@@ -84,4 +84,16 @@ public class DBDataManagerManager {
 		return dbCrdManager;
 	}
 	
+	public final void clear() {
+		this.dbRevisionManager.clear();
+		this.dbFileManager.clear();
+		this.dbFragmentManager.clear();
+		this.dbCloneManager.clear();
+		this.dbFragmentLinkManager.clear();
+		this.dbCloneLinkManager.clear();
+		this.dbFragmentGenealogyManager.clear();
+		this.dbCloneGenealogyManager.clear();
+		this.dbCrdManager.clear();
+	}
+	
 }

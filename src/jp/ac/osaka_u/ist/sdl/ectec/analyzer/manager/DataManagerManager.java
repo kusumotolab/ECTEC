@@ -19,23 +19,23 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.RevisionInfo;
 public class DataManagerManager {
 
 	private final DataManager<RevisionInfo> revisionManager;
-	
+
 	private final DataManager<FileInfo> fileManager;
-	
+
 	private final DataManager<CodeFragmentInfo> fragmentManager;
-	
+
 	private final DataManager<CloneSetInfo> cloneManager;
-	
+
 	private final DataManager<CodeFragmentLinkInfo> fragmentLinkManager;
-	
+
 	private final DataManager<CloneSetLinkInfo> cloneLinkManager;
-	
+
 	private final DataManager<CodeFragmentGenealogyInfo> fragmentGenealogyManager;
-	
+
 	private final DataManager<CloneGenealogyInfo> cloneGenealogyManager;
-	
+
 	private final DataManager<CRD> crdManager;
-	
+
 	public DataManagerManager() {
 		this.revisionManager = new DataManager<RevisionInfo>();
 		this.fileManager = new DataManager<FileInfo>();
@@ -83,5 +83,17 @@ public class DataManagerManager {
 	public final DataManager<CRD> getCrdManager() {
 		return crdManager;
 	}
-	
+
+	public final void clear() {
+		this.revisionManager.clear();
+		this.fileManager.clear();
+		this.fragmentManager.clear();
+		this.cloneManager.clear();
+		this.fragmentLinkManager.clear();
+		this.cloneLinkManager.clear();
+		this.fragmentGenealogyManager.clear();
+		this.cloneGenealogyManager.clear();
+		this.crdManager.clear();
+	}
+
 }
