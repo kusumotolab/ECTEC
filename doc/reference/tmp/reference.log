@@ -1,0 +1,149 @@
+This is e-pTeX, Version 3.1415926-p3.3-110825-2.5 (sjis) (TeX Live 2012/W32TeX) (format=platex 2013.1.4)  22 OCT 2013 17:49
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**reference.tex
+(./reference.tex
+pLaTeX2e <2006/11/10>+0 (based on LaTeX2e <2011/06/27> patch level 0)
+Babel <v3.8m> and hyphenation patterns for english, german-x-2012-05-30, ngerma
+n-x-2012-05-30, afrikaans, ancientgreek, ibycus, arabic, armenian, basque, bulg
+arian, catalan, pinyin, coptic, croatian, czech, danish, dutch, ukenglish, usen
+glishmax, esperanto, estonian, ethiopic, farsi, finnish, french, friulan, galic
+ian, german, ngerman, swissgerman, monogreek, greek, hungarian, icelandic, assa
+mese, bengali, gujarati, hindi, kannada, malayalam, marathi, oriya, panjabi, ta
+mil, telugu, indonesian, interlingua, irish, italian, kurmanji, latin, latvian,
+ lithuanian, mongolian, mongolianlmc, bokmal, nynorsk, polish, portuguese, roma
+nian, romansh, russian, sanskrit, serbian, serbianc, slovak, slovenian, spanish
+, swedish, turkish, turkmen, ukrainian, uppersorbian, welsh, dumylang, nohyphen
+ation, loaded.
+(c:/w32tex/share/texmf/tex/platex/base/jarticle.cls
+Document Class: jarticle 2006/06/27 v1.6 Standard pLaTeX class
+\c@@paper=\count81
+(c:/w32tex/share/texmf/tex/platex/base/jsize10.clo
+File: jsize10.clo 2006/06/27 v1.6 Standard pLaTeX file (size option)
+)
+\c@part=\count82
+\c@section=\count83
+\c@subsection=\count84
+\c@subsubsection=\count85
+\c@paragraph=\count86
+\c@subparagraph=\count87
+\c@figure=\count88
+\c@table=\count89
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\symmincho=\mathgroup4
+LaTeX Font Info:    Overwriting symbol font `mincho' in version `bold'
+(Font)                  JY1/mc/m/n --> JY1/gt/m/n on input line 601.
+\toclineskip=\dimen118
+\@lnumwidth=\dimen119
+\bibindent=\dimen120
+\heisei=\count90
+)
+(c:/w32tex/share/texmf/tex/latex/psnfss/times.sty
+Package: times 2005/04/12 PSNFSS-v9.2a (SPQR) 
+)
+(c:/w32tex/share/texmf/tex/latex/fancyhdr/fancyhdr.sty
+\fancy@headwidth=\skip43
+\f@ncyO@elh=\skip44
+\f@ncyO@erh=\skip45
+\f@ncyO@olh=\skip46
+\f@ncyO@orh=\skip47
+\f@ncyO@elf=\skip48
+\f@ncyO@erf=\skip49
+\f@ncyO@olf=\skip50
+\f@ncyO@orf=\skip51
+) (./tree.sty
+\treewidth=\dimen121
+\treebox=\box41
+\treeheight=\dimen122
+)
+(./reference.aux)
+\openout1 = `reference.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for JY1/mc/m/n on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for JT1/mc/m/n on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+ (I search kanjifont definition file: . . )
+(I search font definition file: . . . . . . . )
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 21.
+
+(c:/w32tex/share/texmf/tex/latex/psnfss/ot1ptm.fd
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
+)
+LaTeX Font Info:    Font shape `JT1/mc/bx/n' in size <17.28> not available
+(Font)              Font shape `JT1/gt/m/n' tried instead on input line 25.
+LaTeX Font Info:    Font shape `JY1/mc/bx/n' in size <17.28> not available
+(Font)              Font shape `JY1/gt/m/n' tried instead on input line 25.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <17.28> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 25.
+
+
+Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
+less on input line 41.
+
+
+Package Fancyhdr Warning: \fancyfoot's `E' option without twoside option is use
+less on input line 42.
+
+LaTeX Font Info:    Font shape `JT1/mc/bx/n' in size <14.4> not available
+(Font)              Font shape `JT1/gt/m/n' tried instead on input line 44.
+LaTeX Font Info:    Font shape `JY1/mc/bx/n' in size <14.4> not available
+(Font)              Font shape `JY1/gt/m/n' tried instead on input line 44.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 44.
+(./reference.toc
+LaTeX Font Info:    Font shape `JT1/mc/bx/n' in size <10> not available
+(Font)              Font shape `JT1/gt/m/n' tried instead on input line 1.
+LaTeX Font Info:    Font shape `JY1/mc/bx/n' in size <10> not available
+(Font)              Font shape `JY1/gt/m/n' tried instead on input line 1.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 3.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 3.
+)
+\tf@toc=\write3
+\openout3 = `reference.toc'.
+
+
+
+Package Fancyhdr Warning: \headheight is too small (12.0pt): 
+ Make it at least 15.0pt.
+ We now make it that large for the rest of the document.
+ This may cause the page layout to be inconsistent, however.
+
+[1
+
+]
+LaTeX Font Info:    Font shape `JT1/mc/bx/n' in size <12> not available
+(Font)              Font shape `JT1/gt/m/n' tried instead on input line 56.
+LaTeX Font Info:    Font shape `JY1/mc/bx/n' in size <12> not available
+(Font)              Font shape `JY1/gt/m/n' tried instead on input line 56.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 56.
+ [2] (./reference.aux) ) 
+Here is how much of TeX's memory you used:
+ 524 strings out of 494054
+ 5596 string characters out of 6159315
+ 60094 words of memory out of 5000000
+ 4010 multiletter control sequences out of 15000+600000
+ 13467 words of font info for 47 fonts, out of 8000000 for 9000
+ 745 hyphenation exceptions out of 8191
+ 22i,12n,43p,141b,278s stack positions out of 5000i,500n,10000p,500000b,50000s
+
+Output written on reference.dvi (2 pages, 4428 bytes).

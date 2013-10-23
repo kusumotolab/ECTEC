@@ -1,0 +1,104 @@
+\documentclass{jarticle}
+
+\usepackage{times}
+\usepackage{fancyhdr}
+\usepackage{tree}
+
+\renewcommand{\baselinestretch}{0.85}
+\setlength{\topmargin}{-10mm}
+\setlength{\oddsidemargin}{0mm}
+\setlength{\evensidemargin}{0mm}
+\setlength{\textheight}{23.6cm}
+\setlength{\textwidth}{16cm}
+
+\newcommand{\bookTitle}{使い方}
+
+\newcommand{\sstack}[1]{\fbox{\shortstack{#1}}}
+\newcommand{\treeroot}[2]{\tree \sstack{#1}#2 \endtree}
+\newcommand{\branch}[2]{\subtree \sstack{#1}#2 \endsubtree}
+\newcommand{\LEAF}[1]{\leaf{\sstack{#1}}}
+
+\begin{document}
+%\maketitle
+
+\begin{center}
+{\LARGE\bf \bookTitle}
+\end{center}
+
+\vspace{4mm}
+
+\begin{flushright}
+{\large\ \today} \\
+\end{flushright}
+
+\pagestyle{fancy}
+\thispagestyle{fancy}
+
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+\renewcommand{\sectionmark}[1]{\markright{#1}}
+\fancyhf{}
+\fancyhead[RE,LO]{\bf \rightmark}
+\fancyfoot[LE,RO]{\thepage}
+
+\tableofcontents
+
+\newpage
+
+
+\section{概要}
+\label{sec:overview}
+
+\thispagestyle{empty}
+
+\section{プロジェクトの構成}
+
+\subsection{概要}
+
+\begin{figure}[tp]
+\centering
+\tree \shortstack{ECTEC}
+ \leaf{\shortstack[l]{doc\\$\;\;$ドキュメント}}
+ \leaf{\shortstack[l]{lib\\$\;\;$使用する外部ライブラリ}}
+ \leaf{\shortstack[l]{src\\$\;\;$ソースファイル}}
+ \leaf{\shortstack[l]{test\\$\;\;$テストケース}}
+ \leaf{\shortstack[l]{test-resources\\$\;\;$テストケースで用いるリソース}}
+\endtree
+\caption{ディレクトリ構造(概観)}
+\label{fig:tree-overview}
+\end{figure}
+
+ルートディレクトリ直下のディレクトリ構造を図\ref{fig:tree-overview}に示す．
+以降，それぞれのサブディレクトリの内容について述べる．
+
+\subsection{doc}
+
+\begin{figure}[tp]
+\centering
+\tree \shortstack{doc}
+ \subtree \shortstack{reference}
+  \subtree \shortstack{Japanese}
+   \leaf{\shortstack{reference.pdf}}
+  \endsubtree
+  \subtree \shortstack{English}
+   \leaf{\shortstack{reference.pdf}}
+  \endsubtree
+  \subtree \shortstack{tmp}
+   \leaf{\shortstack{reference-j.tex}}
+   \leaf{\shortstack{reference-e.tex}}
+  \endsubtree
+ \endsubtree
+ \subtree \shortstack{javadoc}
+ \endsubtree
+\endtree
+\caption{ディレクトリ構造(doc)}
+\label{fig:tree-doc}
+\end{figure}
+
+docディレクトリ以下のディレクトリ構造を図\ref{fig:tree-doc}に示す．
+ドキュメントとして，使用方法のリファレンス(このPDFファイル)と JavaDoc が提供されている．
+リファレンスのソースファイル並びに必要なリソースは一時ディレクトリ(tmp)に置かれており，このリファレンスのソースファイルは reference-j.tex である．
+
+\end{document}
+
+
