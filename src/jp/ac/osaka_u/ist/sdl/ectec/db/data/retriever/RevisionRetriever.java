@@ -2,6 +2,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.SortedMap;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
@@ -37,4 +38,22 @@ public class RevisionRetriever extends AbstractElementRetriever<DBRevisionInfo> 
 		return "REVISION_ID";
 	}
 
+	private String getIdentifierColumnName() {
+		return "REVISION_IDENTIFIER";
+	}
+
+	/**
+	 * retrieve elements having the given identifier
+	 * 
+	 * @param identifier
+	 * @return
+	 * @throws SQLException
+	 */
+	public SortedMap<Long, DBRevisionInfo> retrieveWithIdentifier(
+			final String identifier) throws SQLException {
+		final StringBuilder builder = new StringBuilder();
+		builder.append("select * from " + getTableName() + " where "
+				+ getIdentifierColumnName() + " = '" + identifier + "'");
+		return retrieve(builder.toString());
+	}
 }
