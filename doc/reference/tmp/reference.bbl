@@ -1,0 +1,16 @@
+\begin{thebibliography}{1}
+
+\bibitem{dualaekoko2010tosem}
+Ekwa {Duala-Ekoko} and Martin~P. Robillard.
+\newblock {Clone Region Descriptors: Representing and Tracking Duplication in
+  Source Code}.
+\newblock {\em ACM Transactions on Software Engineering and Methodology},
+  20(1):3:1--3:31, June 2010.
+
+\bibitem{higo2013iwpse}
+Yoshiki Higo, Keisuke Hotta, and Shinji Kusumoto.
+\newblock {Enhancement of CRD-based Clone Tracking}.
+\newblock In {\em Proceedings of the 13th International Workshop on Principles
+  on Software Evolution (IWPSE 2013)}, pages 28--37, Aug. 2013.
+
+\end{thebibliography}

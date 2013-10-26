@@ -3,6 +3,8 @@
 \usepackage{times}
 \usepackage{fancyhdr}
 \usepackage{tree}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{subfigure}
 
 \renewcommand{\baselinestretch}{0.85}
 \setlength{\topmargin}{-10mm}
@@ -18,6 +20,10 @@
 \newcommand{\branch}[2]{\subtree \sstack{#1}#2 \endsubtree}
 \newcommand{\LEAF}[1]{\leaf{\sstack{#1}}}
 
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+\graphicspath{{./figure/}}
+
 \begin{document}
 %\maketitle
 
@@ -31,11 +37,10 @@
 {\large\ \today} \\
 \end{flushright}
 
-\pagestyle{fancy}
-\thispagestyle{fancy}
+\thispagestyle{empty}
 
-\renewcommand{\headrulewidth}{0.5pt}
-\renewcommand{\footrulewidth}{0.5pt}
+%\renewcommand{\headrulewidth}{0.5pt}
+%\renewcommand{\footrulewidth}{0.5pt}
 \renewcommand{\sectionmark}[1]{\markright{#1}}
 \fancyhf{}
 \fancyhead[RE,LO]{\bf \rightmark}
@@ -45,59 +50,1257 @@
 
 \newpage
 
+\pagestyle{fancy}
+\thispagestyle{fancy}
 
-\section{概要}
+\section{まえがき}
 \label{sec:overview}
 
-\thispagestyle{empty}
+このドキュメントは，コードクローン追跡システム ECTEC の使用方法並びに内部で行われている処理内容について述べているドキュメントである．
+ECTEC は Java で記述されており，内部でリレーショナルデータベースを用いている．
 
-\section{プロジェクトの構成}
+このドキュメントを執筆した時点における ECTEC の動作環境，並びに分析対象は以下の通りである．
+
+\begin{description}
+
+\item[対象言語: ] Java
+
+\item[対象バージョン管理システム: ] Subversion
+
+\end{description}
+
+以降の本ドキュメントの構成は次の通り．
+はじめに\ref{sec:quick-start}で ECTEC の簡単な使用方法について述べる．
+次に\ref{sec:processing}において内部で行われている処理内容について述べ，
+\ref{sec:data-structure}でデータ構造について説明する．
+最後に\ref{sec:how-to-use}において ECTEC の使用方法について詳細に述べる．
+%最後に\ref{sec:project}で ECTEC のプロジェクト構成について言及する．
+
+\section{クイックスタート}
+\label{sec:quick-start}
+
+ECTEC が行う処理は，事前分析とライブラリ呼び出しに大別される\footnote{詳細については \ref{sec:processing} で述べる}．
+先に事前分析を行いデータベースを構築した後，ライブラリ呼び出しを行うことでコードクローンの系譜に関する情報を得ることができる．
+
+以降の小節でそれぞれの実行方法について簡単に述べる．
+なお詳細は\ref{sec:how-to-use}を参照されたい．
+
+\subsection{事前分析}
+
+事前分析のメインクラスは {\tt jp.ac.osaka\_u.ist.sdl.ectec.detector.DetectorMain} である．
+以降，事前分析を行う機能のことを{\bf Detector}と呼ぶ．
+メインメソッドに様々な引数を与えることで，Detector の挙動を細かく制御することができる．
+しかし，それらのすべてを逐一指定することは煩雑であるため，Detector はプロパティファイルから設定を読み込み，それをデフォルトの値として使用する．
+Detector は，カレントディレクトリの``ectec.properties''をデフォルトのプロパティファイルとするため，実行に際しカレントディレクトリにこの名前のプロパティファイルを配置する必要がある\footnote{どのプロパティファイルを読み込むかも引数で制御可能であるが，指定が無ければデフォルトのプロパティファイルを読み込む}．
+test-resources/properties/ectec-sample.properties にサンプルのプロパティファイルを配置しているので，さしあたりそのファイルをカレントディレクトリに配置し，名前を``ectec.properties''に変更されたい．
+
+Detector を実行する際に，必ず指定しなければならない必須引数は以下の2つである．
+
+\begin{description}
+
+\item[-r: ] 分析対象リポジトリのURL
+
+\item[-d: ] 分析結果の出力先データベースファイルのパス
+
+\end{description}
+
+リポジトリの URL については，http，file，svn+ssh のそれぞれのプロトコルをサポートしている．
+出力先ファイルは``*.db''を拡張子とするファイルであることが望ましい．
+
+例として，以下のような環境を想定する．
+
+\begin{description}
+
+\item[OS: ] Windows 7
+
+\item[Detector の実行可能 jar ファイル: ] detector.jar
+
+\item[リポジトリの場所: ] ローカルに配置．パスは G:\verb|\|ECTEC\verb|\|sample-repository
+
+\item[出力先: ] G:\verb|\|ECTEC\verb|\|sample.db
+
+\end{description}
+
+このとき，Detector を起動するためのコマンドは以下のようになる．
+
+\begin{quote}
+
+{\tt \$ java -jar detector.jar -r file:///G:/ECTEC/sample-repository \\ -d G:\verb|\|ECTEC\verb|\|sample.db}
+
+\end{quote}
+
+この例の場合，リポジトリがマシンローカルに配置されているため，リポジトリにアクセスするためのプロトコルは file となる．
+リポジトリのURL中のファイル区切り文字が Windows の \verb|\| ではなく / になっている点に注意されたい．
+
+なお引数の指定は順不同である．
+従って，以下のように起動しても，先ほどと全く同じ結果が得られる．
+
+\begin{quote}
+
+{\tt \$ java -jar detector.jar -d G:\verb|\|ECTEC\verb|\|sample.db \\ -r file:///G:/ECTEC/sample-repository}
+
+\end{quote}
+
+\subsection{ライブラリ呼び出し}
+
+ライブラリ呼び出しでは，利用者が記述する Java のコードから ECTEC の解析結果にアクセスする機能を提供する．
+以降，ライブラリ呼び出しによって解析結果を提供する機能のことを {\bf Analyzer} と呼ぶ．
+
+以降の説明では，以下の環境を想定する．
+
+\begin{description}
+
+\item[OS: ] Windows 7
+
+\item[リポジトリの場所: ] ローカルに配置．パスは G:\verb|\|ECTEC\verb|\|sample-repository
+
+\item[出力先: ] G:\verb|\|ECTEC\verb|\|sample.db
+
+\end{description}
+
+Analyzer のメインとなるクラスは {\tt jp.ac.osaka\_u.ist.sdl.ectec.analyzer}パッケージに存在する {\tt GenealogyAnalyzser} である．
+利用者は，はじめに {\tt setup} メソッドを呼び出すことで Analyzer の初期化を行う必要がある．
+想定している環境の場合，メソッドの呼び出し方法は以下のようになる．
+
+\begin{quote}
+
+{\tt GenalogyAnalyzer analyzer = \\ 
+$\;\;\;\;\;\;\;\;\;\;\;$ GenealogyAnalyzer.setup(G:\verb|\|ECTEC\verb|\|sample.db, \\ 
+$\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;$file:///G:/ECTEC/sample-repository, VersionControlSystem.SVN);}
+
+\end{quote}
+
+次に，{\tt selectAndConcretizeCloneGenealogies} メソッドを呼び出すことで，コードクローンの系譜に関する情報を取得することができる．
+コードクローンの系譜に関する情報は {\tt CloneGenealogyInfo} という名前のクラスのインスタンスとして提供される．
+
+このメソッドは {\tt IConstraint} 型の引数を受け取る．
+この引数は取得する系譜に制約を設ける際に使用するものである．
+特に制約を設けない場合，{\tt null} を指定することですべての系譜を取得することができる\footnote{ただし，{\tt CloneGenealogyInfo} は各系譜の各コードクローンのソースコードを保持しており，メモリ使用量が大きい．従って，すべての系譜を取得することが難しい場合は，制約を設けて取得する系譜を制限することを推奨する．}．
+
+具体的なメソッドの呼び出し方法は以下の通り．
+
+\begin{quote}
+
+{\tt Map$<$Long, CloneGenealogyInfo$>$ genealogies = \\
+$\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;$ analyzer.selectAndConcretizeCloneGenealogies(null);}
+
+\end{quote}
+
+このようにして取得した {\tt CloneGenealogyInfo} 型のインスタンスに対してメソッド呼び出しを行うことで，様々な情報を取得することができる．
+
+最後に，プログラムを終了する前に，データベースとの接続を切る必要がある．
+そのために使用するメソッドは {\tt close()}である．
+
+\begin{quote}
+
+{\tt analyzer.close();}
+
+\end{quote}
+
+\section{処理}
+\label{sec:processing}
 
 \subsection{概要}
 
 \begin{figure}[tp]
 \centering
-\tree \shortstack{ECTEC}
- \leaf{\shortstack[l]{doc\\$\;\;$ドキュメント}}
- \leaf{\shortstack[l]{lib\\$\;\;$使用する外部ライブラリ}}
- \leaf{\shortstack[l]{src\\$\;\;$ソースファイル}}
- \leaf{\shortstack[l]{test\\$\;\;$テストケース}}
- \leaf{\shortstack[l]{test-resources\\$\;\;$テストケースで用いるリソース}}
-\endtree
-\caption{ディレクトリ構造(概観)}
-\label{fig:tree-overview}
+\includegraphics[width=0.7\columnwidth]{overview.pdf}
+\caption{処理の全体像}
+\label{fig:processing-overview}
 \end{figure}
 
-ルートディレクトリ直下のディレクトリ構造を図\ref{fig:tree-overview}に示す．
-以降，それぞれのサブディレクトリの内容について述べる．
+処理の全体像を図\ref{fig:processing-overview}に示す．
+処理は大きく以下の2つのステップから成る．
 
-\subsection{doc}
+\begin{description}
+
+\item[STEP1 事前分析: ] 開発履歴情報を分析してコードクローンの系譜を特定し，データベースに格納する．
+
+\item[STEP2 ライブラリ呼び出し: ] データベースに格納されている系譜のうち，指定されたものについて，系譜を構成するコードクローンのソースコードなどを取得する．
+
+\end{description}
+
+ライブラリ呼び出し機能を実行するためには，事前分析を行いデータベースを構築する必要がある．
+以降の小節でそれぞれの処理について述べる．
+
+\subsection{STEP1: 事前分析}
+
+事前分析では，与えられたリポジトリを解析し，コードクローンの系譜並びにそれに関連する情報を取得する．
+その後，取得した情報をデータベースに保存する．
+
+事前分析は以下のサブステップから構成される．
+
+\begin{description}
+
+\item[STEP1-1: ] 対象リポジトリから，分析対象コミット\footnote{少なくとも一つ以上の分析対象ソースファイルが追加・削除・変更されたコミット}並びに分析対象リビジョン\footnote{分析対象コミットの前後のリビジョン}を特定する．
+
+\item[STEP1-2: ] 各分析対象リビジョンについて，そのリビジョンに存在するソースファイルを特定する．
+
+\item[STEP1-3: ] 分析対象ソースファイルを解析し，それぞれのソースファイル中に存在するブロックを特定する．
+
+\item[STEP1-4: ] STEP1-3で特定したブロックについて，コミットの前後のリビジョンに存在するブロック間でCRDの類似度を用いた対応付け(以降，ブロックリンク)を特定する．
+
+%\item[STEP1-5: ] STEP1-4で特定したブロックリンクをもとに，ブロックの系譜(genealogy)を特定する．
+
+\item[STEP1-5: ] STEP1-3で特定したブロックについて，ブロックの文字列からハッシュ値を生成し，それを用いてブロック単位のコードクローン検出を行う．
+
+\item[STEP1-6: ] STEP1-4で特定したブロックリンクとSTEP1-5で特定したコードクローンをもとに，コミット前後のリビジョンに存在するコードクローン間の対応付け(コードクローンリンク)を特定する．
+
+\item[STEP1-7: ] STEP1-6で特定したコードクローンリンクをもとに，コードクローンの系譜を特定する．
+
+\end{description}
+
+\subsubsection{STEP1-1: 分析対象コミットの特定}
+
+対象リポジトリに保持されている開発履歴中のすべてのコミットについて，ログを用いてそのコミットで追加・削除・変更されたファイルのリストを取得する．
+そして，リスト中に分析対象ソースファイルが含まれるか否かを判定し，含まれている場合はそのコミットを分析対象コミットとみなす．
+分析対象ソースファイルは対象とする言語により異なるが，Javaの場合は``{\tt .java}''を拡張子とするファイルである．
+最後に，特定した分析対象コミット，並びに各分析対象コミットの変更前後のリビジョンをデータベースに保存する．
+
+\subsubsection{STEP1-2: 分析対象ソースファイルの特定}
 
 \begin{figure}[tp]
 \centering
-\tree \shortstack{doc}
- \subtree \shortstack{reference}
-  \subtree \shortstack{Japanese}
-   \leaf{\shortstack{reference.pdf}}
-  \endsubtree
-  \subtree \shortstack{English}
-   \leaf{\shortstack{reference.pdf}}
-  \endsubtree
-  \subtree \shortstack{tmp}
-   \leaf{\shortstack{reference-j.tex}}
-   \leaf{\shortstack{reference-e.tex}}
-  \endsubtree
- \endsubtree
- \subtree \shortstack{javadoc}
- \endsubtree
-\endtree
-\caption{ディレクトリ構造(doc)}
-\label{fig:tree-doc}
+\includegraphics[width=0.9\columnwidth]{files-example.pdf}
+\caption{分析対象ソースファイル特定の例}
+\label{fig:files-example}
 \end{figure}
 
-docディレクトリ以下のディレクトリ構造を図\ref{fig:tree-doc}に示す．
-ドキュメントとして，使用方法のリファレンス(このPDFファイル)と JavaDoc が提供されている．
-リファレンスのソースファイル並びに必要なリソースは一時ディレクトリ(tmp)に置かれており，このリファレンスのソースファイルは reference-j.tex である．
+STEP1-1で特定した各分析対象リビジョンについて，そのリビジョンに存在する分析対象ソースファイルを特定し，その情報をデータベースに格納する．
+ここで特定したソースファイルがのちの解析処理の対象となる．
+
+ただし，あるコミットで修正されなかったファイルはコミット前後のリビジョンにおいて同一のファイルとなるため，そのようなファイルに対してコミット前後それぞれのリビジョンで解析を行うことは冗長である．
+このような冗長な解析を避けるため，各ファイルについて，そのファイルが修正されずに存在していた期間を付与し，解析結果を再利用する．
+図\ref{fig:files-example}に分析ソースファイルの特定例を示す．
+この例では，{\tt A.java}がリビジョン2からリビジョン3へのコミットで修正されている．
+また，{\tt B.java}がリビジョン1からリビジョン2へのコミットで追加されており，{\tt C.java}がリビジョン3からリビジョン4へのコミットで削除されている．
+この例の場合，特定されるソースファイル情報は右表のようになる．
+{\tt A.java}はリビジョン1からリビジョン2へのコミットで修正されていないため，リビジョン1で解析を行った結果をリビジョン2において再利用することができる．
+一方，{\tt A.java}はリビジョン2からリビジョン3へのコミットで修正されているため，リビジョン2での解析結果をリビジョン3において再利用することはできない．
+従って，リビジョン2からリビジョン3へのコミットを区切りとして別々のソースファイル情報を作成している．
+最終的に，この例に対して解析する必要のあるファイルは4つとなる．
+
+\subsubsection{STEP1-3: ブロックの特定}
+
+STEP1-2で特定したソースファイルを解析し，そのファイル中に含まれるブロックを特定する．
+
+ここでブロックとは，クラスやメソッド，並びに各種ブロック文を指している．
+Javaを対象とした場合，以下のものがブロックに該当する．
+
+\begin{itemize}
+
+\item クラス
+
+\item メソッド
+
+\item if文
+
+\item else節
+
+\item for文
+
+\item 拡張for文 (for-each文)
+
+\item while文
+
+\item do-while文
+
+\item switch文
+
+\item synchronized文
+
+\item try文
+
+\item catch節
+
+\item finally節
+
+\end{itemize}
+
+\begin{figure}[tp]
+\centering
+\includegraphics[width=0.9\columnwidth]{blocks-example.pdf}
+\caption{ブロック特定の例}
+\label{fig:blocks-example}
+\end{figure}
+
+ブロックについてもソースファイルと同様にその存在期間を付与することで，解析結果の再利用を行う．
+図\ref{fig:blocks-example}にブロック特定の例を示す．
+この例では，{\tt A.java}がリビジョン2からリビジョン3へのコミットで変更されており，その変更によってブロック$\beta$の中身が変化し，ブロック$\beta'$となっている．
+よって，ブロック$\beta$とブロック$\beta'$の存在期間はそれぞれ，リビジョン1からリビジョン2，リビジョン3からリビジョン4となっている．
+また，{\tt A.java}には別のブロック$\alpha$が存在している．
+このブロックはリビジョン2からリビジョン3へのコミットで変化していないが，ブロックを含むソースファイルが変化し再解析されているため，ブロック$\alpha$についても$\beta$，$\beta'$と同様にリビジョン2とリビジョン3の間で別のブロックとして認識される．
+
+\subsubsection{STEP1-4: ブロックリンクの特定}
+
+\begin{figure}[tp]
+\centering
+\subfigure[ブロック間の類似度]{
+\includegraphics[width=0.2\columnwidth]{block-links-init.pdf}
+}
+\subfigure[Single]{
+\includegraphics[width=0.2\columnwidth]{block-links-single.pdf}
+}
+\subfigure[Multiple]{
+\includegraphics[width=0.2\columnwidth]{block-links-multiple.pdf}
+}
+\caption{ブロックリンク特定の例}
+\label{fig:block-links}
+\end{figure}
+
+このサブステップでは，2つの連続するリビジョンに存在するブロックの間で対応関係を取る．
+対応関係の特定には，CRDに基づく手法\cite{dualaekoko2010tosem}を拡張した，CRDの類似度に基づく手法\cite{higo2013iwpse}を用いる．
+ECTECは以下の2つの対応付け方法を提供している．
+
+\begin{description}
+
+\item[Single: ] 前リビジョンに存在するあるブロックについて，後リビジョンに存在するブロックのうち最も確からしいブロック1つと対応付ける．
+
+\item[Multiple: ] 前リビジョンに存在するあるブロックについて，後リビジョンに存在するブロックのうち条件を満たすブロックすべてと対応付ける．
+
+\end{description}
+
+ここで，``最も確からしい''とは，条件\footnote{文献\cite{higo2013iwpse}に定義されている}を満たすブロックの中でCRDの類似度が最も高いものを指す．
+
+図\ref{fig:block-links}にブロックリンク特定の例を示す．
+図中の左側に並ぶブロックが変更前リビジョンに存在するブロック，右側が変更後のリビジョンに存在するブロックである．
+また，類似度の閾値は0.5としている．
+
+Singleの場合は，最も類似度が高くなる対応付け1つを求めるため，この例の場合，AとC，並びにBとDという2つの対応付けが得られる．
+一方Multipleの場合は，条件(この場合，類似度が0.5以上)を満たす対応付けすべてを許容するため，Singleで特定された2つの対応付けに加え，AとD，BとCという対応付けが得られる．
+
+%\subsubsection{STEP1-5: ブロックの系譜の特定}
+
+%このサブステップでは，STEP1-4で特定したブロックリンクを用いてブロックの系譜を特定する．
+%ブロックの系譜はブロックリンクをつなぎ合わせることで形成される．
+%なおブロックの系譜はコードクローンの系譜を求める際には必要ではないため，このステップは必須ではない．
+
+\subsubsection{STEP1-5: コードクローンの特定}
+
+このサブステップでは，STEP1-3で特定したブロックからコードクローンの検出を行う．
+
+\begin{figure}[tp]
+\centering
+\subfigure[元のソースコード]{
+\includegraphics[width=0.4\columnwidth]{normalization-original.pdf}
+}
+\subfigure[完全一致(正規化なし)]{
+\includegraphics[width=0.4\columnwidth]{normalization-exact.pdf}
+}
+\subfigure[変数名，リテラルの正規化]{
+\includegraphics[width=0.4\columnwidth]{normalization-identifier.pdf}
+}
+\subfigure[サブブロックの正規化]{
+\includegraphics[width=0.4\columnwidth]{normalization-subblock.pdf}
+}
+\caption{ソースコードの正規化}
+\label{fig:normalization}
+\end{figure}
+
+コードクローンの検出には，各ブロックから生成されたハッシュ値を用いる．
+ハッシュ値の生成の際，各ブロックを文字列とみなし，その文字列にハッシュ関数を適用してハッシュ値を生成する．
+同じ文字列からは同じハッシュ値が生成されるため，同じハッシュ値を持つブロック同士はコードクローン関係にあるとみなすことができる．
+
+ハッシュ値を生成する際に，ブロックの文字列に対して正規化を行うことが可能である．
+ECTECは以下の3種類の文字列生成方法を提供している．
+
+\begin{description}
+
+\item[完全一致(正規化なし): ] 空白並びにインデントの整形は行うが，それ以外の正規化は行わない．
+
+\item[変数名・リテラルの正規化: ] 空白並びにインデントの整形に加え，変数名並びにリテラルを特殊文字で置き換える．
+
+\item[サブブロックの正規化: ] 変数名・リテラルの正規化で行った正規化に加え，ブロック中に出現するサブブロックをそのサブブロックを表す特殊文字列で置き換える．
+
+\end{description}
+
+図\ref{fig:normalization}にソースコードの正規化の例を示す．
+完全一致ではインデントの整形のみが行われており，変数名・リテラルの正規化ではそれに加えて変数名・リテラルをすべて$\$$で置き換えられている．
+サブブロックの正規化では，さらにメソッド内部のfor文を``{\tt FOR: i < z}''という特殊な文字列で置き換えている．
+この文字列は置き換えた文の種類，並びにその文を特徴付ける文字列(条件式やシグネチャなど)を用いて生成されるものである．
+この正規化により，サブブロック内で行われている処理が異なるようなブロックをコードクローンとして検出することが可能となる．
+なお，この特殊文字列中に出現する変数名・リテラルについては正規化を行わない．
+
+\subsubsection{STEP1-6: コードクローンリンクの特定}
+
+STEP1-4で特定したブロックリンク，並びにSTEP1-5で特定したコードクローンをもとに，コードクローンリンクを特定する．
+2つのコードクローン$C_{1}$，$C_{2}$が以下の条件を満たすとき，$C_{1}$，$C_{2}$を対応付け，コードクローンリンクを形成する．
+
+\begin{itemize}
+
+\item $C_{1}$が属するリビジョンと$C_{2}$が属するリビジョンが連続している．
+
+\item $C_{1}$中のあるブロックと$C_{2}$中のあるブロックがブロックリンクを形成している．
+
+\end{itemize}
+
+なお，ブロックリンクの特定には一対一と多対多の2つの対応付け方法を提供しているが，コードクローンリンクには多対多の対応付けのみを提供している．
+
+\subsubsection{STEP1-7: コードクローンの系譜の特定}
+
+最後に，STEP1-6で特定したコードクローンリンクをつなぎ合わせることで，コードクローンの系譜を特定する．
+
+\subsection{STEP2: ライブラリ呼び出し}
+
+ライブラリ呼び出しでは，事前分析で構築したデータベースからコードクローンの系譜を取得し，データベースへの格納によって失われた情報をリポジトリを用いて復元する．以降，この復元作業のことを{\bf 具体化}と呼ぶ．
+
+ライブラリ呼び出しを行うために必要なステップは以下の通りである．
+
+\begin{description}
+
+\item[STEP2-1: ] 解析結果を格納しているデータベースと，解析に使用したリポジトリを指定し，初期化する．
+
+\item[STEP2-2: ] 具体化したいコードクローンの系譜を選択する．
+
+\item[STEP2-3: ] コードクローンの系譜を具体化する．
+
+\item[STEP2-4: ] データベース並びにリポジトリとの接続を閉じる．
+
+\end{description}
+
+これらのステップのうち，STEP2-2 と STEP2-3 は繰り返し行うことが可能である．
+具体的なメソッド呼び出しの方法等については，使用方法の説明を行う際に詳細に述べる．
+
+\section{データ構造}
+\label{sec:data-structure}
+
+\subsection{データベース}
+
+\begin{table}[p]
+\centering
+\caption{REVISIONテーブルのスキーマ}
+\label{table:revision}
+\begin{tabular}{lll} \hline
+\multicolumn{1}{c}{カラム名} & \multicolumn{1}{c}{型} & \multicolumn{1}{c}{備考} \\ \hline
+REVISION\_ID & LONG & primary key \\
+REVISION\_IDENTIFIRE & TEXT & nor null, unique \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[pb]
+\centering
+\caption{VCS\_COMMITテーブルのスキーマ}
+\label{table:vcs_commit}
+\begin{tabular}{lll} \hline
+\multicolumn{1}{c}{カラム名} & \multicolumn{1}{c}{型} & \multicolumn{1}{c}{備考} \\ \hline
+VCS\_COMMIT\_ID & LONG & primary key \\
+BEFORE\_REVISION\_ID & LONG & external key \\ 
+AFTER\_REVISION\_ID & LONG & external key \\
+BEFORE\_REVISION\_IDENTIFIRE & TEXT & \\
+AFTER\_REVISION\_IDENTIFIRE & TEXT & \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[pb]
+\centering
+\caption{FILEテーブルのスキーマ}
+\label{table:file}
+\begin{tabular}{lll} \hline
+\multicolumn{1}{c}{カラム名} & \multicolumn{1}{c}{型} & \multicolumn{1}{c}{備考} \\ \hline
+FILE\_ID & LONG & primary key \\
+FILE\_PATH & TEXT & \\ 
+START\_REVISION\_ID & LONG & external key \\
+END\_REVISION\_ID & LONG & external \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[pb]
+\centering
+\caption{CODE\_FRAGMENTテーブルのスキーマ}
+\label{table:code_fragment}
+\begin{tabular}{lll} \hline
+\multicolumn{1}{c}{カラム名} & \multicolumn{1}{c}{型} & \multicolumn{1}{c}{備考} \\ \hline
+CODE\_FRAGMENT\_ID & LONG & primary key \\
+OWNER\_FILE\_ID & LONG & external key \\ 
+CRD\_ID & LONG & external key \\
+START\_REVISION\_ID & LONG & external key \\
+END\_REVISION\_ID & LONG & exteral key \\
+HASH & LONG & \\
+HASH\_FOR\_CLONE & LONG & \\
+START\_LINE & INTEGER & $>$ 0 \\
+END\_LINE & INTEGER & $>$ 0 \\
+SIZE & INTEGER & $>$ 0 \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[pb]
+\centering
+\caption{CLONE\_SETテーブルのスキーマ}
+\label{table:clone_set}
+\begin{tabular}{lll} \hline
+\multicolumn{1}{c}{カラム名} & \multicolumn{1}{c}{型} & \multicolumn{1}{c}{備考} \\ \hline
+CLONE\_SET\_ID & LONG & primary key \\
+OWNER\_REVISION\_ID & LONG & external key \\ 
+ELEMENTS & TEXT$^*$ & not null \\
+NUMBER\_OF\_ELEMENTS & INTEGER & $>$ 0 \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[pb]
+\centering
+\caption{CODE\_FRAGMENT\_LINKテーブルのスキーマ}
+\label{table:code_fragment_link}
+\begin{tabular}{lll} \hline
+\multicolumn{1}{c}{カラム名} & \multicolumn{1}{c}{型} & \multicolumn{1}{c}{備考} \\ \hline
+CODE\_FRAGMENT\_LINK\_ID & LONG & primary key \\
+BEFORE\_ELEMENT\_ID & LONG & external key \\ 
+AFTER\_ELEMENT\_ID & LONG & external key \\
+BEFORE\_REVISION\_ID & LONG & external key \\
+AFTER\_REVISION\_ID & LONG & exteral key \\
+CHANGED & INTEGER & 1 or 0 (1 = true) \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[pb]
+\centering
+\caption{CLONE\_SET\_LINKテーブルのスキーマ}
+\label{table:clone_set_link}
+\begin{tabular}{lll} \hline
+\multicolumn{1}{c}{カラム名} & \multicolumn{1}{c}{型} & \multicolumn{1}{c}{備考} \\ \hline
+CLONE\_SET\_LINK\_ID & LONG & primary key \\
+BEFORE\_ELEMENT\_ID & LONG & external key \\ 
+AFTER\_ELEMENT\_ID & LONG & external key \\
+BEFORE\_REVISION\_ID & LONG & external key \\
+AFTER\_REVISION\_ID & LONG & exteral key \\
+CHANGED\_ELEMENTS & INTEGER & $>$ 0 \\
+ADDED\_ELEMENTS & INTEGER & $>$ 0 \\
+DELETED\_ELEMENTS & INTEGER & $>$ 0 \\
+CO\_CHANGED\_ELEMENTS & INTEGER & $>$ 0 \\
+CODE\_FRAGMENT\_LINKS & TEXT$^*$ & not null \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[pb]
+\centering
+\caption{CLONE\_GENEALOGYテーブルのスキーマ}
+\label{table:clone_genealogy}
+\begin{tabular}{lll} \hline
+\multicolumn{1}{c}{カラム名} & \multicolumn{1}{c}{型} & \multicolumn{1}{c}{備考} \\ \hline
+CLONE\_GENEALOGY\_LINK\_ID & LONG & primary key \\
+START\_REVISION\_ID & LONG & external key \\
+END\_REVISION\_ID & LONG & exteral key \\
+CLONES & TEXT$^*$ & not null \\
+CLONE\_LINKS & TEXT$^*$ & not null \\
+CHANGES & INTEGER & $>$ 0 \\
+ADDITIONS & INTEGER & $>$ 0 \\
+DELETIONS & INTEGER & $>$ 0 \\
+DEAD & INTEGER & 1 or 0 (1 = true) \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[pb]
+\centering
+\caption{CRDテーブルのスキーマ}
+\label{table:crd}
+\begin{tabular}{lll} \hline
+\multicolumn{1}{c}{カラム名} & \multicolumn{1}{c}{型} & \multicolumn{1}{c}{備考} \\ \hline
+CRD\_ID & LONG & primary key \\
+TYPE & TEXT & not null \\
+HEAD & TEXT & not null \\
+ANCHOR & TEXT & not null \\
+NORMALIZED\_ANCHOR & TEXT & not null \\
+CM & INTEGER & $>$0 \\
+ANCESTORS & TEXT$^*$ & not null \\
+FULL\_TEXT & TEXT & not null \\ \hline
+\end{tabular}
+\end{table}
+
+
+ECTECは以下のデータベーステーブルを定義し，使用する．
+
+\begin{itemize}
+
+\item REVISION
+\item VCS\_COMMIT
+\item FILE
+\item CODE\_FRAGMENT
+\item CLONE\_SET
+\item CODE\_FRAGMENT\_LINK
+\item CLONE\_SET\_LINK
+\item CLONE\_GENEALOGY
+\item CRD
+
+\end{itemize}
+
+表\ref{table:revision}～表\ref{table:crd}に各テーブルのスキーマを示す．
+それぞれのテーブルは LONG 型の ID を主キーとしている．
+一部に他のテーブルのレコードを参照する列が存在するが，その参照の際にも各レコードの ID を使用する．
+
+以降，それぞれのスキーマについて簡単に述べる．
+
+\subsubsection*{REVISION}
+
+REVISION\_IDENTIFIER は各リビジョンを表す識別子を表している．
+Subversion の場合，各リビジョンはリビジョン番号により識別されるため，識別子はリビジョン番号となる．
+分析対象とならないリビジョンが存在する影響で，リビジョンのIDとリビジョン番号は基本的には一致しない．
+
+\subsubsection*{VCS\_COMMIT}
+
+VCS\_COMMIT はコミットをレコードとするテーブルであり，BEFORE* は変更前リビジョンを，AFTER* は変更後リビジョンを，それぞれ表している．
+
+\subsubsection*{FILE}
+
+FILE はその存在期間を保持するレコードであるため，START\_REVISION\_ID 並びに END\_REVISION\_ID という列を持つ．
+これらはいずれも REVISION テーブルに格納されているレコードの REVISION\_ID の値を参照している．
+
+\subsubsection*{CODE\_FRAGMENT}
+
+CODE\_FRAGMENT は FILE と同様に存在期間を保持するレコードである．
+この存在期間は各コード片を保持するファイルの生存期間に準拠している．
+また，各コード片の CRD は別テーブルとして切り分けているため，対応する CRD の ID が保持されている．
+HASH 並びに HASH\_FOR\_CLONE は各コード片の文字列から算出されたハッシュ値であり，HASH は正規化を適用していない文字列(図\ref{fig:normalization}の完全一致と同一)から算出されたハッシュ値であり，HASH\_FOR\_CLONE は正規化後の文字列から算出されたハッシュ値である．
+これらのうち，コードクローンの検出に用いられるハッシュ値は HASH\_FOR\_CLONE であり，HASH はコード片に何らかの修正が加えられたか否かを判別するために使用する．
+SIZE はこのコード片のサイズを表しており，現在のところそのコード片を構成する AST のノード数を表している．
+
+\subsubsection*{CLONE\_SET}
+
+CLONE\_SET は互いにコードクローン関係にあるコード片の集合であるクローンセットをレコードとするテーブルである．
+ELEMENTS の型が TEXT$^*$ となっているが，これは要素の ID を``,''で連結した文字列であることを示している．
+例えばあるクローンセットが ID 1 のコード片と ID 2 のコード片から構成されている場合，ELEMENTS の値は ``1,2'' となる．
+
+\subsubsection*{CODE\_FRAGMENT\_LINK}
+
+CODE\_FRAGMENT\_LINK は2つの連続するリビジョン間でのコード片のリンク(ブロックリンク)をレコードとするテーブルである．
+CHANGED はコード片がこのリンクよって結び付けられているコード片が，このリンクに関わるコミットで修正されたか否かを表しており，1 の場合は何らかの修正があったことを示している．
+修正されたか否かの判定には，CODE\_FRAGMENT テーブルの HASH の値を使用しており，HASH が変化していれば修正されたものをみなしている．
+なお，コード片を含むファイルに変更が加えられなかった場合のブロックリンクは自明であるため，レコードとして保持されない．
+
+\subsubsection*{CLONE\_SET\_LINK}
+
+CLONE\_SET\_LINK は2つの連続するリビジョン間でのクローンセットのリンク(コードクローンリンク)をレコードとするテーブルである．
+CHANGED/ADDED/DELETED\_ELEMENTS はそれぞれ，変更，追加，削除されたコード片の数の合計を表している．
+
+\subsubsection*{CLONE\_GENEALOGY}
+
+CLONE\_GENEALOGY はコードクローンの系譜を表すテーブルである．
+CLONES はこの系譜に含まれるすべてのクローンセットの ID を， CLONE\_LINKS はこの系譜に含まれるすべてのクローンリンクの ID をそれぞれ表している．
+CHANGES/ADDITIONS/DELETIONS はそれぞれ，要素の変更，追加，削除が行われたリビジョンの合計を表している．
+また DEAD はその系譜が最終リビジョンにおいて生存しているかどうかを示しており，1 の場合は系譜が最終リビジョンにおいて生存していないことを示している．
+
+\subsubsection*{CRD}
+
+CRDテーブルは CRD をレコードとするテーブルである．
+なお，1つのブロックの CRD が1つのレコードとなる．
+TYPE はその CRD が表すブロックの型を，HEAD はその型のブロックから CRD を生成したときに先頭に配置される文字列をそれぞれ表す．
+ANCHOR はそのブロックの条件式などを表し，NORMALIZED\_ANCHOR は正規化されたものを表している．
+CM はメトリクス値を示している．
+ANCESTORS はこのブロックの外側に位置するブロックに対する CRD の ID を連結したリストである．
+例えば，ID 1 の CRD を持つブロックの中に ID 2 の CRD を持つブロックがあり，ID 2 の CRD を持つブロックの中に ID 3 の CRD を持つブロックがあるケースにおける ID 3 の CRD を考えたとき，そのレコードの ANCESTORS の値は ``1,2'' となる．
+なおこのときの ID の順序は外側から順にブロックを辿ったときの順序となっている．
+FULL\_TEXT はこの CRD を文字列表記したものであり，このブロックの外側に位置するブロックも考慮した文字列となる．
+
+\subsection{具体化後}
+
+ライブラリ呼び出しによって具体化された情報を保持するクラスは以下の通り．
+
+\begin{itemize}
+
+\item {\tt CloneGenealogyInfo}
+
+\item {\tt CloneSetLinkInfo}
+
+\item {\tt CloneSetInfo}
+
+\item {\tt CodeFragmentLinkInfo}
+
+\item {\tt BlockInfo} extends {\tt CodeFragmentInfo}
+
+\item {\tt FileInfo}
+
+\item {\tt RevisionInfo}
+
+\item {\tt CRD}
+
+\end{itemize}
+
+以降，それぞれの構造について述べる．
+
+\subsubsection{{\tt CloneGenealogyInfo}}
+
+\begin{center}
+\begin{tabular}{lll} \\ \hline\hline
+\multicolumn{1}{c}{フィールド名} & \multicolumn{1}{c}{型} & \multicolumn{1}{c}{意味} \\ \hline
+{\tt startRevision} & {\tt RevisionInfo} & 系譜の開始リビジョン \\
+{\tt endRevision} & {\tt RevisionInfo} & 系譜の終了リビジョン \\
+{\tt clones} & {\tt List$<$CloneSetInfo$>$} & 系譜を構成するクローンセット \\
+{\tt links} & {\tt List$<$CloneSetLinkInfo$>$} & 系譜を構成するコードクローンリンク \\
+{\tt numberOfChanges} & {\tt int} & 要素が修正されたリビジョンの数 \\
+{\tt numberOfAdditions} & {\tt int} & 要素が追加されたリビジョンの数 \\
+{\tt numberOfDeletions} & {\tt int} & 要素が削除されたリビジョンの数 \\
+{\tt dead} & {\tt boolean} & true = 系譜が最終リビジョンで生存していない \\ \hline\hline
+\end{tabular}
+\end{center}
+
+\subsubsection{{\tt CloneSetLinkInfo}}
+
+\begin{center}
+\begin{tabular}{lll} \\ \hline\hline
+\multicolumn{1}{c}{フィールド名} & \multicolumn{1}{c}{型} & \multicolumn{1}{c}{意味} \\ \hline
+{\tt beforeRevision} & {\tt RevisionInfo} & 前リビジョン \\
+{\tt afterRevision} & {\tt RevisionInfo} & 後リビジョン \\
+{\tt beforeClone} & {\tt CloneSetInfo} & 前クローンセット \\
+{\tt afterClone} & {\tt CloneSetInfo} & 後クローンセット \\
+{\tt numberOfAddedElements} & {\tt int} & 追加された要素の数 \\
+{\tt numberOfDeletedElements} & {\tt int} & 削除された要素の数 \\
+{\tt numberOfChangedElements} & {\tt int} & 変更された要素の数 \\
+{\tt fragmentLinks} & {\tt List$<$CloneSetLinkInfo$>$} & 関連するブロックリンク \\ \hline\hline
+\end{tabular}
+\end{center}
+
+\subsubsection{{\tt CloneSetInfo}}
+
+\begin{center}
+\begin{tabular}{lll} \\ \hline\hline
+\multicolumn{1}{c}{フィールド名} & \multicolumn{1}{c}{型} & \multicolumn{1}{c}{意味} \\ \hline
+{\tt revision} & {\tt RevisionInfo} & リビジョン \\
+{\tt elements} & {\tt List$<$CodeFragmentInfo$>$} & クローンセットを構成するコード片 \\ \hline\hline
+\end{tabular}
+\end{center}
+
+\subsubsection{{\tt CodeFragmentLinkInfo}}
+
+\begin{center}
+\begin{tabular}{lll} \\ \hline\hline
+\multicolumn{1}{c}{フィールド名} & \multicolumn{1}{c}{型} & \multicolumn{1}{c}{意味} \\ \hline
+{\tt beforeRevision} & {\tt RevisionInfo} & 前リビジョン \\
+{\tt afterRevision} & {\tt RevisionInfo} & 後リビジョン \\
+{\tt beforeFragment} & {\tt CodeFragmentInfo} & 前コード片 \\
+{\tt afterFragment} & {\tt CodeFragmentInfo} & 後コード片 \\
+{\tt changed} & {\tt boolean} & true = コード片が修正された \\ \hline\hline
+\end{tabular}
+\end{center}
+
+\subsubsection{{\tt BlockInfo}}
+
+\begin{center}
+\begin{tabular}{lll} \\ \hline\hline
+\multicolumn{1}{c}{フィールド名} & \multicolumn{1}{c}{型} & \multicolumn{1}{c}{意味} \\ \hline
+{\tt ownerFile} & {\tt FileInfo} & 所有ファイル \\
+{\tt crd} & {\tt CRD} & CRD \\
+{\tt startRevision} & {\tt RevisionInfo} & 開始リビジョン \\
+{\tt endRevision} & {\tt RevisionInfo} & 終了リビジョン \\
+{\tt startLine} & {\tt int} & 開始行番号 \\
+{\tt endLine} & {\tt int} & 終了行番号 \\
+{\tt size} & {\tt int} & サイズ \\
+{\tt blockType} & {\tt BlockType} & ブロックの種類 \\
+{\tt node} & {\tt ? extends ASTNode} & ブロックのASTノード \\ \hline\hline
+\end{tabular}
+\end{center}
+
+\subsubsection{{\tt FileInfo}}
+
+\begin{center}
+\begin{tabular}{lll} \\ \hline\hline
+\multicolumn{1}{c}{フィールド名} & \multicolumn{1}{c}{型} & \multicolumn{1}{c}{意味} \\ \hline
+{\tt path} & {\tt String} & ファイルパス \\
+{\tt startRevision} & {\tt RevisionInfo} & 開始リビジョン \\
+{\tt endRevision} & {\tt RevisionInfo} & 終了リビジョン \\
+{\tt node} & {\tt CompilationUnit extends ASTNode} & ファイルのASTノード \\ \hline\hline
+\end{tabular}
+\end{center}
+
+\subsubsection{{\tt RevisionInfo}}
+
+\begin{center}
+\begin{tabular}{lll} \\ \hline\hline
+\multicolumn{1}{c}{フィールド名} & \multicolumn{1}{c}{型} & \multicolumn{1}{c}{意味} \\ \hline
+{\tt identifier} & {\tt String} & 識別子 \\ \hline\hline
+\end{tabular}
+\end{center}
+
+
+\section{使用方法}
+\label{sec:how-to-use}
+
+ここでは，ECTEC の使用方法についてその詳細を述べる．
+なお，\ref{sec:quick-start}と同じく，事前分析機能のことを{\bf Detector}，ライブラリ呼び出し機能のことを{\bf Analyzer}と呼ぶ．
+
+\subsection{事前分析}
+
+\ref{sec:quick-start}で述べたように，Detector のメインクラスは {\tt jp.ac.osaka\_u.ist.sdl.ectec.detector.DetectorMain} である．
+
+Detector には様々な引数を与えることができる．
+それらのうち，必須のもの2つを除いた引数については，プロパティファイルにデフォルト値が保持されているため，利用者が特に指定をしなければデフォルト値が読み込まれる．
+また，-p を用いることで読み込むプロパティファイルを指定することもできる．
+
+なお，プロパティファイルはすべての任意引数に関する記述を持たなければならない．
+記述の無い引数が存在する場合は実行時にエラーとなる．
+
+以降，Detector に与えることができる引数について述べる．
+
+\subsubsection{-r (必須)}
+
+\begin{description}
+
+\item[引数名(long version): ] --repository
+
+\item[意味: ] 分析対象リポジトリのURL
+
+\item[備考: ] サポートするプロトコルは，file，http，svn+ssh の3つ
+
+\item[使用例: ] {\tt -r file:///G:/ECTEC/sample-repository}
+
+\end{description}
+
+
+\subsubsection{-d (必須)}
+
+\begin{description}
+
+\item[引数名(long version): ] --db
+
+\item[意味: ] 分析結果保存先データベースファイルのパス
+
+\item[備考: ] 拡張子は``.db''を推奨
+
+\item[使用例: ] {\tt -d G:\verb|\|ECTEC\verb|\|sample.db}
+
+\end{description}
+
+
+\subsubsection{-a}
+
+\begin{description}
+
+\item[引数名(long version): ] --additional
+
+\item[プロパティファイルのキー: ] ectec.additional-path
+
+\item[意味: ] 分析対象の絞り込み
+
+\item[備考: ] 分析対象リポジトリの一部を分析したい時に使用する．例えば，file:///G:/ECTEC/sample-repository の /src のみを分析対象としたい場合，{\tt -a /src} とすればよい．
+
+\item[使用例: ] {\tt -a /src}
+
+\end{description}
+
+
+\subsubsection{-l}
+
+\begin{description}
+
+\item[引数名(long version): ] --language
+
+\item[プロパティファイルのキー: ] ectec.language
+
+\item[意味: ] 分析対象言語
+
+\item[取り得る値: ] ``java'' (大文字小文字は区別しない)
+
+\item[備考: ] 現時点では Java にしか対応していない
+
+\item[使用例: ] {\tt -l java}
+
+\end{description}
+
+
+\subsubsection{-th}
+
+\begin{description}
+
+\item[引数名(long version): ] --threads
+
+\item[プロパティファイルのキー: ] ectec.threads
+
+\item[意味: ] スレッド数
+
+\item[取り得る値: ] 自然数
+
+\item[使用例: ] {\tt -th 4}
+
+\end{description}
+
+
+\subsubsection{-u}
+
+\begin{description}
+
+\item[引数名(long version): ] --user
+
+\item[プロパティファイルのキー: ] ectec.username
+
+\item[意味: ] ユーザ名
+
+\item[備考: ] ユーザ名・パスワードで制限がかけられているリポジトリにアクセスする際に使用
+
+\item[使用例: ] {\tt -u hoge}
+
+\end{description}
+
+
+\subsubsection{-pw}
+
+\begin{description}
+
+\item[引数名(long version): ] --password
+
+\item[プロパティファイルのキー: ] ectec.passwd
+
+\item[意味: ] パスワード
+
+\item[備考: ] ユーザ名・パスワードで制限がかけられているリポジトリにアクセスする際に使用．内部では平文でデータを保持するため注意．
+
+\item[使用例: ] {\tt -pw hogehoge}
+
+\end{description}
+
+
+\subsubsection{-s}
+
+\begin{description}
+
+\item[引数名(long version): ] --start
+
+\item[プロパティファイルのキー: ] ectec.start-revision-identifier
+
+\item[意味: ] 開始リビジョン
+
+\item[備考: ] 分析を開始するリビジョン．未指定の場合は一番初めのリビジョンから分析する．
+
+\item[使用例: ] {\tt -s 100}
+
+\end{description}
+
+
+\subsubsection{-e}
+
+\begin{description}
+
+\item[引数名(long version): ] --end
+
+\item[プロパティファイルのキー: ] ectec.end-revision-identifier
+
+\item[意味: ] 終了リビジョン
+
+\item[備考: ] 分析を終了するリビジョン．未指定の場合は一番最後のリビジョンまで分析する．
+
+\item[使用例: ] {\tt -e 200}
+
+\end{description}
+
+
+\subsubsection{-v}
+
+\begin{description}
+
+\item[引数名(long version): ] --verbose
+
+\item[プロパティファイルのキー: ] ectec.verbose-level
+
+\item[意味: ] 処理状況出力のレベル
+
+\item[取り得る値: ] (大文字小文字は区別しない)\\{\bf 強: } ``strong'', ``s'', ``v'', ``all'' ``a''．\\{\bf 弱: } ``little'', ``l'', ``weak'', ``w'', ``default'', ``d'', ``yes'', ``y''． \\{\bf 無: } ``nothing'', ``none'', ``no'', ``n''．
+
+\item[備考: ] 3段階で指定可能．``強''は細かく経過を出力，``弱''は大まかな情報を出力，``無''は何も出力しない．各段階を指定するために複数の用語が使用できるが，同じ段階に属している用語であれば，どの用語を使っても動作に変化は無い．
+
+\item[使用例: ] {\tt -v strong}
+
+\end{description}
+
+\subsubsection{-vc}
+
+\begin{description}
+
+\item[引数名(long version): ] --version-control
+
+\item[プロパティファイルのキー: ] ectec.version-control-system
+
+\item[意味: ] 対象となるバージョン管理システム
+
+\item[取り得る値: ] ``svn'' (大文字小文字は区別しない)
+
+\item[備考: ] 現時点では Subversion にしか対応していない
+
+\item[使用例: ] {\tt -vc svn}
+
+\end{description}
+
+
+\subsubsection{-ow}
+
+\begin{description}
+
+\item[引数名(long version): ] --overwrite
+
+\item[プロパティファイルのキー: ] ectec.overwrite-db
+
+\item[意味: ] 出力先データベースがすでに存在する場合，上書きするかどうか
+
+\item[取り得る値: ] ``yes'' or ``no'' (大文字小文字は区別しない)
+
+\item[備考: ] yes を指定した場合，出力先データベースが存在していた場合はその内容を破棄し，新たに解析した結果を格納する．no の場合，出力先データベースが存在していれば実行を停止する．
+
+\item[使用例: ] {\tt -ow yes}
+
+\end{description}
+
+
+\subsubsection{-mb}
+
+\begin{description}
+
+\item[引数名(long version): ] --max-batch
+
+\item[プロパティファイルのキー: ] ectec.max-batch
+
+\item[意味: ] バッチ処理を行う際に一度に処理するステートメントの上限値
+
+\item[取り得る値: ] 自然数
+
+\item[使用例: ] {\tt -mb 10000}
+
+\end{description}
+
+
+\subsubsection{-ch}
+
+\begin{description}
+
+\item[引数名(long version): ] --clone-hash
+
+\item[プロパティファイルのキー: ] ectec.clone-hash
+
+\item[意味: ] クローン検出における正規化方法
+
+\item[取り得る値: ] (大文字小文字は区別しない)\\
+{\bf 完全一致(正規化なし): } ``e'', ``exact'' \\
+{\bf 変数名・リテラルの正規化: } ``d'', ``default'', ``w'', ``weak'' \\
+{\bf サブブロックの正規化: } ``s'', ``strong'', ``subtree'', ``subblock'' 
+
+\item[使用例: ] {\tt -ch exact}
+
+\end{description}
+
+\subsubsection{-cs}
+
+\begin{description}
+
+\item[引数名(long version): ] --crd-similarity
+
+\item[プロパティファイルのキー: ] ectec.crd-similarity
+
+\item[意味: ] CRDの類似度算出方法
+
+\item[取り得る値: ] (大文字小文字は区別しない)\\
+{\bf レーベンシュタイン距離ベース: } ``l'', ``levenshtein'',  ``d'', ``default'' 
+
+\item[備考: ] 現時点ではレーベンシュタイン距離ベースの方法のみ実装されている
+
+\item[使用例: ] {\tt -cs l}
+
+\end{description}
+
+
+\subsubsection{-fl}
+
+\begin{description}
+
+\item[引数名(long version): ] --fragment-link
+
+\item[プロパティファイルのキー: ] ectec.fragment-link
+
+\item[意味: ] コード片のリンク方法
+
+\item[取り得る値: ] (大文字小文字は区別しない)\\
+{\bf Single: } ``s'', ``single'' \\
+{\bf Multiple: } ``m'', ``multiple'', ``d'', ``default''
+
+\item[使用例: ] {\tt -fl multiple}
+
+\end{description}
+
+
+\subsubsection{-st}
+
+\begin{description}
+
+\item[引数名(long version): ] --similarity-threshold
+
+\item[プロパティファイルのキー: ] ectec.similarity-threshold
+
+\item[意味: ] コード片をリンクする際の類似度の下限値
+
+\item[取り得る値: ] 0.0～1.0 の実数値
+
+\item[使用例: ] {\tt -st 0.7}
+
+\end{description}
+
+\subsubsection{-g}
+
+\begin{description}
+
+\item[引数名(long version): ] --granularity
+
+\item[プロパティファイルのキー: ] ectec.granularity
+
+\item[意味: ] 分析対象とするブロックの粒度
+
+\item[取り得る値: ](大文字小文字は区別しない)\\
+{\bf Class: } ``c'', ``class'', ``f'', ``file'' \\
+{\bf Method: } ``m'', ``method'' \\
+{\bf Class-Method: } ``cm'', ``class\_method'', ``larger\_than\_method'' \\
+{\bf All: } ``d'', ``default'', ``a'', ``all'', ``fine-grained''
+
+\item[備考: ] Class: クラスのみを対象とする．Method: メソッドのみを対象とする．Class-Method: クラスとメソッドを対象とする．All: すべてのブロックを対象とする．
+
+\item[使用例: ] {\tt -g all}
+
+\end{description}
+
+\subsubsection{-cst}
+
+\begin{description}
+
+\item[引数名(long version): ] --clone-size-threshold
+
+\item[プロパティファイルのキー: ] ectec.clone-size
+
+\item[意味: ] コードクローン検出を行う際の，コードクローンとして検出するブロックのサイズの下限値
+
+\item[取り得る値: ] 整数値
+
+\item[備考: ] 現時点ではサイズとして使用されるのはASTのノード数
+
+\item[使用例: ] {\tt -cst 30}
+
+\end{description}
+
+\subsubsection{-p}
+
+\begin{description}
+
+\item[引数名(long version): ] --properties
+
+\item[意味: ] 読み込むプロパティファイルへのパス
+
+\item[備考: ] デフォルト以外のプロパティファイルを読み込むときに使用
+
+\item[使用例: ] {\tt -p G:\verb|\|ECTEC\verb|\|another.properties}
+
+\end{description}
+
+\subsection{ライブラリ呼び出し}
+
+基本的な使用方法は\ref{sec:quick-start}で述べた通りである．
+ここでは，{\tt selectAndConcretizeCloneGenealogies}の返り値を用いる方法以外の具体化したデータへのアクセス方法と，系譜選択時の制約記述について述べる．
+
+\subsubsection{データへのアクセス}
+
+{\tt selectAndConcretizeCloneGenealogies}を呼び出してデータを具体化した際，具体化されたすべてのデータは {\tt DataManagerManager} に登録され，管理される．
+
+{\tt GenealogyAnalyzer}の{\tt getDataManagerManager}メソッドを呼び出し，さらにそこから適切なメソッドを呼び出すことで，具体化されたデータへのアクセスを行うことができる．
+
+また，{\tt selectAndConcretizeCloneGenealogies}を用いる方法以外のデータの具体化方法として，具体化したい系譜の ID を直接指定する方法も提供されている．
+{\tt concretizeCloneGenealogy} メソッドに ID を指定することで，指定した ID を持つ系譜を具体化することができる．
+
+\subsubsection{制約記述}
+
+制約記述には {\tt IConstraint} 型のインスタンスを用いる．
+{\tt Iconstraint}はインターフェースであり，{\tt satisfy(DBCloneGenealogyInfo)}というメソッドを提供している．
+このメソッドは引数で受け取ったコードクローンの系譜が具体化の対象となる場合にtrueを返すメソッドである．
+
+このインターフェースを実装したクラスは，現在のところ以下の5つである．
+
+\begin{itemize}
+
+\item {\tt RevisionRangeConstraint}
+
+\item{\tt  NumberOfCloneSetsConstraint}
+
+\item {\tt LaxConstraint}
+
+\item{\tt  AndConjunction}
+
+\item {\tt OrConjunction}
+
+\end{itemize}
+
+{\tt RevisionRangeConstraint} はリビジョン期間に関する制約を設けるためのクラスである．
+開始，終了リビジョンを指定することで，その期間に存在していた系譜を取得することができる．
+また，{\tt mustBeComprised} を true とすれば，指定した期間内に生まれ，指定した期間内に消滅した系譜を取得することができる．
+
+{\tt NumberOfCloneSetsConstraint} は系譜を構成するクローンセットの数に関する制約を設けることができるクラスである．
+上限値と下限値をそれぞれ指定することができる．
+
+{\tt LaxConstraint} は常に true を返す {\tt satisfy} メソッドを実装している．
+このクラスはすべての系譜を取得する際に使用される．
+{\tt selectAndConcretizeCloneGenealogies} に null を指定した場合も，内部ではこのクラスのインスタンスが生成されている．
+
+{\tt AndConjunction} は2つの制約の and を取った制約であり，2つの制約を共に満たす場合に true を返す {\tt satisfy} メソッドが実装されている．
+同様に，{\tt OrConjunction} は2つの制約の or を取った制約である．
+{\tt AndConjunction}，{\tt OrConjunction}はネストさせることが可能であるため，これらを組み合わせることで複雑な制約を記述することができる．
+
+これらを使って {\tt IConstraints} 型の実装クラスのインスタンスを作成し，それを用いることで，制約を満たす系譜のみを具体化することができる．
+
+%\section{プロジェクトの構成}
+%\label{sec:project}
+%
+%\subsection{概要}
+%
+%\begin{figure}[tp]
+%\centering
+%\tree \shortstack{ECTEC}
+% \leaf{\shortstack[l]{doc\\$\;\;$ドキュメント}}
+% \leaf{\shortstack[l]{lib\\$\;\;$使用する外部ライブラリ}}
+% \leaf{\shortstack[l]{src\\$\;\;$ソースファイル}}
+% \leaf{\shortstack[l]{test\\$\;\;$テストケース}}
+% \leaf{\shortstack[l]{test-resources\\$\;\;$テストケースで用いるリソース}}
+%\endtree
+%\caption{ディレクトリ構造(概観)}
+%\label{fig:tree-overview}
+%\end{figure}
+
+%ルートディレクトリ直下のディレクトリ構造を図\ref{fig:tree-overview}に示す．
+%以降，それぞれのサブディレクトリの内容について述べる．
+
+%\subsection{doc}
+
+%\begin{figure}[tp]
+%\centering
+%\tree \shortstack{doc}
+% \subtree \shortstack{reference}
+%  \subtree \shortstack{Japanese}
+%   \leaf{\shortstack{reference.pdf}}
+%  \endsubtree
+%  \subtree \shortstack{English}
+%   \leaf{\shortstack{reference.pdf}}
+%  \endsubtree
+%  \subtree \shortstack{tmp}
+%   \leaf{\shortstack{reference-j.tex}}
+%   \leaf{\shortstack{reference-e.tex}}
+%  \endsubtree
+% \endsubtree
+% \subtree \shortstack{javadoc}
+% \endsubtree
+%\endtree
+%\caption{ディレクトリ構造(doc)}
+%\label{fig:tree-doc}
+%\end{figure}
+
+%docディレクトリ以下のディレクトリ構造を図\ref{fig:tree-doc}に示す．
+%ドキュメントとして，使用方法のリファレンス(このPDFファイル)と JavaDoc が提供されている．
+%リファレンスのソースファイル並びに必要なリソースは一時ディレクトリ(tmp)に置かれており，このリファレンスのソースファイルは reference-j.tex である．
+
+%\subsection{lib}
+
+%libディレクトリ以下には，このツールが参照するライブラリが配置されている．
+%使用しているライブラリは以下の通り．
+
+%\begin{description}
+
+%\item[Commons CLI: ] コマンド引数の解析
+
+%\item[Eclipse JDT: ] Java ソースファイルの解析
+
+%\item[SQLite: ] データベース管理システム(RDBMS)
+
+%\item[SVNKit: ] バージョン管理システム Subversion 用 Java ライブラリ
+
+%\end{description}
+
+\bibliographystyle{unsrt}
+\bibliography{literature}
 
 \end{document}
 

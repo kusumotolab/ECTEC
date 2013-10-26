@@ -24,7 +24,7 @@ public enum StringNormalizeMode {
 	/**
 	 * calculate hash values with identifiers and sub-blocks are normalized
 	 */
-	SUBBLOCK_NORMALIZED(new String[] { "s", "strong", "strict", "subtree", "subblock" });
+	SUBBLOCK_NORMALIZED(new String[] { "s", "strong", "subtree", "subblock" });
 
 	/**
 	 * an array of strings which are used to choose this mode
