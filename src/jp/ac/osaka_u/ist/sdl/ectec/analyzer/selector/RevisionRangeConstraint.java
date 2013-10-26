@@ -112,7 +112,9 @@ public class RevisionRangeConstraint implements IConstraint {
 		if (mustBeComprised) {
 			return (startRevisionId <= targetStartRevisionId && endRevisionId >= targetEndRevisionId);
 		} else {
-			return (startRevisionId <= targetStartRevisionId || endRevisionId >= targetEndRevisionId);
+			final boolean startRevisionCondition = targetStartRevisionId <= endRevisionId;
+			final boolean endRevisionCondition = startRevisionId <= targetEndRevisionId;
+			return startRevisionCondition && endRevisionCondition;
 		}
 	}
 }

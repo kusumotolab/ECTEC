@@ -1,8 +1,18 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer;
 
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.concretizer.ConcretizerController;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.concretizer.Concretizer;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.concretizer.NotConcretizedException;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CloneGenealogyInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.manager.DBDataManagerManager;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.manager.DataManagerManager;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.selector.CloneGenealogySelector;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.selector.IConstraint;
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.vcs.IRepositoryManager;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.vcs.RepositoryManagerManager;
@@ -33,18 +43,20 @@ public class GenealogyAnalyzer {
 	private final DBDataManagerManager dbDataManagerManager;
 
 	/**
-	 * the controller for the concretizer
+	 * the concretizer under control
 	 */
-	private final ConcretizerController controller;
+	private final Concretizer concretizer;
 
 	private GenealogyAnalyzer(final DBConnectionManager dbManager,
 			final DataManagerManager dataManagerManager,
 			final DBDataManagerManager dbDataManagerManager,
-			final ConcretizerController controller) {
+			final IRepositoryManager repositoryManager,
+			final boolean isBlockMode) {
 		this.dbManager = dbManager;
 		this.dataManagerManager = dataManagerManager;
 		this.dbDataManagerManager = dbDataManagerManager;
-		this.controller = controller;
+		this.concretizer = new Concretizer(dataManagerManager,
+				dbDataManagerManager, dbManager, repositoryManager, isBlockMode);
 	}
 
 	/**
@@ -79,12 +91,9 @@ public class GenealogyAnalyzer {
 					.getRepositoryManager();
 			final DataManagerManager dataManagerManager = new DataManagerManager();
 			final DBDataManagerManager dbDataManagerManager = new DBDataManagerManager();
-			final ConcretizerController controller = new ConcretizerController(
-					dataManagerManager, dbDataManagerManager, dbManager,
-					repositoryManager, isBlockMode);
 
 			return new GenealogyAnalyzer(dbManager, dataManagerManager,
-					dbDataManagerManager, controller);
+					dbDataManagerManager, repositoryManager, isBlockMode);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -158,6 +167,15 @@ public class GenealogyAnalyzer {
 	}
 
 	/**
+	 * get the db connection manager
+	 * 
+	 * @return
+	 */
+	public final DBConnectionManager getDBConnectionManager() {
+		return dbManager;
+	}
+
+	/**
 	 * get the data manager manager
 	 * 
 	 * @return
@@ -176,14 +194,51 @@ public class GenealogyAnalyzer {
 	}
 
 	/**
-	 * get the concretizer controller <br>
-	 * calling some methods in the controller affects the data manager manager
-	 * and the db data manager manager
+	 * concretize a clone genealogy
 	 * 
+	 * @param genealogyId
 	 * @return
+	 * @throws NotConcretizedException
 	 */
-	public final ConcretizerController getController() {
-		return controller;
+	public CloneGenealogyInfo concretizeCloneGenealogy(final long genealogyId)
+			throws NotConcretizedException {
+		return concretizer.concretizeCloneGenealogy(genealogyId);
+	}
+
+	/**
+	 * concretize clone genealogies
+	 * 
+	 * @param genealogyIds
+	 * @return
+	 * @throws NotConcretizedException
+	 */
+	public Map<Long, CloneGenealogyInfo> concretizeCloneGenealogies(
+			final Collection<Long> genealogyIds) throws NotConcretizedException {
+		final Map<Long, CloneGenealogyInfo> result = new TreeMap<Long, CloneGenealogyInfo>();
+
+		for (final long genealogyId : genealogyIds) {
+			result.put(genealogyId,
+					concretizer.concretizeCloneGenealogy(genealogyId));
+		}
+
+		return Collections.unmodifiableMap(result);
+	}
+
+	/**
+	 * select clone genealogies that satisfy the given constraint and concretize
+	 * them
+	 * 
+	 * @param constraint
+	 * @return
+	 * @throws NotConcretizedException
+	 */
+	public Map<Long, CloneGenealogyInfo> selectAndConcretizeCloneGenealogies(
+			final IConstraint constraint) throws NotConcretizedException {
+		final CloneGenealogySelector selector = new CloneGenealogySelector(
+				dbManager, constraint);
+		final Set<Long> selectedIds = selector.select().keySet();
+
+		return concretizeCloneGenealogies(selectedIds);
 	}
 
 }

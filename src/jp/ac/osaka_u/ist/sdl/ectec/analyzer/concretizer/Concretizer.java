@@ -120,6 +120,7 @@ public class Concretizer {
 
 		} catch (Exception e) {
 			// something is wrong!!
+			e.printStackTrace();
 			throw new NotConcretizedException(e);
 		}
 	}
@@ -165,8 +166,7 @@ public class Concretizer {
 		for (final Map.Entry<Long, DBCloneSetLinkInfo> entry : dbCloneLinks
 				.entrySet()) {
 			final DBCloneSetLinkInfo cloneLink = entry.getValue();
-			fragmentLinkIds.add(cloneLink.getBeforeElementId());
-			fragmentLinkIds.add(cloneLink.getAfterElementId());
+			fragmentLinkIds.addAll(cloneLink.getCodeFragmentLinks());
 		}
 		final Map<Long, DBCodeFragmentLinkInfo> dbFragmentLinks = retrieveFragmentLinks(fragmentLinkIds);
 		dbDataManagerManager.getDbFragmentLinkManager().addAll(
@@ -207,6 +207,11 @@ public class Concretizer {
 		for (final Map.Entry<Long, DBCloneSetInfo> entry : dbClones.entrySet()) {
 			final DBCloneSetInfo clone = entry.getValue();
 			revisionIds.add(clone.getRevisionId());
+		}
+		for (final Map.Entry<Long, DBFileInfo> entry : dbFiles.entrySet()) {
+			final DBFileInfo file = entry.getValue();
+			revisionIds.add(file.getStartRevisionId());
+			revisionIds.add(file.getEndRevisionId());
 		}
 		final Map<Long, DBRevisionInfo> dbRevisions = retrieveRevisions(revisionIds);
 		dbDataManagerManager.getDbRevisionManager()
@@ -389,7 +394,7 @@ public class Concretizer {
 		final Map<Long, DBCodeFragmentLinkInfo> dbFragmentLinks = getDbFragmentLinks(dbCloneLinks);
 		final Map<Long, DBCrdInfo> dbCrds = getDbCrds(dbFragments);
 		final Map<Long, DBFileInfo> dbFiles = getDbFiles(dbFragments);
-		final Map<Long, DBRevisionInfo> dbRevisions = getDbRevisions(dbClones);
+		final Map<Long, DBRevisionInfo> dbRevisions = getDbRevisions(dbClones, dbFiles);
 
 		// concretize revisions
 		final Map<Long, RevisionInfo> concretizedRevisions = getConcretizedRevisions(dbRevisions);
@@ -560,13 +565,26 @@ public class Concretizer {
 	 * @return
 	 */
 	private Map<Long, DBRevisionInfo> getDbRevisions(
-			final Map<Long, DBCloneSetInfo> dbClones) {
+			final Map<Long, DBCloneSetInfo> dbClones,
+			final Map<Long, DBFileInfo> dbFiles) {
 		final Map<Long, DBRevisionInfo> dbRevisions = new TreeMap<Long, DBRevisionInfo>();
 		for (final Map.Entry<Long, DBCloneSetInfo> entry : dbClones.entrySet()) {
 			final long revisionId = entry.getValue().getRevisionId();
 			if (!dbRevisions.containsKey(revisionId)) {
 				dbRevisions.put(revisionId, dbDataManagerManager
 						.getDbRevisionManager().getElement(revisionId));
+			}
+		}
+		for (final Map.Entry<Long, DBFileInfo> entry : dbFiles.entrySet()) {
+			final long startRevisionId = entry.getValue().getStartRevisionId();
+			final long endRevisionId = entry.getValue().getEndRevisionId();
+			if (!dbRevisions.containsKey(startRevisionId)) {
+				dbRevisions.put(startRevisionId, dbDataManagerManager
+						.getDbRevisionManager().getElement(startRevisionId));
+			}
+			if (!dbRevisions.containsKey(endRevisionId)) {
+				dbRevisions.put(endRevisionId, dbDataManagerManager
+						.getDbRevisionManager().getElement(endRevisionId));
 			}
 		}
 		return dbRevisions;
