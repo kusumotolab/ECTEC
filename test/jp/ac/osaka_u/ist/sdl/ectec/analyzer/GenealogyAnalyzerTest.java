@@ -2,6 +2,13 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import java.util.Map;
+
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.BlockInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CloneGenealogyInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CloneSetInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.selector.RevisionRangeConstraint;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.VersionControlSystem;
 
@@ -32,7 +39,7 @@ public class GenealogyAnalyzerTest {
 		}
 	}
 
-	@Test
+	@Ignore
 	public void test2() {
 		try {
 			final RevisionRangeConstraint constraint = new RevisionRangeConstraint(
@@ -48,4 +55,24 @@ public class GenealogyAnalyzerTest {
 		}
 	}
 
+	@Test
+	public void test3() {
+		try {
+			final Map<Long, CloneGenealogyInfo> genealogies = analyzer.selectAndConcretizeCloneGenealogies(null);
+			for (final CloneGenealogyInfo genealogy : genealogies.values()) {
+				for (final CloneSetInfo clone : genealogy.getClones()) {
+					for (final CodeFragmentInfo fragment : clone.getElements()) {
+						final BlockInfo<?> block = (BlockInfo<?>) fragment;
+						if (block.getNode() == null) {
+							fail();
+						}
+					}
+				}
+			}
+			assertTrue(true);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

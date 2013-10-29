@@ -325,7 +325,8 @@ public class BlockInfoConcretizer {
 			final int endLine = root.getLineNumber(node.getThenStatement()
 					.getStartPosition() + node.getThenStatement().getLength());
 			final MetricsCalculator cmCalculator = new MetricsCalculator();
-			node.accept(cmCalculator);
+			node.getThenStatement().accept(cmCalculator);
+			node.getExpression().accept(cmCalculator);
 			final int cm = cmCalculator.getCC() + cmCalculator.getFO();
 
 			final boolean satisfy = satisfyConditions(startLine, endLine, cm,
@@ -406,7 +407,7 @@ public class BlockInfoConcretizer {
 			final int endLine = root.getLineNumber(node.getBody()
 					.getStartPosition() + node.getBody().getLength());
 			final MetricsCalculator cmCalculator = new MetricsCalculator();
-			node.accept(cmCalculator);
+			node.getBody().accept(cmCalculator);
 			final int cm = cmCalculator.getCC() + cmCalculator.getFO();
 
 			final boolean satisfy = satisfyConditions(startLine, endLine, cm,
