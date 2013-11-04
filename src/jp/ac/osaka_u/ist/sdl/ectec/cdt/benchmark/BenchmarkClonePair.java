@@ -17,7 +17,8 @@ public class BenchmarkClonePair {
 	 */
 	private final BenchmarkCloneFragment fragment2;
 
-	public BenchmarkClonePair(final int id, final BenchmarkCloneFragment fragment,
+	public BenchmarkClonePair(final int id,
+			final BenchmarkCloneFragment fragment,
 			final BenchmarkCloneFragment anotherFragment) {
 		this.id = id;
 
@@ -40,6 +41,20 @@ public class BenchmarkClonePair {
 
 	public final BenchmarkCloneFragment getFragment2() {
 		return fragment2;
+	}
+
+	public final boolean subsume(final BenchmarkClonePair anotherPair) {
+		final boolean subsume1 = this.fragment1.subsume(anotherPair
+				.getFragment1());
+		final boolean subsume2 = this.fragment2.subsume(anotherPair
+				.getFragment2());
+		
+		return subsume1 && subsume2;
+	}
+	
+	@Override
+	public String toString() {
+		return this.fragment1.toString() + "\n" + this.fragment2.toString();
 	}
 
 }

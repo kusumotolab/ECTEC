@@ -1,6 +1,7 @@
 package jp.ac.osaka_u.ist.sdl.ectec.cdt.benchmark;
 
-public class BenchmarkCloneFragment implements Comparable<BenchmarkCloneFragment> {
+public class BenchmarkCloneFragment implements
+		Comparable<BenchmarkCloneFragment> {
 
 	private final String ownerFile;
 
@@ -27,6 +28,15 @@ public class BenchmarkCloneFragment implements Comparable<BenchmarkCloneFragment
 		return endLine;
 	}
 
+	public final boolean subsume(final BenchmarkCloneFragment anotherFragment) {
+		if (!ownerFile.equals(anotherFragment.getOwnerFile())) {
+			return false;
+		}
+
+		return (this.startLine <= anotherFragment.getStartLine() && this.endLine >= anotherFragment
+				.getEndLine());
+	}
+
 	@Override
 	public int compareTo(final BenchmarkCloneFragment another) {
 		final int compareWithPath = this.ownerFile.compareTo(another
@@ -49,6 +59,11 @@ public class BenchmarkCloneFragment implements Comparable<BenchmarkCloneFragment
 
 		return 0;
 
+	}
+
+	@Override
+	public String toString() {
+		return ownerFile + ": " + startLine + "-" + endLine;
 	}
 
 }

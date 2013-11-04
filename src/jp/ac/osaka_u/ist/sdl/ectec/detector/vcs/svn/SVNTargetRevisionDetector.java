@@ -64,39 +64,45 @@ public class SVNTargetRevisionDetector implements ITargetRevisionDetector {
 				latestRevisionNum);
 
 		final SortedSet<Long> revisions = new TreeSet<Long>();
-		repository.log(null, startRevisionNum, selectedEndRevisionNum, true,
-				false, new ISVNLogEntryHandler() {
-					public void handleLogEntry(SVNLogEntry logEntry)
-							throws SVNException {
+		final ISVNLogEntryHandler handler = new ISVNLogEntryHandler() {
+			public void handleLogEntry(SVNLogEntry logEntry)
+					throws SVNException {
 
-						for (final Map.Entry<String, SVNLogEntryPath> entry : logEntry
-								.getChangedPaths().entrySet()) {
+				for (final Map.Entry<String, SVNLogEntryPath> entry : logEntry
+						.getChangedPaths().entrySet()) {
 
-							// in the case that a target source file was changed
-							if (language.isTarget(entry.getKey())) {
-								final long revision = logEntry.getRevision();
-								revisions.add(revision);
-								MessagePrinter
-										.println("\trevision "
-												+ revision
-												+ " was identified as a target revision");
-								break;
-							}
-
-							// in the case that a directory might be deleted
-							else if (('D' == entry.getValue().getType())
-									|| ('R' == entry.getValue().getType())) {
-								final long revision = logEntry.getRevision();
-								revisions.add(revision);
-								MessagePrinter
-										.println("\trevision "
-												+ revision
-												+ " was identified as a target revision");
-								break;
-							}
-						}
+					// in the case that a target source file was
+					// changed
+					if (language.isTarget(entry.getKey())) {
+						final long revision = logEntry.getRevision();
+						revisions.add(revision);
+						MessagePrinter.println("\trevision " + revision
+								+ " was identified as a target revision");
+						break;
 					}
-				});
+
+					// in the case that a directory might be deleted
+					else if (('D' == entry.getValue().getType())
+							|| ('R' == entry.getValue().getType())) {
+						final long revision = logEntry.getRevision();
+						revisions.add(revision);
+						MessagePrinter.println("\trevision " + revision
+								+ " was identified as a target revision");
+						break;
+					}
+				}
+			}
+		};
+
+		for (long currentRevisionNum = startRevisionNum; currentRevisionNum <= selectedEndRevisionNum; currentRevisionNum++) {
+			try {
+				repository.log(null, currentRevisionNum, currentRevisionNum,
+						true, false, handler);
+			} catch (Exception e) {
+				MessagePrinter.ePrintln("\trevision " + currentRevisionNum
+						+ " was ignored due to an error");
+			}
+		}
 
 		DBRevisionInfo previousRevision = new DBRevisionInfo(-1, "INITIAL");
 		for (final long revision : revisions) {
@@ -104,8 +110,9 @@ public class SVNTargetRevisionDetector implements ITargetRevisionDetector {
 					((Long) revision).toString());
 			targetRevisions.put(newRevision.getId(), newRevision);
 
-			final DBCommitInfo commit = new DBCommitInfo(previousRevision.getId(),
-					newRevision.getId(), previousRevision.getIdentifier(),
+			final DBCommitInfo commit = new DBCommitInfo(
+					previousRevision.getId(), newRevision.getId(),
+					previousRevision.getIdentifier(),
 					newRevision.getIdentifier());
 			commits.put(commit.getId(), commit);
 

@@ -3,12 +3,17 @@ package jp.ac.osaka_u.ist.sdl.ectec.cdt.benchmark;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public abstract class CloneDataLoader<T extends BenchmarkClonePair> {
 
+	private String root = "C:/Users/k-hotta/Dropbox/bellon_original/";
+	
 	public List<T> load(final String file) throws Exception {
 		final List<T> result = new ArrayList<T>();
 
@@ -25,21 +30,27 @@ public abstract class CloneDataLoader<T extends BenchmarkClonePair> {
 			final String path1 = split[0];
 			final int start1 = Integer.parseInt(split[1]);
 			final int end1 = Integer.parseInt(split[2]);
-			final BenchmarkCloneFragment fragment1 = new BenchmarkCloneFragment(path1, start1,
-					end1);
+			final BenchmarkCloneFragment fragment1 = new BenchmarkCloneFragment(
+					path1, start1, end1);
 
 			if ((end1 - start1 + 1) < 6) {
 				continue;
 			}
-			
+
 			final String path2 = split[3];
 			final int start2 = Integer.parseInt(split[4]);
 			final int end2 = Integer.parseInt(split[5]);
-			final BenchmarkCloneFragment fragment2 = new BenchmarkCloneFragment(path2, start2,
-					end2);
-			
+			final BenchmarkCloneFragment fragment2 = new BenchmarkCloneFragment(
+					path2, start2, end2);
+
 			if ((end2 - start2 + 1) < 6) {
 				continue;
+			}
+
+			if (path1.equals(path2)) {
+				if (start1 == start2 && end1 == end2) {
+					continue;
+				}
 			}
 
 			final T pair = createInstance(id, fragment1, fragment2);
@@ -52,5 +63,6 @@ public abstract class CloneDataLoader<T extends BenchmarkClonePair> {
 	}
 
 	protected abstract T createInstance(final int id,
-			final BenchmarkCloneFragment fragment1, final BenchmarkCloneFragment fragment2);
+			final BenchmarkCloneFragment fragment1,
+			final BenchmarkCloneFragment fragment2);
 }

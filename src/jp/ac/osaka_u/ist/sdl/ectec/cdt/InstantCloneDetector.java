@@ -46,6 +46,7 @@ public class InstantCloneDetector {
 
 	public static void main(String[] args) {
 		try {
+			final long start = System.nanoTime();
 			parseArgs(args);
 			MessagePrinter.setLevel(MessagePrintLevel.VERBOSE);
 
@@ -82,6 +83,13 @@ public class InstantCloneDetector {
 				pairWriter.write(clonePairs, files);
 				MessagePrinter.println("\tcomplete");
 			}
+			
+			final long end = System.nanoTime();
+			
+			final long nano = end - start;
+			final double mili = (double) nano / (double) 1000000;
+			
+			System.out.println("\t\ttime elapsed: " + mili);
 
 		} catch (Exception e) {
 

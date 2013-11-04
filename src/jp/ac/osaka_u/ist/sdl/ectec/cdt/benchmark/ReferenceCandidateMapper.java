@@ -17,6 +17,7 @@ public class ReferenceCandidateMapper {
 		for (final CloneReference reference : references) {
 			double okMax = -1.0;
 			double goodMax = -1.0;
+			CloneCandidate bestCandidate = null;
 			for (final CloneCandidate candidate : candidates) {
 				final double ok = MetricsCalculator
 						.calcOK(reference, candidate);
@@ -28,14 +29,18 @@ public class ReferenceCandidateMapper {
 				}
 
 				if (good > goodMax) {
-					bestReferenceOf.put(candidate, reference);
+					bestCandidate = candidate;
 					goodMax = good;
 					okMax = ok;
 				} else if (good == goodMax && ok > okMax) {
-					bestReferenceOf.put(candidate, reference);
+					bestCandidate = candidate;
 					goodMax = good;
 					okMax = ok;
 				}
+			}
+
+			if (bestCandidate != null) {
+				bestReferenceOf.put(bestCandidate, reference);
 			}
 		}
 

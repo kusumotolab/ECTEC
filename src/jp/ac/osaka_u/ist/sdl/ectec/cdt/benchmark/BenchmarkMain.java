@@ -29,6 +29,14 @@ public class BenchmarkMain {
 		final Map<CloneCandidate, CloneReference> okUnderThreshold = detectOKUnderThresholdMapping(
 				rawMappings, 0.7);
 
+		for (final Map.Entry<CloneCandidate, CloneReference> entry : okOverThreshold
+				.entrySet()) {
+			final double ok = MetricsCalculator.calcOK(entry.getValue(),
+					entry.getKey());
+			final double ok2 = MetricsCalculator.calcOK(entry.getKey(), entry.getValue());
+			System.out.println(ok + ":" + ok2);
+		}
+
 		final PrintWriter pw = new PrintWriter(new BufferedWriter(
 				new FileWriter(new File(outputPath))));
 
@@ -52,9 +60,9 @@ public class BenchmarkMain {
 
 		final double okRecall = Evaluator.calcRecall(references, candidates,
 				okOverThreshold);
-		final double okPrecision = Evaluator.calcPrecision(references, candidates,
-				okOverThreshold);
-		
+		final double okPrecision = Evaluator.calcPrecision(references,
+				candidates, okOverThreshold);
+
 		pw.print("ok,");
 		pw.print(references.size() + ",");
 		pw.print(candidates.size() + ",");
@@ -62,9 +70,10 @@ public class BenchmarkMain {
 		pw.print((okOverThreshold.size() + okUnderThreshold.size()) + ",");
 		pw.print(okRecall + ",");
 		pw.print(okPrecision + ",");
-		pw.print(Evaluator.calcRejected(okOverThreshold, okUnderThreshold) + ",");
+		pw.print(Evaluator.calcRejected(okOverThreshold, okUnderThreshold)
+				+ ",");
 		pw.println(Evaluator.calcFMeaasure(okPrecision, okRecall));
-		
+
 		pw.close();
 	}
 
@@ -92,7 +101,7 @@ public class BenchmarkMain {
 			final double threshold) {
 		final Map<CloneCandidate, CloneReference> result = new HashMap<CloneCandidate, CloneReference>();
 		for (final ReferenceCandidateMap mapping : rawMappings) {
-			if (mapping.getGood() >= threshold) {
+			if (mapping.getGood() > threshold) {
 				result.put(mapping.getCandidate(), mapping.getReference());
 			}
 		}
@@ -104,7 +113,7 @@ public class BenchmarkMain {
 			final double threshold) {
 		final Map<CloneCandidate, CloneReference> result = new HashMap<CloneCandidate, CloneReference>();
 		for (final ReferenceCandidateMap mapping : rawMappings) {
-			if (mapping.getGood() < threshold) {
+			if (mapping.getGood() <= threshold) {
 				result.put(mapping.getCandidate(), mapping.getReference());
 			}
 		}
@@ -116,7 +125,7 @@ public class BenchmarkMain {
 			final double threshold) {
 		final Map<CloneCandidate, CloneReference> result = new HashMap<CloneCandidate, CloneReference>();
 		for (final ReferenceCandidateMap mapping : rawMappings) {
-			if (mapping.getOk() >= threshold) {
+			if (mapping.getOk() > threshold) {
 				result.put(mapping.getCandidate(), mapping.getReference());
 			}
 		}
@@ -128,7 +137,7 @@ public class BenchmarkMain {
 			final double threshold) {
 		final Map<CloneCandidate, CloneReference> result = new HashMap<CloneCandidate, CloneReference>();
 		for (final ReferenceCandidateMap mapping : rawMappings) {
-			if (mapping.getOk() < threshold) {
+			if (mapping.getOk() <= threshold) {
 				result.put(mapping.getCandidate(), mapping.getReference());
 			}
 		}
