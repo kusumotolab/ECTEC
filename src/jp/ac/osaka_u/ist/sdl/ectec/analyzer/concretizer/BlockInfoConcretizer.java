@@ -432,7 +432,7 @@ public class BlockInfoConcretizer {
 			final boolean judge = judge(finallyBlock, anchor);
 
 			if (judge) {
-				result = node;
+				result = node.getFinally();
 			}
 
 			return !judge;

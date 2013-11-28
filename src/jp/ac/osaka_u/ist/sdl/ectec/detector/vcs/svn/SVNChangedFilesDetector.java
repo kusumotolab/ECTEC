@@ -40,6 +40,17 @@ public class SVNChangedFilesDetector implements IChangedFilesDetector {
 		final long revision = Long.parseLong(commit
 				.getAfterRevisionIdentifier());
 
+		// a special treat for the initial commit
+		if (commit.getBeforeRevisionIdentifier().equals("INITIAL")) {
+			final Map<String, Character> result = new HashMap<String, Character>();
+			final List<String> allFiles = manager.getListOfSourceFiles(revision, language);
+			for (final String file : allFiles) {
+				result.put(file, 'A');
+				System.out.println(file);
+			}
+			return Collections.unmodifiableMap(result);
+		}
+
 		final Map<String, Character> result = new HashMap<String, Character>();
 
 		final List<String> deleted = new ArrayList<String>();

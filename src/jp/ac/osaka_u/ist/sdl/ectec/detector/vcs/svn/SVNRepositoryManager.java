@@ -236,7 +236,8 @@ public class SVNRepositoryManager implements IRepositoryManager {
 	 */
 	public synchronized List<String> getListOfSourceFiles(
 			final long revisionNum, final Language lang) throws SVNException {
-		return getListOfSourceFiles(revisionNum, lang, null);
+		final String nullStr = null;
+		return getListOfSourceFiles(revisionNum, lang, nullStr);
 	}
 
 	/**
@@ -270,13 +271,64 @@ public class SVNRepositoryManager implements IRepositoryManager {
 	public synchronized List<String> getListOfSourceFiles(
 			final long revisionNum, final Language lang,
 			final Collection<String> targets) throws SVNException {
+		// final SVNLogClient logClient = SVNClientManager.newInstance(null,
+		// this.userName, this.passwd).getLogClient();
+		//
+		// final String additionalUrl = this.additionalUrl;
+		//
+		// final List<String> result = new ArrayList<String>();
+		// logClient.doList(this.url, SVNRevision.create(revisionNum),
+		// SVNRevision.create(revisionNum), true, SVNDepth.INFINITY,
+		// SVNDirEntry.DIRENT_ALL, new ISVNDirEntryHandler() {
+		//
+		// @Override
+		// public void handleDirEntry(SVNDirEntry dirEntry)
+		// throws SVNException {
+		// final String path = (additionalUrl == null) ? dirEntry
+		// .getRelativePath() : additionalUrl
+		// + dirEntry.getRelativePath();
+		//
+		// if (lang.isTarget(path)) {
+		// if (targets == null) {
+		// result.add(dirEntry.getRelativePath());
+		// } else {
+		// for (final String target : targets) {
+		// if (path.contains(target)) {
+		// result.add(dirEntry.getRelativePath());
+		// break;
+		// }
+		// }
+		// }
+		// }
+		// }
+		//
+		// });
+		//
+		// return Collections.unmodifiableList(result);
+		final List<String> result = new ArrayList<String>();
+		for (final String target : targets) {
+			try {
+				result.addAll(getListOfSourceFiles(revisionNum, lang, target));
+			} catch (SVNException e) {
+				// ignore
+			}
+		}
+		return Collections.unmodifiableList(result);
+	}
+
+	public synchronized List<String> getListOfSourceFiles(
+			final long revisionNum, final Language lang, final String target)
+			throws SVNException {
 		final SVNLogClient logClient = SVNClientManager.newInstance(null,
 				this.userName, this.passwd).getLogClient();
 
 		final String additionalUrl = this.additionalUrl;
 
+		final SVNURL url = (target == null) ? this.url : this.url.appendPath(
+				target, false);
+
 		final List<String> result = new ArrayList<String>();
-		logClient.doList(this.url, SVNRevision.create(revisionNum),
+		logClient.doList(url, SVNRevision.create(revisionNum),
 				SVNRevision.create(revisionNum), true, SVNDepth.INFINITY,
 				SVNDirEntry.DIRENT_ALL, new ISVNDirEntryHandler() {
 
@@ -288,16 +340,7 @@ public class SVNRepositoryManager implements IRepositoryManager {
 								+ dirEntry.getRelativePath();
 
 						if (lang.isTarget(path)) {
-							if (targets == null) {
-								result.add(dirEntry.getRelativePath());
-							} else {
-								for (final String target : targets) {
-									if (path.contains(target)) {
-										result.add(dirEntry.getRelativePath());
-										break;
-									}
-								}
-							}
+							result.add(dirEntry.getRelativePath());
 						}
 					}
 

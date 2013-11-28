@@ -108,7 +108,7 @@ public class DetectorMain {
 		MessagePrinter
 				.println("\tend revision: "
 						+ ((settings.getEndRevisionIdentifier() == null) ? "nothing is specified, will end at the latest revision"
-								: settings.getStartRevisionIdentifier()));
+								: settings.getEndRevisionIdentifier()));
 		MessagePrinter.println("\tversion control system targeted: "
 				+ settings.getVersionControlSystem().toString());
 		MessagePrinter
@@ -141,7 +141,8 @@ public class DetectorMain {
 		repositoryManagerManager = new RepositoryManagerManager(
 				settings.getVersionControlSystem(),
 				settings.getRepositoryPath(), settings.getUserName(),
-				settings.getPasswd(), settings.getAdditionalPath());
+				settings.getPasswd(), settings.getAdditionalPath(),
+				settings.getThreads());
 		MessagePrinter.stronglyPrintln("\tOK");
 		MessagePrinter.stronglyPrintln();
 	}
@@ -205,11 +206,11 @@ public class DetectorMain {
 
 		final long l3 = System.nanoTime();
 
-		detectAndRegisterFragmentLinks(settings);
+		// detectAndRegisterFragmentLinks(settings);
 
 		final long l4 = System.nanoTime();
 
-		detectAndRegisterFragmentGenealogies(settings);
+		// detectAndRegisterFragmentGenealogies(settings);
 
 		final long l5 = System.nanoTime();
 
@@ -217,11 +218,11 @@ public class DetectorMain {
 
 		final long l6 = System.nanoTime();
 
-		detectAndRegisterCloneLinks(settings);
+		// detectAndRegisterCloneLinks(settings);
 
 		final long l7 = System.nanoTime();
 
-		detectAndRegisterCloneGenealogies(settings);
+		// detectAndRegisterCloneGenealogies(settings);
 
 		final long end = System.nanoTime();
 

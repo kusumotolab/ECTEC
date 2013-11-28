@@ -1,9 +1,10 @@
 package jp.ac.osaka_u.ist.sdl.ectec.detector.filedetector;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
@@ -29,7 +30,7 @@ public class ChangedFilesDetectingThread implements Runnable {
 	 * the key is the path of a file and the value is a set of ids of revisions
 	 * where the file whose path is specified with the key is changed
 	 */
-	private final ConcurrentMap<String, SortedSet<ChangeOnFile>> changedFiles;
+	private final Map<String, SortedSet<ChangeOnFile>> changedFiles;
 
 	/**
 	 * the target language
@@ -47,14 +48,17 @@ public class ChangedFilesDetectingThread implements Runnable {
 	private final AtomicInteger index;
 
 	public ChangedFilesDetectingThread(final IChangedFilesDetector detector,
-			final ConcurrentMap<String, SortedSet<ChangeOnFile>> changedFiles,
 			final Language language, final DBCommitInfo[] commits,
 			final AtomicInteger index) {
 		this.detector = detector;
-		this.changedFiles = changedFiles;
+		this.changedFiles = new HashMap<String, SortedSet<ChangeOnFile>>();
 		this.language = language;
 		this.commits = commits;
 		this.index = index;
+	}
+	
+	public final Map<String, SortedSet<ChangeOnFile>> getChangedFiles() {
+		return Collections.unmodifiableMap(changedFiles);
 	}
 
 	@Override
@@ -90,10 +94,8 @@ public class ChangedFilesDetectingThread implements Runnable {
 					 * put a new entry into the map if the path is not contained
 					 * in it as a key
 					 */
-					synchronized (changedFiles) {
-						if (!changedFiles.containsKey(path)) {
-							changedFiles.put(path, new TreeSet<ChangeOnFile>());
-						}
+					if (!changedFiles.containsKey(path)) {
+						changedFiles.put(path, new TreeSet<ChangeOnFile>());
 					}
 
 					final ChangeOnFile changeOnFile = new ChangeOnFile(path,

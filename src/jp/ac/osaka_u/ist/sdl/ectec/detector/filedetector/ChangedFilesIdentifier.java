@@ -99,16 +99,19 @@ public class ChangedFilesIdentifier {
 	private ConcurrentMap<String, SortedSet<ChangeOnFile>> detectChangedFiles(
 			final Collection<DBCommitInfo> commits) {
 		final Thread[] threads = new Thread[threadsCount];
+		final ChangedFilesDetectingThread[] detectingThreads = new ChangedFilesDetectingThread[threadsCount];
 
-		final ConcurrentMap<String, SortedSet<ChangeOnFile>> changedFiles = new ConcurrentHashMap<String, SortedSet<ChangeOnFile>>();
 		final AtomicInteger index = new AtomicInteger(0);
 
-		final DBCommitInfo[] commitsAsArray = commits.toArray(new DBCommitInfo[0]);
+		final DBCommitInfo[] commitsAsArray = commits
+				.toArray(new DBCommitInfo[0]);
 
 		for (int i = 0; i < threadsCount; i++) {
-			threads[i] = new Thread(new ChangedFilesDetectingThread(
-					manager.createChangedFilesDetector(), changedFiles,
-					language, commitsAsArray, index));
+			final ChangedFilesDetectingThread detectingThread = new ChangedFilesDetectingThread(
+					manager.createChangedFilesDetector(), language,
+					commitsAsArray, index);
+			detectingThreads[i] = detectingThread;
+			threads[i] = new Thread(detectingThread);
 			threads[i].start();
 		}
 
@@ -120,7 +123,24 @@ public class ChangedFilesIdentifier {
 			}
 		}
 
-		return changedFiles;
+		final ConcurrentMap<String, SortedSet<ChangeOnFile>> result = new ConcurrentHashMap<String, SortedSet<ChangeOnFile>>();
+
+		for (final ChangedFilesDetectingThread detectingThread : detectingThreads) {
+			final Map<String, SortedSet<ChangeOnFile>> changedFiles = detectingThread
+					.getChangedFiles();
+			for (final Map.Entry<String, SortedSet<ChangeOnFile>> entry : changedFiles
+					.entrySet()) {
+				if (result.containsKey(entry.getKey())) {
+					result.get(entry.getKey()).addAll(entry.getValue());
+				} else {
+					final SortedSet<ChangeOnFile> newSet = new TreeSet<ChangeOnFile>();
+					newSet.addAll(entry.getValue());
+					result.put(entry.getKey(), newSet);
+				}
+			}
+		}
+
+		return result;
 	}
 
 	/**

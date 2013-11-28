@@ -37,4 +37,26 @@ public class ClonePair {
 				|| (this.fragment1.subsume(another.getFragment2()) && this.fragment2
 						.subsume(another.getFragment1()));
 	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (!(obj instanceof ClonePair)) {
+			return false;
+		}
+
+		final ClonePair another = (ClonePair) obj;
+
+		if (this.fragment1.equals(another.fragment1)
+				&& this.fragment2.equals(another.fragment2)) {
+			return true;
+		}
+
+		if (this.fragment2.equals(another.getFragment1())
+				&& this.fragment1.equals(another.getFragment2())) {
+			return true;
+		}
+
+		return false;
+	}
+
 }

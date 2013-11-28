@@ -4,7 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -44,16 +44,26 @@ public class InstantCloneDetector {
 
 	private static int threadsCount;
 
+	private static boolean useFileList;
+
 	public static void main(String[] args) {
 		try {
 			final long start = System.nanoTime();
 			parseArgs(args);
 			MessagePrinter.setLevel(MessagePrintLevel.VERBOSE);
 
-			MessagePrinter.println("detecting target files ...");
-			final FilePathDetector pathDetector = new FilePathDetector(language);
-			final List<String> paths = pathDetector.detectFiles(new File(
-					inputDir));
+			List<String> paths = null;
+
+			if (useFileList) {
+				MessagePrinter.println("loading the given file list ...");
+				final FileListLoader loader = new FileListLoader();
+				paths = loader.loadFileList(inputDir);
+			} else {
+				MessagePrinter.println("detecting target files ...");
+				final FilePathDetector pathDetector = new FilePathDetector(
+						language);
+				paths = pathDetector.detectFiles(new File(inputDir));
+			}
 
 			MessagePrinter.println("\t" + paths.size()
 					+ " files have been detected");
@@ -72,8 +82,9 @@ public class InstantCloneDetector {
 
 			if (pairWriter != null) {
 				MessagePrinter.println("detecting clone pairs ...");
-				final ClonePairDetector detector = new ClonePairDetector();
-				final List<ClonePair> clonePairs = detector
+				final ClonePairDetector detector = new ClonePairDetector(
+						threadsCount);
+				final Collection<ClonePair> clonePairs = detector
 						.detectClonePairs(fragments);
 				MessagePrinter.println("\t" + clonePairs.size()
 						+ " clone pairs have been detected");
@@ -82,14 +93,27 @@ public class InstantCloneDetector {
 				MessagePrinter.println("writing the results ...");
 				pairWriter.write(clonePairs, files);
 				MessagePrinter.println("\tcomplete");
+			} else if (setWriter != null) {
+				MessagePrinter.println("detecting clone sets ...");
+				final CloneSetDetector detector = new CloneSetDetector(
+						threadsCount);
+				final Collection<CloneSet> cloneSets = detector
+						.detectCloneSets(fragments);
+				MessagePrinter.println("\t" + cloneSets.size()
+						+ " clone sets have been detected");
+				MessagePrinter.println();
+
+				MessagePrinter.println("writing the results ...");
+				setWriter.write(cloneSets, files);
+				MessagePrinter.println("\tcomplete");
 			}
-			
+
 			final long end = System.nanoTime();
-			
+
 			final long nano = end - start;
 			final double mili = (double) nano / (double) 1000000;
-			
-			System.out.println("\t\ttime elapsed: " + mili);
+
+			System.out.println("\t\ttime elapsed: " + mili + "[ms]");
 
 		} catch (Exception e) {
 
@@ -106,7 +130,7 @@ public class InstantCloneDetector {
 		inputDir = cmd.getOptionValue("i");
 		outputFile = cmd.getOptionValue("o");
 		language = Language.getCorrespondingLanguage(cmd.getOptionValue("l"));
-		
+
 		String rootDir = inputDir;
 		if (cmd.hasOption("r")) {
 			rootDir = cmd.getOptionValue("r");
@@ -124,15 +148,15 @@ public class InstantCloneDetector {
 								new File(outputFile)))), language);
 			} else {
 				// default
-				pairWriter = new ClonePairForEvaluationWriter(
+				setWriter = new CCFinderCloneSetWriter(
 						new PrintWriter(new BufferedWriter(new FileWriter(
-								new File(outputFile)))), rootDir);
+								new File(outputFile)))), language);
 			}
 		} else {
 			// default
-			pairWriter = new ClonePairForEvaluationWriter(
+			setWriter = new CCFinderCloneSetWriter(
 					new PrintWriter(new BufferedWriter(new FileWriter(
-							new File(outputFile)))), rootDir);
+							new File(outputFile)))), language);
 		}
 
 		tokenThreshold = 0;
@@ -157,6 +181,8 @@ public class InstantCloneDetector {
 
 		threadsCount = (cmd.hasOption("th")) ? Integer.parseInt(cmd
 				.getOptionValue("th")) : 1;
+
+		useFileList = cmd.hasOption("list");
 	}
 
 	private static Options defineOptions() {
@@ -238,6 +264,14 @@ public class InstantCloneDetector {
 			g.setArgs(1);
 			g.setRequired(false);
 			options.addOption(g);
+		}
+
+		{
+			final Option list = new Option("list", "list-files", false,
+					"use a file list");
+			list.setArgs(0);
+			list.setRequired(false);
+			options.addOption(list);
 		}
 
 		return options;

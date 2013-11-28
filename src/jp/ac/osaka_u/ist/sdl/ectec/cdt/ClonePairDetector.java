@@ -2,16 +2,28 @@ package jp.ac.osaka_u.ist.sdl.ectec.cdt;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
+import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 
 public class ClonePairDetector {
 
-	public List<ClonePair> detectClonePairs(
+	private final int threadsCount;
+
+	public ClonePairDetector(final int threadsCount) {
+		this.threadsCount = threadsCount;
+	}
+
+	public Collection<ClonePair> detectClonePairs(
 			final Map<String, List<InstantCodeFragmentInfo>> fragments) {
 		final Set<InstantCodeFragmentInfo> fragmentsAsSet = new HashSet<InstantCodeFragmentInfo>();
 		for (Map.Entry<String, List<InstantCodeFragmentInfo>> entry : fragments
@@ -22,15 +34,124 @@ public class ClonePairDetector {
 		return detectClonePairs(fragmentsAsSet);
 	}
 
-	public List<ClonePair> detectClonePairs(
+	public Collection<ClonePair> detectClonePairs(
+			final Collection<InstantCodeFragmentInfo> fragments) {
+		final ConcurrentMap<Long, Set<InstantCodeFragmentInfo>> fragmentsCategorizedByHash = categorizeFragments(fragments);
+		fragments.clear();
+
+		final Long[] keys = fragmentsCategorizedByHash.keySet().toArray(
+				new Long[] {});
+		final AtomicInteger index = new AtomicInteger(0);
+
+		final ClonePairMakingThread[] makingThreads = new ClonePairMakingThread[threadsCount];
+		final Thread[] threads = new Thread[threadsCount];
+
+		for (int i = 0; i < threadsCount; i++) {
+			final ClonePairMakingThread makingThread = new ClonePairMakingThread(
+					index, keys, fragmentsCategorizedByHash);
+			makingThreads[i] = makingThread;
+			threads[i] = new Thread(makingThread);
+			threads[i].start();
+		}
+
+		for (final Thread thread : threads) {
+			try {
+				thread.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+		fragmentsCategorizedByHash.clear();
+
+		MessagePrinter.println();
+		MessagePrinter.println("merging the results of all the threads ... ");
+
+		final ConcurrentMap<Long, ClonePair> detectedPairs = new ConcurrentHashMap<Long, ClonePair>();
+		final ConcurrentMap<String, Set<ClonePair>> clonePairsCategorizedByPath = new ConcurrentHashMap<String, Set<ClonePair>>();
+		long pairsCount = 0;
+
+		for (int i = 0; i < makingThreads.length; i++) {
+			final List<ClonePair> pairs = makingThreads[i]
+					.getCreatedClonePairs();
+			final Map<String, Set<ClonePair>> categorizedByPath = makingThreads[i]
+					.getClonePairsCategoriedByHash();
+
+			for (final ClonePair pair : pairs) {
+				detectedPairs.put(pairsCount++, pair);
+			}
+			for (final Map.Entry<String, Set<ClonePair>> entry : categorizedByPath
+					.entrySet()) {
+				if (clonePairsCategorizedByPath.containsKey(entry.getKey())) {
+					clonePairsCategorizedByPath.get(entry.getKey()).addAll(
+							entry.getValue());
+				} else {
+					clonePairsCategorizedByPath.put(entry.getKey(),
+							entry.getValue());
+				}
+			}
+
+			makingThreads[i] = null;
+		}
+
+		MessagePrinter.println("\t" + detectedPairs.size()
+				+ " clone pairs are detected");
+		MessagePrinter.println();
+
+		return refinePairs(detectedPairs, clonePairsCategorizedByPath);
+	}
+
+	private Collection<ClonePair> refinePairs(
+			final ConcurrentMap<Long, ClonePair> detectedPairs,
+			final ConcurrentMap<String, Set<ClonePair>> clonePairsCategorizedByPath) {
+		MessagePrinter.println("removing subsumed clone pairs ...");
+
+		final AtomicLong index = new AtomicLong();
+
+		final ClonePairRefiningThread[] refiningThreads = new ClonePairRefiningThread[threadsCount];
+		final Thread[] threads = new Thread[threadsCount];
+
+		for (int i = 0; i < threadsCount; i++) {
+			final ClonePairRefiningThread refiningThread = new ClonePairRefiningThread(
+					index, detectedPairs, clonePairsCategorizedByPath);
+			refiningThreads[i] = refiningThread;
+			threads[i] = new Thread(refiningThread);
+			threads[i].start();
+		}
+
+		for (final Thread thread : threads) {
+			try {
+				thread.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+		for (final ClonePairRefiningThread thread : refiningThreads) {
+			for (final long subsumedClonePair : thread.getSubsumedClonePairs()) {
+				detectedPairs.remove(subsumedClonePair);
+			}
+		}
+
+		return Collections.unmodifiableCollection(detectedPairs.values());
+	}
+
+	public List<ClonePair> detectClonePairsOld(
 			final Collection<InstantCodeFragmentInfo> fragments) {
 		final Map<Long, Set<InstantCodeFragmentInfo>> fragmentsCategorizedByHash = categorizeFragments(fragments);
 
 		final List<ClonePair> result = new ArrayList<ClonePair>();
 		final Map<String, Set<ClonePair>> clonePairsCategorizedByPath = new HashMap<String, Set<ClonePair>>();
 
+		final long length = fragmentsCategorizedByHash.size();
+		long count = 0;
+
 		for (final Map.Entry<Long, Set<InstantCodeFragmentInfo>> entry : fragmentsCategorizedByHash
 				.entrySet()) {
+			if (++count % 10000 == 0) {
+				System.out.println("\t[" + count + "/" + length
+						+ "] 2nd step processed " + count + " elements");
+			}
 			final Set<InstantCodeFragmentInfo> cloneSet = entry.getValue();
 			if (cloneSet.size() < 2) {
 				continue;
@@ -47,6 +168,10 @@ public class ClonePairDetector {
 						continue;
 					}
 
+					if (count == 27412) {
+						System.out.println(cloneSet.size());
+					}
+					System.out.println(count);
 					final ClonePair clonePair = new ClonePair(fragment1,
 							fragment2);
 					final Set<ClonePair> subsumedPairs = new HashSet<ClonePair>();
@@ -109,12 +234,18 @@ public class ClonePairDetector {
 			}
 		}
 
+		System.out.println("\t[" + count + "/" + length
+				+ "] 2nd step processed all elements");
+
 		return result;
 	}
 
-	private Map<Long, Set<InstantCodeFragmentInfo>> categorizeFragments(
+	private ConcurrentMap<Long, Set<InstantCodeFragmentInfo>> categorizeFragments(
 			Collection<InstantCodeFragmentInfo> fragments) {
-		final Map<Long, Set<InstantCodeFragmentInfo>> result = new TreeMap<Long, Set<InstantCodeFragmentInfo>>();
+		final ConcurrentMap<Long, Set<InstantCodeFragmentInfo>> result = new ConcurrentHashMap<Long, Set<InstantCodeFragmentInfo>>();
+
+		final long length = fragments.size();
+		long count = 0;
 
 		for (final InstantCodeFragmentInfo fragment : fragments) {
 			if (result.containsKey(fragment.getHash())) {
@@ -124,7 +255,14 @@ public class ClonePairDetector {
 				newSet.add(fragment);
 				result.put(fragment.getHash(), newSet);
 			}
+			if (++count % 10000 == 0) {
+				System.out.println("\t[" + count + "/" + length
+						+ "] 1st step processed " + count + " elements");
+			}
 		}
+
+		System.out.println("\t[" + count + "/" + length
+				+ "] 1st step processed all elements");
 
 		return result;
 	}

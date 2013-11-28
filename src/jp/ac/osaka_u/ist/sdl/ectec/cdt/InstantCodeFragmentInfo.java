@@ -6,7 +6,8 @@ package jp.ac.osaka_u.ist.sdl.ectec.cdt;
  * @author k-hotta
  * 
  */
-public class InstantCodeFragmentInfo {
+public class InstantCodeFragmentInfo implements
+		Comparable<InstantCodeFragmentInfo> {
 
 	private final String filePath;
 
@@ -76,7 +77,58 @@ public class InstantCodeFragmentInfo {
 
 		return this.startLine <= another.getStartLine()
 				&& this.endLine >= another.getEndLine();
+	}
 
+	@Override
+	public boolean equals(final Object obj) {
+		if (!(obj instanceof InstantCodeFragmentInfo)) {
+			return false;
+		}
+
+		final InstantCodeFragmentInfo another = (InstantCodeFragmentInfo) obj;
+		if (!filePath.equals(another.getFilePath())) {
+			return false;
+		}
+
+		if (!(startLine == another.getStartLine())) {
+			return false;
+		}
+
+		if (!(startColumn == another.getStartColumn())) {
+			return false;
+		}
+
+		if (!(endLine == another.getEndLine())) {
+			return false;
+		}
+
+		if (!(endColumn == another.getEndColumn())) {
+			return false;
+		}
+
+		return true;
+	}
+
+	@Override
+	public int compareTo(InstantCodeFragmentInfo another) {
+		final int comparePath = this.filePath.compareTo(another.getFilePath());
+		if (comparePath != 0) {
+			return comparePath;
+		}
+
+		final int compareStart = ((Integer) this.startLine).compareTo(another
+				.getStartLine());
+		if (compareStart != 0) {
+			return compareStart;
+		}
+
+		final int compareEnd = ((Integer) this.endLine).compareTo(another
+				.getEndLine());
+		if (compareEnd != 0) {
+			return compareEnd;
+		}
+
+		return 0;
 	}
 
 }

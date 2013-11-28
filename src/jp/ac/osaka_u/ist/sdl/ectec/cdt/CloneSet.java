@@ -1,6 +1,8 @@
 package jp.ac.osaka_u.ist.sdl.ectec.cdt;
 
-import java.util.Set;
+import java.util.Collection;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class CloneSet {
@@ -9,11 +11,17 @@ public class CloneSet {
 
 	private final long id;
 
-	private final Set<InstantCodeFragmentInfo> elements;
+	private final SortedSet<InstantCodeFragmentInfo> elements;
 
-	public CloneSet(final Set<InstantCodeFragmentInfo> elements) {
+	public CloneSet(final SortedSet<InstantCodeFragmentInfo> elements) {
 		this.id = count.getAndIncrement();
 		this.elements = elements;
+	}
+
+	public CloneSet(final Collection<InstantCodeFragmentInfo> elements) {
+		this.id = count.getAndIncrement();
+		this.elements = new TreeSet<InstantCodeFragmentInfo>();
+		this.elements.addAll(elements);
 	}
 
 	public static final AtomicLong getCount() {
@@ -24,8 +32,33 @@ public class CloneSet {
 		return id;
 	}
 
-	public final Set<InstantCodeFragmentInfo> getElements() {
+	public final int getSize() {
+		return elements.size();
+	}
+
+	public final SortedSet<InstantCodeFragmentInfo> getElements() {
 		return elements;
+	}
+
+	public final InstantCodeFragmentInfo getFirstElement() {
+		return elements.first();
+	}
+
+	public boolean subsume(final CloneSet another) {
+		if (this.elements.size() != another.getSize()) {
+			return false;
+		}
+
+		for (final InstantCodeFragmentInfo fragment1 : this.elements) {
+			for (final InstantCodeFragmentInfo fragment2 : another
+					.getElements()) {
+				if (!fragment1.subsume(fragment2)) {
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 
 }

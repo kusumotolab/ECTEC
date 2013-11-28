@@ -29,7 +29,8 @@ public class RepositoryManagerManager {
 	 */
 	public RepositoryManagerManager(final VersionControlSystem vcs,
 			final String url, final String userName, final String passwd,
-			final String additionalUrl) throws Exception {
+			final String additionalUrl, final int threadsCount)
+			throws Exception {
 		switch (vcs) {
 		case SVN:
 			repositoryManager = new SVNRepositoryManager(url, userName, passwd,

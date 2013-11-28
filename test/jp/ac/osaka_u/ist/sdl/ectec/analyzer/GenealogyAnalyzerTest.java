@@ -22,8 +22,8 @@ public class GenealogyAnalyzerTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		String dbPath = "G:\\dbfiles\\ectec-clonetracker.db";
-		String repositoryPath = "file:///G:/repositories/repository-clonetracker";
+		String dbPath = "G:\\dbfiles\\carol.db";
+		String repositoryPath = "file:///G:/repositories/repository-carol";
 		analyzer = GenealogyAnalyzer.setup(dbPath, repositoryPath,
 				VersionControlSystem.SVN);
 	}

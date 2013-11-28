@@ -86,7 +86,7 @@ public class GenealogyAnalyzer {
 			// the additional path is always null
 			final RepositoryManagerManager repositoryManagerManager = new RepositoryManagerManager(
 					versionControlSystem, repositoryPath, userName, passwd,
-					null);
+					null, 1);
 			final IRepositoryManager repositoryManager = repositoryManagerManager
 					.getRepositoryManager();
 			final DataManagerManager dataManagerManager = new DataManagerManager();
