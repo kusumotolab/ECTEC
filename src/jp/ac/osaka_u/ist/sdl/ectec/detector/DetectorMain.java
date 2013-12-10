@@ -206,11 +206,11 @@ public class DetectorMain {
 
 		final long l3 = System.nanoTime();
 
-		// detectAndRegisterFragmentLinks(settings);
+		detectAndRegisterFragmentLinks(settings);
 
 		final long l4 = System.nanoTime();
 
-		// detectAndRegisterFragmentGenealogies(settings);
+		detectAndRegisterFragmentGenealogies(settings);
 
 		final long l5 = System.nanoTime();
 
@@ -218,11 +218,11 @@ public class DetectorMain {
 
 		final long l6 = System.nanoTime();
 
-		// detectAndRegisterCloneLinks(settings);
+		detectAndRegisterCloneLinks(settings);
 
 		final long l7 = System.nanoTime();
 
-		// detectAndRegisterCloneGenealogies(settings);
+		detectAndRegisterCloneGenealogies(settings);
 
 		final long end = System.nanoTime();
 
