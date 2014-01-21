@@ -9,8 +9,10 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentGenealogyInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
@@ -22,22 +24,15 @@ public class FragmentGenealogyPrinter {
 
 	public static void main(final String[] args) {
 		DBConnectionManager dbManager = null;
-		PrintWriter pw = null;
 		SVNRepositoryManager repoManager = null;
 
 		try {
 			final String dbPath = args[0];
-			pw = new PrintWriter(new BufferedWriter(new FileWriter(new File(
-					args[1]))));
-			final String repositoryPath = args[2];
-			final String workingDir = args[3];
-
-			final int threshold = Integer.parseInt(args[4]);
+			final String repositoryPath = args[1];
+			final String workingDir = args[2];
 
 			repoManager = new SVNRepositoryManager(repositoryPath, null, null,
 					null);
-
-			pw.println("ID,B_Rev,B_File,B_Method,B_Start,B_End,A_Rev,A_File,A_Method,A_Start,A_End");
 
 			dbManager = new DBConnectionManager(dbPath, 10000);
 
@@ -54,103 +49,115 @@ public class FragmentGenealogyPrinter {
 					continue;
 				}
 
-				final long startRevisionId = genealogy.getStartRevisionId();
-				final long endRevisionId = genealogy.getEndRevisionId();
-
+				final Map<Long, DBCodeFragmentLinkInfo> links = dbManager
+						.getFragmentLinkRetriever().retrieveWithIds(
+								genealogy.getLinks());
 				final Map<Long, DBRevisionInfo> revisions = dbManager
-						.getRevisionRetriever().retrieveWithIds(
+						.getRevisionRetriever().retrieveAll();
 
-						startRevisionId, endRevisionId);
-				final Map<Long, DBCodeFragmentInfo> fragments = dbManager
-						.getFragmentRetriever().retrieveWithIds(
-								genealogy.getElements());
+				final StringBuilder builder = new StringBuilder();
 
-				DBCodeFragmentInfo startFragment = null;
-				DBCodeFragmentInfo endFragment = null;
-				for (final DBCodeFragmentInfo fragment : fragments.values()) {
-					if (fragment.getStartRevisionId() == startRevisionId) {
-						startFragment = fragment;
-					}
-					if (fragment.getEndRevisionId() == endRevisionId) {
-						endFragment = fragment;
+				for (final DBCodeFragmentLinkInfo link : links.values()) {
+					if (link.isChanged()) {
+
+						final Map<Long, DBCodeFragmentInfo> fragments = dbManager
+								.getFragmentRetriever().retrieveWithIds(
+										link.getBeforeElementId(),
+										link.getAfterElementId());
+
+						final DBCodeFragmentInfo beforeFragment = fragments
+								.get(link.getBeforeElementId());
+						final DBCodeFragmentInfo afterFragment = fragments
+								.get(link.getAfterElementId());
+
+						final Map<Long, DBFileInfo> files = dbManager
+								.getFileRetriever().retrieveWithIds(
+										beforeFragment.getOwnerFileId(),
+										afterFragment.getOwnerFileId());
+						final Map<Long, DBCrdInfo> crds = dbManager
+								.getCrdRetriever().retrieveWithIds(
+										beforeFragment.getCrdId(),
+										afterFragment.getCrdId());
+
+						final DBCrdInfo bCrd = crds.get(beforeFragment
+								.getCrdId());
+						final DBCrdInfo aCrd = crds.get(afterFragment
+								.getCrdId());
+						if (bCrd.getType() != BlockType.METHOD
+								|| aCrd.getType() != BlockType.METHOD) {
+							continue;
+						}
+
+						final String bRev = revisions.get(
+								link.getBeforeRevisionId()).getIdentifier();
+						final String bFile = files.get(
+								beforeFragment.getOwnerFileId()).getPath();
+						final String bMethod = crds.get(
+								beforeFragment.getCrdId()).getAnchor();
+						final String bMethodName = bMethod.substring(0,
+								bMethod.indexOf("("));
+						final int bStart = beforeFragment.getStartLine();
+						final int bEnd = beforeFragment.getEndLine();
+
+						final String aRev = revisions.get(
+								link.getAfterRevisionId()).getIdentifier();
+						final String aFile = files.get(
+								afterFragment.getOwnerFileId()).getPath();
+						final String aMethod = crds.get(
+								afterFragment.getCrdId()).getAnchor();
+						final String aMethodName = aMethod.substring(0,
+								aMethod.indexOf("("));
+						final int aStart = afterFragment.getStartLine();
+						final int aEnd = afterFragment.getEndLine();
+
+						if (!(bMethodName.equals("equals") && aMethodName
+								.equals("equals"))) {
+							//continue;
+						}
+
+						try {
+							final SortedMap<Integer, String> beforeFileContents = getSrcLines(
+									repoManager, bRev, bFile);
+							final SortedMap<Integer, String> afterFileContents = getSrcLines(
+									repoManager, aRev, aFile);
+
+							final String bMethodContent = getMethodContent(
+									beforeFileContents, bStart, bEnd);
+							final String aMethodContent = getMethodContent(
+									afterFileContents, aStart, aEnd);
+
+							builder.append("BEFORE_METHOD\n");
+							builder.append("rev:" + bRev + ", " + bFile + "\n");
+							builder.append("--\n");
+							builder.append(bMethodContent + "\n");
+							builder.append("--\n");
+							builder.append("\n");
+							builder.append("AFTER_METHOD\n");
+							builder.append("rev:" + aRev + ", " + aFile + "\n");
+							builder.append("--\n");
+							builder.append(aMethodContent + "\n");
+							builder.append("--\n");
+							builder.append("\n");
+
+						} catch (Exception e) {
+							// ignore
+						}
+
 					}
 				}
 
-				final Map<Long, DBFileInfo> files = dbManager.getFileRetriever()
-						.retrieveWithIds(startFragment.getOwnerFileId(),
-								endFragment.getOwnerFileId());
-				final Map<Long, DBCrdInfo> crds = dbManager.getCrdRetriever()
-						.retrieveWithIds(startFragment.getCrdId(),
-								endFragment.getCrdId());
-
-				final String bRev = revisions.get(startRevisionId)
-						.getIdentifier();
-				final String bFile = files.get(startFragment.getOwnerFileId())
-						.getPath();
-				final String bMethod = crds.get(startFragment.getCrdId())
-						.getAnchor();
-				final String bMethodName = bMethod.substring(0,
-						bMethod.indexOf("("));
-				final int bStart = startFragment.getStartLine();
-				final int bEnd = startFragment.getEndLine();
-
-				final int bSize = startFragment.getSize();
-
-				final String aRev = revisions.get(endRevisionId)
-						.getIdentifier();
-				final String aFile = files.get(endFragment.getOwnerFileId())
-						.getPath();
-				final String aMethod = crds.get(endFragment.getCrdId())
-						.getAnchor();
-				final String aMethodName = aMethod.substring(0,
-						aMethod.indexOf("("));
-				final int aStart = endFragment.getStartLine();
-				final int aEnd = endFragment.getEndLine();
-
-				final int aSize = endFragment.getSize();
-
-				if (aSize <= bSize || bSize < threshold) {
-					continue;
-				}
-
-				pw.println(index + "," + bRev + "," + bFile + "," + bMethodName
-						+ "," + bStart + "," + bEnd + "," + aRev + "," + aFile
-						+ "," + aMethodName + "," + aStart + "," + aEnd);
-
-				try {
-					final SortedMap<Integer, String> beforeFileContents = getSrcLines(
-							repoManager, bRev, bFile);
-					final SortedMap<Integer, String> afterFileContents = getSrcLines(
-							repoManager, aRev, aFile);
-
-					final String bMethodContent = getMethodContent(
-							beforeFileContents, bStart, bEnd);
-					final String aMethodContent = getMethodContent(
-							afterFileContents, aStart, aEnd);
-
+				if (builder.length() > 0) {
 					final String outputFile = workingDir + File.separator
 							+ index + ".txt";
 					final PrintWriter pw2 = new PrintWriter(new BufferedWriter(
 							new FileWriter(new File(outputFile))));
-					pw2.println("BEFORE_METHOD");
-					pw2.println("rev:" + bRev + ", " + bFile);
-					pw2.println("--");
-					pw2.println(bMethodContent);
-					pw2.println("--");
-					pw2.println();
-					pw2.println("AFTER_METHOD");
-					pw2.println("rev:" + aRev + ", " + aFile);
-					pw2.println("--");
-					pw2.println(aMethodContent);
-					pw2.println("--");
-					pw2.println("");
+
+					pw2.println(builder.toString());
 
 					pw2.close();
-				} catch (Exception e) {
-					// ignore
+					
+					index++;
 				}
-
-				index++;
 			}
 
 		} catch (Exception e) {
@@ -158,9 +165,6 @@ public class FragmentGenealogyPrinter {
 		} finally {
 			if (dbManager != null) {
 				dbManager.close();
-			}
-			if (pw != null) {
-				pw.close();
 			}
 		}
 	}
