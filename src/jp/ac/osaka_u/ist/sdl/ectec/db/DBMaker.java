@@ -37,7 +37,7 @@ public class DBMaker {
 		}
 
 		createNewTables();
-		
+
 		createIndexes();
 
 		dbManager.setAutoCommit(false);
@@ -148,6 +148,32 @@ public class DBMaker {
 	/*
 	 * definitions of each table follow
 	 */
+
+	/**
+	 * get the query to create the repository table
+	 * 
+	 * @return
+	 */
+	private String getRepositoryTableQuery() {
+		final StringBuilder builder = new StringBuilder();
+
+		builder.append("create table REPOSITORY(");
+		builder.append("REPOSITORY_ID LONG PRIMARY KEY,");
+		builder.append("REPOSITORY_URL TEXT UNIQUE");
+		builder.append(")");
+
+		return builder.toString();
+	}
+
+	/**
+	 * create indexes on the repository table
+	 * 
+	 * @throws Exception
+	 */
+	private void createRepositoryTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("create index REPOSITORY_ID_INDEX_REPOSITORY on REPOSITORY(REPOSITORY_ID)");
+	}
 
 	/**
 	 * get the query to create the revision table
