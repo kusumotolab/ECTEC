@@ -165,7 +165,15 @@ public class DBMaker {
 		return builder.toString();
 	}
 
-
+	/**
+	 * create indexes on the repository table
+	 * 
+	 * @throws Exception
+	 */
+	private void createRepositoryTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("create index REPOSITORY_ID_INDEX_REPOSITORY on REPOSITORY(REPOSITORY_ID)");
+	}
 
 	/**
 	 * get the query to create the revision table
