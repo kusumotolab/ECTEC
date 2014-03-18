@@ -201,6 +201,7 @@ public class DBMaker {
 				.executeUpdate("create index REVISION_ID_INDEX_REVISION on REVISION(REVISION_ID)");
 	}
 
+	
 	/**
 	 * get the query to create the commit table
 	 * 
