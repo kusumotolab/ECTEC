@@ -185,7 +185,15 @@ public class DBMaker {
 
 		builder.append("create table REVISION(");
 		builder.append("REVISION_ID LONG PRIMARY KEY,");
-		builder.append("REVISION_IDENTIFIER TEXT UNIQUE");
+		builder.append("REVISION_IDENTIFIER TEXT,");
+		builder.append("REPOSITORY_ID LONG,");
+		builder.append("YEAR INTEGER CHECK(YEAR > 0),");
+		builder.append("MONTH INTEGER CHECK(MONTH >= 1 AND MONTH <= 12),");
+		builder.append("DAY INTEGER CHECK(DAY >= 1 AND DAY <= 31),");
+		builder.append("HOUR INTEGER CHECK(HOUR >= 0 AND HOUR <= 23),");
+		builder.append("MINUTE INTEGER CHECK(MINUTE >= 0 AND MINUTE <= 59),");
+		builder.append("SECOND INTEGER CHECK(SECOND >= 0 AND SECOND <= 59),");
+		builder.append("FOREIGN KEY(REPOSITORY_ID) REFERENCES REPOSITORY(REPOSITORY_ID)");
 		builder.append(")");
 
 		return builder.toString();
@@ -199,6 +207,40 @@ public class DBMaker {
 	private void createRevisionTableIndexes() throws Exception {
 		dbManager
 				.executeUpdate("create index REVISION_ID_INDEX_REVISION on REVISION(REVISION_ID)");
+		dbManager
+				.executeUpdate("create index REPOSITORY_ID_INDEX_REVISION on REVISION(REPOSITORY_ID)");
+	}
+
+	/**
+	 * get the query to create the combined revision table
+	 * 
+	 * @return
+	 */
+	private String getCombinedRevisionTableQuery() {
+		final StringBuilder builder = new StringBuilder();
+
+		builder.append("create table COMBINED_REVISION(");
+		builder.append("COMBINED_REVISION_ID LONG,");
+		builder.append("REVISION_ID LONG,");
+		builder.append("PRIMARY KEY(COMBINED_REVISION_ID, REVISION_ID),");
+		builder.append("FOREIGN KEY(REVISION_ID) REFERENCES REVISION(REVISION_ID)");
+		builder.append(")");
+
+		return builder.toString();
+	}
+
+	/**
+	 * create indexes on the revision table
+	 * 
+	 * @throws Exception
+	 */
+	private void createCombinedRevisionTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("create index COMBINED_REVISION_ID_INDEX_COMBINED_REVISION on COMBINED_REVISION(COMBINED_REVISION_ID)");
+		dbManager
+				.executeUpdate("create index COMBINED_REVISION_ID_INDEX_COMBINED_REVISION on COMBINED_REVISION(REVISION_ID)");
+		dbManager
+				.executeUpdate("create index COMBINED_REVISION_ID_REVISION_ID_INDEX_COMBINED_REVISION on COMBINED_REVISION(REVISION_ID)");
 	}
 
 	/**
@@ -213,8 +255,8 @@ public class DBMaker {
 		builder.append("VCS_COMMIT_ID LONG PRIMARY KEY,");
 		builder.append("BEFORE_REVISION_ID LONG,");
 		builder.append("AFTER_REVISION_ID LONG,");
-		builder.append("BEFORE_REVISION_IDENTIFIER TEXT,");
-		builder.append("AFTER_REVISION_IDENTIFIER TEXT");
+		builder.append("FOREIGN KEY(BEFORE_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
+		builder.append("FOREIGN KEY(AFTER_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID)");
 		builder.append(")");
 
 		return builder.toString();
@@ -244,7 +286,7 @@ public class DBMaker {
 
 		builder.append("create table FILE(");
 		builder.append("FILE_ID LONG PRIMARY KEY,");
-		builder.append("FILE_PATH TEXT,");
+		builder.append("FILE_PATH TEXT NOT NULL,");
 		builder.append("START_REVISION_ID LONG,");
 		builder.append("END_REVISION_ID LONG");
 		builder.append(")");
