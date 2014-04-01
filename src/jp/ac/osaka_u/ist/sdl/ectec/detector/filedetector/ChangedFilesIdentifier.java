@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.FileRegisterer;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.vcs.IRepositoryManager;
+import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.IRepositoryManager;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 

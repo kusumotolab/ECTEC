@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.detector.vcs.svn;
+package jp.ac.osaka_u.ist.sdl.ectec.main.vcs.svn;
 
 import java.util.Collections;
 import java.util.Map;
@@ -8,7 +8,7 @@ import java.util.TreeSet;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.vcs.ITargetRevisionDetector;
+import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.ITargetRevisionDetector;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 

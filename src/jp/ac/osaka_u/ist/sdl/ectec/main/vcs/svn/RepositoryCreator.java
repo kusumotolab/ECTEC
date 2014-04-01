@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.detector.vcs.svn;
+package jp.ac.osaka_u.ist.sdl.ectec.main.vcs.svn;
 
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;

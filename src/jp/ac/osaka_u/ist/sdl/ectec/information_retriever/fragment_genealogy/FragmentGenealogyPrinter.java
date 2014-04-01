@@ -16,7 +16,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.vcs.svn.SVNRepositoryManager;
+import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.svn.SVNRepositoryManager;
 
 public class FragmentGenealogyPrinter {
 

@@ -1,6 +1,6 @@
-package jp.ac.osaka_u.ist.sdl.ectec.detector.vcs;
+package jp.ac.osaka_u.ist.sdl.ectec.main.vcs;
 
-import jp.ac.osaka_u.ist.sdl.ectec.detector.vcs.svn.SVNRepositoryManager;
+import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.svn.SVNRepositoryManager;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.VersionControlSystem;
 
 /**

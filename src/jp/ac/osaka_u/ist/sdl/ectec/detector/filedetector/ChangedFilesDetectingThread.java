@@ -8,7 +8,7 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.vcs.IChangedFilesDetector;
+import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.IChangedFilesDetector;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 

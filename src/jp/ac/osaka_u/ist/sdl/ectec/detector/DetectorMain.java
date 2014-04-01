@@ -19,7 +19,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.CodeFragmentIdentifie
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.hash.DefaultHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.hash.IHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.normalizer.NormalizerCreator;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.vcs.RepositoryManagerManager;
+import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.RepositoryManagerManager;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Constants;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 

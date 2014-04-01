@@ -9,7 +9,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.FileInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.RevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.ast.ASTCreator;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.vcs.IRepositoryManager;
+import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.IRepositoryManager;
 
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
