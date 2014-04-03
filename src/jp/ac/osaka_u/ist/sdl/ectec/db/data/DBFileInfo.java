@@ -8,7 +8,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author k-hotta
  * 
  */
-public class DBFileInfo extends AbstractDBElement implements Comparable<DBFileInfo> {
+public class DBFileInfo extends AbstractDBElement implements
+		Comparable<DBFileInfo> {
 
 	/**
 	 * a counter to keep the number of created elements
@@ -31,6 +32,11 @@ public class DBFileInfo extends AbstractDBElement implements Comparable<DBFileIn
 	private final long endCombinedRevisionid;
 
 	/**
+	 * the id of the combined commit that added this file
+	 */
+	private final long addedCombinedCommitId;
+
+	/**
 	 * the constructor for elements that are retrieved from the db
 	 * 
 	 * @param id
@@ -39,11 +45,13 @@ public class DBFileInfo extends AbstractDBElement implements Comparable<DBFileIn
 	 * @param endCombinedRevisionId
 	 */
 	public DBFileInfo(final long id, final String path,
-			final long startCombinedRevisionId, final long endCombinedRevisionId) {
+			final long startCombinedRevisionId,
+			final long endCombinedRevisionId, final long addedCombinedCommitId) {
 		super(id);
 		this.path = path;
 		this.startCombinedRevisionId = startCombinedRevisionId;
 		this.endCombinedRevisionid = endCombinedRevisionId;
+		this.addedCombinedCommitId = addedCombinedCommitId;
 	}
 
 	/**
@@ -54,8 +62,9 @@ public class DBFileInfo extends AbstractDBElement implements Comparable<DBFileIn
 	 * @param endCombinedRevisionId
 	 */
 	public DBFileInfo(final String path, final long startCombinedRevisionId,
-			final long endCombinedRevisionId) {
-		this(count.getAndIncrement(), path, startCombinedRevisionId, endCombinedRevisionId);
+			final long endCombinedRevisionId, final long addedCombinedCommitId) {
+		this(count.getAndIncrement(), path, startCombinedRevisionId,
+				endCombinedRevisionId);
 	}
 
 	/**
@@ -83,6 +92,15 @@ public class DBFileInfo extends AbstractDBElement implements Comparable<DBFileIn
 	 */
 	public final long getCombinedEndRevisionId() {
 		return this.endCombinedRevisionid;
+	}
+
+	/**
+	 * get the id of the combined commit that added this file
+	 * 
+	 * @return
+	 */
+	public final long getAddedCombinedCommitId() {
+		return this.addedCombinedCommitId;
 	}
 
 	@Override
