@@ -28,14 +28,14 @@ public class DBCodeFragmentInfo extends AbstractDBElement implements
 	private final long crdId;
 
 	/**
-	 * the id of the start revision
+	 * the id of the start combined revision
 	 */
-	private final long startRevisionId;
+	private final long startCombinedRevisionId;
 
 	/**
-	 * the id of the end revision
+	 * the id of the end combined revision
 	 */
-	private final long endRevisionId;
+	private final long endCombinedRevisionId;
 
 	/**
 	 * the hash value created from this fragment
@@ -68,21 +68,21 @@ public class DBCodeFragmentInfo extends AbstractDBElement implements
 	 * @param id
 	 * @param ownerFileId
 	 * @param crdId
-	 * @param startRevisionId
-	 * @param endRevisionId
+	 * @param startCombinedRevisionId
+	 * @param endCombinedRevisionId
 	 * @param hash
 	 * @param startLine
 	 * @param endLine
 	 */
 	public DBCodeFragmentInfo(final long id, final long ownerFileId,
-			final long crdId, final long startRevisionId,
-			final long endRevisionId, final long hash, final long hashForClone,
+			final long crdId, final long startCombinedRevisionId,
+			final long endCombinedRevisionId, final long hash, final long hashForClone,
 			final int startLine, final int endLine, final int size) {
 		super(id);
 		this.ownerFileId = ownerFileId;
 		this.crdId = crdId;
-		this.startRevisionId = startRevisionId;
-		this.endRevisionId = endRevisionId;
+		this.startCombinedRevisionId = startCombinedRevisionId;
+		this.endCombinedRevisionId = endCombinedRevisionId;
 		this.hash = hash;
 		this.hashForClone = hashForClone;
 		this.startLine = startLine;
@@ -95,18 +95,18 @@ public class DBCodeFragmentInfo extends AbstractDBElement implements
 	 * 
 	 * @param ownerFileId
 	 * @param crdId
-	 * @param startRevisionId
-	 * @param endRevisionId
+	 * @param startCombinedRevisionId
+	 * @param endCombinedRevisionId
 	 * @param hash
 	 * @param startLine
 	 * @param endLine
 	 */
 	public DBCodeFragmentInfo(final long ownerFileId, final long crdId,
-			final long startRevisionId, final long endRevisionId,
+			final long startCombinedRevisionId, final long endCombinedRevisionId,
 			final long hash, final long hashForClone, final int startLine,
 			final int endLine, final int size) {
-		this(count.getAndIncrement(), ownerFileId, crdId, startRevisionId,
-				endRevisionId, hash, hashForClone, startLine, endLine, size);
+		this(count.getAndIncrement(), ownerFileId, crdId, startCombinedRevisionId,
+				endCombinedRevisionId, hash, hashForClone, startLine, endLine, size);
 	}
 
 	/**
@@ -128,21 +128,21 @@ public class DBCodeFragmentInfo extends AbstractDBElement implements
 	}
 
 	/**
-	 * get the id of the start revision
+	 * get the id of the start combined revision
 	 * 
 	 * @return
 	 */
-	public final long getStartRevisionId() {
-		return this.startRevisionId;
+	public final long getStartCombinedRevisionId() {
+		return this.startCombinedRevisionId;
 	}
 
 	/**
-	 * get the id of the end revision
+	 * get the id of the end combined revision
 	 * 
 	 * @return
 	 */
-	public final long getEndRevisionId() {
-		return this.endRevisionId;
+	public final long getEndCombinedRevisionId() {
+		return this.endCombinedRevisionId;
 	}
 
 	/**

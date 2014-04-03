@@ -64,15 +64,15 @@ public class FragmentChainFinalizer
 		final DBCodeFragmentInfo endElement = elementsMap.get(endLink
 				.getAfterElementId());
 
-		return new DBCodeFragmentGenealogyInfo(startElement.getStartRevisionId(),
-				endElement.getEndRevisionId(), elements, links, changedCount);
+		return new DBCodeFragmentGenealogyInfo(startElement.getStartCombinedRevisionId(),
+				endElement.getEndCombinedRevisionId(), elements, links, changedCount);
 	}
 
 	@Override
 	protected DBCodeFragmentGenealogyInfo createInstanceFromElement(
 			DBCodeFragmentInfo element) {
-		final long startRevisionId = element.getStartRevisionId();
-		final long endRevisionId = element.getEndRevisionId();
+		final long startRevisionId = element.getStartCombinedRevisionId();
+		final long endRevisionId = element.getEndCombinedRevisionId();
 		final List<Long> elements = new ArrayList<Long>();
 		final List<Long> links = new ArrayList<Long>();
 		elements.add(element.getId());

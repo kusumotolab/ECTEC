@@ -26,9 +26,9 @@ public class CodeFragmentInfoConcretizer {
 		final FileInfo ownerFile = files.get(dbFragment.getOwnerFileId());
 		final CRD crd = crds.get(dbFragment.getCrdId());
 		final RevisionInfo startRevision = revisions.get(dbFragment
-				.getStartRevisionId());
+				.getStartCombinedRevisionId());
 		final RevisionInfo endRevision = revisions.get(dbFragment
-				.getEndRevisionId());
+				.getEndCombinedRevisionId());
 		final int startLine = dbFragment.getStartLine();
 		final int endLine = dbFragment.getEndLine();
 		final int size = dbFragment.getSize();
