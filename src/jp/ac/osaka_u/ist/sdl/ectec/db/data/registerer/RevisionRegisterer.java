@@ -28,7 +28,7 @@ public class RevisionRegisterer extends
 
 	@Override
 	protected String createPreparedStatementQueue() {
-		return "insert into REVISION values (?,?)";
+		return "insert into REVISION values (?,?,?)";
 	}
 
 	@Override
@@ -37,6 +37,7 @@ public class RevisionRegisterer extends
 		int column = 0;
 		pstmt.setLong(++column, element.getId());
 		pstmt.setString(++column, element.getIdentifier());
+		pstmt.setLong(++column, element.getRepositoryId());
 	}
 
 }
