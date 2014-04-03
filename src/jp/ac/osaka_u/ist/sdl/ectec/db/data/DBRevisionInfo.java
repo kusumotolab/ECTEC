@@ -22,12 +22,17 @@ public class DBRevisionInfo extends AbstractDBElement implements
 	private final String identifier;
 
 	/**
+	 * the id of the repository
+	 */
+	private final long repositoryId;
+
+	/**
 	 * the constructor for newly created elements
 	 * 
 	 * @param identifier
 	 */
-	public DBRevisionInfo(final String identifier) {
-		this(count.getAndIncrement(), identifier);
+	public DBRevisionInfo(final String identifier, final long repositoryId) {
+		this(count.getAndIncrement(), identifier, repositoryId);
 	}
 
 	/**
@@ -36,9 +41,11 @@ public class DBRevisionInfo extends AbstractDBElement implements
 	 * @param id
 	 * @param identifier
 	 */
-	public DBRevisionInfo(final long id, final String identifier) {
+	public DBRevisionInfo(final long id, final String identifier,
+			final long repositoryId) {
 		super(id);
 		this.identifier = identifier;
+		this.repositoryId = repositoryId;
 	}
 
 	/**
@@ -48,6 +55,15 @@ public class DBRevisionInfo extends AbstractDBElement implements
 	 */
 	public final String getIdentifier() {
 		return this.identifier;
+	}
+
+	/**
+	 * get the id of the repository
+	 * 
+	 * @return
+	 */
+	public final long getRepositoryId() {
+		return this.repositoryId;
 	}
 
 	@Override
