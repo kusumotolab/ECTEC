@@ -1,5 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.db.data;
 
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -8,7 +9,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author k-hotta
  * 
  */
-public class DBCommitInfo extends AbstractDBElement implements Comparable<DBCommitInfo> {
+public class DBCommitInfo extends AbstractDBElement implements
+		Comparable<DBCommitInfo> {
 
 	/**
 	 * the counter for having the number of created instances
@@ -26,33 +28,20 @@ public class DBCommitInfo extends AbstractDBElement implements Comparable<DBComm
 	private final long afterRevisionId;
 
 	/**
-	 * the identifier of the before revision
+	 * the date of the commit
 	 */
-	private final String beforeRevisionIdentifier;
+	private final Date date;
 
-	/**
-	 * the identifier of the after revision
-	 */
-	private final String afterRevisionIdentifier;
-
-	public DBCommitInfo(final long beforeRevisionId, final long afterRevisionId,
-			final String beforeRevisionIdentifier,
-			final String afterRevisionIdentifier) {
-		super(count.getAndIncrement());
-		this.beforeRevisionId = beforeRevisionId;
-		this.afterRevisionId = afterRevisionId;
-		this.beforeRevisionIdentifier = beforeRevisionIdentifier;
-		this.afterRevisionIdentifier = afterRevisionIdentifier;
+	public DBCommitInfo(final long beforeRevisionId, final long afterRevisionId, final Date date) {
+		this(count.getAndIncrement(), beforeRevisionId, afterRevisionId, date);
 	}
 
 	public DBCommitInfo(final long id, final long beforeRevisionId,
-			final long afterRevisionId, final String beforeRevisionIdentifier,
-			final String afterRevisionIdentifier) {
+			final long afterRevisionId, final Date date) {
 		super(id);
 		this.beforeRevisionId = beforeRevisionId;
 		this.afterRevisionId = afterRevisionId;
-		this.beforeRevisionIdentifier = beforeRevisionIdentifier;
-		this.afterRevisionIdentifier = afterRevisionIdentifier;
+		this.date = date;
 	}
 
 	/**
@@ -74,21 +63,12 @@ public class DBCommitInfo extends AbstractDBElement implements Comparable<DBComm
 	}
 
 	/**
-	 * get the before revision identifier
+	 * get the date of the commit
 	 * 
 	 * @return
 	 */
-	public final String getBeforeRevisionIdentifier() {
-		return this.beforeRevisionIdentifier;
-	}
-
-	/**
-	 * get the after revision identifier
-	 * 
-	 * @return
-	 */
-	public final String getAfterRevisionIdentifier() {
-		return this.afterRevisionIdentifier;
+	public final Date getDate() {
+		return this.date;
 	}
 
 	@Override
