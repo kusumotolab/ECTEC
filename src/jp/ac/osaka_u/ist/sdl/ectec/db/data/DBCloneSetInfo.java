@@ -19,9 +19,9 @@ public class DBCloneSetInfo extends AbstractDBElement implements
 	private static final AtomicLong count = new AtomicLong(0);
 
 	/**
-	 * the id of the revision that has this clone set
+	 * the id of the combined revision that has this clone set
 	 */
-	private final long revisionId;
+	private final long combinedRevisionId;
 
 	/**
 	 * the list of the ids of code fragments of which this clone set consists
@@ -29,23 +29,17 @@ public class DBCloneSetInfo extends AbstractDBElement implements
 	private final List<Long> elements;
 
 	/**
-	 * the number of elements
-	 */
-	private final int numberOfElements;
-
-	/**
 	 * the constructor for elements that are retrieved from the db
 	 * 
 	 * @param id
-	 * @param revisionId
+	 * @param combinedRevisionId
 	 * @param elements
 	 */
-	public DBCloneSetInfo(final long id, final long revisionId,
+	public DBCloneSetInfo(final long id, final long combinedRevisionId,
 			final List<Long> elements) {
 		super(id);
-		this.revisionId = revisionId;
+		this.combinedRevisionId = combinedRevisionId;
 		this.elements = elements;
-		this.numberOfElements = elements.size();
 	}
 
 	/**
@@ -59,12 +53,12 @@ public class DBCloneSetInfo extends AbstractDBElement implements
 	}
 
 	/**
-	 * get the id of the owner revision
+	 * get the id of the owner combined revision
 	 * 
 	 * @return
 	 */
-	public final long getRevisionId() {
-		return this.revisionId;
+	public final long getCombinedRevisionId() {
+		return this.combinedRevisionId;
 	}
 
 	/**
@@ -74,15 +68,6 @@ public class DBCloneSetInfo extends AbstractDBElement implements
 	 */
 	public final List<Long> getElements() {
 		return Collections.unmodifiableList(elements);
-	}
-
-	/**
-	 * get the number of elements
-	 * 
-	 * @return
-	 */
-	public final int getNumberOfElements() {
-		return this.numberOfElements;
 	}
 
 	@Override

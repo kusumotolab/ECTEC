@@ -64,8 +64,8 @@ public class CloneChainFinalizer
 
 	@Override
 	protected DBCloneGenealogyInfo createInstanceFromElement(DBCloneSetInfo element) {
-		final long startRevisionId = element.getRevisionId();
-		final long endRevisionId = element.getRevisionId();
+		final long startRevisionId = element.getCombinedRevisionId();
+		final long endRevisionId = element.getCombinedRevisionId();
 		final List<Long> elements = new ArrayList<Long>();
 		final List<Long> links = new ArrayList<Long>();
 		elements.add(element.getId());

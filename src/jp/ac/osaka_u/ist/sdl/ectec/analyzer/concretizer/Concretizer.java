@@ -206,7 +206,7 @@ public class Concretizer {
 		final Set<Long> revisionIds = new HashSet<Long>();
 		for (final Map.Entry<Long, DBCloneSetInfo> entry : dbClones.entrySet()) {
 			final DBCloneSetInfo clone = entry.getValue();
-			revisionIds.add(clone.getRevisionId());
+			revisionIds.add(clone.getCombinedRevisionId());
 		}
 		for (final Map.Entry<Long, DBFileInfo> entry : dbFiles.entrySet()) {
 			final DBFileInfo file = entry.getValue();
@@ -569,7 +569,7 @@ public class Concretizer {
 			final Map<Long, DBFileInfo> dbFiles) {
 		final Map<Long, DBRevisionInfo> dbRevisions = new TreeMap<Long, DBRevisionInfo>();
 		for (final Map.Entry<Long, DBCloneSetInfo> entry : dbClones.entrySet()) {
-			final long revisionId = entry.getValue().getRevisionId();
+			final long revisionId = entry.getValue().getCombinedRevisionId();
 			if (!dbRevisions.containsKey(revisionId)) {
 				dbRevisions.put(revisionId, dbDataManagerManager
 						.getDbRevisionManager().getElement(revisionId));

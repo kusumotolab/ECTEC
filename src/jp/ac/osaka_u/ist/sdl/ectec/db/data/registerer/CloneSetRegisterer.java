@@ -35,7 +35,7 @@ public class CloneSetRegisterer extends AbstractElementRegisterer<DBCloneSetInfo
 			throws SQLException {
 		int column = 0;
 		pstmt.setLong(++column, element.getId());
-		pstmt.setLong(++column, element.getRevisionId());
+		pstmt.setLong(++column, element.getCombinedRevisionId());
 		pstmt.setString(++column,
 				StringUtils.convertListToString(element.getElements()));
 		pstmt.setInt(++column, element.getNumberOfElements());
