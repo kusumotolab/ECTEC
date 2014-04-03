@@ -596,10 +596,6 @@ public class DBMaker {
 		builder.append("END_COMBINED_REVISION_ID LONG,");
 		builder.append("CLONE_SET_ID LONG,");
 		builder.append("CLONE_SET_LINK_ID LONG,");
-		builder.append("CHANGES INTEGER,");
-		builder.append("ADDITIONS INTEGER,");
-		builder.append("DELETIONS INTEGER,");
-		builder.append("DEAD INTEGER,");
 		builder.append("PRIMARY KEY(CLONE_GENEALOGY_ID,CLONE_SET_ID,CLONE_SET_LINK_ID),");
 		builder.append("FOREIGN KEY(START_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
 		builder.append("FOREIGN KEY(END_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
@@ -626,14 +622,6 @@ public class DBMaker {
 				.executeUpdate("create index CLONE_SET_ID_INDEX_CLONE_GENEALOGY on CLONE_GENEALOGY(CLONE_SET_ID)");
 		dbManager
 				.executeUpdate("create index CLONE_SET_LINK_ID_INDEX_CLONE_GENEALOGY on CLONE_GENEALOGY(CLONE_SET_LINK_ID)");
-		dbManager
-				.executeUpdate("create index CHANGES_INDEX_CLONE_GENEALOGY on CLONE_GENEALOGY(CHANGES)");
-		dbManager
-				.executeUpdate("create index ADDITIONS_INDEX_CLONE_GENEALOGY on CLONE_GENEALOGY(ADDITIONS)");
-		dbManager
-				.executeUpdate("create index DELETIONS_INDEX_CLONE_GENEALOGY on CLONE_GENEALOGY(DELETIONS)");
-		dbManager
-				.executeUpdate("create index DEAD_INDEX_CLONE_GENEALOGY on CLONE_GENEALOGY(DEAD)");
 		dbManager
 				.executeUpdate("create index START_END_REVISION_ID_INDEX_CLONE_GENEALOGY on CLONE_GENEALOGY(START_COMBINED_REVISION_ID,END_COMBINED_REVISION_ID)");
 		dbManager

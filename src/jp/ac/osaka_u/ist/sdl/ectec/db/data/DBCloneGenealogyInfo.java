@@ -19,26 +19,6 @@ public class DBCloneGenealogyInfo extends
 	private static final AtomicLong count = new AtomicLong(0);
 
 	/**
-	 * the number of changes
-	 */
-	private final int numberOfChanges;
-
-	/**
-	 * the number of additions
-	 */
-	private final int numberOfAdditions;
-
-	/**
-	 * the number of deletions
-	 */
-	private final int numberOfDeletions;
-
-	/**
-	 * whether this genealogy is dead or not in the latest revision
-	 */
-	private final boolean dead;
-
-	/**
 	 * the constructor for elements that are retrieved from the db
 	 * 
 	 * @param id
@@ -46,21 +26,11 @@ public class DBCloneGenealogyInfo extends
 	 * @param endRevisionId
 	 * @param elements
 	 * @param links
-	 * @param numberOfChanges
-	 * @param numberOfAdditions
-	 * @param numberOfDeletions
-	 * @param dead
 	 */
 	public DBCloneGenealogyInfo(final long id, final long startRevisionId,
 			final long endRevisionId, final List<Long> elements,
-			final List<Long> links, final int numberOfChanges,
-			final int numberOfAdditions, final int numberOfDeletions,
-			final boolean dead) {
+			final List<Long> links) {
 		super(id, startRevisionId, endRevisionId, elements, links);
-		this.numberOfChanges = numberOfChanges;
-		this.numberOfAdditions = numberOfAdditions;
-		this.numberOfDeletions = numberOfDeletions;
-		this.dead = dead;
 	}
 
 	/**
@@ -70,55 +40,12 @@ public class DBCloneGenealogyInfo extends
 	 * @param endRevisionId
 	 * @param elements
 	 * @param links
-	 * @param numberOfChanges
-	 * @param numberOfAdditions
-	 * @param numberOfDeletions
-	 * @param dead
 	 */
 	public DBCloneGenealogyInfo(final long startRevisionId,
 			final long endRevisionId, final List<Long> elements,
-			final List<Long> links, final int numberOfChanges,
-			final int numberOfAdditions, final int numberOfDeletions,
-			final boolean dead) {
+			final List<Long> links) {
 		this(count.getAndIncrement(), startRevisionId, endRevisionId, elements,
-				links, numberOfChanges, numberOfAdditions, numberOfDeletions,
-				dead);
-	}
-
-	/**
-	 * get the number of changes
-	 * 
-	 * @return
-	 */
-	public final int getNumberOfChanges() {
-		return this.numberOfChanges;
-	}
-
-	/**
-	 * get the number of additions
-	 * 
-	 * @return
-	 */
-	public final int getNumberOfAdditions() {
-		return this.numberOfAdditions;
-	}
-
-	/**
-	 * get the number of deletions
-	 * 
-	 * @return
-	 */
-	public final int getNumberOfDeletions() {
-		return this.numberOfDeletions;
-	}
-
-	/**
-	 * get whether this genealogy is dead in the latest revision
-	 * 
-	 * @return
-	 */
-	public final boolean isDead() {
-		return dead;
+				links);
 	}
 
 	@Override

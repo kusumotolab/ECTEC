@@ -31,8 +31,8 @@ public class CodeFragmentGenealogyRegisterer extends
 			DBCodeFragmentGenealogyInfo element) throws SQLException {
 		int column = 0;
 		pstmt.setLong(++column, element.getId());
-		pstmt.setLong(++column, element.getStartRevisionId());
-		pstmt.setLong(++column, element.getEndRevisionId());
+		pstmt.setLong(++column, element.getStartCombinedRevisionId());
+		pstmt.setLong(++column, element.getEndCombinedRevisionId());
 		pstmt.setString(++column,
 				StringUtils.convertListToString(element.getElements()));
 		pstmt.setString(++column,

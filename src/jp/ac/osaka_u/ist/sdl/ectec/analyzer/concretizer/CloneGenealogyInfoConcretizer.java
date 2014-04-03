@@ -28,9 +28,9 @@ public class CloneGenealogyInfoConcretizer {
 			final Map<Long, CloneSetLinkInfo> cloneLinks) {
 		final long id = dbGenealogy.getId();
 		final RevisionInfo startRevision = revisions.get(dbGenealogy
-				.getStartRevisionId());
+				.getStartCombinedRevisionId());
 		final RevisionInfo endRevision = revisions.get(dbGenealogy
-				.getEndRevisionId());
+				.getEndCombinedRevisionId());
 
 		final List<CloneSetInfo> clonesList = new ArrayList<CloneSetInfo>();
 		final List<Long> cloneIds = dbGenealogy.getElements();

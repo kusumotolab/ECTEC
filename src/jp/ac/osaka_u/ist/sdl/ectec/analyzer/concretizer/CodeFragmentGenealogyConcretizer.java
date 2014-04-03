@@ -28,9 +28,9 @@ public class CodeFragmentGenealogyConcretizer {
 			final Map<Long, CodeFragmentLinkInfo> fragmentLinks) {
 		final long id = dbGenealogy.getId();
 		final RevisionInfo startRevision = revisions.get(dbGenealogy
-				.getStartRevisionId());
+				.getStartCombinedRevisionId());
 		final RevisionInfo endRevision = revisions.get(dbGenealogy
-				.getEndRevisionId());
+				.getEndCombinedRevisionId());
 
 		final List<CodeFragmentInfo> fragmentsList = new ArrayList<CodeFragmentInfo>();
 		final List<Long> fragmentIds = dbGenealogy.getElements();
