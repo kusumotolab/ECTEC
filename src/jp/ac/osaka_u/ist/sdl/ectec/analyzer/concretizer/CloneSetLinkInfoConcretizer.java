@@ -27,9 +27,9 @@ public class CloneSetLinkInfoConcretizer {
 			final Map<Long, CodeFragmentLinkInfo> fragmentLinks) {
 		final long id = dbCloneLink.getId();
 		final RevisionInfo beforeRevision = revisions.get(dbCloneLink
-				.getBeforeRevisionId());
+				.getBeforeCombinedRevisionId());
 		final RevisionInfo afterRevision = revisions.get(dbCloneLink
-				.getAfterRevisionId());
+				.getAfterCombinedRevisionId());
 		final CloneSetInfo beforeClone = clones.get(dbCloneLink
 				.getBeforeElementId());
 		final CloneSetInfo afterClone = clones.get(dbCloneLink

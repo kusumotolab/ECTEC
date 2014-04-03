@@ -19,14 +19,14 @@ public abstract class DBElementLinkInfo extends AbstractDBElement {
 	private final long afterElementId;
 
 	/**
-	 * the id of the before revision
+	 * the id of the before combined revision
 	 */
-	private final long beforeRevisionId;
+	private final long beforeCombinedRevisionId;
 
 	/**
-	 * the id of the after revision
+	 * the id of the after combined revision
 	 */
-	private final long afterRevisionId;
+	private final long afterCombinedRevisionId;
 
 	/**
 	 * the constructor
@@ -34,17 +34,17 @@ public abstract class DBElementLinkInfo extends AbstractDBElement {
 	 * @param id
 	 * @param beforeElementId
 	 * @param afterElementId
-	 * @param beforeRevisionId
-	 * @param afterRevisionId
+	 * @param beforeCombinedRevisionId
+	 * @param afterCombinedRevisionId
 	 */
 	public DBElementLinkInfo(final long id, final long beforeElementId,
-			final long afterElementId, final long beforeRevisionId,
-			final long afterRevisionId) {
+			final long afterElementId, final long beforeCombinedRevisionId,
+			final long afterCombinedRevisionId) {
 		super(id);
 		this.beforeElementId = beforeElementId;
 		this.afterElementId = afterElementId;
-		this.beforeRevisionId = beforeRevisionId;
-		this.afterRevisionId = afterRevisionId;
+		this.beforeCombinedRevisionId = beforeCombinedRevisionId;
+		this.afterCombinedRevisionId = afterCombinedRevisionId;
 	}
 
 	/**
@@ -70,8 +70,8 @@ public abstract class DBElementLinkInfo extends AbstractDBElement {
 	 * 
 	 * @return
 	 */
-	public final long getBeforeRevisionId() {
-		return this.beforeRevisionId;
+	public final long getBeforeCombinedRevisionId() {
+		return this.beforeCombinedRevisionId;
 	}
 
 	/**
@@ -79,8 +79,8 @@ public abstract class DBElementLinkInfo extends AbstractDBElement {
 	 * 
 	 * @return
 	 */
-	public final long getAfterRevisionId() {
-		return this.afterRevisionId;
+	public final long getAfterCombinedRevisionId() {
+		return this.afterCombinedRevisionId;
 	}
 
 }

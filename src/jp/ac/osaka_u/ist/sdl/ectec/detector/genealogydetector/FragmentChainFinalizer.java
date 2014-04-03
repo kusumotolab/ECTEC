@@ -48,10 +48,10 @@ public class FragmentChainFinalizer
 			if (link.isChanged()) {
 				changedCount++;
 			}
-			if (link.getBeforeRevisionId() == startRevisionId) {
+			if (link.getBeforeCombinedRevisionId() == startRevisionId) {
 				startLink = link;
 			}
-			if (link.getAfterRevisionId() == endRevisionId) {
+			if (link.getAfterCombinedRevisionId() == endRevisionId) {
 				endLink = link;
 			}
 		}

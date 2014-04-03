@@ -38,8 +38,8 @@ public class CodeFragmentLinkRegisterer extends
 		pstmt.setLong(++column, element.getId());
 		pstmt.setLong(++column, element.getBeforeElementId());
 		pstmt.setLong(++column, element.getAfterElementId());
-		pstmt.setLong(++column, element.getBeforeRevisionId());
-		pstmt.setLong(++column, element.getAfterRevisionId());
+		pstmt.setLong(++column, element.getBeforeCombinedRevisionId());
+		pstmt.setLong(++column, element.getAfterCombinedRevisionId());
 		pstmt.setInt(++column, (element.isChanged()) ? 1 : 0);
 	}
 

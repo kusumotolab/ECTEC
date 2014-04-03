@@ -92,12 +92,12 @@ public class FragmentPrinter {
 								.getBeforeElementId());
 
 						final String str = printFragment(fragment,
-								revisions.get(link.getBeforeRevisionId()),
+								revisions.get(link.getBeforeCombinedRevisionId()),
 								files.get(fragment.getOwnerFileId()),
 								crds.get(fragment.getCrdId()), repoManager);
 
 						toBePrinted.put(Long.parseLong(revisions.get(
-								link.getBeforeRevisionId()).getIdentifier()),
+								link.getBeforeCombinedRevisionId()).getIdentifier()),
 								str);
 
 						first = false;
@@ -108,12 +108,12 @@ public class FragmentPrinter {
 								.getAfterElementId());
 
 						final String str = printFragment(fragment,
-								revisions.get(link.getAfterRevisionId()),
+								revisions.get(link.getAfterCombinedRevisionId()),
 								files.get(fragment.getOwnerFileId()),
 								crds.get(fragment.getCrdId()), repoManager);
 
 						toBePrinted.put(Long.parseLong(revisions.get(
-								link.getAfterRevisionId()).getIdentifier()),
+								link.getAfterCombinedRevisionId()).getIdentifier()),
 								str);
 					}
 

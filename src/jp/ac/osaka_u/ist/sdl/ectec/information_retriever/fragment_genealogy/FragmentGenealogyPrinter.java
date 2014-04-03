@@ -89,7 +89,7 @@ public class FragmentGenealogyPrinter {
 						}
 
 						final String bRev = revisions.get(
-								link.getBeforeRevisionId()).getIdentifier();
+								link.getBeforeCombinedRevisionId()).getIdentifier();
 						final String bFile = files.get(
 								beforeFragment.getOwnerFileId()).getPath();
 						final String bMethod = crds.get(
@@ -100,7 +100,7 @@ public class FragmentGenealogyPrinter {
 						final int bEnd = beforeFragment.getEndLine();
 
 						final String aRev = revisions.get(
-								link.getAfterRevisionId()).getIdentifier();
+								link.getAfterCombinedRevisionId()).getIdentifier();
 						final String aFile = files.get(
 								afterFragment.getOwnerFileId()).getPath();
 						final String aMethod = crds.get(

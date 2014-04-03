@@ -39,8 +39,8 @@ public class ElementChain<L extends DBElementLinkInfo> {
 		this.revisions = new TreeSet<Long>();
 		this.links = new TreeSet<Long>();
 		this.elements = new TreeSet<Long>();
-		this.revisions.add(link.getBeforeRevisionId());
-		this.revisions.add(link.getAfterRevisionId());
+		this.revisions.add(link.getBeforeCombinedRevisionId());
+		this.revisions.add(link.getAfterCombinedRevisionId());
 		this.links.add(link.getId());
 		this.elements.add(link.getBeforeElementId());
 		this.elements.add(link.getAfterElementId());
@@ -72,8 +72,8 @@ public class ElementChain<L extends DBElementLinkInfo> {
 
 	public synchronized void invite(final L anotherLink) {
 		synchronized (revisions) {
-			this.revisions.add(anotherLink.getBeforeRevisionId());
-			this.revisions.add(anotherLink.getAfterRevisionId());
+			this.revisions.add(anotherLink.getBeforeCombinedRevisionId());
+			this.revisions.add(anotherLink.getAfterCombinedRevisionId());
 		}
 		synchronized (links) {
 			this.links.add(anotherLink.getId());
