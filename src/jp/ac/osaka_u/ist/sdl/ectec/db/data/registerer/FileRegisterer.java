@@ -35,8 +35,8 @@ public class FileRegisterer extends AbstractElementRegisterer<DBFileInfo> {
 		int column = 0;
 		pstmt.setLong(++column, element.getId());
 		pstmt.setString(++column, element.getPath());
-		pstmt.setLong(++column, element.getStartRevisionId());
-		pstmt.setLong(++column, element.getEndRevisionId());
+		pstmt.setLong(++column, element.getStartCombinedRevisionId());
+		pstmt.setLong(++column, element.getCombinedEndRevisionId());
 	}
 
 }

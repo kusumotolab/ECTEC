@@ -210,8 +210,8 @@ public class Concretizer {
 		}
 		for (final Map.Entry<Long, DBFileInfo> entry : dbFiles.entrySet()) {
 			final DBFileInfo file = entry.getValue();
-			revisionIds.add(file.getStartRevisionId());
-			revisionIds.add(file.getEndRevisionId());
+			revisionIds.add(file.getStartCombinedRevisionId());
+			revisionIds.add(file.getCombinedEndRevisionId());
 		}
 		final Map<Long, DBRevisionInfo> dbRevisions = retrieveRevisions(revisionIds);
 		dbDataManagerManager.getDbRevisionManager()
@@ -576,8 +576,8 @@ public class Concretizer {
 			}
 		}
 		for (final Map.Entry<Long, DBFileInfo> entry : dbFiles.entrySet()) {
-			final long startRevisionId = entry.getValue().getStartRevisionId();
-			final long endRevisionId = entry.getValue().getEndRevisionId();
+			final long startRevisionId = entry.getValue().getStartCombinedRevisionId();
+			final long endRevisionId = entry.getValue().getCombinedEndRevisionId();
 			if (!dbRevisions.containsKey(startRevisionId)) {
 				dbRevisions.put(startRevisionId, dbDataManagerManager
 						.getDbRevisionManager().getElement(startRevisionId));

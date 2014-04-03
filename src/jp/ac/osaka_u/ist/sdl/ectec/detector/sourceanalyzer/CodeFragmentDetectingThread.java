@@ -103,15 +103,15 @@ public class CodeFragmentDetectingThread implements Runnable {
 					+ targetFile.getPath());
 
 			final String startRevision = revisions.get(targetFile
-					.getStartRevisionId());
+					.getStartCombinedRevisionId());
 			try {
 				final String src = manager.getFileContents(startRevision,
 						targetFile.getPath());
 				final CompilationUnit root = ASTCreator.createAST(src);
 
 				final CodeFragmentDetector detector = new CodeFragmentDetector(
-						targetFile.getId(), targetFile.getStartRevisionId(),
-						targetFile.getEndRevisionId(), hashCalculator, root,
+						targetFile.getId(), targetFile.getStartCombinedRevisionId(),
+						targetFile.getCombinedEndRevisionId(), hashCalculator, root,
 						granularity, blockAnalyzerCreator);
 
 				root.accept(detector);

@@ -161,15 +161,15 @@ public class CodeFragmentIdentifier {
 					+ "] processing " + file.getPath());
 
 			final String startRevision = revisionIdentifiers.get(file
-					.getStartRevisionId());
+					.getStartCombinedRevisionId());
 
 			final String src = repositoryManager.getFileContents(startRevision,
 					file.getPath());
 			final CompilationUnit root = ASTCreator.createAST(src);
 
 			final CodeFragmentDetector detector = new CodeFragmentDetector(
-					file.getId(), file.getStartRevisionId(),
-					file.getEndRevisionId(), hashCalculator, root, granularity,
+					file.getId(), file.getStartCombinedRevisionId(),
+					file.getCombinedEndRevisionId(), hashCalculator, root, granularity,
 					blockAnalyzerCreator);
 
 			root.accept(detector);

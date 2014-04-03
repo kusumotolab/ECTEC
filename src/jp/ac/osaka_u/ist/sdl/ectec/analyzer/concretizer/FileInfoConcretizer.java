@@ -35,9 +35,9 @@ public final class FileInfoConcretizer {
 		try {
 			final long id = dbFile.getId();
 			final RevisionInfo startRevision = revisions.get(dbFile
-					.getStartRevisionId());
+					.getStartCombinedRevisionId());
 			final RevisionInfo endRevision = revisions.get(dbFile
-					.getEndRevisionId());
+					.getCombinedEndRevisionId());
 
 			if (startRevision == null || endRevision == null) {
 				return null;
