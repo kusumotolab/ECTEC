@@ -8,7 +8,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author k-hotta
  * 
  */
-public class DBRepositoryInfo extends AbstractDBElement {
+public class DBRepositoryInfo extends AbstractDBElement implements
+		Comparable<DBRepositoryInfo> {
 
 	/**
 	 * a counter to keep the number of created elements
@@ -47,6 +48,11 @@ public class DBRepositoryInfo extends AbstractDBElement {
 	 */
 	public final String getUrl() {
 		return this.url;
+	}
+
+	@Override
+	public int compareTo(DBRepositoryInfo another) {
+		return ((Long) this.getId()).compareTo(another.getId());
 	}
 
 }
