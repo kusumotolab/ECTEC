@@ -24,7 +24,6 @@ public class DBCodeFragmentLinkInfo extends DBElementLinkInfo implements
 	 * @param afterElementId
 	 * @param beforeCombinedRevisionId
 	 * @param afterCombinedRevisionId
-	 * @param changed
 	 */
 	public DBCodeFragmentLinkInfo(final long id, final long beforeElementId,
 			final long afterElementId, final long beforeCombinedRevisionId,
