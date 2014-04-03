@@ -64,7 +64,7 @@ public class DBFileInfo extends AbstractDBElement implements
 	public DBFileInfo(final String path, final long startCombinedRevisionId,
 			final long endCombinedRevisionId, final long addedCombinedCommitId) {
 		this(count.getAndIncrement(), path, startCombinedRevisionId,
-				endCombinedRevisionId);
+				endCombinedRevisionId, addedCombinedCommitId);
 	}
 
 	/**
