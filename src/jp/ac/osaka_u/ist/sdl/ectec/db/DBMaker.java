@@ -469,11 +469,9 @@ public class DBMaker {
 
 		builder.append("create table CLONE_SET(");
 		builder.append("CLONE_SET_ID LONG,");
-		builder.append("OWNER_REPOSITORY_ID LONG,");
 		builder.append("OWNER_COMBINED_REVISION_ID LONG,");
 		builder.append("ELEMENT LONG,");
 		builder.append("PRIMARY KEY(CLONE_SET_ID, ELEMENT),");
-		builder.append("FOREIGN KEY(OWNER_REPOSITORY_ID) REFERENCES REPOSITORY(REPOSITORY_ID),");
 		builder.append("FOREIGN KEY(OWNER_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(OWNER_COMBINED_REVISION_ID),");
 		builder.append("FOREIGN KEY(ELEMENT) REFERENCES CODE_FRAGMENT(CODE_FRAGMENT_ID)");
 		builder.append(")");
@@ -489,8 +487,6 @@ public class DBMaker {
 	private void createCloneSetTableIndexes() throws Exception {
 		dbManager
 				.executeUpdate("create index CLONE_SET_ID_INDEX_CLONE_SET on CLONE_SET(CLONE_SET_ID)");
-		dbManager
-				.executeUpdate("create index OWNER_REPOSITORY_ID_INDEX_CLONE_SET on CLONE_SET(OWNER_REPOSITORY_ID)");
 		dbManager
 				.executeUpdate("create index OWNER_COMBINED_REVISION_ID_INDEX_CLONE_SET on CLONE_SET(OWNER_COMBINED_REVISION_ID)");
 		dbManager
