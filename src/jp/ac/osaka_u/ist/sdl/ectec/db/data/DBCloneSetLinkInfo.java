@@ -19,26 +19,6 @@ public class DBCloneSetLinkInfo extends DBElementLinkInfo implements
 	private static final AtomicLong count = new AtomicLong(0);
 
 	/**
-	 * the number of changed elements
-	 */
-	private final int numberOfChangedElements;
-
-	/**
-	 * the number of added elements
-	 */
-	private final int numberOfAddedElements;
-
-	/**
-	 * the number of deleted elements
-	 */
-	private final int numberOfDeletedElements;
-
-	/**
-	 * the number of co-changed elements (in this clone set)
-	 */
-	private final int numberOfCoChangecElements;
-
-	/**
 	 * the list of the ids of code fragment links related to this clone set link
 	 */
 	private final List<Long> codeFragmentLinks;
@@ -49,26 +29,16 @@ public class DBCloneSetLinkInfo extends DBElementLinkInfo implements
 	 * @param id
 	 * @param beforeElementId
 	 * @param afterElementId
-	 * @param beforeRevisionId
-	 * @param afterRevisionId
-	 * @param numberOfChangedElements
-	 * @param numberOfAddedElements
-	 * @param numberOfDeletedElements
-	 * @param numberOfCoChangedElements
+	 * @param beforeCombinedRevisionId
+	 * @param afterCombinedRevisionId
 	 * @param codeFragmentLinks
 	 */
 	public DBCloneSetLinkInfo(final long id, final long beforeElementId,
-			final long afterElementId, final long beforeRevisionId,
-			final long afterRevisionId, final int numberOfChangedElements,
-			final int numberOfAddedElements, final int numberOfDeletedElements,
-			final int numberOfCoChangedElements,
+			final long afterElementId, final long beforeCombinedRevisionId,
+			final long afterCombinedRevisionId,
 			final List<Long> codeFragmentLinks) {
-		super(id, beforeElementId, afterElementId, beforeRevisionId,
-				afterRevisionId);
-		this.numberOfChangedElements = numberOfChangedElements;
-		this.numberOfAddedElements = numberOfAddedElements;
-		this.numberOfDeletedElements = numberOfDeletedElements;
-		this.numberOfCoChangecElements = numberOfCoChangedElements;
+		super(id, beforeElementId, afterElementId, beforeCombinedRevisionId,
+				afterCombinedRevisionId);
 		this.codeFragmentLinks = codeFragmentLinks;
 	}
 
@@ -77,60 +47,17 @@ public class DBCloneSetLinkInfo extends DBElementLinkInfo implements
 	 * 
 	 * @param beforeElementId
 	 * @param afterElementId
-	 * @param beforeRevisionId
-	 * @param afterRevisionId
-	 * @param numberOfChangedElements
-	 * @param numberOfAddedElements
-	 * @param numberOfDeletedElements
-	 * @param numberOfCoChangedElements
+	 * @param beforeCombinedRevisionId
+	 * @param afterCombinedRevisionId
 	 * @param codeFragmentLinks
 	 */
 	public DBCloneSetLinkInfo(final long beforeElementId,
-			final long afterElementId, final long beforeRevisionId,
-			final long afterRevisionId, final int numberOfChangedElements,
-			final int numberOfAddedElements, final int numberOfDeletedElements,
-			final int numberOfCoChangedElements,
+			final long afterElementId, final long beforeCombinedRevisionId,
+			final long afterCombinedRevisionId,
 			final List<Long> codeFragmentLinks) {
 		this(count.getAndIncrement(), beforeElementId, afterElementId,
-				beforeRevisionId, afterRevisionId, numberOfChangedElements,
-				numberOfAddedElements, numberOfDeletedElements,
-				numberOfCoChangedElements, codeFragmentLinks);
-	}
-
-	/**
-	 * get the number of changed elements
-	 * 
-	 * @return
-	 */
-	public final int getNumberOfChangedElements() {
-		return this.numberOfChangedElements;
-	}
-
-	/**
-	 * get the number of added elements
-	 * 
-	 * @return
-	 */
-	public final int getNumberOfAddedElements() {
-		return this.numberOfAddedElements;
-	}
-
-	/**
-	 * get the number of deleted elements
-	 * 
-	 * @return
-	 */
-	public final int getNumberOfDeletedElements() {
-		return this.numberOfDeletedElements;
-	}
-
-	/**
-	 * get the number of co-changed elements
-	 * 
-	 * @return
-	 */
-	public final int getNumberOfCoChangedElements() {
-		return this.numberOfCoChangecElements;
+				beforeCombinedRevisionId, afterCombinedRevisionId,
+				codeFragmentLinks);
 	}
 
 	/**
