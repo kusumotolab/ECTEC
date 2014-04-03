@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author k-hotta
  * 
  */
-public class DBCombinedRevision extends AbstractDBElement implements Comparable<DBCombinedRevision> {
+public class DBCombinedRevisionInfo extends AbstractDBElement implements Comparable<DBCombinedRevisionInfo> {
 
 	/**
 	 * a counter to keep the nubmer of created elements
@@ -27,7 +27,7 @@ public class DBCombinedRevision extends AbstractDBElement implements Comparable<
 	 * 
 	 * @param id
 	 */
-	public DBCombinedRevision(final long id, final List<Long> originalRevisions) {
+	public DBCombinedRevisionInfo(final long id, final List<Long> originalRevisions) {
 		super(id);
 		this.originalRevisions = originalRevisions;
 	}
@@ -37,7 +37,7 @@ public class DBCombinedRevision extends AbstractDBElement implements Comparable<
 	 * 
 	 * @param originalRevisions
 	 */
-	public DBCombinedRevision(final List<Long> originalRevisions) {
+	public DBCombinedRevisionInfo(final List<Long> originalRevisions) {
 		this(count.getAndIncrement(), originalRevisions);
 	}
 
@@ -51,7 +51,7 @@ public class DBCombinedRevision extends AbstractDBElement implements Comparable<
 	}
 
 	@Override
-	public int compareTo(DBCombinedRevision another) {
+	public int compareTo(DBCombinedRevisionInfo another) {
 		return ((Long) this.getId()).compareTo(another.getId());
 	}
 
