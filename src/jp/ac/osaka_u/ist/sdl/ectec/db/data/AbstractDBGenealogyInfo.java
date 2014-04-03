@@ -3,7 +3,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.db.data;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class AbstractDBGenealogyInfo<T extends AbstractDBElement, U extends DBElementLinkInfo>
+public abstract class AbstractDBGenealogyInfo<T extends AbstractDBElement, U extends AbstractDBElementLinkInfo>
 		extends AbstractDBElement {
 
 	/**

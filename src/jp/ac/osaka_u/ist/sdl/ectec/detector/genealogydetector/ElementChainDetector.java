@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBElementLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.AbstractDBElementLinkInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.LinkElementRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
@@ -22,7 +22,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
  * @param <G>
  * @param <L>
  */
-public class ElementChainDetector<L extends DBElementLinkInfo> {
+public class ElementChainDetector<L extends AbstractDBElementLinkInfo> {
 
 	/**
 	 * target revisions

@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author k-hotta
  * 
  */
-public class DBCodeFragmentLinkInfo extends DBElementLinkInfo implements
+public class DBCodeFragmentLinkInfo extends AbstractDBElementLinkInfo implements
 		Comparable<DBCodeFragmentLinkInfo> {
 
 	/**

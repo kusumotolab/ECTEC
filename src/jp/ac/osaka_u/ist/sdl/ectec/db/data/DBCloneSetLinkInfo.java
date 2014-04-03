@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author k-hotta
  * 
  */
-public class DBCloneSetLinkInfo extends DBElementLinkInfo implements
+public class DBCloneSetLinkInfo extends AbstractDBElementLinkInfo implements
 		Comparable<DBCloneSetLinkInfo> {
 
 	/**

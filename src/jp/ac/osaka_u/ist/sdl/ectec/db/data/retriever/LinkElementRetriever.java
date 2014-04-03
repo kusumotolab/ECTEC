@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.SortedMap;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
-import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBElementLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.AbstractDBElementLinkInfo;
 
 /**
  * An abstract class for retrieving link elements
@@ -13,7 +13,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBElementLinkInfo;
  * 
  * @param <T>
  */
-public abstract class LinkElementRetriever<T extends DBElementLinkInfo> extends
+public abstract class LinkElementRetriever<T extends AbstractDBElementLinkInfo> extends
 		AbstractElementRetriever<T> {
 
 	public LinkElementRetriever(DBConnectionManager dbManager) {

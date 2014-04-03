@@ -6,7 +6,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.db.data;
  * @author k-hotta
  * 
  */
-public abstract class DBElementLinkInfo extends AbstractDBElement {
+public abstract class AbstractDBElementLinkInfo extends AbstractDBElement {
 
 	/**
 	 * the id of the before element
@@ -37,7 +37,7 @@ public abstract class DBElementLinkInfo extends AbstractDBElement {
 	 * @param beforeCombinedRevisionId
 	 * @param afterCombinedRevisionId
 	 */
-	public DBElementLinkInfo(final long id, final long beforeElementId,
+	public AbstractDBElementLinkInfo(final long id, final long beforeElementId,
 			final long afterElementId, final long beforeCombinedRevisionId,
 			final long afterCombinedRevisionId) {
 		super(id);
