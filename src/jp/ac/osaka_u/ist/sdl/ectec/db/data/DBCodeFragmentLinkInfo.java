@@ -17,26 +17,20 @@ public class DBCodeFragmentLinkInfo extends DBElementLinkInfo implements
 	private static final AtomicLong count = new AtomicLong(0);
 
 	/**
-	 * whether the code fragment was changed or not
-	 */
-	private final boolean changed;
-
-	/**
 	 * the constructor for elements that are retrieved from the db
 	 * 
 	 * @param id
 	 * @param beforeElementId
 	 * @param afterElementId
-	 * @param beforeRevisionId
-	 * @param afterRevisionId
+	 * @param beforeCombinedRevisionId
+	 * @param afterCombinedRevisionId
 	 * @param changed
 	 */
 	public DBCodeFragmentLinkInfo(final long id, final long beforeElementId,
-			final long afterElementId, final long beforeRevisionId,
-			final long afterRevisionId, final boolean changed) {
-		super(id, beforeElementId, afterElementId, beforeRevisionId,
-				afterRevisionId);
-		this.changed = changed;
+			final long afterElementId, final long beforeCombinedRevisionId,
+			final long afterCombinedRevisionId) {
+		super(id, beforeElementId, afterElementId, beforeCombinedRevisionId,
+				afterCombinedRevisionId);
 	}
 
 	/**
@@ -44,24 +38,15 @@ public class DBCodeFragmentLinkInfo extends DBElementLinkInfo implements
 	 * 
 	 * @param beforeElementId
 	 * @param afterElementId
-	 * @param beforeRevisionId
-	 * @param afterRevisionId
+	 * @param beforeCombinedRevisionId
+	 * @param afterCombinedRevisionId
 	 * @param changed
 	 */
 	public DBCodeFragmentLinkInfo(final long beforeElementId,
-			final long afterElementId, final long beforeRevisionId,
-			final long afterRevisionId, final boolean changed) {
+			final long afterElementId, final long beforeCombinedRevisionId,
+			final long afterCombinedRevisionId) {
 		this(count.getAndIncrement(), beforeElementId, afterElementId,
-				beforeRevisionId, afterRevisionId, changed);
-	}
-
-	/**
-	 * get whether this code fragment was changed or not
-	 * 
-	 * @return
-	 */
-	public final boolean isChanged() {
-		return changed;
+				beforeCombinedRevisionId, afterCombinedRevisionId);
 	}
 
 	@Override
