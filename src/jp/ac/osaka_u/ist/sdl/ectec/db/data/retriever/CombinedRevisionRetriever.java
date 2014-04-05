@@ -58,6 +58,10 @@ public class CombinedRevisionRetriever
 
 			originalRevisionIds.add(row.getOriginalRevisionId());
 		}
+		
+		if (aRow == null) {
+			return null;
+		}
 
 		final long id = aRow.getId();
 		final List<Long> listOfOriginalRevisionIds = new ArrayList<Long>(

@@ -6,7 +6,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever;
  * @author k-hotta
  * 
  */
-public class CloneSetRowData extends AbstractRowData {
+class CloneSetRowData extends AbstractRowData {
 
 	private final long ownerCombinedRevisionId;
 
