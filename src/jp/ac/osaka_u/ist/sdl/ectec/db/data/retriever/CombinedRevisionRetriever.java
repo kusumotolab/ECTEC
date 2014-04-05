@@ -3,10 +3,10 @@ package jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.Set;
+import java.util.TreeSet;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCombinedRevisionInfo;
@@ -17,8 +17,9 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCombinedRevisionInfo;
  * @author k-hotta
  * 
  */
-public class CombinedRevisionRetriever extends
-		AbstractElementRetriever<DBCombinedRevisionInfo> {
+public class CombinedRevisionRetriever
+		extends
+		AbstractNonuniqueElementRetriever<DBCombinedRevisionInfo, CombinedRevisionRowData> {
 
 	public CombinedRevisionRetriever(final DBConnectionManager dbManager) {
 		super(dbManager);
@@ -35,37 +36,34 @@ public class CombinedRevisionRetriever extends
 	}
 
 	@Override
-	public SortedMap<Long, DBCombinedRevisionInfo> instantiate(ResultSet rs)
+	protected CombinedRevisionRowData makeRowInstance(ResultSet rs)
 			throws SQLException {
-		final SortedMap<Long, DBCombinedRevisionInfo> result = new TreeMap<Long, DBCombinedRevisionInfo>();
+		int column = 0;
+		final long id = rs.getLong(++column);
+		final long originalRevisionId = rs.getLong(++column);
 
-		long previousId = -1;
-		List<Long> originalRevisions = new ArrayList<Long>();
-		while (rs.next()) {
-			int column = 0;
-			final long id = rs.getLong(++column);
-			final long originalRevisionId = rs.getLong(++column);
+		return new CombinedRevisionRowData(id, originalRevisionId);
+	}
 
-			if (id != previousId) {
-				if (!originalRevisions.isEmpty()) {
-					final DBCombinedRevisionInfo newInstance = new DBCombinedRevisionInfo(
-							previousId, originalRevisions);
-					result.put(newInstance.getId(), newInstance);
-					originalRevisions = new ArrayList<Long>();
-				}
+	@Override
+	protected DBCombinedRevisionInfo createElement(
+			Collection<CombinedRevisionRowData> rows) {
+		CombinedRevisionRowData aRow = null;
+		final Set<Long> originalRevisionIds = new TreeSet<Long>();
+
+		for (final CombinedRevisionRowData row : rows) {
+			if (aRow == null) {
+				aRow = row;
 			}
 
-			previousId = id;
-			originalRevisions.add(originalRevisionId);
+			originalRevisionIds.add(row.getOriginalRevisionId());
 		}
 
-		if (!originalRevisions.isEmpty()) {
-			final DBCombinedRevisionInfo newInstance = new DBCombinedRevisionInfo(
-					previousId, originalRevisions);
-			result.put(newInstance.getId(), newInstance);
-		}
+		final long id = aRow.getId();
+		final List<Long> listOfOriginalRevisionIds = new ArrayList<Long>(
+				originalRevisionIds);
 
-		return Collections.unmodifiableSortedMap(result);
+		return new DBCombinedRevisionInfo(id, listOfOriginalRevisionIds);
 	}
 
 }
