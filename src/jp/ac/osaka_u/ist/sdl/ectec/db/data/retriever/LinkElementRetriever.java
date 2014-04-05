@@ -14,7 +14,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.AbstractDBElementLinkInfo;
  * @param <T>
  */
 public abstract class LinkElementRetriever<T extends AbstractDBElementLinkInfo> extends
-		AbstractElementRetriever<T> {
+		AbstractUniqueElementRetriever<T> {
 
 	public LinkElementRetriever(DBConnectionManager dbManager) {
 		super(dbManager);

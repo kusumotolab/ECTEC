@@ -14,7 +14,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.AbstractDBElement;
  * @param <T>
  */
 public abstract class RangedElementRetriever<T extends AbstractDBElement> extends
-		AbstractElementRetriever<T> {
+		AbstractUniqueElementRetriever<T> {
 
 	public RangedElementRetriever(DBConnectionManager dbManager) {
 		super(dbManager);

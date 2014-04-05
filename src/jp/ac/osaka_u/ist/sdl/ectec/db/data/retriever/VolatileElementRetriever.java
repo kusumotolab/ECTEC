@@ -14,7 +14,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.AbstractDBElement;
  * @param <T>
  */
 public abstract class VolatileElementRetriever<T extends AbstractDBElement>
-		extends AbstractElementRetriever<T> {
+		extends AbstractUniqueElementRetriever<T> {
 
 	public VolatileElementRetriever(DBConnectionManager dbManager) {
 		super(dbManager);

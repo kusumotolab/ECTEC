@@ -9,7 +9,7 @@ import java.util.TreeSet;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.AbstractDBElement;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.AbstractDBGenealogyInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.AbstractDBElementLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.AbstractElementRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.AbstractUniqueElementRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.LinkElementRetriever;
 
 /**
@@ -25,7 +25,7 @@ public abstract class ElementChainFinalizer<E extends AbstractDBElement, L exten
 	/**
 	 * the retriever of elements
 	 */
-	protected final AbstractElementRetriever<E> elementRetriever;
+	protected final AbstractUniqueElementRetriever<E> elementRetriever;
 
 	/**
 	 * the retriever of links
@@ -38,7 +38,7 @@ public abstract class ElementChainFinalizer<E extends AbstractDBElement, L exten
 	private final Collection<Long> processedElements;
 
 	public ElementChainFinalizer(
-			final AbstractElementRetriever<E> elementRetriever,
+			final AbstractUniqueElementRetriever<E> elementRetriever,
 			final LinkElementRetriever<L> linkRetriever) {
 		this.elementRetriever = elementRetriever;
 		this.linkRetriever = linkRetriever;

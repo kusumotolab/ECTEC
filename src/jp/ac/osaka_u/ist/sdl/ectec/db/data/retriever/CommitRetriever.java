@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
 
-public class CommitRetriever extends AbstractElementRetriever<DBCommitInfo> {
+public class CommitRetriever extends AbstractUniqueElementRetriever<DBCommitInfo> {
 
 	public CommitRetriever(DBConnectionManager dbManager) {
 		super(dbManager);

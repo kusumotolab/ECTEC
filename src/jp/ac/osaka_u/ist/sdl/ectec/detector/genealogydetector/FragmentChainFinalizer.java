@@ -7,7 +7,7 @@ import java.util.Map;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentGenealogyInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.AbstractElementRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.AbstractUniqueElementRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.LinkElementRetriever;
 
 /**
@@ -22,7 +22,7 @@ public class FragmentChainFinalizer
 		ElementChainFinalizer<DBCodeFragmentInfo, DBCodeFragmentLinkInfo, DBCodeFragmentGenealogyInfo> {
 
 	public FragmentChainFinalizer(
-			AbstractElementRetriever<DBCodeFragmentInfo> elementRetriever,
+			AbstractUniqueElementRetriever<DBCodeFragmentInfo> elementRetriever,
 			LinkElementRetriever<DBCodeFragmentLinkInfo> linkRetriever) {
 		super(elementRetriever, linkRetriever);
 	}

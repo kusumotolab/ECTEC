@@ -20,14 +20,14 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.AbstractDBElement;
  * 
  * @param <T>
  */
-public abstract class AbstractElementRetriever<T extends AbstractDBElement> {
+public abstract class AbstractUniqueElementRetriever<T extends AbstractDBElement> {
 
 	/**
 	 * the manager of the connection between db
 	 */
 	protected final DBConnectionManager dbManager;
 
-	public AbstractElementRetriever(final DBConnectionManager dbManager) {
+	public AbstractUniqueElementRetriever(final DBConnectionManager dbManager) {
 		this.dbManager = dbManager;
 	}
 

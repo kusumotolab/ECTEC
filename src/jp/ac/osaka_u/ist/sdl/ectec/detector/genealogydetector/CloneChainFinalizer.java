@@ -7,7 +7,7 @@ import java.util.Map;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneGenealogyInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.AbstractElementRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.AbstractUniqueElementRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.LinkElementRetriever;
 
 public class CloneChainFinalizer
@@ -20,7 +20,7 @@ public class CloneChainFinalizer
 	private final long lastRevisionId;
 
 	public CloneChainFinalizer(
-			AbstractElementRetriever<DBCloneSetInfo> elementRetriever,
+			AbstractUniqueElementRetriever<DBCloneSetInfo> elementRetriever,
 			LinkElementRetriever<DBCloneSetLinkInfo> linkRetriever,
 			final long lastRevisionId) {
 		super(elementRetriever, linkRetriever);

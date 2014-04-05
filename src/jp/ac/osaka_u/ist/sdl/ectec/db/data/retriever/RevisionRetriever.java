@@ -13,7 +13,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
  * @author k-hotta
  * 
  */
-public class RevisionRetriever extends AbstractElementRetriever<DBRevisionInfo> {
+public class RevisionRetriever extends AbstractUniqueElementRetriever<DBRevisionInfo> {
 
 	public RevisionRetriever(DBConnectionManager dbManager) {
 		super(dbManager);
