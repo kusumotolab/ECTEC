@@ -23,7 +23,7 @@ public class CombinedRevisionRegisterer extends
 
 	@Override
 	protected String createPreparedStatementQueue() {
-		return "insert into COMBINED_REVISION";
+		return "insert into COMBINED_REVISION values (?,?)";
 	}
 
 	@Override
