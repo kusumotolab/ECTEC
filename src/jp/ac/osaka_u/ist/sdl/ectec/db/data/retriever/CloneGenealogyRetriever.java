@@ -3,11 +3,14 @@ package jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeSet;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneGenealogyInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.util.StringUtils;
 
 /**
  * A class for retrieving clone genealogies
@@ -15,43 +18,62 @@ import jp.ac.osaka_u.ist.sdl.ectec.util.StringUtils;
  * @author k-hotta
  * 
  */
-public class CloneGenealogyRetriever extends
-		RangedElementRetriever<DBCloneGenealogyInfo> {
+public class CloneGenealogyRetriever
+		extends
+		AbstractNonuniqueElementRetriever<DBCloneGenealogyInfo, CloneGenealogyRowData> {
 
 	public CloneGenealogyRetriever(DBConnectionManager dbManager) {
 		super(dbManager);
 	}
 
 	@Override
-	protected DBCloneGenealogyInfo createElement(ResultSet rs)
+	protected CloneGenealogyRowData makeRowInstance(ResultSet rs)
 			throws SQLException {
 		int column = 0;
 		final long id = rs.getLong(++column);
-		final long startRevisionId = rs.getLong(++column);
-		final long endRevisionId = rs.getLong(++column);
-		final String clonesStr = rs.getString(++column);
-		final String cloneLinksStr = rs.getString(++column);
-		final int numberOfChanges = rs.getInt(++column);
-		final int numberOfAdditions = rs.getInt(++column);
-		final int numberOfDeletions = rs.getInt(++column);
-		final boolean dead = (rs.getInt(++column) == 1) ? true : false;
+		final long startCombinedRevisionId = rs.getLong(++column);
+		final long endCombinedRevisionId = rs.getLong(++column);
+		final long cloneSetId = rs.getLong(++column);
+		final long cloneSetLinkId = rs.getLong(++column);
 
-		final List<Long> clones = new ArrayList<Long>();
-		StringUtils.convertStringToCollection(clones, clonesStr);
-		final List<Long> cloneLinks = new ArrayList<Long>();
-		StringUtils.convertStringToCollection(cloneLinks, cloneLinksStr);
-
-		return new DBCloneGenealogyInfo(id, startRevisionId, endRevisionId,
-				clones, cloneLinks, numberOfChanges, numberOfAdditions,
-				numberOfDeletions, dead);
+		return new CloneGenealogyRowData(id, startCombinedRevisionId,
+				endCombinedRevisionId, cloneSetId, cloneSetLinkId);
 	}
 
 	@Override
+	protected DBCloneGenealogyInfo createElement(
+			Collection<CloneGenealogyRowData> rows) {
+		final Set<Long> cloneSetIds = new TreeSet<Long>();
+		final Set<Long> cloneSetLinkIds = new TreeSet<Long>();
+		CloneGenealogyRowData aRow = null;
+
+		for (final CloneGenealogyRowData row : rows) {
+			if (aRow == null) {
+				aRow = row;
+			}
+			cloneSetIds.add(row.getCloneSetId());
+			cloneSetLinkIds.add(row.getCloneSetLinkId());
+		}
+
+		if (aRow == null) {
+			return null; // here shouldn't be reached
+		}
+
+		final long id = aRow.getId();
+		final long startCombinedRevisionId = aRow.getStartCombinedRevisionId();
+		final long endCombinedRevisionId = aRow.getEndCombinedRevisionId();
+		final List<Long> listOfCloneSetIds = new ArrayList<Long>(cloneSetIds);
+		final List<Long> listOfCloneSetLinkIds = new ArrayList<Long>(
+				cloneSetLinkIds);
+
+		return new DBCloneGenealogyInfo(id, startCombinedRevisionId,
+				endCombinedRevisionId, listOfCloneSetIds, listOfCloneSetLinkIds);
+	}
+
 	protected String getStartRevisionIdColumnName() {
 		return "START_REVISION_ID";
 	}
 
-	@Override
 	protected String getEndRevisionIdColumnName() {
 		return "END_REVISION_ID";
 	}
@@ -64,6 +86,22 @@ public class CloneGenealogyRetriever extends
 	@Override
 	protected String getIdColumnName() {
 		return "CLONE_GENEALOGY_ID";
+	}
+
+	/**
+	 * retrieve elements that exist in the specified revision
+	 * 
+	 * @param revisionId
+	 * @return
+	 * @throws SQLException
+	 */
+	public synchronized SortedMap<Long, DBCloneGenealogyInfo> retrieveElementsInSpecifiedRevision(
+			final long revisionId) throws SQLException {
+		final String query = "select * from " + getTableName() + " where "
+				+ getStartRevisionIdColumnName() + " <= " + revisionId
+				+ " AND " + getEndRevisionIdColumnName() + " >= " + revisionId;
+
+		return retrieve(query);
 	}
 
 }
