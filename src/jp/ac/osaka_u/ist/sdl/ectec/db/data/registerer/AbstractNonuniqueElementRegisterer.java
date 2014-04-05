@@ -15,7 +15,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.AbstractDBElement;
  * @param <T>
  */
 public abstract class AbstractNonuniqueElementRegisterer<T extends AbstractDBElement>
-		extends AbstractUniqueElementRegisterer<T> {
+		extends AbstractElementRegisterer<T> {
 
 	public AbstractNonuniqueElementRegisterer(DBConnectionManager dbManager,
 			int maxBatchCount) {

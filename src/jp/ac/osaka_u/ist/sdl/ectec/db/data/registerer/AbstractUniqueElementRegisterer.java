@@ -8,23 +8,14 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.AbstractDBElement;
 
 /**
- * An abstract class to register elements into the db
+ * An abstract class to register unique elements into the db
  * 
  * @author k-hotta
  * 
  * @param <T>
  */
-public abstract class AbstractUniqueElementRegisterer<T extends AbstractDBElement> {
+public abstract class AbstractUniqueElementRegisterer<T extends AbstractDBElement> extends AbstractElementRegisterer<T> {
 
-	/**
-	 * the manager of the connection between db
-	 */
-	protected final DBConnectionManager dbManager;
-
-	/**
-	 * the maximum number of statements that are batched
-	 */
-	protected final int maxBatchCount;
 
 	/**
 	 * the constructor
@@ -34,8 +25,7 @@ public abstract class AbstractUniqueElementRegisterer<T extends AbstractDBElemen
 	 */
 	public AbstractUniqueElementRegisterer(final DBConnectionManager dbManager,
 			final int maxBatchCount) {
-		this.dbManager = dbManager;
-		this.maxBatchCount = maxBatchCount;
+		super(dbManager, maxBatchCount);
 	}
 
 	/**
@@ -44,6 +34,7 @@ public abstract class AbstractUniqueElementRegisterer<T extends AbstractDBElemen
 	 * @param elements
 	 * @throws SQLException
 	 */
+	@Override
 	public synchronized void register(final Collection<T> elements) throws SQLException {
 		final PreparedStatement pstmt = dbManager
 				.createPreparedStatement(createPreparedStatementQueue());
@@ -64,13 +55,6 @@ public abstract class AbstractUniqueElementRegisterer<T extends AbstractDBElemen
 
 		pstmt.close();
 	}
-
-	/**
-	 * get the query to create a prepared statement
-	 * 
-	 * @return
-	 */
-	protected abstract String createPreparedStatementQueue();
 
 	/**
 	 * set attributes in the given prepared statement
