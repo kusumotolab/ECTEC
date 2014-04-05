@@ -24,8 +24,9 @@ public class RevisionRetriever extends AbstractUniqueElementRetriever<DBRevision
 		int column = 0;
 		final long id = rs.getLong(++column);
 		final String identifier = rs.getString(++column);
+		final long repositoryId = rs.getLong(++column);
 
-		return new DBRevisionInfo(id, identifier);
+		return new DBRevisionInfo(id, identifier, repositoryId);
 	}
 
 	@Override
