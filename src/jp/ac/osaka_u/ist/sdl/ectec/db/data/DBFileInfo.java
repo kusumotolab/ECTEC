@@ -17,6 +17,11 @@ public class DBFileInfo extends AbstractDBElement implements
 	private static final AtomicLong count = new AtomicLong(0);
 
 	/**
+	 * the id of the owner repository
+	 */
+	private final long ownerRepositoryId;
+
+	/**
 	 * the path of this file
 	 */
 	private final String path;
@@ -40,14 +45,17 @@ public class DBFileInfo extends AbstractDBElement implements
 	 * the constructor for elements that are retrieved from the db
 	 * 
 	 * @param id
+	 * @param ownerRepositoryId
 	 * @param path
 	 * @param startCombinedRevisionId
 	 * @param endCombinedRevisionId
+	 * @param addedCombinedCommitId
 	 */
-	public DBFileInfo(final long id, final String path,
-			final long startCombinedRevisionId,
+	public DBFileInfo(final long id, final long ownerRepositoryId,
+			final String path, final long startCombinedRevisionId,
 			final long endCombinedRevisionId, final long addedCombinedCommitId) {
 		super(id);
+		this.ownerRepositoryId = ownerRepositoryId;
 		this.path = path;
 		this.startCombinedRevisionId = startCombinedRevisionId;
 		this.endCombinedRevisionid = endCombinedRevisionId;
@@ -57,14 +65,27 @@ public class DBFileInfo extends AbstractDBElement implements
 	/**
 	 * the constructor for newly created elements
 	 * 
+	 * @param ownerRepositoryId
 	 * @param path
 	 * @param startCombinedRevisionId
 	 * @param endCombinedRevisionId
+	 * @param addedCombinedCommitId
 	 */
-	public DBFileInfo(final String path, final long startCombinedRevisionId,
+	public DBFileInfo(final long ownerRepositoryId, final String path,
+			final long startCombinedRevisionId,
 			final long endCombinedRevisionId, final long addedCombinedCommitId) {
-		this(count.getAndIncrement(), path, startCombinedRevisionId,
-				endCombinedRevisionId, addedCombinedCommitId);
+		this(count.getAndIncrement(), ownerRepositoryId, path,
+				startCombinedRevisionId, endCombinedRevisionId,
+				addedCombinedCommitId);
+	}
+
+	/**
+	 * get the id of the owner repository
+	 * 
+	 * @return
+	 */
+	public final long getOwnerRepositoryId() {
+		return this.ownerRepositoryId;
 	}
 
 	/**
