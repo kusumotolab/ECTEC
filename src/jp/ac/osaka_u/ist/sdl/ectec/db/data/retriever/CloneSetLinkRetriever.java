@@ -3,11 +3,13 @@ package jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.util.StringUtils;
 
 /**
  * A class for retrieving links of clone sets
@@ -16,43 +18,67 @@ import jp.ac.osaka_u.ist.sdl.ectec.util.StringUtils;
  * 
  */
 public class CloneSetLinkRetriever extends
-		LinkElementRetriever<DBCloneSetLinkInfo> {
+		AbstractElementRetriever<DBCloneSetLinkInfo> {
 
 	public CloneSetLinkRetriever(DBConnectionManager dbManager) {
 		super(dbManager);
 	}
 
 	@Override
-	protected DBCloneSetLinkInfo createElement(ResultSet rs) throws SQLException {
-		int column = 0;
-		final long id = rs.getLong(++column);
-		final long beforeElementId = rs.getLong(++column);
-		final long afterElementId = rs.getLong(++column);
-		final long beforeRevisionId = rs.getLong(++column);
-		final long afterRevisionId = rs.getLong(++column);
-		final int numberOfChangedElements = rs.getInt(++column);
-		final int numberOfAddedElements = rs.getInt(++column);
-		final int numberOfDeletedElements = rs.getInt(++column);
-		final int numberOfCoChangedElements = rs.getInt(++column);
-		final String codeFragmentLinksStr = rs.getString(++column);
-		final List<Long> codeFragmentLinks = new ArrayList<Long>();
-		StringUtils.convertStringToCollection(codeFragmentLinks,
-				codeFragmentLinksStr);
+	public SortedMap<Long, DBCloneSetLinkInfo> instantiate(ResultSet rs)
+			throws SQLException {
+		final SortedMap<Long, DBCloneSetLinkInfo> result = new TreeMap<Long, DBCloneSetLinkInfo>();
 
-		return new DBCloneSetLinkInfo(id, beforeElementId, afterElementId,
-				beforeRevisionId, afterRevisionId, numberOfChangedElements,
-				numberOfAddedElements, numberOfDeletedElements,
-				numberOfCoChangedElements, codeFragmentLinks);
+		long previousId = -1;
+		long id = -1;
+		long beforeElementId = -1;
+		long afterElementId = -1;
+		long beforeCombinedRevisionId = -1;
+		long afterCombinedRevisionId = -1;
+		long codeFragmentLinkId = -1;
+		List<Long> codeFragmentLinkIds = new ArrayList<Long>();
+
+		while (rs.next()) {
+			int column = 0;
+			id = rs.getLong(++column);
+			beforeElementId = rs.getLong(++column);
+			afterElementId = rs.getLong(++column);
+			beforeCombinedRevisionId = rs.getLong(++column);
+			afterCombinedRevisionId = rs.getLong(++column);
+			codeFragmentLinkId = rs.getLong(++column);
+
+			if (id != previousId) {
+				if (!codeFragmentLinkIds.isEmpty()) {
+					final DBCloneSetLinkInfo newInstance = new DBCloneSetLinkInfo(
+							id, beforeElementId, afterElementId,
+							beforeCombinedRevisionId, afterCombinedRevisionId,
+							codeFragmentLinkIds);
+					result.put(newInstance.getId(), newInstance);
+					codeFragmentLinkIds = new ArrayList<Long>();
+				}
+			}
+			
+			previousId = id;
+			codeFragmentLinkIds.add(codeFragmentLinkId);
+		}
+		
+		if (!codeFragmentLinkIds.isEmpty()) {
+			final DBCloneSetLinkInfo newInstance = new DBCloneSetLinkInfo(
+					id, beforeElementId, afterElementId,
+					beforeCombinedRevisionId, afterCombinedRevisionId,
+					codeFragmentLinkIds);
+			result.put(newInstance.getId(), newInstance);
+		}
+
+		return Collections.unmodifiableSortedMap(result);
 	}
 
-	@Override
 	protected String getBeforeRevisionIdColumnName() {
-		return "BEFORE_REVISION_ID";
+		return "BEFORE_COMBINED_REVISION_ID";
 	}
 
-	@Override
 	protected String getAfterRevisionIdColumnName() {
-		return "AFTER_REVISION_ID";
+		return "AFTER_COMBINED_REVISION_ID";
 	}
 
 	@Override
@@ -63,6 +89,36 @@ public class CloneSetLinkRetriever extends
 	@Override
 	protected String getIdColumnName() {
 		return "CLONE_SET_LINK_ID";
+	}
+
+	/**
+	 * retrieve elements by specifying their before revision
+	 * 
+	 * @param beforeRevisionId
+	 * @return
+	 * @throws SQLException
+	 */
+	public synchronized SortedMap<Long, DBCloneSetLinkInfo> retrieveElementsWithBeforeRevision(
+			final long beforeRevisionId) throws SQLException {
+		final String query = "select * from " + getTableName() + " where "
+				+ getBeforeRevisionIdColumnName() + " = " + beforeRevisionId;
+
+		return retrieve(query);
+	}
+
+	/**
+	 * retrieve elements by specifying their before revision
+	 * 
+	 * @param afterRevisionId
+	 * @return
+	 * @throws SQLException
+	 */
+	public synchronized SortedMap<Long, DBCloneSetLinkInfo> retrieveElementsWithAfterRevision(
+			final long afterRevisionId) throws SQLException {
+		final String query = "select * from " + getTableName() + " where "
+				+ getAfterRevisionIdColumnName() + " = " + afterRevisionId;
+
+		return retrieve(query);
 	}
 
 }
