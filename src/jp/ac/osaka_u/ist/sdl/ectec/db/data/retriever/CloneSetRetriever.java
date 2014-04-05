@@ -3,10 +3,11 @@ package jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.TreeSet;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
@@ -17,50 +18,11 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
  * @author k-hotta
  * 
  */
-public class CloneSetRetriever extends AbstractElementRetriever<DBCloneSetInfo> {
+public class CloneSetRetriever extends
+		AbstractNonuniqueElementRetriever<DBCloneSetInfo, CloneSetRowData> {
 
 	public CloneSetRetriever(DBConnectionManager dbManager) {
 		super(dbManager);
-	}
-
-	@Override
-	public SortedMap<Long, DBCloneSetInfo> instantiate(ResultSet rs)
-			throws SQLException {
-		final SortedMap<Long, DBCloneSetInfo> result = new TreeMap<Long, DBCloneSetInfo>();
-
-		List<Long> elementIds = new ArrayList<Long>();
-		long previousId = -1;
-		long id = -1;
-		long ownerCombinedRevisionId = -1;
-		long elementId = -1;
-		
-		while (rs.next()) {
-			int column = 0;
-			id = rs.getLong(++column);
-			ownerCombinedRevisionId = rs.getLong(++column);
-			elementId = rs.getLong(++column);
-
-			if (id != previousId) {
-				if (!elementIds.isEmpty()) {
-					final DBCloneSetInfo newInstance = new DBCloneSetInfo(
-							elementId, ownerCombinedRevisionId, elementIds);
-					result.put(newInstance.getId(), newInstance);
-					elementIds = new ArrayList<Long>();
-				}
-			}
-
-			previousId = id;
-			elementIds.add(elementId);
-		}
-		
-		if (!elementIds.isEmpty()) {
-			final DBCloneSetInfo newInstance = new DBCloneSetInfo(
-					id, ownerCombinedRevisionId, elementIds);
-			result.put(newInstance.getId(), newInstance);
-			elementIds = new ArrayList<Long>();
-		}
-
-		return Collections.unmodifiableSortedMap(result);
 	}
 
 	protected String getRevisionIdColumnName() {
@@ -92,4 +54,37 @@ public class CloneSetRetriever extends AbstractElementRetriever<DBCloneSetInfo> 
 		return retrieve(query);
 	}
 
+	@Override
+	protected CloneSetRowData makeRowInstance(ResultSet rs) throws SQLException {
+		int column = 0;
+		final long id = rs.getLong(++column);
+		final long ownerCombinedRevisionId = rs.getLong(++column);
+		final long elementId = rs.getLong(++column);
+
+		return new CloneSetRowData(id, ownerCombinedRevisionId, elementId);
+	}
+
+	@Override
+	protected DBCloneSetInfo createElement(Collection<CloneSetRowData> rows) {
+		CloneSetRowData aRow = null;
+		final Set<Long> elementIds = new TreeSet<Long>();
+
+		for (final CloneSetRowData row : rows) {
+			if (aRow == null) {
+				aRow = row;
+			}
+
+			elementIds.add(row.getElementId());
+		}
+
+		if (aRow == null) {
+			return null;
+		}
+
+		final long id = aRow.getId();
+		final long ownerCombinedRevisionId = aRow.getOwnerCombinedRevisionId();
+		final List<Long> listOfElementIds = new ArrayList<Long>(elementIds);
+
+		return new DBCloneSetInfo(id, ownerCombinedRevisionId, listOfElementIds);
+	}
 }
