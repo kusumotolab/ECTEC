@@ -13,7 +13,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
  * 
  */
 public class RevisionRegisterer extends
-		AbstractElementRegisterer<DBRevisionInfo> {
+		AbstractUniqueElementRegisterer<DBRevisionInfo> {
 
 	/**
 	 * the constructor

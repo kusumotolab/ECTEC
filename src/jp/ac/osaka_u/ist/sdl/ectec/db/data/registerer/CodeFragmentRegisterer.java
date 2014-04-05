@@ -13,7 +13,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
  * 
  */
 public class CodeFragmentRegisterer extends
-		AbstractElementRegisterer<DBCodeFragmentInfo> {
+		AbstractUniqueElementRegisterer<DBCodeFragmentInfo> {
 
 	/**
 	 * the constructor

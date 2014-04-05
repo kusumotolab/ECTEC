@@ -14,7 +14,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
  * @author k-hotta
  * 
  */
-public class CommitRegisterer extends AbstractElementRegisterer<DBCommitInfo> {
+public class CommitRegisterer extends AbstractUniqueElementRegisterer<DBCommitInfo> {
 
 	public CommitRegisterer(DBConnectionManager dbManager, int maxBatchCount) {
 		super(dbManager, maxBatchCount);

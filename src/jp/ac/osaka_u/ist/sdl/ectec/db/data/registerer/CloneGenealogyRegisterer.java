@@ -14,7 +14,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.util.StringUtils;
  * 
  */
 public class CloneGenealogyRegisterer extends
-		AbstractElementRegisterer<DBCloneGenealogyInfo> {
+		AbstractUniqueElementRegisterer<DBCloneGenealogyInfo> {
 
 	/**
 	 * the constructor

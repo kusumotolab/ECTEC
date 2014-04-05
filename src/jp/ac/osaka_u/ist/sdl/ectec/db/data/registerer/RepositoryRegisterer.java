@@ -13,7 +13,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRepositoryInfo;
  * 
  */
 public class RepositoryRegisterer extends
-		AbstractElementRegisterer<DBRepositoryInfo> {
+		AbstractUniqueElementRegisterer<DBRepositoryInfo> {
 
 	public RepositoryRegisterer(DBConnectionManager dbManager, int maxBatchCount) {
 		super(dbManager, maxBatchCount);

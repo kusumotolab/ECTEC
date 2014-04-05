@@ -14,7 +14,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.AbstractDBElement;
  * 
  * @param <T>
  */
-public abstract class AbstractElementRegisterer<T extends AbstractDBElement> {
+public abstract class AbstractUniqueElementRegisterer<T extends AbstractDBElement> {
 
 	/**
 	 * the manager of the connection between db
@@ -32,7 +32,7 @@ public abstract class AbstractElementRegisterer<T extends AbstractDBElement> {
 	 * @param dbManager
 	 * @param maxBatchCount
 	 */
-	public AbstractElementRegisterer(final DBConnectionManager dbManager,
+	public AbstractUniqueElementRegisterer(final DBConnectionManager dbManager,
 			final int maxBatchCount) {
 		this.dbManager = dbManager;
 		this.maxBatchCount = maxBatchCount;

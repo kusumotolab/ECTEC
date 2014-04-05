@@ -12,7 +12,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
  * @author k-hotta
  * 
  */
-public class FileRegisterer extends AbstractElementRegisterer<DBFileInfo> {
+public class FileRegisterer extends AbstractUniqueElementRegisterer<DBFileInfo> {
 
 	/**
 	 * the constructor

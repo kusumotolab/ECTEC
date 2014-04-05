@@ -14,7 +14,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.util.StringUtils;
  * 
  */
 public class CodeFragmentGenealogyRegisterer extends
-		AbstractElementRegisterer<DBCodeFragmentGenealogyInfo> {
+		AbstractUniqueElementRegisterer<DBCodeFragmentGenealogyInfo> {
 
 	public CodeFragmentGenealogyRegisterer(DBConnectionManager dbManager,
 			int maxBatchCount) {

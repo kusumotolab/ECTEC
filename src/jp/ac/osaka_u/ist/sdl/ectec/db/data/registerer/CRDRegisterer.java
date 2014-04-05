@@ -13,7 +13,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.util.StringUtils;
  * @author k-hotta
  * 
  */
-public class CRDRegisterer extends AbstractElementRegisterer<DBCrdInfo> {
+public class CRDRegisterer extends AbstractUniqueElementRegisterer<DBCrdInfo> {
 
 	/**
 	 * the constructor
