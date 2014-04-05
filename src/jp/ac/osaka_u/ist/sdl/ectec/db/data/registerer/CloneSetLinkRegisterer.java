@@ -2,10 +2,10 @@ package jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collection;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.util.StringUtils;
 
 /**
  * A class that represents a registerer for links of clone sets
@@ -14,7 +14,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.util.StringUtils;
  * 
  */
 public class CloneSetLinkRegisterer extends
-		AbstractUniqueElementRegisterer<DBCloneSetLinkInfo> {
+		AbstractNonuniqueElementRegisterer<DBCloneSetLinkInfo> {
 
 	/**
 	 * the constructor
@@ -29,23 +29,34 @@ public class CloneSetLinkRegisterer extends
 
 	@Override
 	protected String createPreparedStatementQueue() {
-		return "insert into CLONE_SET_LINK values(?,?,?,?,?,?,?,?,?,?)";
+		return "insert into CLONE_SET_LINK values(?,?,?,?,?,?)";
 	}
 
 	@Override
-	protected void setAttributes(PreparedStatement pstmt,
+	protected int makePreparedStatements(PreparedStatement pstmt,
 			DBCloneSetLinkInfo element) throws SQLException {
-		int column = 0;
-		pstmt.setLong(++column, element.getId());
-		pstmt.setLong(++column, element.getBeforeElementId());
-		pstmt.setLong(++column, element.getAfterElementId());
-		pstmt.setLong(++column, element.getBeforeCombinedRevisionId());
-		pstmt.setLong(++column, element.getAfterCombinedRevisionId());
-		pstmt.setInt(++column, element.getNumberOfChangedElements());
-		pstmt.setInt(++column, element.getNumberOfAddedElements());
-		pstmt.setInt(++column, element.getNumberOfDeletedElements());
-		pstmt.setInt(++column, element.getNumberOfCoChangedElements());
-		pstmt.setString(++column,
-				StringUtils.convertListToString(element.getCodeFragmentLinks()));
+		final long elementId = element.getId();
+		final long beforeElementId = element.getBeforeElementId();
+		final long afterElementId = element.getAfterElementId();
+		final long beforeCombinedRevisionId = element
+				.getBeforeCombinedRevisionId();
+		final long afterCombinedRevisionId = element
+				.getAfterCombinedRevisionId();
+		final Collection<Long> fragmentLinks = element.getCodeFragmentLinks();
+
+		for (final long fragmentLink : fragmentLinks) {
+			int column = 0;
+			pstmt.setLong(++column, elementId);
+			pstmt.setLong(++column, beforeElementId);
+			pstmt.setLong(++column, afterElementId);
+			pstmt.setLong(++column, beforeCombinedRevisionId);
+			pstmt.setLong(++column, afterCombinedRevisionId);
+			pstmt.setLong(++column, fragmentLink);
+
+			pstmt.addBatch();
+		}
+
+		return fragmentLinks.size();
 	}
+
 }
