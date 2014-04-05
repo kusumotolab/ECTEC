@@ -2,10 +2,10 @@ package jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collection;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneGenealogyInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.util.StringUtils;
 
 /**
  * A class that represents a registerer for clone genealogies
@@ -14,7 +14,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.util.StringUtils;
  * 
  */
 public class CloneGenealogyRegisterer extends
-		AbstractUniqueElementRegisterer<DBCloneGenealogyInfo> {
+		AbstractNonuniqueElementRegisterer<DBCloneGenealogyInfo> {
 
 	/**
 	 * the constructor
@@ -29,24 +29,32 @@ public class CloneGenealogyRegisterer extends
 
 	@Override
 	protected String createPreparedStatementQueue() {
-		return "insert into CLONE_GENEALOGY values(?,?,?,?,?,?,?,?,?)";
+		return "insert into CLONE_GENEALOGY values(?,?,?,?,?)";
 	}
 
 	@Override
-	protected void setAttributes(PreparedStatement pstmt,
+	protected int makePreparedStatements(PreparedStatement pstmt,
 			DBCloneGenealogyInfo element) throws SQLException {
-		int column = 0;
-		pstmt.setLong(++column, element.getId());
-		pstmt.setLong(++column, element.getStartCombinedRevisionId());
-		pstmt.setLong(++column, element.getEndCombinedRevisionId());
-		pstmt.setString(++column,
-				StringUtils.convertListToString(element.getElements()));
-		pstmt.setString(++column,
-				StringUtils.convertListToString(element.getLinks()));
-		pstmt.setInt(++column, element.getNumberOfChanges());
-		pstmt.setInt(++column, element.getNumberOfAdditions());
-		pstmt.setInt(++column, element.getNumberOfDeletions());
-		pstmt.setInt(++column, (element.isDead()) ? 1 : 0);
+		final long elementId = element.getId();
+		final long startCombinedRevisionId = element.getStartCombinedRevisionId();
+		final long endCombinedRevisionId = element.getEndCombinedRevisionId();
+		final Collection<Long> cloneSetIds = element.getElements();
+		final Collection<Long> cloneSetLinks = element.getLinks();
+		
+		for (final long cloneSetId : cloneSetIds) {
+			for (final long cloneSetLink : cloneSetLinks) {
+				int column = 0;
+				pstmt.setLong(++column, elementId);
+				pstmt.setLong(++column, startCombinedRevisionId);
+				pstmt.setLong(++column, endCombinedRevisionId);
+				pstmt.setLong(++column, cloneSetId);
+				pstmt.setLong(++column, cloneSetLink);
+				
+				pstmt.addBatch();
+			}
+		}
+		
+		return cloneSetIds.size() * cloneSetLinks.size();
 	}
 
 }
