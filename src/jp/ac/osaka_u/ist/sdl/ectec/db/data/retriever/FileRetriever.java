@@ -33,11 +33,11 @@ public class FileRetriever extends AbstractUniqueElementRetriever<DBFileInfo> {
 	}
 
 	protected String getStartRevisionIdColumnName() {
-		return "START_REVISION_ID";
+		return "START_COMBINED_REVISION_ID";
 	}
 
 	protected String getEndRevisionIdColumnName() {
-		return "END_REVISION_ID";
+		return "END_COMBINED_REVISION_ID";
 	}
 
 	@Override

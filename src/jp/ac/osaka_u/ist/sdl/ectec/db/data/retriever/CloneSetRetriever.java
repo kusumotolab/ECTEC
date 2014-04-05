@@ -64,7 +64,7 @@ public class CloneSetRetriever extends AbstractElementRetriever<DBCloneSetInfo> 
 	}
 
 	protected String getRevisionIdColumnName() {
-		return "OWNER_REVISION_ID";
+		return "OWNER_COMBINED_REVISION_ID";
 	}
 
 	@Override
