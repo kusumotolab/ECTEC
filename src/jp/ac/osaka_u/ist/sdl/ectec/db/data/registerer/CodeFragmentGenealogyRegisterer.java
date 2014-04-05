@@ -2,10 +2,10 @@ package jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collection;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentGenealogyInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.util.StringUtils;
 
 /**
  * A class that represents a registerer for genealogies of code fragments
@@ -14,7 +14,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.util.StringUtils;
  * 
  */
 public class CodeFragmentGenealogyRegisterer extends
-		AbstractUniqueElementRegisterer<DBCodeFragmentGenealogyInfo> {
+		AbstractNonuniqueElementRegisterer<DBCodeFragmentGenealogyInfo> {
 
 	public CodeFragmentGenealogyRegisterer(DBConnectionManager dbManager,
 			int maxBatchCount) {
@@ -23,20 +23,33 @@ public class CodeFragmentGenealogyRegisterer extends
 
 	@Override
 	protected String createPreparedStatementQueue() {
-		return "insert into CODE_FRAGMENT_GENEALOGY values (?,?,?,?,?,?)";
+		return "insert into CODE_FRAGMENT_GENEALOGY values (?,?,?,?,?)";
 	}
 
 	@Override
-	protected void setAttributes(PreparedStatement pstmt,
+	protected int makePreparedStatements(PreparedStatement pstmt,
 			DBCodeFragmentGenealogyInfo element) throws SQLException {
-		int column = 0;
-		pstmt.setLong(++column, element.getId());
-		pstmt.setLong(++column, element.getStartCombinedRevisionId());
-		pstmt.setLong(++column, element.getEndCombinedRevisionId());
-		pstmt.setString(++column,
-				StringUtils.convertListToString(element.getElements()));
-		pstmt.setString(++column,
-				StringUtils.convertListToString(element.getLinks()));
-		pstmt.setInt(++column, element.getChangedCount());
+		final long elementId = element.getId();
+		final long startCombinedRevisionId = element
+				.getStartCombinedRevisionId();
+		final long endCombinedRevisionId = element.getEndCombinedRevisionId();
+		final Collection<Long> fragmentIds = element.getElements();
+		final Collection<Long> fragmentLinks = element.getLinks();
+
+		for (final long fragmentId : fragmentIds) {
+			for (final long fragmentLink : fragmentLinks) {
+				int column = 0;
+				pstmt.setLong(++column, elementId);
+				pstmt.setLong(++column, startCombinedRevisionId);
+				pstmt.setLong(++column, endCombinedRevisionId);
+				pstmt.setLong(++column, fragmentId);
+				pstmt.setLong(++column, fragmentLink);
+
+				pstmt.addBatch();
+			}
+		}
+
+		return fragmentIds.size() * fragmentLinks.size();
 	}
+
 }
