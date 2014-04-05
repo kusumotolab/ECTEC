@@ -2,6 +2,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.SortedMap;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
@@ -13,7 +14,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
  * 
  */
 public class CodeFragmentRetriever extends
-		RangedElementRetriever<DBCodeFragmentInfo> {
+		AbstractUniqueElementRetriever<DBCodeFragmentInfo> {
 
 	public CodeFragmentRetriever(DBConnectionManager dbManager) {
 		super(dbManager);
@@ -25,24 +26,22 @@ public class CodeFragmentRetriever extends
 		final long id = rs.getLong(++column);
 		final long ownerFileId = rs.getLong(++column);
 		final long crdId = rs.getLong(++column);
-		final long startRevisionId = rs.getLong(++column);
-		final long endRevisionId = rs.getLong(++column);
+		final long startCombinedRevisionId = rs.getLong(++column);
+		final long endCombinedRevisionId = rs.getLong(++column);
 		final long hash = rs.getLong(++column);
 		final long hashForClone = rs.getLong(++column);
 		final int startLine = rs.getInt(++column);
 		final int endLine = rs.getInt(++column);
 		final int size = rs.getInt(++column);
 
-		return new DBCodeFragmentInfo(id, ownerFileId, crdId, startRevisionId,
-				endRevisionId, hash, hashForClone, startLine, endLine, size);
+		return new DBCodeFragmentInfo(id, ownerFileId, crdId, startCombinedRevisionId,
+				endCombinedRevisionId, hash, hashForClone, startLine, endLine, size);
 	}
 
-	@Override
 	protected String getStartRevisionIdColumnName() {
 		return "START_REVISION_ID";
 	}
 
-	@Override
 	protected String getEndRevisionIdColumnName() {
 		return "END_REVISION_ID";
 	}
@@ -55,6 +54,22 @@ public class CodeFragmentRetriever extends
 	@Override
 	protected String getIdColumnName() {
 		return "CODE_FRAGMENT_ID";
+	}
+	
+	/**
+	 * retrieve elements that exist in the specified revision
+	 * 
+	 * @param revisionId
+	 * @return
+	 * @throws SQLException
+	 */
+	public synchronized SortedMap<Long, DBCodeFragmentInfo> retrieveElementsInSpecifiedRevision(
+			final long revisionId) throws SQLException {
+		final String query = "select * from " + getTableName() + " where "
+				+ getStartRevisionIdColumnName() + " <= " + revisionId
+				+ " AND " + getEndRevisionIdColumnName() + " >= " + revisionId;
+
+		return retrieve(query);
 	}
 
 }
