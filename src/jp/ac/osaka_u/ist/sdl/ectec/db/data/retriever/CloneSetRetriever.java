@@ -3,11 +3,13 @@ package jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.util.StringUtils;
 
 /**
  * A class for retrieving clone sets from db
@@ -15,28 +17,52 @@ import jp.ac.osaka_u.ist.sdl.ectec.util.StringUtils;
  * @author k-hotta
  * 
  */
-public class CloneSetRetriever extends VolatileElementRetriever<DBCloneSetInfo> {
+public class CloneSetRetriever extends AbstractElementRetriever<DBCloneSetInfo> {
 
 	public CloneSetRetriever(DBConnectionManager dbManager) {
 		super(dbManager);
 	}
 
 	@Override
-	protected DBCloneSetInfo createElement(ResultSet rs) throws SQLException {
-		int column = 0;
-		final long id = rs.getLong(++column);
-		final long revisionId = rs.getLong(++column);
-		final String elementsStr = rs.getString(++column);
-		final List<Long> elements = new ArrayList<Long>();
-		StringUtils.convertStringToCollection(elements, elementsStr);
+	public SortedMap<Long, DBCloneSetInfo> instantiate(ResultSet rs)
+			throws SQLException {
+		final SortedMap<Long, DBCloneSetInfo> result = new TreeMap<Long, DBCloneSetInfo>();
 
-		// ignoring the third column(#_ELEMENTS)
-		// because it can be calculated from elements
+		List<Long> elementIds = new ArrayList<Long>();
+		long previousId = -1;
+		long id = -1;
+		long ownerCombinedRevisionId = -1;
+		long elementId = -1;
+		
+		while (rs.next()) {
+			int column = 0;
+			id = rs.getLong(++column);
+			ownerCombinedRevisionId = rs.getLong(++column);
+			elementId = rs.getLong(++column);
 
-		return new DBCloneSetInfo(id, revisionId, elements);
+			if (id != previousId) {
+				if (!elementIds.isEmpty()) {
+					final DBCloneSetInfo newInstance = new DBCloneSetInfo(
+							elementId, ownerCombinedRevisionId, elementIds);
+					result.put(newInstance.getId(), newInstance);
+					elementIds = new ArrayList<Long>();
+				}
+			}
+
+			previousId = id;
+			elementIds.add(elementId);
+		}
+		
+		if (!elementIds.isEmpty()) {
+			final DBCloneSetInfo newInstance = new DBCloneSetInfo(
+					id, ownerCombinedRevisionId, elementIds);
+			result.put(newInstance.getId(), newInstance);
+			elementIds = new ArrayList<Long>();
+		}
+
+		return Collections.unmodifiableSortedMap(result);
 	}
 
-	@Override
 	protected String getRevisionIdColumnName() {
 		return "OWNER_REVISION_ID";
 	}
@@ -49,6 +75,21 @@ public class CloneSetRetriever extends VolatileElementRetriever<DBCloneSetInfo> 
 	@Override
 	protected String getIdColumnName() {
 		return "CLONE_SET_ID";
+	}
+
+	/**
+	 * retrieve elements that exist at the specified revision
+	 * 
+	 * @param revisionId
+	 * @return
+	 * @throws SQLException
+	 */
+	public SortedMap<Long, DBCloneSetInfo> retrieveElementsInSpecifiedRevision(
+			final long revisionId) throws SQLException {
+		final String query = "select * from " + getTableName() + " where "
+				+ getRevisionIdColumnName() + " = " + revisionId;
+
+		return retrieve(query);
 	}
 
 }
