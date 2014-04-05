@@ -26,7 +26,7 @@ public class FileRegisterer extends AbstractUniqueElementRegisterer<DBFileInfo> 
 
 	@Override
 	protected String createPreparedStatementQueue() {
-		return "insert into FILE values (?,?,?,?)";
+		return "insert into FILE values (?,?,?,?,?,?)";
 	}
 
 	@Override
@@ -34,9 +34,11 @@ public class FileRegisterer extends AbstractUniqueElementRegisterer<DBFileInfo> 
 			throws SQLException {
 		int column = 0;
 		pstmt.setLong(++column, element.getId());
+		pstmt.setLong(++column, element.getOwnerRepositoryId());
 		pstmt.setString(++column, element.getPath());
 		pstmt.setLong(++column, element.getStartCombinedRevisionId());
 		pstmt.setLong(++column, element.getCombinedEndRevisionId());
+		pstmt.setLong(++column, element.getAddedCombinedCommitId());
 	}
 
 }
