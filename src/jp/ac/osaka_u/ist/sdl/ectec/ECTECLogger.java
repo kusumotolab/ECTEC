@@ -1,5 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec;
 
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
@@ -33,14 +34,21 @@ public class ECTECLogger {
 			}
 		};
 		standardHandler.setLevel(level);
+		standardHandler.setFormatter(new StandardLoggerFormatter());
 		logger.addHandler(standardHandler);
 		logger.setLevel(level);
+
+		final ConsoleHandler errorHandler = new ConsoleHandler();
+		errorHandler.setFormatter(new ErrorLoggerFormatter());
+		errorHandler.setLevel(Level.WARNING);
+		eLogger.addHandler(errorHandler);
+		eLogger.setLevel(Level.WARNING);
 	}
 
 	public static Logger getLogger() {
 		return logger;
 	}
-	
+
 	public static Logger getELogger() {
 		return eLogger;
 	}
