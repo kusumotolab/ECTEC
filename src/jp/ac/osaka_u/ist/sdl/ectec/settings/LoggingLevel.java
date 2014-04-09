@@ -1,5 +1,7 @@
 package jp.ac.osaka_u.ist.sdl.ectec.settings;
 
+import java.util.logging.Level;
+
 /**
  * The level of logging
  * 
@@ -8,17 +10,25 @@ package jp.ac.osaka_u.ist.sdl.ectec.settings;
  */
 public enum LoggingLevel {
 
-	SEVERE("SEVERE"), WARNING("WARNING"), INFO("INFO"), CONFIG("CONFIG"), FINE(
-			"FINE"), FINER("FINER"), FINEST("FINEST");
+	INFO("INFO", Level.INFO), CONFIG("CONFIG", Level.CONFIG), FINE("FINE",
+			Level.FINE), FINER("FINER", Level.FINER), FINEST("FINEST",
+			Level.FINEST);
 
 	private final String str;
 
-	private LoggingLevel(final String str) {
+	private final Level level;
+
+	private LoggingLevel(final String str, final Level level) {
 		this.str = str;
+		this.level = level;
 	}
 
 	public final String getStr() {
 		return str;
+	}
+
+	public final Level getLevel() {
+		return level;
 	}
 
 	public final boolean corresponds(final String str) {
@@ -30,11 +40,7 @@ public enum LoggingLevel {
 	}
 
 	public static LoggingLevel getCorrespondingLevel(final String str) {
-		if (SEVERE.corresponds(str)) {
-			return SEVERE;
-		} else if (WARNING.corresponds(str)) {
-			return WARNING;
-		} else if (INFO.corresponds(str)) {
+		if (INFO.corresponds(str)) {
 			return INFO;
 		} else if (CONFIG.corresponds(str)) {
 			return CONFIG;

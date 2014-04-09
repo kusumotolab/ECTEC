@@ -71,22 +71,25 @@ public abstract class AbstractSettings implements PropertiesKeys {
 				: null;
 
 		// load the given or default properties file
-		final PropertiesReader propReader = new PropertiesReader(
-				propertyFilePath);
+		final PropertiesReader propReader = (propertyFilePath == null) ? new PropertiesReader()
+				: new PropertiesReader(propertyFilePath);
 
 		// initialize the logger
 		loggingLevel = (cmd.hasOption("v")) ? LoggingLevel
 				.getCorrespondingLevel(cmd.getOptionValue("v")) : LoggingLevel
 				.getCorrespondingLevel(propReader.getProperty(VERBOSE_LEVEL));
-		ECTECLogger.initialize(loggingLevel.getStr());
-		
-		ECTECLogger.getLogger().config("the logger was initialized as " + loggingLevel.getStr());
-		ECTECLogger.getLogger().config("the loaded property file: " + propertyFilePath);
+		ECTECLogger.initialize(loggingLevel.getLevel());
+
+		ECTECLogger.getLogger().config(
+				"the logger was initialized as " + loggingLevel.getStr());
+		ECTECLogger.getLogger().config(
+				"the loaded property file: " + propertyFilePath);
 
 		// initialize other common settings
 		dbPath = cmd.getOptionValue("d");
-		ECTECLogger.getLogger().config("the path of the database file: " + dbPath);
-		
+		ECTECLogger.getLogger().config(
+				"the path of the database file: " + dbPath);
+
 		threads = (cmd.hasOption("th")) ? Integer.parseInt(cmd
 				.getOptionValue("th")) : Integer.parseInt(propReader
 				.getProperty(THREADS));
