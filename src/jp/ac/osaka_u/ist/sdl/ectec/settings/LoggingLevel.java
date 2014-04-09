@@ -8,8 +8,8 @@ package jp.ac.osaka_u.ist.sdl.ectec.settings;
  */
 public enum LoggingLevel {
 
-	SEVERE("severe"), WARNING("warning"), INFO("info"), CONFIG("config"), FINE(
-			"fine"), FINER("finer"), FINEST("finest");
+	SEVERE("SEVERE"), WARNING("WARNING"), INFO("INFO"), CONFIG("CONFIG"), FINE(
+			"FINE"), FINER("FINER"), FINEST("FINEST");
 
 	private final String str;
 

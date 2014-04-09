@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 /**
@@ -38,6 +39,15 @@ public class ECTECLogger {
 		InputStream inStream = null;
 		try {
 			inStream = new ByteArrayInputStream(config.getBytes("UTF-8"));
+
+			try {
+				LogManager.getLogManager().readConfiguration(inStream);
+				logger.config("LogManager was configured");
+			} catch (IOException e) {
+				logger.warning("An error occurred when configuring LogManager:"
+						+ e.toString());
+			}
+
 		} catch (UnsupportedEncodingException e) {
 			logger.severe("UTF-8 Encoding is not supported: " + e.toString());
 		} finally {
@@ -52,7 +62,7 @@ public class ECTECLogger {
 		}
 	}
 
-	public static Logger getLogger() {
+	public synchronized static Logger getLogger() {
 		return logger;
 	}
 

@@ -1,8 +1,9 @@
 package jp.ac.osaka_u.ist.sdl.ectec.main;
 
+import jp.ac.osaka_u.ist.sdl.ectec.ECTECLogger;
 import jp.ac.osaka_u.ist.sdl.ectec.PropertiesKeys;
 import jp.ac.osaka_u.ist.sdl.ectec.PropertiesReader;
-import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrintLevel;
+import jp.ac.osaka_u.ist.sdl.ectec.settings.LoggingLevel;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -24,9 +25,9 @@ public abstract class AbstractSettings implements PropertiesKeys {
 	private String propertyFilePath;
 
 	/**
-	 * the level of verbose output
+	 * the level of logging
 	 */
-	private MessagePrintLevel verboseLevel;
+	private LoggingLevel loggingLevel;
 
 	/**
 	 * the path of the db
@@ -38,18 +39,18 @@ public abstract class AbstractSettings implements PropertiesKeys {
 	 */
 	private int threads;
 
-	public final MessagePrintLevel getVerboseLevel() {
-		return this.verboseLevel;
+	public final LoggingLevel getLoggingLevel() {
+		return this.loggingLevel;
 	}
 
 	public final String getPropertyFilePath() {
 		return this.propertyFilePath;
 	}
-	
+
 	public final String getDbPath() {
 		return this.dbPath;
 	}
-	
+
 	public final int getThreads() {
 		return this.threads;
 	}
@@ -73,15 +74,23 @@ public abstract class AbstractSettings implements PropertiesKeys {
 		final PropertiesReader propReader = new PropertiesReader(
 				propertyFilePath);
 
+		// initialize the logger
+		loggingLevel = (cmd.hasOption("v")) ? LoggingLevel
+				.getCorrespondingLevel(cmd.getOptionValue("v")) : LoggingLevel
+				.getCorrespondingLevel(propReader.getProperty(VERBOSE_LEVEL));
+		ECTECLogger.initialize(loggingLevel.getStr());
+		
+		ECTECLogger.getLogger().config("the logger was initialized as " + loggingLevel.getStr());
+		ECTECLogger.getLogger().config("the loaded property file: " + propertyFilePath);
+
 		// initialize other common settings
-		verboseLevel = (cmd.hasOption("v")) ? MessagePrintLevel
-				.getCorrespondingLevel(cmd.getOptionValue("v"))
-				: MessagePrintLevel.getCorrespondingLevel(propReader
-						.getProperty(VERBOSE_LEVEL));
 		dbPath = cmd.getOptionValue("d");
+		ECTECLogger.getLogger().config("the path of the database file: " + dbPath);
+		
 		threads = (cmd.hasOption("th")) ? Integer.parseInt(cmd
 				.getOptionValue("th")) : Integer.parseInt(propReader
 				.getProperty(THREADS));
+		ECTECLogger.getLogger().config("the number of threads: " + threads);
 
 		// initialize other settings
 		initializeParticularSettings(cmd, propReader);
