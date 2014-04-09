@@ -40,5 +40,9 @@ public class ECTECLogger {
 	public static Logger getLogger() {
 		return logger;
 	}
+	
+	public static Logger getELogger() {
+		return eLogger;
+	}
 
 }
