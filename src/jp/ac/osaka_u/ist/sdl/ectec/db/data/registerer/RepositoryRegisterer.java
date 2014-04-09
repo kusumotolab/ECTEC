@@ -21,7 +21,7 @@ public class RepositoryRegisterer extends
 
 	@Override
 	protected String createPreparedStatementQueue() {
-		return "insert into REPOSITORY values (?,?)";
+		return "insert into REPOSITORY values (?,?,?)";
 	}
 
 	@Override
@@ -29,6 +29,7 @@ public class RepositoryRegisterer extends
 			DBRepositoryInfo element) throws SQLException {
 		int column = 0;
 		pstmt.setLong(++column, element.getId());
+		pstmt.setString(++column, element.getName());
 		pstmt.setString(++column, element.getUrl());
 	}
 

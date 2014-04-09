@@ -23,9 +23,10 @@ public class RepositoryRetriever extends
 	protected DBRepositoryInfo createElement(ResultSet rs) throws SQLException {
 		int column = 0;
 		final long id = rs.getLong(++column);
+		final String name = rs.getString(++column);
 		final String url = rs.getString(++column);
-		
-		return new DBRepositoryInfo(id, url);
+
+		return new DBRepositoryInfo(id, name, url);
 	}
 
 	@Override

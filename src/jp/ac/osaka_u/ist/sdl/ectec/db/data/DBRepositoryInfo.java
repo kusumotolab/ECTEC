@@ -17,6 +17,11 @@ public class DBRepositoryInfo extends AbstractDBElement implements
 	private static final AtomicLong count = new AtomicLong(0);
 
 	/**
+	 * the name of the repository
+	 */
+	private final String name;
+
+	/**
 	 * the url of the repository
 	 */
 	private final String url;
@@ -25,20 +30,32 @@ public class DBRepositoryInfo extends AbstractDBElement implements
 	 * the constructor for elements that are retrieved from db
 	 * 
 	 * @param id
+	 * @param name
 	 * @param url
 	 */
-	public DBRepositoryInfo(final long id, final String url) {
+	public DBRepositoryInfo(final long id, final String name, final String url) {
 		super(id);
+		this.name = name;
 		this.url = url;
 	}
 
 	/**
 	 * the constructor for newly created elements
 	 * 
+	 * @param name
 	 * @param url
 	 */
-	public DBRepositoryInfo(final String url) {
-		this(count.getAndIncrement(), url);
+	public DBRepositoryInfo(final String name, final String url) {
+		this(count.getAndIncrement(), name, url);
+	}
+
+	/**
+	 * get the name of the repository
+	 * 
+	 * @return
+	 */
+	public final String getName() {
+		return this.name;
 	}
 
 	/**

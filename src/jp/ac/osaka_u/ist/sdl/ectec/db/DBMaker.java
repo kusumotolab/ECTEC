@@ -165,6 +165,7 @@ public class DBMaker {
 
 		builder.append("create table REPOSITORY(");
 		builder.append("REPOSITORY_ID LONG PRIMARY KEY,");
+		builder.append("REPOSITORY_NAME TEXT UNIQUE,");
 		builder.append("REPOSITORY_URL TEXT UNIQUE");
 		builder.append(")");
 
