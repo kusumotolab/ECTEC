@@ -19,14 +19,24 @@ import org.apache.commons.cli.PosixParser;
 public abstract class AbstractSettings implements PropertiesKeys {
 
 	/**
+	 * the path of the properties file
+	 */
+	private String propertyFilePath;
+
+	/**
 	 * the level of verbose output
 	 */
 	private MessagePrintLevel verboseLevel;
 
 	/**
-	 * the path of the properties file
+	 * the path of the db
 	 */
-	private String propertyFilePath;
+	private String dbPath;
+
+	/**
+	 * the number of threads
+	 */
+	private int threads;
 
 	public final MessagePrintLevel getVerboseLevel() {
 		return this.verboseLevel;
@@ -34,6 +44,14 @@ public abstract class AbstractSettings implements PropertiesKeys {
 
 	public final String getPropertyFilePath() {
 		return this.propertyFilePath;
+	}
+	
+	public final String getDbPath() {
+		return this.dbPath;
+	}
+	
+	public final int getThreads() {
+		return this.threads;
 	}
 
 	/**
@@ -60,6 +78,10 @@ public abstract class AbstractSettings implements PropertiesKeys {
 				.getCorrespondingLevel(cmd.getOptionValue("v"))
 				: MessagePrintLevel.getCorrespondingLevel(propReader
 						.getProperty(VERBOSE_LEVEL));
+		dbPath = cmd.getOptionValue("d");
+		threads = (cmd.hasOption("th")) ? Integer.parseInt(cmd
+				.getOptionValue("th")) : Integer.parseInt(propReader
+				.getProperty(THREADS));
 
 		// initialize other settings
 		initializeParticularSettings(cmd, propReader);
@@ -74,6 +96,14 @@ public abstract class AbstractSettings implements PropertiesKeys {
 		final Options options = new Options();
 
 		{
+			final Option p = new Option("p", "properties", true,
+					"properties file");
+			p.setArgs(1);
+			p.setRequired(false);
+			options.addOption(p);
+		}
+
+		{
 			final Option v = new Option("v", "verbose", true, "verbose output");
 			v.setArgs(1);
 			v.setRequired(false);
@@ -81,11 +111,18 @@ public abstract class AbstractSettings implements PropertiesKeys {
 		}
 
 		{
-			final Option p = new Option("p", "properties", true,
-					"properties file");
-			p.setArgs(1);
-			p.setRequired(false);
-			options.addOption(p);
+			final Option d = new Option("d", "db", true, "database");
+			d.setArgs(1);
+			d.setRequired(true);
+			options.addOption(d);
+		}
+
+		{
+			final Option th = new Option("th", "threads", true,
+					"the number of maximum threads");
+			th.setArgs(1);
+			th.setRequired(false);
+			options.addOption(th);
 		}
 
 		return addParticularOptions(options);
