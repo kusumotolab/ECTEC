@@ -21,6 +21,18 @@ public class DBMaker {
 		this.dbManager = dbManager;
 	}
 
+	public static void main(String[] args) {
+		try {
+			final String dbPath = args[0];
+			final DBConnectionManager dbManager = new DBConnectionManager(
+					dbPath, 10000);
+			final DBMaker maker = new DBMaker(dbManager);
+			maker.makeDb(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	 * make the db
 	 * 
@@ -373,7 +385,7 @@ public class DBMaker {
 		dbManager
 				.executeUpdate("create index END_COMBINED_REVISION_ID_INDEX_FILE on FILE(END_COMBINED_REVISION_ID)");
 	}
-	
+
 	/**
 	 * get the query to create the table for genealogies of clones
 	 * 

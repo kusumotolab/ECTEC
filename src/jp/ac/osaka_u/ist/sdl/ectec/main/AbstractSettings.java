@@ -1,5 +1,7 @@
 package jp.ac.osaka_u.ist.sdl.ectec.main;
 
+import java.io.File;
+
 import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.PropertiesKeys;
 import jp.ac.osaka_u.ist.sdl.ectec.PropertiesReader;
@@ -82,32 +84,41 @@ public abstract class AbstractSettings implements PropertiesKeys {
 
 		// initialize other common settings
 		dbPath = cmd.getOptionValue("d");
-		logger.info("the path of the database file: " + dbPath);
 
 		if (dbPath == null) {
 			throw new IllegalSettingValueException("dbPath must not be null.");
 		}
+		final File dbFile = new File(dbPath);
+		if (!dbFile.exists()) {
+			throw new IllegalSettingValueException(dbPath + " doesn't exist.");
+		}
+
+		logger.info("the path of the database file: " + dbPath);
 
 		threads = (cmd.hasOption("th")) ? Integer.parseInt(cmd
 				.getOptionValue("th")) : Integer.parseInt(propReader
 				.getProperty(THREADS));
-		logger.info("the number of threads: " + threads);
+
 		if (threads <= 0) {
 			throw new IllegalSettingValueException(
 					"the number of threads must be more than 0 but the specified value is "
 							+ threads);
 		}
 
+		logger.info("the number of threads: " + threads);
+
 		maxBatchCount = (cmd.hasOption("mb")) ? Integer.parseInt(cmd
 				.getOptionValue("mb")) : Integer.parseInt(propReader
 				.getProperty(MAX_BATCH));
-		logger.info("the maximum number of batched statements: "
-				+ maxBatchCount);
+
 		if (maxBatchCount <= 0) {
 			throw new IllegalSettingValueException(
 					"the maximum number of batched statements must be more than 0 but the specified value is "
 							+ maxBatchCount);
 		}
+
+		logger.info("the maximum number of batched statements: "
+				+ maxBatchCount);
 
 		// initialize other settings
 		initializeParticularSettings(cmd, propReader);
