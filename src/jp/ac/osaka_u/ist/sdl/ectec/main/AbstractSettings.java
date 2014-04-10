@@ -1,6 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.main;
 
-import jp.ac.osaka_u.ist.sdl.ectec.ECTECLogger;
+import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.PropertiesKeys;
 import jp.ac.osaka_u.ist.sdl.ectec.PropertiesReader;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.LoggingLevel;
@@ -10,6 +10,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
+import org.apache.log4j.Logger;
 
 /**
  * An abstract class having common functions to keep runtime settings
@@ -18,6 +19,12 @@ import org.apache.commons.cli.PosixParser;
  * 
  */
 public abstract class AbstractSettings implements PropertiesKeys {
+
+	/**
+	 * the logger for settings
+	 */
+	protected static final Logger logger = LoggingManager
+			.getLogger("settings");
 
 	/**
 	 * the path of the properties file
@@ -39,6 +46,11 @@ public abstract class AbstractSettings implements PropertiesKeys {
 	 */
 	private int threads;
 
+	/**
+	 * the maximum number of batched statements
+	 */
+	private int maxBatchCount;
+
 	public final LoggingLevel getLoggingLevel() {
 		return this.loggingLevel;
 	}
@@ -53,6 +65,10 @@ public abstract class AbstractSettings implements PropertiesKeys {
 
 	public final int getThreads() {
 		return this.threads;
+	}
+
+	public final int getMaxBatchCount() {
+		return this.maxBatchCount;
 	}
 
 	/**
@@ -78,22 +94,24 @@ public abstract class AbstractSettings implements PropertiesKeys {
 		loggingLevel = (cmd.hasOption("v")) ? LoggingLevel
 				.getCorrespondingLevel(cmd.getOptionValue("v")) : LoggingLevel
 				.getCorrespondingLevel(propReader.getProperty(VERBOSE_LEVEL));
-		ECTECLogger.initialize(loggingLevel.getLevel());
 
-		ECTECLogger.getLogger().config(
-				"the logger was initialized as " + loggingLevel.getStr());
-		ECTECLogger.getLogger().config(
-				"the loaded property file: " + propertyFilePath);
+		logger.info("the logger was initialized as " + loggingLevel.getStr());
+		logger.info("the loaded property file: " + propertyFilePath);
 
 		// initialize other common settings
 		dbPath = cmd.getOptionValue("d");
-		ECTECLogger.getLogger().config(
-				"the path of the database file: " + dbPath);
+		logger.info("the path of the database file: " + dbPath);
 
 		threads = (cmd.hasOption("th")) ? Integer.parseInt(cmd
 				.getOptionValue("th")) : Integer.parseInt(propReader
 				.getProperty(THREADS));
-		ECTECLogger.getLogger().config("the number of threads: " + threads);
+		logger.info("the number of threads: " + threads);
+
+		maxBatchCount = (cmd.hasOption("mb")) ? Integer.parseInt(cmd
+				.getOptionValue("mb")) : Integer.parseInt(propReader
+				.getProperty(MAX_BATCH));
+		logger.info("the maximum number of batched statements: "
+				+ maxBatchCount);
 
 		// initialize other settings
 		initializeParticularSettings(cmd, propReader);
@@ -135,6 +153,14 @@ public abstract class AbstractSettings implements PropertiesKeys {
 			th.setArgs(1);
 			th.setRequired(false);
 			options.addOption(th);
+		}
+
+		{
+			final Option mb = new Option("mb", "max-batch", true,
+					"the maximum number of batched statements");
+			mb.setArgs(1);
+			mb.setRequired(false);
+			options.addOption(mb);
 		}
 
 		return addParticularOptions(options);
