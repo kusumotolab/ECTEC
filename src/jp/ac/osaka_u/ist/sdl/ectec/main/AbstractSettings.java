@@ -3,7 +3,6 @@ package jp.ac.osaka_u.ist.sdl.ectec.main;
 import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.PropertiesKeys;
 import jp.ac.osaka_u.ist.sdl.ectec.PropertiesReader;
-import jp.ac.osaka_u.ist.sdl.ectec.settings.LoggingLevel;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -23,18 +22,12 @@ public abstract class AbstractSettings implements PropertiesKeys {
 	/**
 	 * the logger for settings
 	 */
-	protected static final Logger logger = LoggingManager
-			.getLogger("settings");
+	protected static final Logger logger = LoggingManager.getLogger("settings");
 
 	/**
 	 * the path of the properties file
 	 */
 	private String propertyFilePath;
-
-	/**
-	 * the level of logging
-	 */
-	private LoggingLevel loggingLevel;
 
 	/**
 	 * the path of the db
@@ -50,10 +43,6 @@ public abstract class AbstractSettings implements PropertiesKeys {
 	 * the maximum number of batched statements
 	 */
 	private int maxBatchCount;
-
-	public final LoggingLevel getLoggingLevel() {
-		return this.loggingLevel;
-	}
 
 	public final String getPropertyFilePath() {
 		return this.propertyFilePath;
@@ -89,29 +78,36 @@ public abstract class AbstractSettings implements PropertiesKeys {
 		// load the given or default properties file
 		final PropertiesReader propReader = (propertyFilePath == null) ? new PropertiesReader()
 				: new PropertiesReader(propertyFilePath);
-
-		// initialize the logger
-		loggingLevel = (cmd.hasOption("v")) ? LoggingLevel
-				.getCorrespondingLevel(cmd.getOptionValue("v")) : LoggingLevel
-				.getCorrespondingLevel(propReader.getProperty(VERBOSE_LEVEL));
-
-		logger.info("the logger was initialized as " + loggingLevel.getStr());
 		logger.info("the loaded property file: " + propertyFilePath);
 
 		// initialize other common settings
 		dbPath = cmd.getOptionValue("d");
 		logger.info("the path of the database file: " + dbPath);
 
+		if (dbPath == null) {
+			throw new IllegalSettingValueException("dbPath must not be null.");
+		}
+
 		threads = (cmd.hasOption("th")) ? Integer.parseInt(cmd
 				.getOptionValue("th")) : Integer.parseInt(propReader
 				.getProperty(THREADS));
 		logger.info("the number of threads: " + threads);
+		if (threads <= 0) {
+			throw new IllegalSettingValueException(
+					"the number of threads must be more than 0 but the specified value is "
+							+ threads);
+		}
 
 		maxBatchCount = (cmd.hasOption("mb")) ? Integer.parseInt(cmd
 				.getOptionValue("mb")) : Integer.parseInt(propReader
 				.getProperty(MAX_BATCH));
 		logger.info("the maximum number of batched statements: "
 				+ maxBatchCount);
+		if (maxBatchCount <= 0) {
+			throw new IllegalSettingValueException(
+					"the maximum number of batched statements must be more than 0 but the specified value is "
+							+ maxBatchCount);
+		}
 
 		// initialize other settings
 		initializeParticularSettings(cmd, propReader);
@@ -131,13 +127,6 @@ public abstract class AbstractSettings implements PropertiesKeys {
 			p.setArgs(1);
 			p.setRequired(false);
 			options.addOption(p);
-		}
-
-		{
-			final Option v = new Option("v", "verbose", true, "verbose output");
-			v.setArgs(1);
-			v.setRequired(false);
-			options.addOption(v);
 		}
 
 		{
