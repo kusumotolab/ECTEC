@@ -27,6 +27,11 @@ public abstract class AbstractSettings implements PropertiesKeys {
 	protected static final Logger logger = LoggingManager.getLogger("settings");
 
 	/**
+	 * the logger for errors
+	 */
+	protected static final Logger eLogger = LoggingManager.getLogger("error");
+
+	/**
 	 * the path of the properties file
 	 */
 	private String propertyFilePath;
