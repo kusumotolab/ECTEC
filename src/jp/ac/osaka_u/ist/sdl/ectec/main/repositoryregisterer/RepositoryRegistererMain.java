@@ -1,8 +1,8 @@
 package jp.ac.osaka_u.ist.sdl.ectec.main.repositoryregisterer;
 
+import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 
-import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 /**
@@ -17,13 +17,13 @@ public class RepositoryRegistererMain {
 	/**
 	 * the logger
 	 */
-	private static final Logger logger = LogManager
+	private static final Logger logger = LoggingManager
 			.getLogger(RepositoryRegistererMain.class.getName());
 
 	/**
 	 * the logger for errors
 	 */
-	private static final Logger eLogger = LogManager.getLogger("error");
+	private static final Logger eLogger = LoggingManager.getLogger("error");
 
 	/**
 	 * the db manater
