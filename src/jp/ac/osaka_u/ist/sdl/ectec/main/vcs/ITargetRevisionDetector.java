@@ -18,13 +18,9 @@ public interface ITargetRevisionDetector {
 	 * detect target revisions and commits
 	 * 
 	 * @param language
-	 * @param startRevisionIdentifier
-	 * @param endRevisionIdentifier
 	 * @throws Exception
 	 */
-	public void detect(final Language language,
-			final String startRevisionIdentifier,
-			final String endRevisionIdentifier) throws Exception;
+	public void detect(final Language language) throws Exception;
 
 	/**
 	 * get the detected target revisions <br>

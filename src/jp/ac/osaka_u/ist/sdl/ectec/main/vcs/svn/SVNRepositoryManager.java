@@ -67,8 +67,20 @@ public class SVNRepositoryManager implements IRepositoryManager {
 	 */
 	private final String additionalUrl;
 
+	/**
+	 * the name of the repository
+	 */
+	private final String repositoryName;
+
+	/**
+	 * the id of the repository
+	 */
+	private final long repositoryId;
+
 	public SVNRepositoryManager(final String urlRoot, final String userName,
-			final String passwd, final String additionalUrl) throws Exception {
+			final String passwd, final String additionalUrl,
+			final String repositoryName, final long repositoryId)
+			throws Exception {
 		this.targetRevisionDetector = new SVNTargetRevisionDetector(this);
 
 		final String urlStr = (additionalUrl == null) ? urlRoot : urlRoot
@@ -84,6 +96,8 @@ public class SVNRepositoryManager implements IRepositoryManager {
 		this.userName = userName;
 		this.passwd = passwd;
 		this.additionalUrl = additionalUrl;
+		this.repositoryName = repositoryName;
+		this.repositoryId = repositoryId;
 	}
 
 	/**
@@ -130,6 +144,24 @@ public class SVNRepositoryManager implements IRepositoryManager {
 	 */
 	public String getAdditionalUrl() {
 		return additionalUrl;
+	}
+
+	/**
+	 * get the name of the repository
+	 * 
+	 * @return
+	 */
+	public final String getRepositoryName() {
+		return repositoryName;
+	}
+
+	/**
+	 * get the id of the repository
+	 * 
+	 * @return
+	 */
+	public final long getRepositoryId() {
+		return repositoryId;
 	}
 
 	/**
