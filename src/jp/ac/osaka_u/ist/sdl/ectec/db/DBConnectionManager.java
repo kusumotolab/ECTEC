@@ -13,6 +13,8 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CloneSetRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CodeFragmentGenealogyRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CodeFragmentLinkRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CodeFragmentRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CombinedCommitRegisterer;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CombinedRevisionRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CommitRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.FileRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.RepositoryRegisterer;
@@ -24,6 +26,8 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CloneSetRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentGenealogyRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentLinkRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CombinedCommitRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CombinedRevisionRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CommitRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.FileRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.RepositoryRetriever;
@@ -48,6 +52,10 @@ public final class DBConnectionManager {
 
 	private final CommitRegisterer commitRegisterer;
 
+	private final CombinedRevisionRegisterer combinedRevisionRegisterer;
+
+	private final CombinedCommitRegisterer combinedCommitRegisterer;
+
 	private final FileRegisterer fileRegisterer;
 
 	private final CodeFragmentRegisterer fragmentRegisterer;
@@ -69,6 +77,10 @@ public final class DBConnectionManager {
 	private final RevisionRetriever revisionRetriever;
 
 	private final CommitRetriever commitRetriever;
+
+	private final CombinedRevisionRetriever combinedRevisionRetriever;
+
+	private final CombinedCommitRetriever combinedCommitRetriever;
 
 	private final FileRetriever fileRetriever;
 
@@ -101,6 +113,10 @@ public final class DBConnectionManager {
 				maxBatchCount);
 		this.revisionRegisterer = new RevisionRegisterer(this, maxBatchCount);
 		this.commitRegisterer = new CommitRegisterer(this, maxBatchCount);
+		this.combinedRevisionRegisterer = new CombinedRevisionRegisterer(this,
+				maxBatchCount);
+		this.combinedCommitRegisterer = new CombinedCommitRegisterer(this,
+				maxBatchCount);
 		this.fileRegisterer = new FileRegisterer(this, maxBatchCount);
 		this.fragmentRegisterer = new CodeFragmentRegisterer(this,
 				maxBatchCount);
@@ -117,6 +133,8 @@ public final class DBConnectionManager {
 		this.repositoryRetriever = new RepositoryRetriever(this);
 		this.revisionRetriever = new RevisionRetriever(this);
 		this.commitRetriever = new CommitRetriever(this);
+		this.combinedRevisionRetriever = new CombinedRevisionRetriever(this);
+		this.combinedCommitRetriever = new CombinedCommitRetriever(this);
 		this.fileRetriever = new FileRetriever(this);
 		this.fragmentRetriever = new CodeFragmentRetriever(this);
 		this.cloneRetriever = new CloneSetRetriever(this);
@@ -131,13 +149,21 @@ public final class DBConnectionManager {
 	public final RepositoryRegisterer getRepositoryRegisterer() {
 		return repositoryRegisterer;
 	}
-	
+
 	public final RevisionRegisterer getRevisionRegisterer() {
 		return revisionRegisterer;
 	}
 
 	public final CommitRegisterer getCommitRegisterer() {
 		return commitRegisterer;
+	}
+	
+	public final CombinedRevisionRegisterer getCombinedRevisionRegisterer() {
+		return combinedRevisionRegisterer;
+	}
+	
+	public final CombinedCommitRegisterer getCombinedCommitRegisterer() {
+		return combinedCommitRegisterer;
 	}
 
 	public final FileRegisterer getFileRegisterer() {
@@ -171,7 +197,7 @@ public final class DBConnectionManager {
 	public final CRDRegisterer getCrdRegisterer() {
 		return crdRegisterer;
 	}
-	
+
 	public final RepositoryRetriever getRepositoryRetriever() {
 		return repositoryRetriever;
 	}
@@ -182,6 +208,14 @@ public final class DBConnectionManager {
 
 	public final CommitRetriever getCommitRetriever() {
 		return commitRetriever;
+	}
+	
+	public final CombinedRevisionRetriever getCombinedRevisionRetriever() {
+		return combinedRevisionRetriever;
+	}
+	
+	public final CombinedCommitRetriever getCombinedCommitRetriever() {
+		return combinedCommitRetriever;
 	}
 
 	public final FileRetriever getFileRetriever() {
