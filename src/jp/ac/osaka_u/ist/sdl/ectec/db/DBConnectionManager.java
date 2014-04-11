@@ -157,11 +157,11 @@ public final class DBConnectionManager {
 	public final CommitRegisterer getCommitRegisterer() {
 		return commitRegisterer;
 	}
-	
+
 	public final CombinedRevisionRegisterer getCombinedRevisionRegisterer() {
 		return combinedRevisionRegisterer;
 	}
-	
+
 	public final CombinedCommitRegisterer getCombinedCommitRegisterer() {
 		return combinedCommitRegisterer;
 	}
@@ -209,11 +209,11 @@ public final class DBConnectionManager {
 	public final CommitRetriever getCommitRetriever() {
 		return commitRetriever;
 	}
-	
+
 	public final CombinedRevisionRetriever getCombinedRevisionRetriever() {
 		return combinedRevisionRetriever;
 	}
-	
+
 	public final CombinedCommitRetriever getCombinedCommitRetriever() {
 		return combinedCommitRetriever;
 	}
@@ -331,7 +331,6 @@ public final class DBConnectionManager {
 		final Statement stmt = createStatement();
 		stmt.executeUpdate(query);
 		stmt.close();
-
 	}
 
 }
