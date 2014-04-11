@@ -85,7 +85,7 @@ public abstract class AbstractSettings implements PropertiesKeys {
 		// load the given or default properties file
 		final PropertiesReader propReader = (propertyFilePath == null) ? new PropertiesReader()
 				: new PropertiesReader(propertyFilePath);
-		logger.info("the loaded property file: " + propertyFilePath);
+		logger.info("the loaded property file: " + propReader.getLoadedFileName());
 
 		// initialize other common settings
 		dbPath = cmd.getOptionValue("d");

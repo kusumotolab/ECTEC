@@ -82,4 +82,13 @@ public class PropertiesReader implements PropertiesKeys {
 		return prop.getProperty(key);
 	}
 
+	/**
+	 * get the name of the loaded properties file
+	 * 
+	 * @return
+	 */
+	public final String getLoadedFileName() {
+		return this.propertiesFilePath;
+	}
+
 }

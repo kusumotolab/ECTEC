@@ -51,15 +51,21 @@ public class RevisionDetectThreadMonitor {
 	 */
 	private final CommitRegisterer commitRegisterer;
 
+	/**
+	 * the array of threads to be monitored
+	 */
+	private final Thread[] threads;
+
 	public RevisionDetectThreadMonitor(
 			final ConcurrentMap<Long, DBRevisionInfo> detectedRevisions,
 			final ConcurrentMap<Long, DBCommitInfo> detectedCommits,
 			final RevisionRegisterer revisionRegisterer,
-			final CommitRegisterer commitRegisterer) {
+			final CommitRegisterer commitRegisterer, final Thread[] threads) {
 		this.detectedRevisions = detectedRevisions;
 		this.detectedCommits = detectedCommits;
 		this.revisionRegisterer = revisionRegisterer;
 		this.commitRegisterer = commitRegisterer;
+		this.threads = threads;
 	}
 
 	public void monitor() throws Exception {
@@ -108,7 +114,15 @@ public class RevisionDetectThreadMonitor {
 						+ e.toString());
 			}
 
-			if (Thread.activeCount() <= 2) {
+			boolean allThreadDead = true;
+			for (final Thread thread : threads) {
+				if (thread.isAlive()) {
+					allThreadDead = false;
+					break;
+				}
+			}
+
+			if (allThreadDead) {
 				break;
 			}
 
@@ -116,13 +130,15 @@ public class RevisionDetectThreadMonitor {
 
 		revisionRegisterer.register(detectedRevisions.values());
 		commitRegisterer.register(detectedCommits.values());
-		
-		logger.info(detectedRevisions.size() + " revisions have been registered into db");
-		logger.info(detectedCommits.size() + " commits have been registered into db");
-		
+
+		logger.info(detectedRevisions.size()
+				+ " revisions have been registered into db");
+		logger.info(detectedCommits.size()
+				+ " commits have been registered into db");
+
 		numberOfRevisions += detectedRevisions.size();
 		numberOfCommits += detectedCommits.size();
-		
+
 		logger.info("total revisions: " + numberOfRevisions);
 		logger.info("total commits: " + numberOfCommits);
 

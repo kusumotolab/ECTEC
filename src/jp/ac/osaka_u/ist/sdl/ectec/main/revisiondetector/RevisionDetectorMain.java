@@ -8,6 +8,8 @@ import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRepositoryInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.main.IllegalStateException;
+import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.RepositoryManagerManager;
+import jp.ac.osaka_u.ist.sdl.ectec.settings.VersionControlSystem;
 
 import org.apache.log4j.Logger;
 
@@ -42,6 +44,11 @@ public class RevisionDetectorMain {
 	private static Map<Long, DBRepositoryInfo> repositories = new TreeMap<Long, DBRepositoryInfo>();
 
 	/**
+	 * the manager of repository managers
+	 */
+	private static RepositoryManagerManager repositoryManagerManager = null;
+
+	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -52,6 +59,16 @@ public class RevisionDetectorMain {
 			// pre processing
 			preprocess(settings);
 
+			// main processing
+			final RevisionDetector detector = new RevisionDetector(settings,
+					dbManager, repositoryManagerManager, repositories);
+			detector.run();
+
+			// post processing
+			postprocess();
+
+			logger.info("operations have finished.");
+			
 		} catch (Exception e) {
 			eLogger.fatal("operations failed.\n" + e.toString());
 		}
@@ -83,6 +100,10 @@ public class RevisionDetectorMain {
 		dbManager = new DBConnectionManager(settings.getDbPath(),
 				settings.getMaxBatchCount());
 		logger.info("connected to the db");
+
+		// initialize the manager of repository managers
+		repositoryManagerManager = new RepositoryManagerManager();
+		logger.info("initialized the manager of repository managers");
 
 		// retrieving all the repositories registered in the db
 		logger.info("retrieving repositories ...");
@@ -118,11 +139,31 @@ public class RevisionDetectorMain {
 		}
 
 		logger.info("targets " + repositories.size() + " repositories");
+
+		final VersionControlSystem vcs = settings.getVcs();
+
 		for (final Map.Entry<Long, DBRepositoryInfo> entry : repositories
 				.entrySet()) {
 			final DBRepositoryInfo repository = entry.getValue();
 			logger.debug("repository " + entry.getKey() + ": "
 					+ repository.getName() + " - " + repository.getUrl());
+
+			try {
+				repositoryManagerManager.addRepositoryManager(repository, vcs);
+			} catch (Exception e) {
+				eLogger.warn(e.toString());
+			}
+		}
+
+		logger.info("repository managers were initialized");
+	}
+
+	/**
+	 * perform post-processing
+	 */
+	private static void postprocess() {
+		if (dbManager != null) {
+			dbManager.close();
 		}
 	}
 
