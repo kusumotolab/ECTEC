@@ -32,7 +32,7 @@ public class RevisionDetectorMain {
 	private static final Logger eLogger = LoggingManager.getLogger("error");
 
 	/**
-	 * the db manater
+	 * the db manager
 	 */
 	private static DBConnectionManager dbManager = null;
 
