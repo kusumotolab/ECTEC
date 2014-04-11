@@ -43,7 +43,7 @@ public class RepositoryManagerManager {
 	public void addRepositoryManager(final DBRepositoryInfo repository,
 			final VersionControlSystem vcs) throws Exception {
 		addRepositoryManager(repository.getId(), repository.getUrl(), null,
-				null, null, vcs);
+				null, null, repository.getName(), vcs);
 	}
 
 	/**
@@ -59,14 +59,14 @@ public class RepositoryManagerManager {
 	 */
 	public void addRepositoryManager(final long id, final String url,
 			final String userName, final String passwd,
-			final String additionalUrl, final VersionControlSystem vcs)
-			throws Exception {
+			final String additionalUrl, final String repositoryName,
+			final VersionControlSystem vcs) throws Exception {
 		IRepositoryManager repositoryManager = null;
 
 		switch (vcs) {
 		case SVN:
 			repositoryManager = new SVNRepositoryManager(url, userName, passwd,
-					additionalUrl);
+					additionalUrl, repositoryName, id);
 			break;
 		default:
 			break;
