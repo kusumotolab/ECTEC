@@ -33,23 +33,38 @@ public class DBCommitInfo extends AbstractDBElement implements
 	private final long afterRevisionId;
 
 	/**
+	 * the identifier of the before revision
+	 */
+	private final String beforeRevisionIdentifier;
+
+	/**
+	 * the identifier of the after revision
+	 */
+	private final String afterRevisionIdentifier;
+
+	/**
 	 * the date of the commit
 	 */
 	private final Date date;
 
 	public DBCommitInfo(final long repositoryId, final long beforeRevisionId,
-			final long afterRevisionId, final Date date) {
+			final long afterRevisionId, final String beforeRevisionIdentifier,
+			final String afterRevisionIdentifier, final Date date) {
 		this(count.getAndIncrement(), repositoryId, beforeRevisionId,
-				afterRevisionId, date);
+				afterRevisionId, beforeRevisionIdentifier,
+				afterRevisionIdentifier, date);
 	}
 
 	public DBCommitInfo(final long id, final long repositoryId,
 			final long beforeRevisionId, final long afterRevisionId,
-			final Date date) {
+			final String beforeRevisionIdentifier,
+			final String afterRevisionIdentifier, final Date date) {
 		super(id);
 		this.repositoryId = repositoryId;
 		this.beforeRevisionId = beforeRevisionId;
 		this.afterRevisionId = afterRevisionId;
+		this.beforeRevisionIdentifier = beforeRevisionIdentifier;
+		this.afterRevisionIdentifier = afterRevisionIdentifier;
 		this.date = date;
 	}
 
@@ -78,6 +93,24 @@ public class DBCommitInfo extends AbstractDBElement implements
 	 */
 	public final long getAfterRevisionId() {
 		return this.afterRevisionId;
+	}
+
+	/**
+	 * get the identifier of the before revision
+	 * 
+	 * @return
+	 */
+	public final String getBeforeRevisionIdentifier() {
+		return this.beforeRevisionIdentifier;
+	}
+
+	/**
+	 * get the identifier of the after revision
+	 * 
+	 * @return
+	 */
+	public final String getAfterRevisionIdentifier() {
+		return this.afterRevisionIdentifier;
 	}
 
 	/**

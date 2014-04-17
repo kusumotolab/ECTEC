@@ -23,7 +23,7 @@ public class CommitRegisterer extends
 
 	@Override
 	protected String createPreparedStatementQueue() {
-		return "insert into VCS_COMMIT values (?,?,?,?,?,?,?,?,?,?)";
+		return "insert into VCS_COMMIT values (?,?,?,?,?,?,?,?,?,?,?,?)";
 	}
 
 	@Override
@@ -34,6 +34,8 @@ public class CommitRegisterer extends
 		pstmt.setLong(++column, element.getRepositoryId());
 		pstmt.setLong(++column, element.getBeforeRevisionId());
 		pstmt.setLong(++column, element.getAfterRevisionId());
+		pstmt.setString(++column, element.getBeforeRevisionIdentifier());
+		pstmt.setString(++column, element.getAfterRevisionIdentifier());
 
 		final Date date = element.getDate();
 		final Calendar calendar = Calendar.getInstance();

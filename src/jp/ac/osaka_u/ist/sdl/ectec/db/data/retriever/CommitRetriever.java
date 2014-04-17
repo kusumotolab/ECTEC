@@ -29,6 +29,8 @@ public class CommitRetriever extends
 		final long repositoryId = rs.getLong(++column);
 		final long beforeRevisionId = rs.getLong(++column);
 		final long afterRevisionId = rs.getLong(++column);
+		final String beforeRevisionIdentifier = rs.getString(++column);
+		final String afterRevisionIdentifier = rs.getString(++column);
 		final int year = rs.getInt(++column);
 		final int month = rs.getInt(++column);
 		final int day = rs.getInt(++column);
@@ -41,7 +43,8 @@ public class CommitRetriever extends
 		final Date date = cal.getTime();
 
 		return new DBCommitInfo(id, repositoryId, beforeRevisionId,
-				afterRevisionId, date);
+				afterRevisionId, beforeRevisionIdentifier,
+				afterRevisionIdentifier, date);
 	}
 
 	@Override
