@@ -21,13 +21,13 @@ import org.apache.log4j.Logger;
  * @author k-hotta
  * 
  */
-public class RevisionCombiner {
+public class CommitCombiner {
 
 	/**
 	 * the logger
 	 */
 	private static final Logger logger = LoggingManager
-			.getLogger(RevisionCombiner.class.getName());
+			.getLogger(CommitCombiner.class.getName());
 
 	/**
 	 * the logger for errors
@@ -45,14 +45,14 @@ public class RevisionCombiner {
 	/**
 	 * the combined revisions <br>
 	 * this field will be filled after calling
-	 * {@link RevisionCombiner#detectCombinedRevisions()}
+	 * {@link CommitCombiner#detectCombinedRevisions()}
 	 */
 	private final Map<Long, DBCombinedRevisionInfo> combinedRevisions;
 
 	/**
 	 * the combined commits <br>
 	 * this field will be filled after calling
-	 * {@link RevisionCombiner#detectCombinedRevisions()}
+	 * {@link CommitCombiner#detectCombinedRevisions()}
 	 */
 	private final Map<Long, DBCombinedCommitInfo> combinedCommits;
 
@@ -61,7 +61,7 @@ public class RevisionCombiner {
 	 */
 	private final int numberOfOriginalCommits;
 
-	public RevisionCombiner(final Map<Long, LinkedList<DBCommitInfo>> commits) {
+	public CommitCombiner(final Map<Long, LinkedList<DBCommitInfo>> commits) {
 		this.commits = commits;
 
 		int numberOfOriginalCommits = 0;
