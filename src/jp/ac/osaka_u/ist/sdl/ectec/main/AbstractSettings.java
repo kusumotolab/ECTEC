@@ -85,7 +85,8 @@ public abstract class AbstractSettings implements PropertiesKeys {
 		// load the given or default properties file
 		final PropertiesReader propReader = (propertyFilePath == null) ? new PropertiesReader()
 				: new PropertiesReader(propertyFilePath);
-		logger.info("the loaded property file: " + propReader.getLoadedFileName());
+		logger.info("the loaded property file: "
+				+ propReader.getLoadedFileName());
 
 		// initialize other common settings
 		dbPath = cmd.getOptionValue("d");
@@ -172,21 +173,27 @@ public abstract class AbstractSettings implements PropertiesKeys {
 	}
 
 	/**
-	 * define particular options for each subsystem
+	 * define particular options for each subsystem <br>
+	 * override this method if any particular options are required
 	 * 
 	 * @param options
 	 * @return
 	 */
-	protected abstract Options addParticularOptions(final Options options);
+	protected Options addParticularOptions(final Options options) {
+		return options;
+	}
 
 	/**
-	 * initialize particular settings in each subsystem
+	 * initialize particular settings in each subsystem <br>
+	 * override this method if any particular options are required
 	 * 
 	 * @param cmd
 	 * @param propReader
 	 * @throws Exception
 	 */
-	protected abstract void initializeParticularSettings(final CommandLine cmd,
-			final PropertiesReader propReader) throws Exception;
+	protected void initializeParticularSettings(final CommandLine cmd,
+			final PropertiesReader propReader) throws Exception {
+		return; // do nothing on default
+	}
 
 }
