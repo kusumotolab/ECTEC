@@ -2,9 +2,11 @@ package jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Map;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
@@ -55,6 +57,51 @@ public class CommitRetriever extends
 	@Override
 	protected String getIdColumnName() {
 		return "VCS_COMMIT_ID";
+	}
+
+	public DBCommitInfo getLatestCommit() throws SQLException {
+		final int maxYear = getIntWithQuery("select MAX(YEAR) from "
+				+ getTableName());
+		final int maxMonth = getIntWithQuery("select MAX(MONTH) from "
+				+ getTableName() + " where YEAR = " + maxYear);
+		final int maxDay = getIntWithQuery("select MAX(DAY) from "
+				+ getTableName() + " where YEAR = " + maxYear + " AND MONTH = "
+				+ maxMonth);
+
+		final Map<Long, DBCommitInfo> commitsInTheDay = retrieve("select * from "
+				+ getTableName()
+				+ " where YEAR = "
+				+ maxYear
+				+ " AND MONTH = "
+				+ maxMonth + " AND DAY = " + maxDay);
+
+		DBCommitInfo result = null;
+		for (final Map.Entry<Long, DBCommitInfo> entry : commitsInTheDay
+				.entrySet()) {
+			final DBCommitInfo currentCommit = entry.getValue();
+			if (result == null) {
+				result = currentCommit;
+				continue;
+			}
+
+			if (result.getDate().compareTo(currentCommit.getDate()) < 0) {
+				result = currentCommit;
+			}
+		}
+
+		return result;
+	}
+
+	private int getIntWithQuery(final String query) throws SQLException {
+		final Statement stmt = dbManager.createStatement();
+		final ResultSet rs = stmt.executeQuery(query);
+
+		final int result = rs.getInt(1);
+
+		stmt.close();
+		rs.close();
+
+		return result;
 	}
 
 }
