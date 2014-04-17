@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.detector.filedetector;
+package jp.ac.osaka_u.ist.sdl.ectec.main.filedetector;
 
 /**
  * A class that represents a change on a file

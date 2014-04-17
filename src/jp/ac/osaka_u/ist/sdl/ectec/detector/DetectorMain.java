@@ -11,7 +11,6 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.clonedetector.BlockBasedCloneIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.clonelinker.CloneSetLinkIdentifier;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.filedetector.ChangedFilesIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.genealogydetector.CloneGenealogyIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.genealogydetector.FragmentGenealogyIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.linker.CodeFragmentLinkIdentifier;
@@ -19,6 +18,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.CodeFragmentIdentifie
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.hash.DefaultHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.hash.IHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.normalizer.NormalizerCreator;
+import jp.ac.osaka_u.ist.sdl.ectec.main.filedetector.ChangedFilesIdentifier;
 import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.RepositoryManagerManager;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Constants;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;

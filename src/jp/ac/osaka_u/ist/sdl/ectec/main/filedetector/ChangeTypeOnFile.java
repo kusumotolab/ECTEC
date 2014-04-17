@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.detector.filedetector;
+package jp.ac.osaka_u.ist.sdl.ectec.main.filedetector;
 
 /**
  * An enum that represents types of changes on files
