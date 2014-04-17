@@ -26,6 +26,7 @@ public class CommitRetriever extends
 	protected DBCommitInfo createElement(ResultSet rs) throws SQLException {
 		int column = 0;
 		final long id = rs.getLong(++column);
+		final long repositoryId = rs.getLong(++column);
 		final long beforeRevisionId = rs.getLong(++column);
 		final long afterRevisionId = rs.getLong(++column);
 		final int year = rs.getInt(++column);
@@ -39,7 +40,8 @@ public class CommitRetriever extends
 				minute, second);
 		final Date date = cal.getTime();
 
-		return new DBCommitInfo(id, beforeRevisionId, afterRevisionId, date);
+		return new DBCommitInfo(id, repositoryId, beforeRevisionId,
+				afterRevisionId, date);
 	}
 
 	@Override

@@ -18,6 +18,11 @@ public class DBCommitInfo extends AbstractDBElement implements
 	private static final AtomicLong count = new AtomicLong(0);
 
 	/**
+	 * the repository id
+	 */
+	private final long repositoryId;
+
+	/**
 	 * the before revision id
 	 */
 	private final long beforeRevisionId;
@@ -32,16 +37,29 @@ public class DBCommitInfo extends AbstractDBElement implements
 	 */
 	private final Date date;
 
-	public DBCommitInfo(final long beforeRevisionId, final long afterRevisionId, final Date date) {
-		this(count.getAndIncrement(), beforeRevisionId, afterRevisionId, date);
+	public DBCommitInfo(final long repositoryId, final long beforeRevisionId,
+			final long afterRevisionId, final Date date) {
+		this(count.getAndIncrement(), repositoryId, beforeRevisionId,
+				afterRevisionId, date);
 	}
 
-	public DBCommitInfo(final long id, final long beforeRevisionId,
-			final long afterRevisionId, final Date date) {
+	public DBCommitInfo(final long id, final long repositoryId,
+			final long beforeRevisionId, final long afterRevisionId,
+			final Date date) {
 		super(id);
+		this.repositoryId = repositoryId;
 		this.beforeRevisionId = beforeRevisionId;
 		this.afterRevisionId = afterRevisionId;
 		this.date = date;
+	}
+
+	/**
+	 * get the repository id
+	 * 
+	 * @return
+	 */
+	public final long getRepositoryId() {
+		return this.repositoryId;
 	}
 
 	/**

@@ -118,7 +118,7 @@ public class SVNTargetRevisionDetector implements ITargetRevisionDetector {
 					((Long) entry.getKey()).toString(), repositoryId);
 			targetRevisions.put(newRevision.getId(), newRevision);
 
-			final DBCommitInfo commit = new DBCommitInfo(
+			final DBCommitInfo commit = new DBCommitInfo(repositoryId,
 					previousRevision.getId(), newRevision.getId(),
 					entry.getValue());
 			commits.put(commit.getId(), commit);

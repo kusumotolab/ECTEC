@@ -14,7 +14,8 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
  * @author k-hotta
  * 
  */
-public class CommitRegisterer extends AbstractUniqueElementRegisterer<DBCommitInfo> {
+public class CommitRegisterer extends
+		AbstractUniqueElementRegisterer<DBCommitInfo> {
 
 	public CommitRegisterer(DBConnectionManager dbManager, int maxBatchCount) {
 		super(dbManager, maxBatchCount);
@@ -22,7 +23,7 @@ public class CommitRegisterer extends AbstractUniqueElementRegisterer<DBCommitIn
 
 	@Override
 	protected String createPreparedStatementQueue() {
-		return "insert into VCS_COMMIT values (?,?,?,?,?,?,?,?,?)";
+		return "insert into VCS_COMMIT values (?,?,?,?,?,?,?,?,?,?)";
 	}
 
 	@Override
@@ -30,6 +31,7 @@ public class CommitRegisterer extends AbstractUniqueElementRegisterer<DBCommitIn
 			throws SQLException {
 		int column = 0;
 		pstmt.setLong(++column, element.getId());
+		pstmt.setLong(++column, element.getRepositoryId());
 		pstmt.setLong(++column, element.getBeforeRevisionId());
 		pstmt.setLong(++column, element.getAfterRevisionId());
 

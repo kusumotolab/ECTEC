@@ -234,6 +234,7 @@ public class DBMaker {
 
 		builder.append("create table VCS_COMMIT(");
 		builder.append("VCS_COMMIT_ID LONG PRIMARY KEY,");
+		builder.append("REPOSITORY_ID LONG,");
 		builder.append("BEFORE_REVISION_ID LONG,");
 		builder.append("AFTER_REVISION_ID LONG,");
 		builder.append("YEAR INTEGER CHECK(YEAR > 0),");
@@ -242,6 +243,7 @@ public class DBMaker {
 		builder.append("HOUR INTEGER CHECK(HOUR >= 0 AND HOUR <= 23),");
 		builder.append("MINUTE INTEGER CHECK(MINUTE >= 0 AND MINUTE <= 59),");
 		builder.append("SECOND INTEGER CHECK(SECOND >= 0 AND SECOND <= 59),");
+		builder.append("FOREIGN KEY(REPOSITORY_ID) REFERENCES REPOSITORY(REPOSITORY_ID),");
 		builder.append("FOREIGN KEY(BEFORE_REVISION_ID) REFERENCES REVISION(REVISION_ID),");
 		builder.append("FOREIGN KEY(AFTER_REVISION_ID) REFERENCES REVISION(REVISION_ID)");
 		builder.append(")");
@@ -257,6 +259,8 @@ public class DBMaker {
 	private void createCommitTableIndexes() throws Exception {
 		dbManager
 				.executeUpdate("create index VCS_COMMIT_ID_INDEX_VCS_COMMIT on VCS_COMMIT(VCS_COMMIT_ID)");
+		dbManager
+				.executeUpdate("create index REPOSITORY_ID_INDEX_VCS_COMMIT on VCS_COMMIT(REPOSITORY_ID)");
 		dbManager
 				.executeUpdate("create index BEFORE_REVISION_ID_INDEX_VCS_COMMIT on VCS_COMMIT(BEFORE_REVISION_ID)");
 		dbManager
