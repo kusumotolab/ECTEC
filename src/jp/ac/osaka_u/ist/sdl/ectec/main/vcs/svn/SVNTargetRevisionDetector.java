@@ -120,7 +120,8 @@ public class SVNTargetRevisionDetector implements ITargetRevisionDetector {
 
 			final DBCommitInfo commit = new DBCommitInfo(repositoryId,
 					previousRevision.getId(), newRevision.getId(),
-					entry.getValue());
+					previousRevision.getIdentifier(),
+					newRevision.getIdentifier(), entry.getValue());
 			commits.put(commit.getId(), commit);
 
 			previousRevision = newRevision;
