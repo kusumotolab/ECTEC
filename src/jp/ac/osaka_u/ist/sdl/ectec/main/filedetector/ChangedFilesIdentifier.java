@@ -2,6 +2,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.main.filedetector;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -9,12 +10,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCombinedCommitInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.FileRegisterer;
-import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.IRepositoryManager;
+import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.IChangedFilesDetector;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
-import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
+
+import org.apache.log4j.Logger;
 
 /**
  * A class to detect and register changed files
@@ -25,14 +28,15 @@ import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 public class ChangedFilesIdentifier {
 
 	/**
-	 * the repository manager
+	 * the logger
 	 */
-	private final IRepositoryManager manager;
+	private static final Logger logger = LoggingManager
+			.getLogger(ChangedFilesIdentifier.class.getName());
 
 	/**
-	 * the registerer for files
+	 * the detectors
 	 */
-	private final FileRegisterer registerer;
+	private final ConcurrentMap<Long, IChangedFilesDetector> changedFilesDetectors;
 
 	/**
 	 * the target language
@@ -47,14 +51,14 @@ public class ChangedFilesIdentifier {
 	/**
 	 * the constructor
 	 * 
-	 * @param detector
-	 * @param registerer
+	 * @param repositoryManagerManager
+	 * @param language
+	 * @param threadsCount
 	 */
-	public ChangedFilesIdentifier(final IRepositoryManager manager,
-			final FileRegisterer registerer, final Language language,
-			final int threadsCount) {
-		this.manager = manager;
-		this.registerer = registerer;
+	public ChangedFilesIdentifier(
+			final ConcurrentMap<Long, IChangedFilesDetector> changedFilesDetectors,
+			final Language language, final int threadsCount) {
+		this.changedFilesDetectors = changedFilesDetectors;
 		this.language = language;
 		this.threadsCount = threadsCount;
 	}
@@ -66,28 +70,22 @@ public class ChangedFilesIdentifier {
 	 * @param targetRevisions
 	 * @throws SQLException
 	 */
-	public void detectAndRegister(final Map<Long, DBCommitInfo> commits)
+	public Map<Long, DBFileInfo> detect(
+			final Map<Long, DBCombinedCommitInfo> combinedCommits,
+			final Map<Long, DBCommitInfo> originalCommits,
+			final DBCombinedCommitInfo latestCombinedCommit)
 			throws SQLException {
-		final SortedSet<Long> revisionsAsSet = new TreeSet<Long>();
-		for (final Map.Entry<Long, DBCommitInfo> entry : commits.entrySet()) {
-			revisionsAsSet.add(entry.getValue().getAfterRevisionId());
-		}
+		logger.info("detecting changed files in each revision ... ");
+		final ConcurrentMap<String, SortedSet<ChangeOnFile>> changedFiles = detectChangedFiles(
+				combinedCommits.values(), originalCommits);
 
-		MessagePrinter
-				.stronglyPrintln("detecting changed files in each revision ... ");
-		final ConcurrentMap<String, SortedSet<ChangeOnFile>> changedFiles = detectChangedFiles(commits
-				.values());
-		MessagePrinter.stronglyPrintln();
+		logger.info("creating  instances of files ... ");
+		final Map<Long, DBFileInfo> fileInstances = createFileInstances(
+				changedFiles,
+				latestCombinedCommit.getAfterCombinedRevisionId(),
+				combinedCommits);
 
-		MessagePrinter.stronglyPrintln("creating  instances of files ... ");
-		final ConcurrentMap<Long, DBFileInfo> fileInstances = createFileInstances(
-				changedFiles, revisionsAsSet.last(), commits);
-		MessagePrinter.stronglyPrintln();
-
-		MessagePrinter.stronglyPrintln("registering files ... ");
-		registerer.register(fileInstances.values());
-		MessagePrinter.stronglyPrintln("\tOK");
-		MessagePrinter.stronglyPrintln();
+		return Collections.unmodifiableMap(fileInstances);
 	}
 
 	/**
@@ -97,19 +95,23 @@ public class ChangedFilesIdentifier {
 	 * @return
 	 */
 	private ConcurrentMap<String, SortedSet<ChangeOnFile>> detectChangedFiles(
-			final Collection<DBCommitInfo> commits) {
+			final Collection<DBCombinedCommitInfo> combinedCommits,
+			final Map<Long, DBCommitInfo> originalCommits) {
 		final Thread[] threads = new Thread[threadsCount];
 		final ChangedFilesDetectingThread[] detectingThreads = new ChangedFilesDetectingThread[threadsCount];
 
 		final AtomicInteger index = new AtomicInteger(0);
 
-		final DBCommitInfo[] commitsAsArray = commits
-				.toArray(new DBCommitInfo[0]);
+		final DBCombinedCommitInfo[] commitsAsArray = combinedCommits
+				.toArray(new DBCombinedCommitInfo[0]);
+
+		final ConcurrentMap<Long, DBCommitInfo> originalCommitsMap = new ConcurrentHashMap<Long, DBCommitInfo>();
+		originalCommitsMap.putAll(originalCommits);
 
 		for (int i = 0; i < threadsCount; i++) {
 			final ChangedFilesDetectingThread detectingThread = new ChangedFilesDetectingThread(
-					manager.createChangedFilesDetector(), language,
-					commitsAsArray, index);
+					changedFilesDetectors, language, commitsAsArray,
+					originalCommitsMap, index);
 			detectingThreads[i] = detectingThread;
 			threads[i] = new Thread(detectingThread);
 			threads[i].start();
@@ -152,7 +154,8 @@ public class ChangedFilesIdentifier {
 	 */
 	private ConcurrentMap<Long, DBFileInfo> createFileInstances(
 			final ConcurrentMap<String, SortedSet<ChangeOnFile>> changes,
-			final long lastRevisionId, final Map<Long, DBCommitInfo> commits) {
+			final long lastRevisionId,
+			final Map<Long, DBCombinedCommitInfo> commits) {
 		final Thread[] threads = new Thread[threadsCount];
 
 		final ConcurrentMap<Long, DBFileInfo> fileInstances = new ConcurrentHashMap<Long, DBFileInfo>();
@@ -161,7 +164,7 @@ public class ChangedFilesIdentifier {
 		final String[] targetPathsAsArray = changes.keySet().toArray(
 				new String[0]);
 
-		final ConcurrentMap<Long, DBCommitInfo> concurrentCommits = new ConcurrentHashMap<Long, DBCommitInfo>();
+		final ConcurrentMap<Long, DBCombinedCommitInfo> concurrentCommits = new ConcurrentHashMap<Long, DBCombinedCommitInfo>();
 		concurrentCommits.putAll(commits);
 
 		for (int i = 0; i < threadsCount; i++) {

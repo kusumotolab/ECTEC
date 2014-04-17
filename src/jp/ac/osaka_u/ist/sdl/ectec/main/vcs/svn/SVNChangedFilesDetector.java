@@ -41,7 +41,7 @@ public class SVNChangedFilesDetector implements IChangedFilesDetector {
 				.getAfterRevisionIdentifier());
 
 		// a special treat for the initial commit
-		if (commit.getBeforeRevisionIdentifier().equals("INITIAL")) {
+		if (commit.getBeforeRevisionId() == -1) {
 			final Map<String, Character> result = new HashMap<String, Character>();
 			final List<String> allFiles = manager.getListOfSourceFiles(revision, language);
 			for (final String file : allFiles) {

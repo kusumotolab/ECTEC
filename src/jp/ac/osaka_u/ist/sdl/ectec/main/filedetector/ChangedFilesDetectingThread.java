@@ -5,12 +5,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCombinedCommitInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.main.IllegalStateException;
 import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.IChangedFilesDetector;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
-import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
+
+import org.apache.log4j.Logger;
 
 /**
  * A thread class that detects changed files with specified detector
@@ -21,9 +26,20 @@ import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 public class ChangedFilesDetectingThread implements Runnable {
 
 	/**
-	 * a detector
+	 * the logger
 	 */
-	private final IChangedFilesDetector detector;
+	private static final Logger logger = LoggingManager
+			.getLogger(ChangedFilesDetectingThread.class.getName());
+
+	/**
+	 * the logger for errors
+	 */
+	private static final Logger eLogger = LoggingManager.getLogger("error");
+
+	/**
+	 * detectors
+	 */
+	private final ConcurrentMap<Long, IChangedFilesDetector> detectors;
 
 	/**
 	 * the map contains the result of analysis <br>
@@ -38,25 +54,34 @@ public class ChangedFilesDetectingThread implements Runnable {
 	private final Language language;
 
 	/**
-	 * the target commits as array
+	 * the target combined commits as array
 	 */
-	private final DBCommitInfo[] commits;
+	private final DBCombinedCommitInfo[] combinedCommits;
+
+	/**
+	 * the original commits
+	 */
+	private final ConcurrentMap<Long, DBCommitInfo> originalCommits;
 
 	/**
 	 * the counter that points which revision is the next target
 	 */
 	private final AtomicInteger index;
 
-	public ChangedFilesDetectingThread(final IChangedFilesDetector detector,
-			final Language language, final DBCommitInfo[] commits,
+	public ChangedFilesDetectingThread(
+			final ConcurrentMap<Long, IChangedFilesDetector> detectors,
+			final Language language,
+			final DBCombinedCommitInfo[] combinedCommits,
+			final ConcurrentMap<Long, DBCommitInfo> originalCommits,
 			final AtomicInteger index) {
-		this.detector = detector;
+		this.detectors = detectors;
 		this.changedFiles = new HashMap<String, SortedSet<ChangeOnFile>>();
 		this.language = language;
-		this.commits = commits;
+		this.combinedCommits = combinedCommits;
+		this.originalCommits = originalCommits;
 		this.index = index;
 	}
-	
+
 	public final Map<String, SortedSet<ChangeOnFile>> getChangedFiles() {
 		return Collections.unmodifiableMap(changedFiles);
 	}
@@ -66,25 +91,40 @@ public class ChangedFilesDetectingThread implements Runnable {
 		while (true) {
 			final int currentIndex = index.getAndIncrement();
 
-			if (currentIndex >= commits.length) {
+			if (currentIndex >= combinedCommits.length) {
 				break;
 			}
 
-			final DBCommitInfo targetCommit = commits[currentIndex];
-			final String targetRevisionIdentifier = targetCommit
-					.getAfterRevisionIdentifier();
-
-			MessagePrinter.println("\t[" + (currentIndex + 1) + "/"
-					+ commits.length + "] analyzing commit from revision "
-					+ targetCommit.getBeforeRevisionIdentifier()
-					+ " to revision " + targetRevisionIdentifier);
+			final DBCombinedCommitInfo targetCombinedCommit = combinedCommits[currentIndex];
+			final DBCommitInfo targetOriginalCommit = originalCommits
+					.get(targetCombinedCommit.getOriginalCommitId());
 
 			try {
-				// detect changed files in this revision
-				final Map<String, Character> changedFilesInThisRevision = detector
-						.detectChangedFiles(targetCommit, language);
 
-				// store paths detected the above step into the concurrent map
+				if (targetOriginalCommit == null) {
+					throw new IllegalStateException(
+							"cannot find corresponding original commit to combined commit "
+									+ targetCombinedCommit.getId());
+				}
+
+				logger.info("[" + (currentIndex + 1) + "/"
+						+ combinedCommits.length
+						+ "] analyzing combined commit "
+						+ targetCombinedCommit.getId()
+						+ " (original commit : commit on repository "
+						+ targetOriginalCommit.getRepositoryId()
+						+ " from revision "
+						+ targetOriginalCommit.getBeforeRevisionIdentifier()
+						+ " to revision "
+						+ targetOriginalCommit.getAfterRevisionIdentifier());
+
+				// detect changed files in this revision
+				final IChangedFilesDetector detector = detectors
+						.get(targetOriginalCommit.getRepositoryId());
+				final Map<String, Character> changedFilesInThisRevision = detector
+						.detectChangedFiles(targetOriginalCommit, language);
+
+				// store paths detected the above step into the map
 				for (final Map.Entry<String, Character> entry : changedFilesInThisRevision
 						.entrySet()) {
 					// the path of a changed file
@@ -98,18 +138,18 @@ public class ChangedFilesDetectingThread implements Runnable {
 						changedFiles.put(path, new TreeSet<ChangeOnFile>());
 					}
 
-					final ChangeOnFile changeOnFile = new ChangeOnFile(path,
-							targetCommit.getId(),
+					final ChangeOnFile changeOnFile = new ChangeOnFile(
+							targetOriginalCommit.getRepositoryId(), path,
+							targetCombinedCommit.getId(),
+							targetOriginalCommit.getDate(),
 							ChangeTypeOnFile.getCorrespondingChangeType(entry
 									.getValue()));
 					changedFiles.get(path).add(changeOnFile);
 				}
 
 			} catch (Exception e) {
-				MessagePrinter
-						.eStronglyPrintln("[ERROR] something is occured when analyzing revision "
-								+ targetRevisionIdentifier);
-				e.printStackTrace();
+				eLogger.warn("something is wrong when processing combined commit "
+						+ targetCombinedCommit.getId() + "\n" + e.toString());
 			}
 		}
 	}

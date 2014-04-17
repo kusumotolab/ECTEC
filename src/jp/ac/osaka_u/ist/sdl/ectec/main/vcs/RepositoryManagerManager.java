@@ -91,4 +91,13 @@ public class RepositoryManagerManager {
 		return repositoryManagers.get(id);
 	}
 
+	/**
+	 * get the repository managers
+	 * 
+	 * @return
+	 */
+	public final ConcurrentMap<Long, IRepositoryManager> getRepositoryManagers() {
+		return repositoryManagers;
+	}
+
 }

@@ -1,5 +1,7 @@
 package jp.ac.osaka_u.ist.sdl.ectec.main.filedetector;
 
+import java.util.Date;
+
 /**
  * A class that represents a change on a file
  * 
@@ -9,25 +11,47 @@ package jp.ac.osaka_u.ist.sdl.ectec.main.filedetector;
 public class ChangeOnFile implements Comparable<ChangeOnFile> {
 
 	/**
+	 * the id of the repository
+	 */
+	private final long repositoryId;
+
+	/**
 	 * the path of the file
 	 */
 	private final String path;
 
 	/**
-	 * the id of the commit where this file was changed
+	 * the id of the combined commit where this file was changed
 	 */
-	private final long changedCommitId;
+	private final long combinedCommitId;
+
+	/**
+	 * the date of the commit where this file was changed
+	 */
+	private final Date date;
 
 	/**
 	 * the type of the change
 	 */
 	private final ChangeTypeOnFile type;
 
-	public ChangeOnFile(final String path, final long changedCommitId,
+	public ChangeOnFile(final long repositoryId, final String path,
+			final long combinedCommitId, final Date date,
 			final ChangeTypeOnFile type) {
+		this.repositoryId = repositoryId;
 		this.path = path;
-		this.changedCommitId = changedCommitId;
+		this.combinedCommitId = combinedCommitId;
+		this.date = date;
 		this.type = type;
+	}
+
+	/**
+	 * get the id of the repository
+	 * 
+	 * @return
+	 */
+	public final long getRepositoryId() {
+		return repositoryId;
 	}
 
 	/**
@@ -40,12 +64,21 @@ public class ChangeOnFile implements Comparable<ChangeOnFile> {
 	}
 
 	/**
-	 * get the id of the commit where this file was changed
+	 * get the id of the combined commit where this file was changed
 	 * 
 	 * @return
 	 */
-	public final long getChagnedCommitId() {
-		return this.changedCommitId;
+	public final long getCombinedCommitId() {
+		return this.combinedCommitId;
+	}
+
+	/**
+	 * get the date of the commit where this file was changed
+	 * 
+	 * @return
+	 */
+	public final Date getDate() {
+		return this.date;
 	}
 
 	/**
@@ -59,8 +92,13 @@ public class ChangeOnFile implements Comparable<ChangeOnFile> {
 
 	@Override
 	public int compareTo(ChangeOnFile another) {
-		return ((Long) this.changedCommitId).compareTo(another
-				.getChagnedCommitId());
+		int basedOnDate = this.date.compareTo(another.getDate());
+		if (basedOnDate != 0) {
+			return basedOnDate;
+		} else {
+			return ((Long) this.combinedCommitId).compareTo(another
+					.getCombinedCommitId());
+		}
 	}
 
 }
