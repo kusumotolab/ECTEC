@@ -37,11 +37,6 @@ public class DBFileInfo extends AbstractDBElement implements
 	private final long endCombinedRevisionid;
 
 	/**
-	 * the id of the combined commit that added this file
-	 */
-	private final long addedCombinedCommitId;
-
-	/**
 	 * the constructor for elements that are retrieved from the db
 	 * 
 	 * @param id
@@ -49,17 +44,15 @@ public class DBFileInfo extends AbstractDBElement implements
 	 * @param path
 	 * @param startCombinedRevisionId
 	 * @param endCombinedRevisionId
-	 * @param addedCombinedCommitId
 	 */
 	public DBFileInfo(final long id, final long ownerRepositoryId,
 			final String path, final long startCombinedRevisionId,
-			final long endCombinedRevisionId, final long addedCombinedCommitId) {
+			final long endCombinedRevisionId) {
 		super(id);
 		this.ownerRepositoryId = ownerRepositoryId;
 		this.path = path;
 		this.startCombinedRevisionId = startCombinedRevisionId;
 		this.endCombinedRevisionid = endCombinedRevisionId;
-		this.addedCombinedCommitId = addedCombinedCommitId;
 	}
 
 	/**
@@ -69,14 +62,11 @@ public class DBFileInfo extends AbstractDBElement implements
 	 * @param path
 	 * @param startCombinedRevisionId
 	 * @param endCombinedRevisionId
-	 * @param addedCombinedCommitId
 	 */
 	public DBFileInfo(final long ownerRepositoryId, final String path,
-			final long startCombinedRevisionId,
-			final long endCombinedRevisionId, final long addedCombinedCommitId) {
+			final long startCombinedRevisionId, final long endCombinedRevisionId) {
 		this(count.getAndIncrement(), ownerRepositoryId, path,
-				startCombinedRevisionId, endCombinedRevisionId,
-				addedCombinedCommitId);
+				startCombinedRevisionId, endCombinedRevisionId);
 	}
 
 	/**
@@ -113,15 +103,6 @@ public class DBFileInfo extends AbstractDBElement implements
 	 */
 	public final long getCombinedEndRevisionId() {
 		return this.endCombinedRevisionid;
-	}
-
-	/**
-	 * get the id of the combined commit that added this file
-	 * 
-	 * @return
-	 */
-	public final long getAddedCombinedCommitId() {
-		return this.addedCombinedCommitId;
 	}
 
 	@Override

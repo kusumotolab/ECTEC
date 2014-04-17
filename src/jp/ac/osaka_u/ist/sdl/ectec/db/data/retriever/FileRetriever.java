@@ -27,9 +27,9 @@ public class FileRetriever extends AbstractUniqueElementRetriever<DBFileInfo> {
 		final String path = rs.getString(++column);
 		final long startCombinedRevisionId = rs.getLong(++column);
 		final long endCombinedRevisionId = rs.getLong(++column);
-		final long addedCombinedCommitId = rs.getLong(++column);
 
-		return new DBFileInfo(id, repositoryId, path, startCombinedRevisionId, endCombinedRevisionId, addedCombinedCommitId);
+		return new DBFileInfo(id, repositoryId, path, startCombinedRevisionId,
+				endCombinedRevisionId);
 	}
 
 	protected String getStartRevisionIdColumnName() {
@@ -49,7 +49,7 @@ public class FileRetriever extends AbstractUniqueElementRetriever<DBFileInfo> {
 	protected String getIdColumnName() {
 		return "FILE_ID";
 	}
-	
+
 	/**
 	 * retrieve elements that exist in the specified revision
 	 * 

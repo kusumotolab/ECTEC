@@ -26,7 +26,7 @@ public class FileRegisterer extends AbstractUniqueElementRegisterer<DBFileInfo> 
 
 	@Override
 	protected String createPreparedStatementQueue() {
-		return "insert into FILE values (?,?,?,?,?,?)";
+		return "insert into FILE values (?,?,?,?,?)";
 	}
 
 	@Override
@@ -38,7 +38,6 @@ public class FileRegisterer extends AbstractUniqueElementRegisterer<DBFileInfo> 
 		pstmt.setString(++column, element.getPath());
 		pstmt.setLong(++column, element.getStartCombinedRevisionId());
 		pstmt.setLong(++column, element.getCombinedEndRevisionId());
-		pstmt.setLong(++column, element.getAddedCombinedCommitId());
 	}
 
 }
