@@ -6,6 +6,19 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneGenealogyInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentGenealogyInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCombinedCommitInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCombinedRevisionInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRepositoryInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CRDRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CloneGenealogyRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CloneSetLinkRegisterer;
@@ -331,6 +344,49 @@ public final class DBConnectionManager {
 		final Statement stmt = createStatement();
 		stmt.executeUpdate(query);
 		stmt.close();
+	}
+
+	public void initializeElementCounters() throws Exception {
+		final long maxRepository = repositoryRetriever.getMaximumId();
+		DBRepositoryInfo.resetCount(maxRepository);
+
+		final long maxRevision = revisionRetriever.getMaximumId();
+		DBRevisionInfo.resetCount(maxRevision);
+
+		final long maxCommit = commitRetriever.getMaximumId();
+		DBCommitInfo.resetCount(maxCommit);
+
+		final long maxCombinedRevision = combinedRevisionRetriever
+				.getMaximumId();
+		DBCombinedRevisionInfo.resetCount(maxCombinedRevision);
+
+		final long maxCombinedCommit = combinedCommitRetriever.getMaximumId();
+		DBCombinedCommitInfo.resetCount(maxCombinedCommit);
+
+		final long maxFile = fileRetriever.getMaximumId();
+		DBFileInfo.resetCount(maxFile);
+
+		final long maxCrd = crdRetriever.getMaximumId();
+		DBCrdInfo.resetCount(maxCrd);
+
+		final long maxFragment = fragmentRetriever.getMaximumId();
+		DBCodeFragmentInfo.resetCount(maxFragment);
+
+		final long maxClone = cloneRetriever.getMaximumId();
+		DBCloneSetInfo.resetCount(maxClone);
+
+		final long maxFragmentLink = fragmentLinkRetriever.getMaximumId();
+		DBCodeFragmentLinkInfo.resetCount(maxFragmentLink);
+
+		final long maxCloneLink = cloneLinkRetriever.getMaximumId();
+		DBCloneSetLinkInfo.resetCount(maxCloneLink);
+
+		final long maxCloneGenealogy = cloneGenealogyRetriever.getMaximumId();
+		DBCloneGenealogyInfo.resetCount(maxCloneGenealogy);
+
+		final long maxFragmentGenealogy = fragmentGenealogyRetriever
+				.getMaximumId();
+		DBCodeFragmentGenealogyInfo.resetCount(maxFragmentGenealogy);
 	}
 
 }

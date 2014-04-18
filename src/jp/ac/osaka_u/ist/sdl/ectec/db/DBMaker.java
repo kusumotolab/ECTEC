@@ -393,7 +393,7 @@ public class DBMaker {
 	}
 
 	/**
-	 * get the query to create the table for genealogies of clones
+	 * get the query to create the table for crds
 	 * 
 	 * @return
 	 */
