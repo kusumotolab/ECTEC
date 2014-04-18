@@ -15,7 +15,7 @@ public class DBCommitInfo extends AbstractDBElement implements
 	/**
 	 * the counter for having the number of created instances
 	 */
-	private static final AtomicLong count = new AtomicLong(0);
+	private static AtomicLong count = new AtomicLong(0);
 
 	/**
 	 * the repository id
@@ -66,6 +66,15 @@ public class DBCommitInfo extends AbstractDBElement implements
 		this.beforeRevisionIdentifier = beforeRevisionIdentifier;
 		this.afterRevisionIdentifier = afterRevisionIdentifier;
 		this.date = date;
+	}
+
+	/**
+	 * reset the count with the given long value
+	 * 
+	 * @param l
+	 */
+	public static void resetCount(final long l) {
+		count = new AtomicLong(l);
 	}
 
 	/**

@@ -14,7 +14,7 @@ public class DBFileInfo extends AbstractDBElement implements
 	/**
 	 * a counter to keep the number of created elements
 	 */
-	private static final AtomicLong count = new AtomicLong(0);
+	private static AtomicLong count = new AtomicLong(0);
 
 	/**
 	 * the id of the owner repository
@@ -67,6 +67,15 @@ public class DBFileInfo extends AbstractDBElement implements
 			final long startCombinedRevisionId, final long endCombinedRevisionId) {
 		this(count.getAndIncrement(), ownerRepositoryId, path,
 				startCombinedRevisionId, endCombinedRevisionId);
+	}
+
+	/**
+	 * reset the count with the given long value
+	 * 
+	 * @param l
+	 */
+	public static void resetCount(final long l) {
+		count = new AtomicLong(l);
 	}
 
 	/**

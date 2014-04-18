@@ -16,7 +16,7 @@ public class DBCloneSetLinkInfo extends AbstractDBElementLinkInfo implements
 	/**
 	 * a counter to keep the number of created elements
 	 */
-	private static final AtomicLong count = new AtomicLong(0);
+	private static AtomicLong count = new AtomicLong(0);
 
 	/**
 	 * the list of the ids of code fragment links related to this clone set link
@@ -59,6 +59,16 @@ public class DBCloneSetLinkInfo extends AbstractDBElementLinkInfo implements
 				beforeCombinedRevisionId, afterCombinedRevisionId,
 				codeFragmentLinks);
 	}
+	
+	/**
+	 * reset the count with the given long value
+	 * 
+	 * @param l
+	 */
+	public static void resetCount(final long l) {
+		count = new AtomicLong(l);
+	}
+
 
 	/**
 	 * get the list of ids of code fragment links related to this clone set link

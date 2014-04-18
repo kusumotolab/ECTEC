@@ -10,12 +10,13 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author k-hotta
  * 
  */
-public class DBCombinedRevisionInfo extends AbstractDBElement implements Comparable<DBCombinedRevisionInfo> {
+public class DBCombinedRevisionInfo extends AbstractDBElement implements
+		Comparable<DBCombinedRevisionInfo> {
 
 	/**
-	 * a counter to keep the nubmer of created elements
+	 * a counter to keep the number of created elements
 	 */
-	private static final AtomicLong count = new AtomicLong(0);
+	private static AtomicLong count = new AtomicLong(0);
 
 	/**
 	 * a list that has ids of revisions included in this combined revision
@@ -27,7 +28,8 @@ public class DBCombinedRevisionInfo extends AbstractDBElement implements Compara
 	 * 
 	 * @param id
 	 */
-	public DBCombinedRevisionInfo(final long id, final List<Long> originalRevisions) {
+	public DBCombinedRevisionInfo(final long id,
+			final List<Long> originalRevisions) {
 		super(id);
 		this.originalRevisions = originalRevisions;
 	}
@@ -39,6 +41,15 @@ public class DBCombinedRevisionInfo extends AbstractDBElement implements Compara
 	 */
 	public DBCombinedRevisionInfo(final List<Long> originalRevisions) {
 		this(count.getAndIncrement(), originalRevisions);
+	}
+
+	/**
+	 * reset the count with the given long value
+	 * 
+	 * @param l
+	 */
+	public static void resetCount(final long l) {
+		count = new AtomicLong(l);
 	}
 
 	/**

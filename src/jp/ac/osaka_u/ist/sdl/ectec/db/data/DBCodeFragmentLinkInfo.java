@@ -14,7 +14,7 @@ public class DBCodeFragmentLinkInfo extends AbstractDBElementLinkInfo implements
 	/**
 	 * a counter to keep the number of created elements
 	 */
-	private static final AtomicLong count = new AtomicLong(0);
+	private static AtomicLong count = new AtomicLong(0);
 
 	/**
 	 * the constructor for elements that are retrieved from the db
@@ -46,6 +46,16 @@ public class DBCodeFragmentLinkInfo extends AbstractDBElementLinkInfo implements
 		this(count.getAndIncrement(), beforeElementId, afterElementId,
 				beforeCombinedRevisionId, afterCombinedRevisionId);
 	}
+	
+	/**
+	 * reset the count with the given long value
+	 * 
+	 * @param l
+	 */
+	public static void resetCount(final long l) {
+		count = new AtomicLong(l);
+	}
+
 
 	@Override
 	public int compareTo(DBCodeFragmentLinkInfo another) {

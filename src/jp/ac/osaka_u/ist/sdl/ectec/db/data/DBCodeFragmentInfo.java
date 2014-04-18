@@ -15,7 +15,7 @@ public class DBCodeFragmentInfo extends AbstractDBElement implements
 	/**
 	 * a counter to keep the number of created elements
 	 */
-	private static final AtomicLong count = new AtomicLong(0);
+	private static AtomicLong count = new AtomicLong(0);
 
 	/**
 	 * the id of the owner file of this fragment
@@ -109,6 +109,16 @@ public class DBCodeFragmentInfo extends AbstractDBElement implements
 				endCombinedRevisionId, hash, hashForClone, startLine, endLine, size);
 	}
 
+	/**
+	 * reset the count with the given long value
+	 * 
+	 * @param l
+	 */
+	public static void resetCount(final long l) {
+		count = new AtomicLong(l);
+	}
+
+	
 	/**
 	 * get the id of the owner file of this fragment
 	 * 

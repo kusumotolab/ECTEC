@@ -16,7 +16,7 @@ public class DBCloneSetInfo extends AbstractDBElement implements
 	/**
 	 * a counter to keep the number of created elements
 	 */
-	private static final AtomicLong count = new AtomicLong(0);
+	private static AtomicLong count = new AtomicLong(0);
 
 	/**
 	 * the id of the combined revision that has this clone set
@@ -41,6 +41,16 @@ public class DBCloneSetInfo extends AbstractDBElement implements
 		this.combinedRevisionId = combinedRevisionId;
 		this.elements = elements;
 	}
+	
+	/**
+	 * reset the count with the given long value
+	 * 
+	 * @param l
+	 */
+	public static void resetCount(final long l) {
+		count = new AtomicLong(l);
+	}
+
 
 	/**
 	 * the constructor for newly created elements

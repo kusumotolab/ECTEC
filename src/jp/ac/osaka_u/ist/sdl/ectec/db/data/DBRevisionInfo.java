@@ -14,7 +14,7 @@ public class DBRevisionInfo extends AbstractDBElement implements
 	/**
 	 * a counter to keep the number of created elements
 	 */
-	private static final AtomicLong count = new AtomicLong(0);
+	private static AtomicLong count = new AtomicLong(0);
 
 	/**
 	 * a string to identify this revision (revision number and so on)
@@ -55,6 +55,15 @@ public class DBRevisionInfo extends AbstractDBElement implements
 	 */
 	public final String getIdentifier() {
 		return this.identifier;
+	}
+
+	/**
+	 * reset the count with the given long value
+	 * 
+	 * @param l
+	 */
+	public static void resetCount(final long l) {
+		count = new AtomicLong(l);
 	}
 
 	/**

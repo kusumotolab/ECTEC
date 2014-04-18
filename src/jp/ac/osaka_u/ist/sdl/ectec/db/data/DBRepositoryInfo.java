@@ -14,7 +14,7 @@ public class DBRepositoryInfo extends AbstractDBElement implements
 	/**
 	 * a counter to keep the number of created elements
 	 */
-	private static final AtomicLong count = new AtomicLong(0);
+	private static AtomicLong count = new AtomicLong(0);
 
 	/**
 	 * the name of the repository
@@ -47,6 +47,15 @@ public class DBRepositoryInfo extends AbstractDBElement implements
 	 */
 	public DBRepositoryInfo(final String name, final String url) {
 		this(count.getAndIncrement(), name, url);
+	}
+
+	/**
+	 * reset the count with the given long value
+	 * 
+	 * @param l
+	 */
+	public static void resetCount(final long l) {
+		count = new AtomicLong(l);
 	}
 
 	/**

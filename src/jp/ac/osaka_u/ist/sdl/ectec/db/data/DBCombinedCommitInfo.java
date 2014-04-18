@@ -14,7 +14,7 @@ public class DBCombinedCommitInfo extends AbstractDBElement implements
 	/**
 	 * a counter to keep the nubmer of created elements
 	 */
-	private static final AtomicLong count = new AtomicLong(0);
+	private static AtomicLong count = new AtomicLong(0);
 
 	/**
 	 * the id of the before combined revision
@@ -60,6 +60,16 @@ public class DBCombinedCommitInfo extends AbstractDBElement implements
 		this(count.getAndIncrement(), beforeCombinedRevisionId,
 				afterCombinedRevisionId, originalCommitId);
 	}
+	
+	/**
+	 * reset the count with the given long value
+	 * 
+	 * @param l
+	 */
+	public static void resetCount(final long l) {
+		count = new AtomicLong(l);
+	}
+
 
 	/**
 	 * get the id of the before combined revision

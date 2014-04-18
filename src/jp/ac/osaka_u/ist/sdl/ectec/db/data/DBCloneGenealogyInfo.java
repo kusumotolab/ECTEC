@@ -16,7 +16,7 @@ public class DBCloneGenealogyInfo extends
 	/**
 	 * a counter to keep the number of created elements
 	 */
-	private static final AtomicLong count = new AtomicLong(0);
+	private static AtomicLong count = new AtomicLong(0);
 
 	/**
 	 * the constructor for elements that are retrieved from the db
@@ -31,6 +31,15 @@ public class DBCloneGenealogyInfo extends
 			final long endRevisionId, final List<Long> elements,
 			final List<Long> links) {
 		super(id, startRevisionId, endRevisionId, elements, links);
+	}
+
+	/**
+	 * reset the count with the given long value
+	 * 
+	 * @param l
+	 */
+	public static void resetCount(final long l) {
+		count = new AtomicLong(l);
 	}
 
 	/**

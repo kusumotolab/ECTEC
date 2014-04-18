@@ -14,9 +14,9 @@ public class DBCodeFragmentGenealogyInfo extends
 		implements Comparable<DBCodeFragmentGenealogyInfo> {
 
 	/**
-	 * the conter to have the number of created elements
+	 * the counter to have the number of created elements
 	 */
-	private static final AtomicLong count = new AtomicLong(0);
+	private static AtomicLong count = new AtomicLong(0);
 
 	public DBCodeFragmentGenealogyInfo(final long id,
 			final long startRevisionId, final long endRevisionId,
@@ -30,6 +30,16 @@ public class DBCodeFragmentGenealogyInfo extends
 		this(count.getAndIncrement(), startRevisionId, endRevisionId, elements,
 				links);
 	}
+	
+	/**
+	 * reset the count with the given long value
+	 * 
+	 * @param l
+	 */
+	public static void resetCount(final long l) {
+		count = new AtomicLong(l);
+	}
+
 
 	@Override
 	public int compareTo(DBCodeFragmentGenealogyInfo another) {
