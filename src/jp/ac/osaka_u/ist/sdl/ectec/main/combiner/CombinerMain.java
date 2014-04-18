@@ -80,6 +80,9 @@ public class CombinerMain {
 		dbManager = new DBConnectionManager(settings.getDbPath(),
 				settings.getMaxBatchCount());
 		logger.info("connected to the database");
+
+		dbManager.initializeElementCounters();
+		logger.info("initialized counters of elements");
 	}
 
 	/**

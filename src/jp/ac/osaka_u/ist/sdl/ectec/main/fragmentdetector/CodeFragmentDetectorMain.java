@@ -91,6 +91,9 @@ public class CodeFragmentDetectorMain {
 		dbManager = new DBConnectionManager(settings.getDbPath(),
 				settings.getMaxBatchCount());
 		logger.info("connected to the db");
+		
+		dbManager.initializeElementCounters();
+		logger.info("initialized counters of elements");
 
 		// initialize the manager of repository managers
 		repositoryManagerManager = new RepositoryManagerManager();
