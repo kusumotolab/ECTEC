@@ -65,7 +65,7 @@ public class RevisionDetector {
 	 */
 	public final void run() throws Exception {
 		// the minimum number of thread is 2
-		final int threadsCount = Math.max(targetRepositories.size(),
+		final int threadsCount = Math.min(targetRepositories.size(),
 				Math.max(settings.getThreads(), 2));
 
 		final Thread[] threads = new Thread[threadsCount - 1];

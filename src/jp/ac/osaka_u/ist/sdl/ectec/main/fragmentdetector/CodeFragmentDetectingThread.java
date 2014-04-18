@@ -3,16 +3,19 @@ package jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.ast.ASTCreator;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCombinedRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.hash.IHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.normalizer.NormalizerCreator;
 import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.IRepositoryManager;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.AnalyzeGranularity;
-import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
 /**
@@ -22,6 +25,12 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
  * 
  */
 public class CodeFragmentDetectingThread implements Runnable {
+
+	/**
+	 * the logger
+	 */
+	private static final Logger logger = LoggingManager
+			.getLogger(CodeFragmentDetectingThread.class.getName());
 
 	/**
 	 * a map having detected crds
@@ -44,14 +53,19 @@ public class CodeFragmentDetectingThread implements Runnable {
 	private final AtomicInteger index;
 
 	/**
-	 * the repository manager
+	 * the repository managers
 	 */
-	private final IRepositoryManager manager;
+	private final ConcurrentMap<Long, IRepositoryManager> repositoryManagers;
 
 	/**
 	 * a map having target revisions
 	 */
-	private final ConcurrentMap<Long, String> revisions;
+	private final ConcurrentMap<Long, DBRevisionInfo> originalRevisions;
+
+	/**
+	 * a map having target combined revisions
+	 */
+	private final ConcurrentMap<Long, DBCombinedRevisionInfo> combinedRevisions;
 
 	/**
 	 * the factory for block analyzers
@@ -71,9 +85,11 @@ public class CodeFragmentDetectingThread implements Runnable {
 	public CodeFragmentDetectingThread(
 			final ConcurrentMap<Long, DBCrdInfo> detectedCrds,
 			final ConcurrentMap<Long, DBCodeFragmentInfo> detectedFragments,
-			final DBFileInfo[] targetFiles, final AtomicInteger index,
-			final IRepositoryManager manager,
-			final ConcurrentMap<Long, String> revisions,
+			final DBFileInfo[] targetFiles,
+			final AtomicInteger index,
+			final ConcurrentMap<Long, IRepositoryManager> repositoryManagers,
+			final ConcurrentMap<Long, DBRevisionInfo> originalRevisions,
+			final ConcurrentMap<Long, DBCombinedRevisionInfo> combinedRevisions,
 			final AnalyzeGranularity granularity,
 			final NormalizerCreator blockAnalyzerCreator,
 			final IHashCalculator hashCalculator) {
@@ -81,8 +97,9 @@ public class CodeFragmentDetectingThread implements Runnable {
 		this.detectedFragments = detectedFragments;
 		this.targetFiles = targetFiles;
 		this.index = index;
-		this.manager = manager;
-		this.revisions = revisions;
+		this.repositoryManagers = repositoryManagers;
+		this.originalRevisions = originalRevisions;
+		this.combinedRevisions = combinedRevisions;
 		this.blockAnalyzerCreator = blockAnalyzerCreator;
 		this.granularity = granularity;
 		this.hashCalculator = hashCalculator;
@@ -98,32 +115,76 @@ public class CodeFragmentDetectingThread implements Runnable {
 			}
 
 			final DBFileInfo targetFile = targetFiles[currentIndex];
-			MessagePrinter.println("\t[" + (currentIndex + 1) + "/"
-					+ targetFiles.length + "] processing "
-					+ targetFile.getPath());
+			logger.info("[" + (currentIndex + 1) + "/" + targetFiles.length
+					+ "] processing " + targetFile.getPath());
 
-			final String startRevision = revisions.get(targetFile
-					.getStartCombinedRevisionId());
+			final long repositoryId = targetFile.getOwnerRepositoryId();
+			final DBCombinedRevisionInfo startCombinedRevision = combinedRevisions
+					.get(targetFile.getStartCombinedRevisionId());
 			try {
-				final String src = manager.getFileContents(startRevision,
-						targetFile.getPath());
+				final IRepositoryManager repositoryManager = repositoryManagers
+						.get(repositoryId);
+
+				if (repositoryManager == null) {
+					throw new IllegalStateException(
+							"repository manager of repository " + repositoryId
+									+ " is null");
+				}
+
+				final DBRevisionInfo originalRevision = getCorrespondingOriginalRevision(
+						startCombinedRevision, repositoryId);
+
+				final String src = repositoryManager.getFileContents(
+						originalRevision.getIdentifier(), targetFile.getPath());
 				final CompilationUnit root = ASTCreator.createAST(src);
 
-				final CodeFragmentDetector detector = new CodeFragmentDetector(
-						targetFile.getId(), targetFile.getStartCombinedRevisionId(),
-						targetFile.getCombinedEndRevisionId(), hashCalculator, root,
-						granularity, blockAnalyzerCreator);
+				final ASTParser parser = new ASTParser(
+						targetFile.getId(),
+						targetFile.getStartCombinedRevisionId(),
+						targetFile.getCombinedEndRevisionId(), hashCalculator,
+						root, granularity, blockAnalyzerCreator);
 
-				root.accept(detector);
+				root.accept(parser);
 
-				this.detectedCrds.putAll(detector.getDetectedCrds());
-				this.detectedFragments.putAll(detector.getDetectedFragments());
+				this.detectedCrds.putAll(parser.getDetectedCrds());
+				this.detectedFragments.putAll(parser.getDetectedFragments());
 
 			} catch (Exception e) {
-				MessagePrinter.ePrintln("something is wrong in processing "
-						+ targetFile.getPath() + " at revision "
-						+ startRevision);
+				logger.warn("something is wrong in processing "
+						+ targetFile.getPath() + " in repository "
+						+ repositoryId + " at combined revision "
+						+ startCombinedRevision.getId());
+				e.printStackTrace();
 			}
 		}
 	}
+
+	private DBRevisionInfo getCorrespondingOriginalRevision(
+			final DBCombinedRevisionInfo combinedRevision,
+			final long repositoryId) throws IllegalStateException {
+		DBRevisionInfo result = null;
+		for (final long candidateId : combinedRevision.getOriginalRevisions()) {
+			final DBRevisionInfo candidateOriginalRevision = originalRevisions
+					.get(candidateId);
+			if (candidateOriginalRevision.getRepositoryId() == repositoryId) {
+				if (result == null) {
+					result = candidateOriginalRevision;
+				} else {
+					throw new IllegalStateException(
+							"duplicate repository in the combined revision "
+									+ combinedRevision.getId());
+				}
+			}
+		}
+
+		if (result == null) {
+			throw new IllegalStateException(
+					"cannot find corresponding original revision for repository "
+							+ repositoryId + " for combined revision "
+							+ combinedRevision.getId());
+		}
+
+		return result;
+	}
+
 }

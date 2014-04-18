@@ -4,12 +4,14 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentMap;
 
+import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CRDRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CodeFragmentRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Constants;
-import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
+
+import org.apache.log4j.Logger;
 
 /**
  * A monitor class for code fragment detecting threads
@@ -18,6 +20,17 @@ import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
  * 
  */
 public class CodeFragmentDetectingThreadMonitor {
+
+	/**
+	 * the logger
+	 */
+	private static final Logger logger = LoggingManager
+			.getLogger(CodeFragmentDetectingThreadMonitor.class.getName());
+
+	/**
+	 * the logger for errors
+	 */
+	private final static Logger eLogger = LoggingManager.getLogger("error");
 
 	/**
 	 * a map having detected crds
@@ -47,16 +60,23 @@ public class CodeFragmentDetectingThreadMonitor {
 	 */
 	private final CodeFragmentRegisterer fragmentRegisterer;
 
+	/**
+	 * the array of the threads to be monitored
+	 */
+	private final Thread[] threads;
+
 	public CodeFragmentDetectingThreadMonitor(
 			final ConcurrentMap<Long, DBCrdInfo> detectedCrds,
 			final ConcurrentMap<Long, DBCodeFragmentInfo> detectedFragments,
 			final int maximumElementsCount, final CRDRegisterer crdRegisterer,
-			final CodeFragmentRegisterer fragmentRegisterer) {
+			final CodeFragmentRegisterer fragmentRegisterer,
+			final Thread[] threads) {
 		this.detectedCrds = detectedCrds;
 		this.detectedFragments = detectedFragments;
 		this.maxElementsCount = maximumElementsCount;
 		this.crdRegisterer = crdRegisterer;
 		this.fragmentRegisterer = fragmentRegisterer;
+		this.threads = threads;
 	}
 
 	public void monitor() throws Exception {
@@ -73,7 +93,7 @@ public class CodeFragmentDetectingThreadMonitor {
 						final Set<DBCrdInfo> currentElements = new TreeSet<DBCrdInfo>();
 						currentElements.addAll(detectedCrds.values());
 						crdRegisterer.register(currentElements);
-						MessagePrinter.println("\t" + currentElements.size()
+						logger.info(currentElements.size()
 								+ " CRDs have been registered into db");
 						numberOfCrds += currentElements.size();
 
@@ -88,7 +108,7 @@ public class CodeFragmentDetectingThreadMonitor {
 						final Set<DBCodeFragmentInfo> currentElements = new TreeSet<DBCodeFragmentInfo>();
 						currentElements.addAll(detectedFragments.values());
 						fragmentRegisterer.register(currentElements);
-						MessagePrinter.println("\t" + currentElements.size()
+						logger.info(currentElements.size()
 								+ " fragments have been registered into db");
 						numberOfFragments += currentElements.size();
 
@@ -99,34 +119,36 @@ public class CodeFragmentDetectingThreadMonitor {
 				}
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				eLogger.warn("something is wrong in RevisionDetectThreadMonitor\n"
+						+ e.toString());
 			}
 
 			// break this loop if all the other threads have died
-			if (Thread.activeCount() == 2) {
+			boolean allThreadDead = true;
+			for (final Thread thread : threads) {
+				if (thread.isAlive()) {
+					allThreadDead = false;
+					break;
+				}
+			}
+
+			if (allThreadDead) {
 				break;
 			}
+
 		}
 
-		MessagePrinter.println();
-
-		MessagePrinter.println("\tall threads have finished their work");
-		MessagePrinter
-				.println("\tregistering all the remaining elements into db ");
+		logger.info("all threads have finished their work");
+		logger.info("registering all the remaining elements into db ");
 		crdRegisterer.register(detectedCrds.values());
 		fragmentRegisterer.register(detectedFragments.values());
 
 		numberOfCrds += detectedCrds.size();
 		numberOfFragments += detectedFragments.size();
 
-		MessagePrinter.println("\t\tOK");
-
-		MessagePrinter.println();
-
-		MessagePrinter.println("the numbers of detected elements are ... ");
-		MessagePrinter.println("\tCRD: " + numberOfCrds);
-		MessagePrinter.println("\tFragment: " + numberOfFragments);
-
+		logger.info("the numbers of detected elements are ... ");
+		logger.info("CRD: " + numberOfCrds);
+		logger.info("Fragment: " + numberOfFragments);
 	}
 
 }
