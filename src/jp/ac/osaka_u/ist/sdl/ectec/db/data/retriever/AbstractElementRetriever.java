@@ -61,7 +61,7 @@ public abstract class AbstractElementRetriever<T extends AbstractDBElement> {
 		final String query = "select * from " + getTableName();
 		return retrieve(query);
 	}
-	
+
 	/**
 	 * retrieve elements having one of the given id
 	 * 
@@ -147,7 +147,32 @@ public abstract class AbstractElementRetriever<T extends AbstractDBElement> {
 
 		return retrieveWithoutIds(idSet);
 	}
-	
+
+	/**
+	 * get the maximum number of ID
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
+	public synchronized long getMaximumId() throws SQLException {
+		final String query = "select MAX(" + getIdColumnName() + ") from "
+				+ getTableName();
+
+		final Statement stmt = dbManager.createStatement();
+		final ResultSet rs = stmt.executeQuery(query);
+
+		long result = 0;
+		while (rs.next()) {
+			result = rs.getLong(1);
+			break;
+		}
+
+		stmt.close();
+		rs.close();
+
+		return result;
+	}
+
 	/**
 	 * instantiate the given result set
 	 * 
