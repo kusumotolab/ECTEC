@@ -154,7 +154,6 @@ public class CodeFragmentDetectingThread implements Runnable {
 						+ targetFile.getPath() + " in repository "
 						+ repositoryId + " at combined revision "
 						+ startCombinedRevision.getId());
-				e.printStackTrace();
 			}
 		}
 	}
