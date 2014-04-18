@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
-import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.hash.IHashCalculator;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.normalizer.NormalizerCreator;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.normalizer.StringCreateVisitor;
+import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.hash.IHashCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.normalizer.NormalizerCreator;
+import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.normalizer.StringCreateVisitor;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.AnalyzeGranularity;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 

@@ -8,8 +8,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.hash.DefaultHashCalculator;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.normalizer.NormalizerCreator;
+import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.hash.DefaultHashCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.normalizer.NormalizerCreator;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.AnalyzeGranularity;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrintLevel;
