@@ -33,6 +33,11 @@ public class CodeFragmentDetectingThread implements Runnable {
 			.getLogger(CodeFragmentDetectingThread.class.getName());
 
 	/**
+	 * the logger for errors
+	 */
+	private static final Logger eLogger = LoggingManager.getLogger("error");
+
+	/**
 	 * a map having detected crds
 	 */
 	private final ConcurrentMap<Long, DBCrdInfo> detectedCrds;
@@ -138,8 +143,7 @@ public class CodeFragmentDetectingThread implements Runnable {
 						originalRevision.getIdentifier(), targetFile.getPath());
 				final CompilationUnit root = ASTCreator.createAST(src);
 
-				final ASTParser parser = new ASTParser(
-						targetFile.getId(),
+				final ASTParser parser = new ASTParser(targetFile.getId(),
 						targetFile.getStartCombinedRevisionId(),
 						targetFile.getCombinedEndRevisionId(), hashCalculator,
 						root, granularity, blockAnalyzerCreator);
@@ -150,7 +154,7 @@ public class CodeFragmentDetectingThread implements Runnable {
 				this.detectedFragments.putAll(parser.getDetectedFragments());
 
 			} catch (Exception e) {
-				logger.warn("something is wrong in processing "
+				eLogger.warn("something is wrong in processing "
 						+ targetFile.getPath() + " in repository "
 						+ repositoryId + " at combined revision "
 						+ startCombinedRevision.getId());
