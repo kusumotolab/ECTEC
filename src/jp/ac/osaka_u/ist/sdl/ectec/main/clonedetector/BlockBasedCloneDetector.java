@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.detector.clonedetector;
+package jp.ac.osaka_u.ist.sdl.ectec.main.clonedetector;
 
 import java.util.ArrayList;
 import java.util.Collections;
