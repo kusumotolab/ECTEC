@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.detector.linker;
+package jp.ac.osaka_u.ist.sdl.ectec.main.linker;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
