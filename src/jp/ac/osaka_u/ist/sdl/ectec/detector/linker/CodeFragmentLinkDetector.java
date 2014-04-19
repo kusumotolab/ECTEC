@@ -223,7 +223,7 @@ public class CodeFragmentLinkDetector {
 	protected void retrieveElements(final long revisionId) throws SQLException {
 		if (!codeFragments.containsKey(revisionId)) {
 			final Map<Long, DBCodeFragmentInfo> retrievedFragments = fragmentRetriever
-					.retrieveElementsInSpecifiedRevision(revisionId);
+					.retrieveElementsInSpecifiedCombinedRevision(revisionId);
 			codeFragments.put(revisionId, retrievedFragments);
 		}
 

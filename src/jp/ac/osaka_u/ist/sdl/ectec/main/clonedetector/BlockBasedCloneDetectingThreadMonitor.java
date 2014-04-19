@@ -4,10 +4,12 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
+import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CloneSetRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Constants;
-import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
+
+import org.apache.log4j.Logger;
 
 /**
  * A monitor class for clone detecting threads
@@ -16,6 +18,17 @@ import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
  * 
  */
 public class BlockBasedCloneDetectingThreadMonitor {
+
+	/**
+	 * the logger
+	 */
+	private static final Logger logger = LoggingManager
+			.getLogger(BlockBasedCloneDetectingThreadMonitor.class.getName());
+
+	/**
+	 * the logger for errors
+	 */
+	private static final Logger eLogger = LoggingManager.getLogger("error");
 
 	/**
 	 * a map having detected clones
@@ -35,12 +48,19 @@ public class BlockBasedCloneDetectingThreadMonitor {
 	 */
 	private final int maxElementsCount;
 
+	/**
+	 * the array of the threads to be monitored
+	 */
+	private final Thread[] threads;
+
 	public BlockBasedCloneDetectingThreadMonitor(
 			final ConcurrentMap<Long, DBCloneSetInfo> detectedClones,
-			final CloneSetRegisterer registerer, final int maxElementsCount) {
+			final CloneSetRegisterer registerer, final int maxElementsCount,
+			final Thread[] threads) {
 		this.detectedClones = detectedClones;
 		this.registerer = registerer;
 		this.maxElementsCount = maxElementsCount;
+		this.threads = threads;
 	}
 
 	public void monitor() throws Exception {
@@ -55,7 +75,7 @@ public class BlockBasedCloneDetectingThreadMonitor {
 						final Set<DBCloneSetInfo> currentClones = new HashSet<DBCloneSetInfo>();
 						currentClones.addAll(detectedClones.values());
 						registerer.register(currentClones);
-						MessagePrinter.println("\t" + currentClones.size()
+						logger.info(currentClones.size()
 								+ " clone sets have been registered into db");
 						numberOfClones += currentClones.size();
 
@@ -66,29 +86,33 @@ public class BlockBasedCloneDetectingThreadMonitor {
 				}
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				eLogger.warn("something is wrong in BlockBasedCloneDetectingThreadMonigor\n"
+						+ e.toString());
 			}
 
-			if (Thread.activeCount() == 2) {
+			// break this loop if all the other threads have died
+			boolean allThreadDead = true;
+			for (final Thread thread : threads) {
+				if (thread.isAlive()) {
+					allThreadDead = false;
+					break;
+				}
+			}
+
+			if (allThreadDead) {
 				break;
 			}
 		}
 
-		MessagePrinter.println();
 
-		MessagePrinter.println("\tall threads have finished their work");
-		MessagePrinter
-				.println("\tregistering all the remaining clone sets into db ");
+		logger.info("all threads have finished their work");
+		logger.info("registering all the remaining clone sets into db ");
 		registerer.register(detectedClones.values());
 
 		numberOfClones += detectedClones.size();
 
-		MessagePrinter.println("\t\tOK");
-
-		MessagePrinter.println();
-
-		MessagePrinter.println("the numbers of detected elements are ... ");
-		MessagePrinter.println("\tClone Sets: " + numberOfClones);
+		logger.info("the numbers of detected elements are ... ");
+		logger.info("Clone Sets: " + numberOfClones);
 	}
 
 }

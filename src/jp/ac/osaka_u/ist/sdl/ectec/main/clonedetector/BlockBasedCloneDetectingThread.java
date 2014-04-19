@@ -8,7 +8,6 @@ import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCombinedRevisionInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentRetriever;
 
 import org.apache.log4j.Logger;
@@ -57,16 +56,22 @@ public class BlockBasedCloneDetectingThread implements Runnable {
 	 */
 	private final int cloneSizeThreshold;
 
+	/**
+	 * whether detecting cross project clones
+	 */
+	private final boolean detectCrossProjectClones;
+
 	public BlockBasedCloneDetectingThread(
 			final DBCombinedRevisionInfo[] targetCombinedRevisions,
 			final ConcurrentMap<Long, DBCloneSetInfo> detectedClones,
 			final CodeFragmentRetriever retriever, final AtomicInteger index,
-			final int cloneSizeThreshold) {
+			final int cloneSizeThreshold, final boolean detectCrossProjectClones) {
 		this.targetCombinedRevisions = targetCombinedRevisions;
 		this.detectedClones = detectedClones;
 		this.retriever = retriever;
 		this.index = index;
 		this.cloneSizeThreshold = cloneSizeThreshold;
+		this.detectCrossProjectClones = detectCrossProjectClones;
 	}
 
 	@Override
@@ -80,21 +85,29 @@ public class BlockBasedCloneDetectingThread implements Runnable {
 
 			final DBCombinedRevisionInfo targetCombinedRevision = targetCombinedRevisions[currentIndex];
 
-			logger.info.("[" + currentIndex + "/"
-					+ targetCombinedRevisions.length + "] analyzing combined revision "
+			logger.info("[" + currentIndex + "/"
+					+ targetCombinedRevisions.length
+					+ "] analyzing combined revision "
 					+ targetCombinedRevision.getId());
 
 			try {
 				final Map<Long, DBCodeFragmentInfo> codeFragments = retriever
-						.retrieveElementsInSpecifiedRevision(targetRevision
+						.retrieveElementsInSpecifiedCombinedRevision(targetCombinedRevision
 								.getId());
 				final FragmentComparator detector = new FragmentComparator(
-						targetRevision.getId(), cloneSizeThreshold);
-				detectedClones.putAll(detector.detectClones(codeFragments));
+						targetCombinedRevision.getId(), cloneSizeThreshold);
+
+				if (detectCrossProjectClones) {
+					detectedClones.putAll(detector.detectClones(codeFragments));
+				} else {
+					final ByRepositoryFragmentComparator byRepositoryComparator = new ByRepositoryFragmentComparator(
+							detector);
+					detectedClones.putAll(byRepositoryComparator
+							.detectClones(codeFragments));
+				}
 			} catch (Exception e) {
-				MessagePrinter
-						.ePrintln("something is wrong when analyzing revision "
-								+ targetRevision.getIdentifier());
+				eLogger.warn("something is wrong when analyzing combined revision "
+						+ targetCombinedRevision.getId());
 			}
 		}
 	}

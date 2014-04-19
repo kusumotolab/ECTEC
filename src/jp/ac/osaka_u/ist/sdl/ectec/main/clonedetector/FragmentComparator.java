@@ -21,17 +21,18 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
 public class FragmentComparator {
 
 	/**
-	 * the id of the target revision
+	 * the id of the target combined revision
 	 */
-	private final long revisionId;
+	private final long combinedRevisionId;
 
 	/**
 	 * the threshold of the size of clones
 	 */
 	private final int sizeThreshold;
 
-	public FragmentComparator(final long revisionId, final int sizeThreshold) {
-		this.revisionId = revisionId;
+	public FragmentComparator(final long combinedRevisionId,
+			final int sizeThreshold) {
+		this.combinedRevisionId = combinedRevisionId;
 		this.sizeThreshold = sizeThreshold;
 	}
 
@@ -74,7 +75,7 @@ public class FragmentComparator {
 
 				if (elements.size() > 1) {
 					final DBCloneSetInfo cloneSet = new DBCloneSetInfo(
-							revisionId, elements);
+							combinedRevisionId, elements);
 					result.put(cloneSet.getId(), cloneSet);
 				}
 			}

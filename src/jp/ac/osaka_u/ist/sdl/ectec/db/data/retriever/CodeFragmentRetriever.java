@@ -62,15 +62,16 @@ public class CodeFragmentRetriever extends
 	/**
 	 * retrieve elements that exist in the specified revision
 	 * 
-	 * @param revisionId
+	 * @param combinedRevisionId
 	 * @return
 	 * @throws SQLException
 	 */
-	public synchronized SortedMap<Long, DBCodeFragmentInfo> retrieveElementsInSpecifiedRevision(
-			final long revisionId) throws SQLException {
+	public synchronized SortedMap<Long, DBCodeFragmentInfo> retrieveElementsInSpecifiedCombinedRevision(
+			final long combinedRevisionId) throws SQLException {
 		final String query = "select * from " + getTableName() + " where "
-				+ getStartRevisionIdColumnName() + " <= " + revisionId
-				+ " AND " + getEndRevisionIdColumnName() + " >= " + revisionId;
+				+ getStartRevisionIdColumnName() + " <= " + combinedRevisionId
+				+ " AND " + getEndRevisionIdColumnName() + " >= "
+				+ combinedRevisionId;
 
 		return retrieve(query);
 	}

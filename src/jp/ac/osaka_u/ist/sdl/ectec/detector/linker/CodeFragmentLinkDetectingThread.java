@@ -175,7 +175,7 @@ public class CodeFragmentLinkDetectingThread implements Runnable {
 		synchronized (codeFragments) {
 			if (!codeFragments.containsKey(revisionId)) {
 				final Map<Long, DBCodeFragmentInfo> retrievedFragments = fragmentRetriever
-						.retrieveElementsInSpecifiedRevision(revisionId);
+						.retrieveElementsInSpecifiedCombinedRevision(revisionId);
 				final Map<Long, DBCodeFragmentInfo> concurrentRetrievedFragments = new ConcurrentHashMap<Long, DBCodeFragmentInfo>();
 				concurrentRetrievedFragments.putAll(retrievedFragments);
 				codeFragments.put(revisionId, concurrentRetrievedFragments);
