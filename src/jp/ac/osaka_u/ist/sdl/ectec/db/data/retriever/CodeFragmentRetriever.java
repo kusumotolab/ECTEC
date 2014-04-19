@@ -21,10 +21,12 @@ public class CodeFragmentRetriever extends
 	}
 
 	@Override
-	protected DBCodeFragmentInfo createElement(ResultSet rs) throws SQLException {
+	protected DBCodeFragmentInfo createElement(ResultSet rs)
+			throws SQLException {
 		int column = 0;
 		final long id = rs.getLong(++column);
 		final long ownerFileId = rs.getLong(++column);
+		final long ownerRepositoryId = rs.getLong(++column);
 		final long crdId = rs.getLong(++column);
 		final long startCombinedRevisionId = rs.getLong(++column);
 		final long endCombinedRevisionId = rs.getLong(++column);
@@ -34,8 +36,9 @@ public class CodeFragmentRetriever extends
 		final int endLine = rs.getInt(++column);
 		final int size = rs.getInt(++column);
 
-		return new DBCodeFragmentInfo(id, ownerFileId, crdId, startCombinedRevisionId,
-				endCombinedRevisionId, hash, hashForClone, startLine, endLine, size);
+		return new DBCodeFragmentInfo(id, ownerFileId, ownerRepositoryId,
+				crdId, startCombinedRevisionId, endCombinedRevisionId, hash,
+				hashForClone, startLine, endLine, size);
 	}
 
 	protected String getStartRevisionIdColumnName() {
@@ -55,7 +58,7 @@ public class CodeFragmentRetriever extends
 	protected String getIdColumnName() {
 		return "CODE_FRAGMENT_ID";
 	}
-	
+
 	/**
 	 * retrieve elements that exist in the specified revision
 	 * 

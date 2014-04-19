@@ -30,8 +30,7 @@ public class FragmentComparator {
 	 */
 	private final int sizeThreshold;
 
-	public FragmentComparator(final long revisionId,
-			final int sizeThreshold) {
+	public FragmentComparator(final long revisionId, final int sizeThreshold) {
 		this.revisionId = revisionId;
 		this.sizeThreshold = sizeThreshold;
 	}
@@ -74,8 +73,8 @@ public class FragmentComparator {
 				}
 
 				if (elements.size() > 1) {
-					final DBCloneSetInfo cloneSet = new DBCloneSetInfo(revisionId,
-							elements);
+					final DBCloneSetInfo cloneSet = new DBCloneSetInfo(
+							revisionId, elements);
 					result.put(cloneSet.getId(), cloneSet);
 				}
 			}

@@ -70,6 +70,11 @@ public class ASTParser extends ASTVisitor {
 	private final long ownerFileId;
 
 	/**
+	 * the id of the owner repository
+	 */
+	private final long ownerRepositoryId;
+
+	/**
 	 * the id of the start revision
 	 */
 	private final long startRevisionId;
@@ -114,7 +119,7 @@ public class ASTParser extends ASTVisitor {
 	 */
 	private final AnalyzeGranularity granularity;
 
-	public ASTParser(final long ownerFileId,
+	public ASTParser(final long ownerFileId, final long ownerRepositoryId,
 			final long startRevisionId, final long endRevisionId,
 			final IHashCalculator hashCalculator, final CompilationUnit root,
 			final AnalyzeGranularity granularity,
@@ -122,6 +127,7 @@ public class ASTParser extends ASTVisitor {
 		this.detectedCrds = new TreeMap<Long, DBCrdInfo>();
 		this.detectedFragments = new TreeMap<Long, DBCodeFragmentInfo>();
 		this.ownerFileId = ownerFileId;
+		this.ownerRepositoryId = ownerRepositoryId;
 		this.startRevisionId = startRevisionId;
 		this.endRevisionId = endRevisionId;
 		this.parentCrds = new Stack<DBCrdInfo>();
@@ -197,8 +203,9 @@ public class ASTParser extends ASTVisitor {
 		final long hash = hashCalculator.calcHashValue(rawStr.toString());
 		final long hashForClone = hashCalculator.calcHashValue(strForClone);
 
-		return new DBCodeFragmentInfo(ownerFileId, crdId, startRevisionId,
-				endRevisionId, hash, hashForClone, startLine, endLine, size);
+		return new DBCodeFragmentInfo(ownerFileId, ownerRepositoryId, crdId,
+				startRevisionId, endRevisionId, hash, hashForClone, startLine,
+				endLine, size);
 	}
 
 	/**

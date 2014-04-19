@@ -5,8 +5,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Logger;
-
 import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCombinedRevisionInfo;
@@ -17,9 +15,10 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CRDRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CodeFragmentRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.hash.IHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.normalizer.NormalizerCreator;
-import jp.ac.osaka_u.ist.sdl.ectec.main.revisiondetector.RevisionDetector;
 import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.IRepositoryManager;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.AnalyzeGranularity;
+
+import org.apache.log4j.Logger;
 
 /**
  * A class for managing threads that detects code fragments

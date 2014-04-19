@@ -4,11 +4,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCombinedRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
+
+import org.apache.log4j.Logger;
 
 /**
  * A thread class to detect clones
@@ -19,9 +22,20 @@ import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 public class BlockBasedCloneDetectingThread implements Runnable {
 
 	/**
-	 * the target revisions
+	 * the logger
 	 */
-	private final DBRevisionInfo[] targetRevisions;
+	private static final Logger logger = LoggingManager
+			.getLogger(BlockBasedCloneDetectingThread.class.getName());
+
+	/**
+	 * the logger for errors
+	 */
+	private static final Logger eLogger = LoggingManager.getLogger("error");
+
+	/**
+	 * the target combined revisions
+	 */
+	private final DBCombinedRevisionInfo[] targetCombinedRevisions;
 
 	/**
 	 * a map having detected clones
@@ -43,11 +57,12 @@ public class BlockBasedCloneDetectingThread implements Runnable {
 	 */
 	private final int cloneSizeThreshold;
 
-	public BlockBasedCloneDetectingThread(final DBRevisionInfo[] targetRevisions,
+	public BlockBasedCloneDetectingThread(
+			final DBCombinedRevisionInfo[] targetCombinedRevisions,
 			final ConcurrentMap<Long, DBCloneSetInfo> detectedClones,
 			final CodeFragmentRetriever retriever, final AtomicInteger index,
 			final int cloneSizeThreshold) {
-		this.targetRevisions = targetRevisions;
+		this.targetCombinedRevisions = targetCombinedRevisions;
 		this.detectedClones = detectedClones;
 		this.retriever = retriever;
 		this.index = index;
@@ -59,15 +74,15 @@ public class BlockBasedCloneDetectingThread implements Runnable {
 		while (true) {
 			final int currentIndex = index.getAndIncrement();
 
-			if (currentIndex >= targetRevisions.length) {
+			if (currentIndex >= targetCombinedRevisions.length) {
 				break;
 			}
 
-			final DBRevisionInfo targetRevision = targetRevisions[currentIndex];
+			final DBCombinedRevisionInfo targetCombinedRevision = targetCombinedRevisions[currentIndex];
 
-			MessagePrinter.println("\t[" + currentIndex + "/"
-					+ targetRevisions.length + "] analyzing revision "
-					+ targetRevision.getIdentifier());
+			logger.info.("[" + currentIndex + "/"
+					+ targetCombinedRevisions.length + "] analyzing combined revision "
+					+ targetCombinedRevision.getId());
 
 			try {
 				final Map<Long, DBCodeFragmentInfo> codeFragments = retriever

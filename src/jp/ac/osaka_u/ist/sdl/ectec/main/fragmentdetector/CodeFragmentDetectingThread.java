@@ -144,7 +144,7 @@ public class CodeFragmentDetectingThread implements Runnable {
 				final CompilationUnit root = ASTCreator.createAST(src);
 
 				final ASTParser parser = new ASTParser(targetFile.getId(),
-						targetFile.getStartCombinedRevisionId(),
+						repositoryId, targetFile.getStartCombinedRevisionId(),
 						targetFile.getCombinedEndRevisionId(), hashCalculator,
 						root, granularity, blockAnalyzerCreator);
 

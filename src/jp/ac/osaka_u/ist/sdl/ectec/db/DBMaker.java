@@ -435,6 +435,7 @@ public class DBMaker {
 		builder.append("create table CODE_FRAGMENT(");
 		builder.append("CODE_FRAGMENT_ID LONG PRIMARY KEY,");
 		builder.append("OWNER_FILE_ID LONG,");
+		builder.append("OWNER_REPOSITORY_ID LONG,");
 		builder.append("CRD_ID LONG,");
 		builder.append("START_COMBINED_REVISION_ID LONG,");
 		builder.append("END_COMBINED_REVISION_ID LONG,");
@@ -444,6 +445,7 @@ public class DBMaker {
 		builder.append("END_LINE INTEGER,");
 		builder.append("SIZE INTEGER,");
 		builder.append("FOREIGN KEY(OWNER_FILE_ID) REFERENCES FILE(FILE_ID),");
+		builder.append("FOREIGN KEY(OWNER_REPOSITORY_ID) REFERENCES REPOSITORY(REPOSITORY_ID),");
 		builder.append("FOREIGN KEY(CRD_ID) REFERENCES CRD(CRD_ID),");
 		builder.append("FOREIGN KEY(START_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
 		builder.append("FOREIGN KEY(END_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID)");
