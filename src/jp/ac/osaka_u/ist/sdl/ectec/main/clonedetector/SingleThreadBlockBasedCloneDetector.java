@@ -77,7 +77,7 @@ public class SingleThreadBlockBasedCloneDetector {
 
 			final Map<Long, DBCodeFragmentInfo> codeFragments = fragmentRetriever
 					.retrieveElementsInSpecifiedRevision(targetRevision.getId());
-			final BlockBasedCloneDetector detector = new BlockBasedCloneDetector(
+			final FragmentComparator detector = new FragmentComparator(
 					targetRevision.getId(), cloneSizeThreshold);
 			detectedClones.putAll(detector.detectClones(codeFragments));
 

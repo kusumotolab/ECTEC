@@ -73,7 +73,7 @@ public class BlockBasedCloneDetectingThread implements Runnable {
 				final Map<Long, DBCodeFragmentInfo> codeFragments = retriever
 						.retrieveElementsInSpecifiedRevision(targetRevision
 								.getId());
-				final BlockBasedCloneDetector detector = new BlockBasedCloneDetector(
+				final FragmentComparator detector = new FragmentComparator(
 						targetRevision.getId(), cloneSizeThreshold);
 				detectedClones.putAll(detector.detectClones(codeFragments));
 			} catch (Exception e) {

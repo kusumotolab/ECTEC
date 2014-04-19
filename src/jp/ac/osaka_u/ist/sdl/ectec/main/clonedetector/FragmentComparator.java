@@ -18,7 +18,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
  * @author k-hotta
  * 
  */
-public class BlockBasedCloneDetector {
+public class FragmentComparator {
 
 	/**
 	 * the id of the target revision
@@ -30,7 +30,7 @@ public class BlockBasedCloneDetector {
 	 */
 	private final int sizeThreshold;
 
-	public BlockBasedCloneDetector(final long revisionId,
+	public FragmentComparator(final long revisionId,
 			final int sizeThreshold) {
 		this.revisionId = revisionId;
 		this.sizeThreshold = sizeThreshold;
