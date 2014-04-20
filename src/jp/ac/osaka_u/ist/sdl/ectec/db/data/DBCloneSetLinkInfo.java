@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * 
  */
 public class DBCloneSetLinkInfo extends AbstractDBElementLinkInfo implements
-		Comparable<DBCloneSetLinkInfo> {
+		Comparable<DBCloneSetLinkInfo>, IDBLinkElement {
 
 	/**
 	 * a counter to keep the number of created elements
