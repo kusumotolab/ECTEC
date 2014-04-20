@@ -29,9 +29,12 @@ public class CodeFragmentLinkRetriever extends
 		final long afterElementId = rs.getLong(++column);
 		final long beforeCombinedRevisionId = rs.getLong(++column);
 		final long afterCombinedRevisionId = rs.getLong(++column);
+		final int changed = rs.getInt(++column);
+
+		final boolean changedBool = (changed == 1);
 
 		return new DBCodeFragmentLinkInfo(id, beforeElementId, afterElementId,
-				beforeCombinedRevisionId, afterCombinedRevisionId);
+				beforeCombinedRevisionId, afterCombinedRevisionId, changedBool);
 	}
 
 	protected String getBeforeRevisionIdColumnName() {

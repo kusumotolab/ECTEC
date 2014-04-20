@@ -172,7 +172,8 @@ public class DBCrdInfo extends AbstractDBElement implements
 			return false;
 		}
 
-		return ((DBCrdInfo) o).getFullText().equals(this.getFullText());
+//		return ((DBCrdInfo) o).getFullText().equals(this.getFullText());
+		return ((DBCrdInfo) o).getId() == this.getId();
 	}
 
 	@Override

@@ -85,7 +85,7 @@ public class BlockBasedCloneDetectingThread implements Runnable {
 
 			final DBCombinedRevisionInfo targetCombinedRevision = targetCombinedRevisions[currentIndex];
 
-			logger.info("[" + currentIndex + "/"
+			logger.info("[" + (currentIndex + 1) + "/"
 					+ targetCombinedRevisions.length
 					+ "] analyzing combined revision "
 					+ targetCombinedRevision.getId());

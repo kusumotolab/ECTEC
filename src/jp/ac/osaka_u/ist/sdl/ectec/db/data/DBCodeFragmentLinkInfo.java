@@ -17,6 +17,11 @@ public class DBCodeFragmentLinkInfo extends AbstractDBElementLinkInfo implements
 	private static AtomicLong count = new AtomicLong(0);
 
 	/**
+	 * whether this link changes the before element
+	 */
+	private final boolean changed;
+
+	/**
 	 * the constructor for elements that are retrieved from the db
 	 * 
 	 * @param id
@@ -27,9 +32,10 @@ public class DBCodeFragmentLinkInfo extends AbstractDBElementLinkInfo implements
 	 */
 	public DBCodeFragmentLinkInfo(final long id, final long beforeElementId,
 			final long afterElementId, final long beforeCombinedRevisionId,
-			final long afterCombinedRevisionId) {
+			final long afterCombinedRevisionId, final boolean changed) {
 		super(id, beforeElementId, afterElementId, beforeCombinedRevisionId,
 				afterCombinedRevisionId);
+		this.changed = changed;
 	}
 
 	/**
@@ -42,11 +48,11 @@ public class DBCodeFragmentLinkInfo extends AbstractDBElementLinkInfo implements
 	 */
 	public DBCodeFragmentLinkInfo(final long beforeElementId,
 			final long afterElementId, final long beforeCombinedRevisionId,
-			final long afterCombinedRevisionId) {
+			final long afterCombinedRevisionId, final boolean changed) {
 		this(count.getAndIncrement(), beforeElementId, afterElementId,
-				beforeCombinedRevisionId, afterCombinedRevisionId);
+				beforeCombinedRevisionId, afterCombinedRevisionId, changed);
 	}
-	
+
 	/**
 	 * reset the count with the given long value
 	 * 
@@ -56,6 +62,14 @@ public class DBCodeFragmentLinkInfo extends AbstractDBElementLinkInfo implements
 		count = new AtomicLong(l);
 	}
 
+	/**
+	 * whether this link changes the before element
+	 * 
+	 * @return
+	 */
+	public final boolean isChanged() {
+		return changed;
+	}
 
 	@Override
 	public int compareTo(DBCodeFragmentLinkInfo another) {

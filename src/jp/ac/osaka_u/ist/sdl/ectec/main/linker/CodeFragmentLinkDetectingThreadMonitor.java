@@ -7,13 +7,15 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentMap;
 
+import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCombinedCommitInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CodeFragmentLinkRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Constants;
-import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
+
+import org.apache.log4j.Logger;
 
 /**
  * A monitor class for code clone link threads
@@ -22,6 +24,17 @@ import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
  * 
  */
 public class CodeFragmentLinkDetectingThreadMonitor {
+
+	/**
+	 * the logger
+	 */
+	private static final Logger logger = LoggingManager
+			.getLogger(CodeFragmentLinkDetectingThreadMonitor.class.getName());
+
+	/**
+	 * the logger for errors
+	 */
+	private static final Logger eLogger = LoggingManager.getLogger("error");
 
 	/**
 	 * a map having detected links
@@ -44,15 +57,15 @@ public class CodeFragmentLinkDetectingThreadMonitor {
 	private final ConcurrentMap<Long, Map<Long, DBCrdInfo>> crds;
 
 	/**
-	 * already processed commits
+	 * already processed combined commits
 	 */
-	private final ConcurrentMap<Long, DBCommitInfo> processedCommits;
+	private final ConcurrentMap<Long, DBCombinedCommitInfo> processedCombinedCommits;
 
 	/**
-	 * id of a revision and a collection of ids of commits that relates to the
-	 * revision
+	 * id of a combined revision and a collection of ids of combined commits
+	 * that relates to the revision
 	 */
-	private final Map<Long, Collection<Long>> revisionAndRelatedCommits;
+	private final Map<Long, Collection<Long>> combinedRevisionAndRelatedCombinedCommits;
 
 	/**
 	 * the threshold for elements <br>
@@ -62,21 +75,24 @@ public class CodeFragmentLinkDetectingThreadMonitor {
 	 */
 	private final int maxElementsCount;
 
+	private final Thread[] threads;
+
 	public CodeFragmentLinkDetectingThreadMonitor(
 			final ConcurrentMap<Long, DBCodeFragmentLinkInfo> detectedLinks,
 			final CodeFragmentLinkRegisterer fragmentLinkRegisterer,
 			final ConcurrentMap<Long, Map<Long, DBCodeFragmentInfo>> codeFragments,
 			final ConcurrentMap<Long, Map<Long, DBCrdInfo>> crds,
-			final ConcurrentMap<Long, DBCommitInfo> processedCommits,
-			final Map<Long, Collection<Long>> revisionAndRelatedCommits,
-			final int maxElementsCount) {
+			final ConcurrentMap<Long, DBCombinedCommitInfo> processedCombinedCommits,
+			final Map<Long, Collection<Long>> combinedRevisionAndRelatedCombinedCommits,
+			final int maxElementsCount, final Thread[] threads) {
 		this.detectedLinks = detectedLinks;
 		this.fragmentLinkRegisterer = fragmentLinkRegisterer;
 		this.codeFragments = codeFragments;
 		this.crds = crds;
-		this.processedCommits = processedCommits;
-		this.revisionAndRelatedCommits = revisionAndRelatedCommits;
+		this.processedCombinedCommits = processedCombinedCommits;
+		this.combinedRevisionAndRelatedCombinedCommits = combinedRevisionAndRelatedCombinedCommits;
 		this.maxElementsCount = maxElementsCount;
+		this.threads = threads;
 	}
 
 	public void monitor() throws Exception {
@@ -92,10 +108,8 @@ public class CodeFragmentLinkDetectingThreadMonitor {
 						final Set<DBCodeFragmentLinkInfo> currentElements = new HashSet<DBCodeFragmentLinkInfo>();
 						currentElements.addAll(detectedLinks.values());
 						fragmentLinkRegisterer.register(currentElements);
-						MessagePrinter
-								.println("\t"
-										+ currentElements.size()
-										+ " links of fragments have been registered into db");
+						logger.info(currentElements.size()
+								+ " links of fragments have been registered into db");
 						numberOfLinks += currentElements.size();
 
 						for (final DBCodeFragmentLinkInfo link : currentElements) {
@@ -106,58 +120,60 @@ public class CodeFragmentLinkDetectingThreadMonitor {
 
 				// remove fragments if they are no longer needed
 				synchronized (codeFragments) {
-					final Collection<Long> fragmentRevisionIds = new TreeSet<Long>();
-					fragmentRevisionIds.addAll(codeFragments.keySet());
-					for (final long revisionId : fragmentRevisionIds) {
-						final Collection<Long> relatedCommits = revisionAndRelatedCommits
-								.get(revisionId);
-						if (processedCommits.keySet().containsAll(
-								relatedCommits)) {
-							codeFragments.remove(revisionId);
+					final Collection<Long> fragmentCombinedRevisionIds = new TreeSet<Long>();
+					fragmentCombinedRevisionIds.addAll(codeFragments.keySet());
+					for (final long combinedRevisionId : fragmentCombinedRevisionIds) {
+						final Collection<Long> relatedCombinedCommits = combinedRevisionAndRelatedCombinedCommits
+								.get(combinedRevisionId);
+						if (processedCombinedCommits.keySet().containsAll(
+								relatedCombinedCommits)) {
+							codeFragments.remove(combinedRevisionId);
 						}
 					}
 				}
 
 				// remove crds if they are no longer needed
 				synchronized (crds) {
-					final Collection<Long> crdRevisionIds = new TreeSet<Long>();
-					crdRevisionIds.addAll(crds.keySet());
-					for (final long revisionId : crdRevisionIds) {
-						final Collection<Long> relatedCommits = revisionAndRelatedCommits
-								.get(revisionId);
-						if (processedCommits.keySet().containsAll(
+					final Collection<Long> crdCombinedRevisionIds = new TreeSet<Long>();
+					crdCombinedRevisionIds.addAll(crds.keySet());
+					for (final long combinedRevisionId : crdCombinedRevisionIds) {
+						final Collection<Long> relatedCommits = combinedRevisionAndRelatedCombinedCommits
+								.get(combinedRevisionId);
+						if (processedCombinedCommits.keySet().containsAll(
 								relatedCommits)) {
-							crds.remove(revisionId);
+							crds.remove(combinedRevisionId);
 						}
 					}
 				}
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				eLogger.warn("something is wrong in the monitoring thread\n"
+						+ e.toString());
 			}
 
 			// break this loop if all the other threads have died
-			if (Thread.activeCount() == 2) {
+			boolean allThreadDead = true;
+			for (final Thread thread : threads) {
+				if (thread.isAlive()) {
+					allThreadDead = false;
+					break;
+				}
+			}
+
+			if (allThreadDead) {
 				break;
 			}
 
 		}
 
-		MessagePrinter.println();
-
-		MessagePrinter.println("\tall threads have finished their work");
-		MessagePrinter
-				.println("\tregistering all the remaining elements into db ");
+		logger.info("all threads have finished their work");
+		logger.info("registering all the remaining elements into db ");
 		fragmentLinkRegisterer.register(detectedLinks.values());
 
 		numberOfLinks += detectedLinks.size();
 
-		MessagePrinter.println("\t\tOK");
-
-		MessagePrinter.println();
-
-		MessagePrinter.println("the numbers of detected elements are ... ");
-		MessagePrinter.println("\tLinks: " + numberOfLinks);
+		logger.info("the numbers of detected elements are ... ");
+		logger.info("Links: " + numberOfLinks);
 
 	}
 }

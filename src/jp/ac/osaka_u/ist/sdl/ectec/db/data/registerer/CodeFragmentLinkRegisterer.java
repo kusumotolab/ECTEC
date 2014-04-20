@@ -28,7 +28,7 @@ public class CodeFragmentLinkRegisterer extends
 
 	@Override
 	protected String createPreparedStatementQueue() {
-		return "insert into CODE_FRAGMENT_LINK values(?,?,?,?,?)";
+		return "insert into CODE_FRAGMENT_LINK values(?,?,?,?,?,?)";
 	}
 
 	@Override
@@ -40,6 +40,9 @@ public class CodeFragmentLinkRegisterer extends
 		pstmt.setLong(++column, element.getAfterElementId());
 		pstmt.setLong(++column, element.getBeforeCombinedRevisionId());
 		pstmt.setLong(++column, element.getAfterCombinedRevisionId());
+
+		final int changed = (element.isChanged()) ? 1 : 0;
+		pstmt.setInt(++column, changed);
 	}
 
 }

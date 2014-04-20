@@ -74,11 +74,11 @@ public class CloneDetectorMainSettings extends AbstractSettings {
 		}
 
 		{
-			final Option cpc = new Option("cpc", "cross_project_clones", true,
+			final Option cp = new Option("cp", "cross_project", true,
 					"whether detect cross project clones");
-			cpc.setArgs(1);
-			cpc.setRequired(false);
-			options.addOption(cpc);
+			cp.setArgs(1);
+			cp.setRequired(false);
+			options.addOption(cp);
 		}
 
 		{
@@ -107,16 +107,16 @@ public class CloneDetectorMainSettings extends AbstractSettings {
 			logger.info("targets all the combined revisions registered into the db");
 		}
 
-		final String cpcStr = (cmd.hasOption("cpc")) ? cmd
-				.getOptionValue("cpc") : propReader
+		final String cpStr = (cmd.hasOption("cp")) ? cmd
+				.getOptionValue("cp") : propReader
 				.getProperty(CROSS_PROJECT_CLONES);
-		if (cpcStr.equalsIgnoreCase("yes")) {
+		if (cpStr.equalsIgnoreCase("yes")) {
 			detectCrossProjectClones = true;
-		} else if (cpcStr.equalsIgnoreCase("no")) {
+		} else if (cpStr.equalsIgnoreCase("no")) {
 			detectCrossProjectClones = false;
 		} else {
-			throw new IllegalSettingValueException("illegal value " + cpcStr
-					+ " for -cpc");
+			throw new IllegalSettingValueException("illegal value " + cpStr
+					+ " for -cp");
 		}
 		logger.info("detect cross project clones: " + detectCrossProjectClones);
 
