@@ -20,7 +20,8 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetLinkInfo;
  */
 public class CloneSetLinkRetriever
 		extends
-		AbstractNonuniqueElementRetriever<DBCloneSetLinkInfo, CloneSetLinkRowData> {
+		AbstractNonuniqueElementRetriever<DBCloneSetLinkInfo, CloneSetLinkRowData>
+		implements ILinkElementRetriever<DBCloneSetLinkInfo> {
 
 	public CloneSetLinkRetriever(DBConnectionManager dbManager) {
 		super(dbManager);
@@ -99,7 +100,8 @@ public class CloneSetLinkRetriever
 	 * @return
 	 * @throws SQLException
 	 */
-	public synchronized SortedMap<Long, DBCloneSetLinkInfo> retrieveElementsWithBeforeRevision(
+	@Override
+	public synchronized SortedMap<Long, DBCloneSetLinkInfo> retrieveElementsWithBeforeCombinedRevision(
 			final long beforeRevisionId) throws SQLException {
 		final String query = "select * from " + getTableName() + " where "
 				+ getBeforeRevisionIdColumnName() + " = " + beforeRevisionId;
@@ -114,7 +116,8 @@ public class CloneSetLinkRetriever
 	 * @return
 	 * @throws SQLException
 	 */
-	public synchronized SortedMap<Long, DBCloneSetLinkInfo> retrieveElementsWithAfterRevision(
+	@Override
+	public synchronized SortedMap<Long, DBCloneSetLinkInfo> retrieveElementsWithAfterCombinedRevision(
 			final long afterRevisionId) throws SQLException {
 		final String query = "select * from " + getTableName() + " where "
 				+ getAfterRevisionIdColumnName() + " = " + afterRevisionId;

@@ -1,15 +1,17 @@
-package jp.ac.osaka_u.ist.sdl.ectec.detector.genealogydetector;
+package jp.ac.osaka_u.ist.sdl.ectec.main.genealogydetector;
 
 import java.util.Collection;
 import java.util.Map;
 
+import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentGenealogyInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCombinedRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CodeFragmentGenealogyRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentLinkRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
+
+import org.apache.log4j.Logger;
 
 /**
  * A class to detect and register genealogies of code fragments
@@ -20,9 +22,15 @@ import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 public class FragmentGenealogyIdentifier {
 
 	/**
+	 * the logger
+	 */
+	private static final Logger logger = LoggingManager
+			.getLogger(FragmentGenealogyIdentifier.class.getName());
+
+	/**
 	 * target revisions
 	 */
-	private final Map<Long, DBRevisionInfo> targetRevisions;
+	private final Map<Long, DBCombinedRevisionInfo> targetCombinedRevisions;
 
 	/**
 	 * the number of threads
@@ -45,12 +53,12 @@ public class FragmentGenealogyIdentifier {
 	private final CodeFragmentGenealogyRegisterer registerer;
 
 	public FragmentGenealogyIdentifier(
-			final Map<Long, DBRevisionInfo> targetRevisions,
+			final Map<Long, DBCombinedRevisionInfo> targetCombinedRevisions,
 			final int threadsCount,
 			final CodeFragmentRetriever elementRetriever,
 			final CodeFragmentLinkRetriever linkRetriever,
 			final CodeFragmentGenealogyRegisterer registerer) {
-		this.targetRevisions = targetRevisions;
+		this.targetCombinedRevisions = targetCombinedRevisions;
 		this.threadsCount = threadsCount;
 		this.elementRetriever = elementRetriever;
 		this.linkRetriever = linkRetriever;
@@ -59,7 +67,7 @@ public class FragmentGenealogyIdentifier {
 
 	public void detectAndRegister() throws Exception {
 		final ElementChainDetector<DBCodeFragmentLinkInfo> chainDetector = new ElementChainDetector<DBCodeFragmentLinkInfo>(
-				targetRevisions, linkRetriever, threadsCount);
+				targetCombinedRevisions, linkRetriever, threadsCount);
 		final Collection<ElementChain<DBCodeFragmentLinkInfo>> chains = chainDetector
 				.detect();
 
@@ -68,15 +76,11 @@ public class FragmentGenealogyIdentifier {
 		final Map<Long, DBCodeFragmentGenealogyInfo> genealogies = finalizer
 				.finalize(chains);
 
-		MessagePrinter.println();
-		MessagePrinter.println("the number of detected genealogies is "
+		logger.info("the number of detected genealogies is "
 				+ genealogies.size());
-		MessagePrinter.println();
-		MessagePrinter.println("registering detected genealogies ... ");
+		logger.info("registering detected genealogies ... ");
 
 		registerer.register(genealogies.values());
-
-		MessagePrinter.println("\tOK");
 	}
 
 }

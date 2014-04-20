@@ -30,7 +30,7 @@ public class DBCodeFragmentGenealogyInfo extends
 		this(count.getAndIncrement(), startRevisionId, endRevisionId, elements,
 				links);
 	}
-	
+
 	/**
 	 * reset the count with the given long value
 	 * 
@@ -39,7 +39,6 @@ public class DBCodeFragmentGenealogyInfo extends
 	public static void resetCount(final long l) {
 		count = new AtomicLong(l);
 	}
-
 
 	@Override
 	public int compareTo(DBCodeFragmentGenealogyInfo another) {

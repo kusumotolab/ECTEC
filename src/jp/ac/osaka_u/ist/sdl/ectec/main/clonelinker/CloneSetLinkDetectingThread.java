@@ -118,7 +118,7 @@ public class CloneSetLinkDetectingThread implements Runnable {
 				retrieveElements(afterCombinedRevisionId);
 
 				final Map<Long, DBCodeFragmentLinkInfo> fragmentLinks = fragmentLinkRetriever
-						.retrieveElementsWithBeforeRevision(beforeCombinedRevisionId);
+						.retrieveElementsWithBeforeCombinedRevision(beforeCombinedRevisionId);
 
 				final CloneSetLinker linker = new CloneSetLinker();
 				detectedCloneLinks.putAll(linker.detectCloneSetLinks(cloneSets

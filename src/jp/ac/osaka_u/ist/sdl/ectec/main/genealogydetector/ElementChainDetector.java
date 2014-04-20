@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.detector.genealogydetector;
+package jp.ac.osaka_u.ist.sdl.ectec.main.genealogydetector;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -9,10 +9,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.AbstractDBElementLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.LinkElementRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCombinedRevisionInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.ILinkElementRetriever;
+
+import org.apache.log4j.Logger;
 
 /**
  * A class to detect element chains
@@ -25,23 +27,30 @@ import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 public class ElementChainDetector<L extends AbstractDBElementLinkInfo> {
 
 	/**
-	 * target revisions
+	 * the logger
 	 */
-	private final Map<Long, DBRevisionInfo> targetRevisions;
+	private static final Logger logger = LoggingManager
+			.getLogger(ElementChainDetector.class.getName());
+
+	/**
+	 * target combined revisions
+	 */
+	private final Map<Long, DBCombinedRevisionInfo> targetCombinedRevisions;
 
 	/**
 	 * the retriever to get elements of the given type L from db
 	 */
-	private final LinkElementRetriever<L> retriever;
+	private final ILinkElementRetriever<L> retriever;
 
 	/**
 	 * the number of threads
 	 */
 	private final int threadsCount;
 
-	public ElementChainDetector(final Map<Long, DBRevisionInfo> targetRevisions,
-			final LinkElementRetriever<L> retriever, final int threadsCount) {
-		this.targetRevisions = targetRevisions;
+	public ElementChainDetector(
+			final Map<Long, DBCombinedRevisionInfo> targetCombinedRevisions,
+			final ILinkElementRetriever<L> retriever, final int threadsCount) {
+		this.targetCombinedRevisions = targetCombinedRevisions;
 		this.retriever = retriever;
 		this.threadsCount = threadsCount;
 	}
@@ -57,17 +66,17 @@ public class ElementChainDetector<L extends AbstractDBElementLinkInfo> {
 		int count = 0;
 
 		// analyze a single revision with multiple threads
-		for (final Map.Entry<Long, DBRevisionInfo> entry : targetRevisions
+		for (final Map.Entry<Long, DBCombinedRevisionInfo> entry : targetCombinedRevisions
 				.entrySet()) {
-			final long revisionId = entry.getKey();
-			final DBRevisionInfo revision = entry.getValue();
-			MessagePrinter.println("\t[" + (++count) + "/"
-					+ targetRevisions.size() + "] processing revision "
-					+ revision.getIdentifier());
+			final long combinedRevisionId = entry.getKey();
+			final DBCombinedRevisionInfo combinedRevision = entry.getValue();
+			logger.info("[" + (++count) + "/" + targetCombinedRevisions.size()
+					+ "] processing combined revision "
+					+ combinedRevision.getId());
 
 			final ConcurrentMap<Long, L> beforeLinks = new ConcurrentHashMap<Long, L>();
 			beforeLinks.putAll(retriever
-					.retrieveElementsWithAfterRevision(revisionId));
+					.retrieveElementsWithAfterCombinedRevision(combinedRevisionId));
 
 			if (beforeLinks.isEmpty()) {
 				continue;

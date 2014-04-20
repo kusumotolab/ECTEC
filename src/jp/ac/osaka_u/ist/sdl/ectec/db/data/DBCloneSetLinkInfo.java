@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * 
  */
 public class DBCloneSetLinkInfo extends AbstractDBElementLinkInfo implements
-		Comparable<DBCloneSetLinkInfo>, IDBLinkElement {
+		Comparable<DBCloneSetLinkInfo> {
 
 	/**
 	 * a counter to keep the number of created elements
@@ -59,7 +59,7 @@ public class DBCloneSetLinkInfo extends AbstractDBElementLinkInfo implements
 				beforeCombinedRevisionId, afterCombinedRevisionId,
 				codeFragmentLinks);
 	}
-	
+
 	/**
 	 * reset the count with the given long value
 	 * 
@@ -68,7 +68,6 @@ public class DBCloneSetLinkInfo extends AbstractDBElementLinkInfo implements
 	public static void resetCount(final long l) {
 		count = new AtomicLong(l);
 	}
-
 
 	/**
 	 * get the list of ids of code fragment links related to this clone set link

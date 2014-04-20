@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * 
  */
 public class DBCodeFragmentLinkInfo extends AbstractDBElementLinkInfo implements
-		Comparable<DBCodeFragmentLinkInfo>, IDBLinkElement {
+		Comparable<DBCodeFragmentLinkInfo> {
 
 	/**
 	 * a counter to keep the number of created elements

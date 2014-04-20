@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.detector.genealogydetector;
+package jp.ac.osaka_u.ist.sdl.ectec.main.genealogydetector;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -7,10 +7,10 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.AbstractDBElement;
-import jp.ac.osaka_u.ist.sdl.ectec.db.data.AbstractDBGenealogyInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.AbstractDBElementLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.AbstractUniqueElementRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.LinkElementRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.AbstractDBGenealogyInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.AbstractElementRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.ILinkElementRetriever;
 
 /**
  * A class to create genealogies from the given chains
@@ -25,12 +25,12 @@ public abstract class ElementChainFinalizer<E extends AbstractDBElement, L exten
 	/**
 	 * the retriever of elements
 	 */
-	protected final AbstractUniqueElementRetriever<E> elementRetriever;
+	protected final AbstractElementRetriever<E> elementRetriever;
 
 	/**
 	 * the retriever of links
 	 */
-	protected final LinkElementRetriever<L> linkRetriever;
+	protected final ILinkElementRetriever<L> linkRetriever;
 
 	/**
 	 * a collection of ids of elements included in any genealogy
@@ -38,8 +38,8 @@ public abstract class ElementChainFinalizer<E extends AbstractDBElement, L exten
 	private final Collection<Long> processedElements;
 
 	public ElementChainFinalizer(
-			final AbstractUniqueElementRetriever<E> elementRetriever,
-			final LinkElementRetriever<L> linkRetriever) {
+			final AbstractElementRetriever<E> elementRetriever,
+			final ILinkElementRetriever<L> linkRetriever) {
 		this.elementRetriever = elementRetriever;
 		this.linkRetriever = linkRetriever;
 		this.processedElements = new TreeSet<Long>();

@@ -14,7 +14,8 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
  * 
  */
 public class CodeFragmentLinkRetriever extends
-		AbstractUniqueElementRetriever<DBCodeFragmentLinkInfo> {
+		AbstractUniqueElementRetriever<DBCodeFragmentLinkInfo> implements
+		ILinkElementRetriever<DBCodeFragmentLinkInfo> {
 
 	public CodeFragmentLinkRetriever(DBConnectionManager dbManager) {
 		super(dbManager);
@@ -62,7 +63,8 @@ public class CodeFragmentLinkRetriever extends
 	 * @return
 	 * @throws SQLException
 	 */
-	public synchronized SortedMap<Long, DBCodeFragmentLinkInfo> retrieveElementsWithBeforeRevision(
+	@Override
+	public synchronized SortedMap<Long, DBCodeFragmentLinkInfo> retrieveElementsWithBeforeCombinedRevision(
 			final long beforeRevisionId) throws SQLException {
 		final String query = "select * from " + getTableName() + " where "
 				+ getBeforeRevisionIdColumnName() + " = " + beforeRevisionId;
@@ -77,7 +79,8 @@ public class CodeFragmentLinkRetriever extends
 	 * @return
 	 * @throws SQLException
 	 */
-	public synchronized SortedMap<Long, DBCodeFragmentLinkInfo> retrieveElementsWithAfterRevision(
+	@Override
+	public synchronized SortedMap<Long, DBCodeFragmentLinkInfo> retrieveElementsWithAfterCombinedRevision(
 			final long afterRevisionId) throws SQLException {
 		final String query = "select * from " + getTableName() + " where "
 				+ getAfterRevisionIdColumnName() + " = " + afterRevisionId;

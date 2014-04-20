@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.detector.genealogydetector;
+package jp.ac.osaka_u.ist.sdl.ectec.main.genealogydetector;
 
 import java.util.Set;
 import java.util.SortedSet;

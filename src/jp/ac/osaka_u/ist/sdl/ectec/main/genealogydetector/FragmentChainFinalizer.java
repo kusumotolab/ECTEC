@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.detector.genealogydetector;
+package jp.ac.osaka_u.ist.sdl.ectec.main.genealogydetector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentGenealogyInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.AbstractUniqueElementRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.LinkElementRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.ILinkElementRetriever;
 
 /**
  * A class to create instances of code fragment genealogies from the given
@@ -23,7 +23,7 @@ public class FragmentChainFinalizer
 
 	public FragmentChainFinalizer(
 			AbstractUniqueElementRetriever<DBCodeFragmentInfo> elementRetriever,
-			LinkElementRetriever<DBCodeFragmentLinkInfo> linkRetriever) {
+			ILinkElementRetriever<DBCodeFragmentLinkInfo> linkRetriever) {
 		super(elementRetriever, linkRetriever);
 	}
 
@@ -40,14 +40,14 @@ public class FragmentChainFinalizer
 
 		final Map<Long, DBCodeFragmentLinkInfo> linksMap = linkRetriever
 				.retrieveWithIds(links);
-		int changedCount = 0;
+		// int changedCount = 0;
 		DBCodeFragmentLinkInfo startLink = null;
 		DBCodeFragmentLinkInfo endLink = null;
 
 		for (final DBCodeFragmentLinkInfo link : linksMap.values()) {
-			if (link.isChanged()) {
-				changedCount++;
-			}
+			// if (link.isChanged()) {
+			// changedCount++;
+			// }
 			if (link.getBeforeCombinedRevisionId() == startRevisionId) {
 				startLink = link;
 			}
@@ -64,8 +64,9 @@ public class FragmentChainFinalizer
 		final DBCodeFragmentInfo endElement = elementsMap.get(endLink
 				.getAfterElementId());
 
-		return new DBCodeFragmentGenealogyInfo(startElement.getStartCombinedRevisionId(),
-				endElement.getEndCombinedRevisionId(), elements, links, changedCount);
+		return new DBCodeFragmentGenealogyInfo(
+				startElement.getStartCombinedRevisionId(),
+				endElement.getEndCombinedRevisionId(), elements, links);
 	}
 
 	@Override
@@ -76,10 +77,10 @@ public class FragmentChainFinalizer
 		final List<Long> elements = new ArrayList<Long>();
 		final List<Long> links = new ArrayList<Long>();
 		elements.add(element.getId());
-		final int changedCount = 0;
+		// final int changedCount = 0;
 
 		return new DBCodeFragmentGenealogyInfo(startRevisionId, endRevisionId,
-				elements, links, changedCount);
+				elements, links);
 	}
 
 }
