@@ -6,13 +6,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetLinkInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCombinedCommitInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CloneSetRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentLinkRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
+
+import org.apache.log4j.Logger;
 
 /**
  * A thread class to detect links of clone sets
@@ -23,9 +25,20 @@ import jp.ac.osaka_u.ist.sdl.ectec.settings.MessagePrinter;
 public class CloneSetLinkDetectingThread implements Runnable {
 
 	/**
-	 * the target commits
+	 * the logger
 	 */
-	private final DBCommitInfo[] targetCommits;
+	private static final Logger logger = LoggingManager
+			.getLogger(CloneSetLinkDetectingThread.class.getName());
+
+	/**
+	 * the logger for errors
+	 */
+	private static final Logger eLogger = LoggingManager.getLogger("error");
+
+	/**
+	 * the target combined commits
+	 */
+	private final DBCombinedCommitInfo[] targetCombinedCommits;
 
 	/**
 	 * a map having detected links of clones
@@ -48,28 +61,29 @@ public class CloneSetLinkDetectingThread implements Runnable {
 	private final CloneSetRetriever cloneRetriever;
 
 	/**
-	 * already processed commits
+	 * already processed combined commits
 	 */
-	private final ConcurrentMap<Long, DBCommitInfo> processedCommits;
+	private final ConcurrentMap<Long, DBCombinedCommitInfo> processedCombinedCommits;
 
 	/**
 	 * a counter that points the current state of the processing
 	 */
 	private final AtomicInteger index;
 
-	public CloneSetLinkDetectingThread(final DBCommitInfo[] targetCommits,
+	public CloneSetLinkDetectingThread(
+			final DBCombinedCommitInfo[] targetCombinedCommits,
 			final ConcurrentMap<Long, DBCloneSetLinkInfo> detectedCloneLinks,
 			final ConcurrentMap<Long, Map<Long, DBCloneSetInfo>> cloneSets,
 			final CodeFragmentLinkRetriever fragmentLinkRetriever,
 			final CloneSetRetriever cloneRetriever,
-			final ConcurrentMap<Long, DBCommitInfo> processedCommits,
+			final ConcurrentMap<Long, DBCombinedCommitInfo> processedCombinedCommits,
 			final AtomicInteger index) {
-		this.targetCommits = targetCommits;
+		this.targetCombinedCommits = targetCombinedCommits;
 		this.detectedCloneLinks = detectedCloneLinks;
 		this.cloneSets = cloneSets;
 		this.fragmentLinkRetriever = fragmentLinkRetriever;
 		this.cloneRetriever = cloneRetriever;
-		this.processedCommits = processedCommits;
+		this.processedCombinedCommits = processedCombinedCommits;
 		this.index = index;
 	}
 
@@ -78,71 +92,70 @@ public class CloneSetLinkDetectingThread implements Runnable {
 		while (true) {
 			final int currentIndex = index.getAndIncrement();
 
-			if (currentIndex >= targetCommits.length) {
+			if (currentIndex >= targetCombinedCommits.length) {
 				break;
 			}
 
-			final DBCommitInfo targetCommit = targetCommits[currentIndex];
+			final DBCombinedCommitInfo targetCombinedCommit = targetCombinedCommits[currentIndex];
 
-			final long beforeRevisionId = targetCommit.getBeforeRevisionId();
-			if (beforeRevisionId == -1) {
-				processedCommits.put(targetCommit.getId(), targetCommit);
-				MessagePrinter.println("\t[" + processedCommits.size() + "/"
-						+ targetCommits.length
-						+ "] processed the commit from revision "
-						+ targetCommit.getBeforeRevisionIdentifier()
-						+ " to revision "
-						+ targetCommit.getAfterRevisionIdentifier());
+			final long beforeCombinedRevisionId = targetCombinedCommit
+					.getBeforeCombinedRevisionId();
+			if (beforeCombinedRevisionId == -1) {
+				processedCombinedCommits.put(targetCombinedCommit.getId(),
+						targetCombinedCommit);
+				logger.info("[" + processedCombinedCommits.size() + "/"
+						+ targetCombinedCommits.length
+						+ "] processed the combined commit "
+						+ targetCombinedCommit.getId());
 				continue;
 			}
-			final long afterRevisionId = targetCommit.getAfterRevisionId();
+			final long afterCombinedRevisionId = targetCombinedCommit
+					.getAfterCombinedRevisionId();
 
 			try {
 				// retrieve necessary elements
-				retrieveElements(beforeRevisionId);
-				retrieveElements(afterRevisionId);
+				retrieveElements(beforeCombinedRevisionId);
+				retrieveElements(afterCombinedRevisionId);
 
 				final Map<Long, DBCodeFragmentLinkInfo> fragmentLinks = fragmentLinkRetriever
-						.retrieveElementsWithBeforeRevision(beforeRevisionId);
+						.retrieveElementsWithBeforeRevision(beforeCombinedRevisionId);
 
 				final CloneSetLinker linker = new CloneSetLinker();
 				detectedCloneLinks.putAll(linker.detectCloneSetLinks(cloneSets
-						.get(beforeRevisionId).values(),
-						cloneSets.get(afterRevisionId).values(), fragmentLinks,
-						beforeRevisionId, afterRevisionId));
+						.get(beforeCombinedRevisionId).values(),
+						cloneSets.get(afterCombinedRevisionId).values(),
+						fragmentLinks, beforeCombinedRevisionId,
+						afterCombinedRevisionId));
 
 			} catch (Exception e) {
-				MessagePrinter
-						.ePrintln("something is wrong in processing the commit from revision"
-								+ targetCommit.getBeforeRevisionIdentifier()
-								+ " to revision "
-								+ targetCommit.getAfterRevisionIdentifier());
+				eLogger.warn("something is wrong in processing the combined commit "
+						+ targetCombinedCommit.getId());
 			}
 
-			processedCommits.put(targetCommit.getId(), targetCommit);
-			MessagePrinter.println("\t[" + processedCommits.size() + "/"
-					+ targetCommits.length
-					+ "] processed the commit from revision "
-					+ targetCommit.getBeforeRevisionIdentifier()
-					+ " to revision "
-					+ targetCommit.getAfterRevisionIdentifier());
+			processedCombinedCommits.put(targetCombinedCommit.getId(),
+					targetCombinedCommit);
+			logger.info("[" + processedCombinedCommits.size() + "/"
+					+ targetCombinedCommits.length
+					+ "] processed the combined commit "
+					+ targetCombinedCommit.getId());
 		}
 	}
 
 	/**
 	 * retrieve elements if they have not been stored into the maps
 	 * 
-	 * @param revisionId
+	 * @param combinedRevisionId
 	 * @throws SQLException
 	 */
-	private void retrieveElements(final long revisionId) throws Exception {
+	private void retrieveElements(final long combinedRevisionId)
+			throws Exception {
 		synchronized (cloneSets) {
-			if (!cloneSets.containsKey(revisionId)) {
+			if (!cloneSets.containsKey(combinedRevisionId)) {
 				final Map<Long, DBCloneSetInfo> retrievedClones = cloneRetriever
-						.retrieveElementsInSpecifiedRevision(revisionId);
+						.retrieveElementsInSpecifiedRevision(combinedRevisionId);
 				final Map<Long, DBCloneSetInfo> concurrentRetrievedClones = new ConcurrentHashMap<Long, DBCloneSetInfo>();
 				concurrentRetrievedClones.putAll(retrievedClones);
-				cloneSets.put(revisionId, concurrentRetrievedClones);
+				cloneSets.put(combinedRevisionId, concurrentRetrievedClones);
 			}
 		}
 	}

@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCombinedCommitInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CloneSetLinkRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CloneSetRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentLinkRetriever;
@@ -26,7 +26,7 @@ public class CloneSetLinkIdentifier {
 	/**
 	 * the target commits
 	 */
-	private final Map<Long, DBCommitInfo> commits;
+	private final Map<Long, DBCombinedCommitInfo> combinedCommits;
 
 	/**
 	 * the number of threads
@@ -53,13 +53,14 @@ public class CloneSetLinkIdentifier {
 	 */
 	private final int maxElementsCount;
 
-	public CloneSetLinkIdentifier(final Map<Long, DBCommitInfo> commits,
+	public CloneSetLinkIdentifier(
+			final Map<Long, DBCombinedCommitInfo> combinedCommits,
 			final int threadsCount,
 			final CodeFragmentLinkRetriever fragmentLinkRetriever,
 			final CloneSetRetriever cloneRetriever,
 			final CloneSetLinkRegisterer cloneLinkRegisterer,
 			final int maxElementsCount) {
-		this.commits = commits;
+		this.combinedCommits = combinedCommits;
 		this.threadsCount = threadsCount;
 		this.fragmentLinkRetriever = fragmentLinkRetriever;
 		this.cloneRetriever = cloneRetriever;
@@ -68,73 +69,63 @@ public class CloneSetLinkIdentifier {
 	}
 
 	public void run() throws Exception {
-		if (threadsCount == 1) {
-			runWithSingleThread();
-		} else {
-			runWithMultipleThread();
-		}
-	}
+		final DBCombinedCommitInfo[] combinedCommitsArray = combinedCommits
+				.values().toArray(new DBCombinedCommitInfo[0]);
 
-	private void runWithSingleThread() throws Exception {
-		assert threadsCount == 1;
+		// the minimum number of thread is 2
+		final int tailoredThreadsCount = Math.min(combinedCommits.size(),
+				Math.max(threadsCount, 2));
 
-		final Map<Long, Collection<Long>> revisionAndRelatedCommits = detectRevisionAndRelatedCommits();
-		final DBCommitInfo[] commitsArray = commits.values().toArray(new DBCommitInfo[0]);
-
-		final SingleThreadCloneSetLinkDetector detector = new SingleThreadCloneSetLinkDetector(
-				commitsArray, fragmentLinkRetriever, cloneRetriever,
-				cloneLinkRegisterer, revisionAndRelatedCommits,
-				maxElementsCount);
-		detector.detectAndRegister();
-	}
-
-	private void runWithMultipleThread() throws Exception {
-		assert threadsCount > 1;
-
-		final DBCommitInfo[] commitsArray = commits.values().toArray(new DBCommitInfo[0]);
-		final Map<Long, Collection<Long>> revisionAndRelatedCommits = detectRevisionAndRelatedCommits();
+		final Map<Long, Collection<Long>> combinedRevisionAndRelatedCombinedCommits = detectCombinedRevisionAndRelatedCombinedCommits();
 
 		final ConcurrentMap<Long, DBCloneSetLinkInfo> detectedCloneLinks = new ConcurrentHashMap<Long, DBCloneSetLinkInfo>();
 		final ConcurrentMap<Long, Map<Long, DBCloneSetInfo>> cloneSets = new ConcurrentHashMap<Long, Map<Long, DBCloneSetInfo>>();
-		final ConcurrentMap<Long, DBCommitInfo> processedCommits = new ConcurrentHashMap<Long, DBCommitInfo>();
+		final ConcurrentMap<Long, DBCombinedCommitInfo> processedCombinedCommits = new ConcurrentHashMap<Long, DBCombinedCommitInfo>();
 		final AtomicInteger index = new AtomicInteger(0);
 
-		final Thread[] threads = new Thread[threadsCount - 1];
-		for (int i = 0; i < threadsCount - 1; i++) {
+		final Thread[] threads = new Thread[tailoredThreadsCount - 1];
+		for (int i = 0; i < tailoredThreadsCount - 1; i++) {
 			threads[i] = new Thread(new CloneSetLinkDetectingThread(
-					commitsArray, detectedCloneLinks, cloneSets,
-					fragmentLinkRetriever, cloneRetriever, processedCommits,
-					index));
+					combinedCommitsArray, detectedCloneLinks, cloneSets,
+					fragmentLinkRetriever, cloneRetriever,
+					processedCombinedCommits, index));
 			threads[i].start();
 		}
 
 		final CloneSetLinkDetectingThreadMonitor monitor = new CloneSetLinkDetectingThreadMonitor(
 				detectedCloneLinks, cloneLinkRegisterer, cloneSets,
-				processedCommits, revisionAndRelatedCommits, maxElementsCount);
+				processedCombinedCommits,
+				combinedRevisionAndRelatedCombinedCommits, maxElementsCount,
+				threads);
 		monitor.monitor();
 	}
 
-	private Map<Long, Collection<Long>> detectRevisionAndRelatedCommits() {
+	private Map<Long, Collection<Long>> detectCombinedRevisionAndRelatedCombinedCommits() {
 		final Map<Long, Collection<Long>> result = new TreeMap<Long, Collection<Long>>();
-		for (final Map.Entry<Long, DBCommitInfo> entry : commits.entrySet()) {
-			final DBCommitInfo commit = entry.getValue();
+		for (final Map.Entry<Long, DBCombinedCommitInfo> entry : combinedCommits
+				.entrySet()) {
+			final DBCombinedCommitInfo combinedCommit = entry.getValue();
 
-			final long beforeRevisionId = commit.getBeforeRevisionId();
-			if (result.containsKey(beforeRevisionId)) {
-				result.get(beforeRevisionId).add(entry.getValue().getId());
+			final long beforeCombinedRevisionId = combinedCommit
+					.getBeforeCombinedRevisionId();
+			if (result.containsKey(beforeCombinedRevisionId)) {
+				result.get(beforeCombinedRevisionId).add(
+						entry.getValue().getId());
 			} else {
 				final Collection<Long> newCollection = new TreeSet<Long>();
 				newCollection.add(entry.getValue().getId());
-				result.put(beforeRevisionId, newCollection);
+				result.put(beforeCombinedRevisionId, newCollection);
 			}
 
-			final long afterRevisionId = entry.getValue().getAfterRevisionId();
-			if (result.containsKey(afterRevisionId)) {
-				result.get(afterRevisionId).add(entry.getValue().getId());
+			final long afterCombinedRevisionId = entry.getValue()
+					.getAfterCombinedRevisionId();
+			if (result.containsKey(afterCombinedRevisionId)) {
+				result.get(afterCombinedRevisionId).add(
+						entry.getValue().getId());
 			} else {
 				final Collection<Long> newCollection = new TreeSet<Long>();
 				newCollection.add(entry.getValue().getId());
-				result.put(afterRevisionId, newCollection);
+				result.put(afterCombinedRevisionId, newCollection);
 			}
 		}
 		return result;

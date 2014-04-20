@@ -26,15 +26,16 @@ public class CloneSetLinker {
 	 * @param beforeClones
 	 * @param afterClones
 	 * @param fragmentLinks
-	 * @param beforeRevisionId
-	 * @param afterRevisionId
+	 * @param beforeCombinedRevisionId
+	 * @param afterCombinedRevisionId
 	 * @return
 	 */
 	public Map<Long, DBCloneSetLinkInfo> detectCloneSetLinks(
 			final Collection<DBCloneSetInfo> beforeClones,
 			final Collection<DBCloneSetInfo> afterClones,
 			final Map<Long, DBCodeFragmentLinkInfo> fragmentLinks,
-			final long beforeRevisionId, final long afterRevisionId) {
+			final long beforeCombinedRevisionId,
+			final long afterCombinedRevisionId) {
 		final Map<Long, DBCloneSetLinkInfo> result = new TreeMap<Long, DBCloneSetLinkInfo>();
 		final Map<Long, DBCodeFragmentLinkInfo> fragmentLinksCopy = new HashMap<Long, DBCodeFragmentLinkInfo>();
 		fragmentLinksCopy.putAll(fragmentLinks);
@@ -47,10 +48,10 @@ public class CloneSetLinker {
 						beforeClone, afterClone);
 
 				if (!relatedLinks.isEmpty() || !unchangedFragmentIds.isEmpty()) {
-					final DBCloneSetLinkInfo cloneLink = createLinkInstance(
-							beforeRevisionId, afterRevisionId,
-							fragmentLinksCopy, beforeClone, afterClone,
-							relatedLinks, unchangedFragmentIds);
+					final DBCloneSetLinkInfo cloneLink = new DBCloneSetLinkInfo(
+							beforeClone.getId(), afterClone.getId(),
+							beforeCombinedRevisionId, afterCombinedRevisionId,
+							relatedLinks);
 
 					result.put(cloneLink.getId(), cloneLink);
 				}
@@ -69,8 +70,8 @@ public class CloneSetLinker {
 	 * @param fragmentLinksCopy
 	 * @return
 	 */
-	private List<Long> getRelatedFragmentLinks(final DBCloneSetInfo beforeClone,
-			final DBCloneSetInfo afterClone,
+	private List<Long> getRelatedFragmentLinks(
+			final DBCloneSetInfo beforeClone, final DBCloneSetInfo afterClone,
 			final Map<Long, DBCodeFragmentLinkInfo> fragmentLinksCopy) {
 		final List<Long> beforeFragments = beforeClone.getElements();
 		final List<Long> afterFragments = afterClone.getElements();
@@ -100,8 +101,8 @@ public class CloneSetLinker {
 	 * @param afterClone
 	 * @return
 	 */
-	private List<Long> getUnchangedFragmentIds(final DBCloneSetInfo beforeClone,
-			final DBCloneSetInfo afterClone) {
+	private List<Long> getUnchangedFragmentIds(
+			final DBCloneSetInfo beforeClone, final DBCloneSetInfo afterClone) {
 		final List<Long> beforeFragments = beforeClone.getElements();
 		final List<Long> afterFragments = afterClone.getElements();
 
@@ -111,52 +112,12 @@ public class CloneSetLinker {
 			for (final long afterFragment : afterFragments) {
 				if (beforeFragment == afterFragment) {
 					result.add(beforeFragment);
+					break;
 				}
 			}
 		}
 
 		return result;
-	}
-
-	/**
-	 * create an instance of clone set link
-	 * 
-	 * @param beforeRevisionId
-	 * @param afterRevisionId
-	 * @param fragmentLinksCopy
-	 * @param beforeClone
-	 * @param afterClone
-	 * @param relatedLinks
-	 * @return
-	 */
-	private DBCloneSetLinkInfo createLinkInstance(final long beforeRevisionId,
-			final long afterRevisionId,
-			final Map<Long, DBCodeFragmentLinkInfo> fragmentLinksCopy,
-			final DBCloneSetInfo beforeClone, final DBCloneSetInfo afterClone,
-			final List<Long> relatedLinks, final List<Long> unchangedFragments) {
-		int numberOfChangedElements = 0;
-		int numberOfCoChangedElements = 0;
-
-		for (final long linkId : relatedLinks) {
-			final DBCodeFragmentLinkInfo link = fragmentLinksCopy.get(linkId);
-			if (link.isChanged()) {
-				numberOfChangedElements++;
-				numberOfCoChangedElements++;
-			}
-		}
-
-		final int numberOfAddedElements = afterClone.getElements().size()
-				- relatedLinks.size() - unchangedFragments.size();
-		final int numberOfDeletedElements = beforeClone.getElements().size()
-				- relatedLinks.size() - unchangedFragments.size();
-
-		final DBCloneSetLinkInfo cloneLink = new DBCloneSetLinkInfo(
-				beforeClone.getId(), afterClone.getId(), beforeRevisionId,
-				afterRevisionId, numberOfChangedElements,
-				numberOfAddedElements, numberOfDeletedElements,
-				numberOfCoChangedElements, relatedLinks);
-
-		return cloneLink;
 	}
 
 }
