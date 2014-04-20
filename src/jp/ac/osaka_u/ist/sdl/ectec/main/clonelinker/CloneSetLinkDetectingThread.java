@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.detector.clonelinker;
+package jp.ac.osaka_u.ist.sdl.ectec.main.clonelinker;
 
 import java.sql.SQLException;
 import java.util.Map;
