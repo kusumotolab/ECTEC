@@ -31,9 +31,10 @@ public abstract class AbstractNonuniqueElementRegisterer<T extends AbstractDBEle
 
 		for (final T element : elements) {
 			count = makePreparedStatements(pstmt, element);
-			if ((++count % maxBatchCount) == 0) {
+			if ((++count - maxBatchCount) >= 0) {
 				pstmt.executeBatch();
 				pstmt.clearBatch();
+				count -= maxBatchCount;
 			}
 		}
 

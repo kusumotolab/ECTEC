@@ -44,16 +44,28 @@ public class CloneSetLinkRegisterer extends
 				.getAfterCombinedRevisionId();
 		final Collection<Long> fragmentLinks = element.getCodeFragmentLinks();
 
-		for (final long fragmentLink : fragmentLinks) {
+		if (fragmentLinks.isEmpty()) {
 			int column = 0;
 			pstmt.setLong(++column, elementId);
 			pstmt.setLong(++column, beforeElementId);
 			pstmt.setLong(++column, afterElementId);
 			pstmt.setLong(++column, beforeCombinedRevisionId);
 			pstmt.setLong(++column, afterCombinedRevisionId);
-			pstmt.setLong(++column, fragmentLink);
+			pstmt.setLong(++column, (long) -1);
 
 			pstmt.addBatch();
+		} else {
+			for (final long fragmentLink : fragmentLinks) {
+				int column = 0;
+				pstmt.setLong(++column, elementId);
+				pstmt.setLong(++column, beforeElementId);
+				pstmt.setLong(++column, afterElementId);
+				pstmt.setLong(++column, beforeCombinedRevisionId);
+				pstmt.setLong(++column, afterCombinedRevisionId);
+				pstmt.setLong(++column, fragmentLink);
+
+				pstmt.addBatch();
+			}
 		}
 
 		return fragmentLinks.size();
