@@ -11,12 +11,12 @@ import java.util.Properties;
  * @author k-hotta
  * 
  */
-public class PropertiesReader {
+public class PropertiesReader implements PropertiesKeys {
 
 	/**
 	 * the path of properties file to be read
 	 */
-	protected final String propertiesFilePath;
+	private final String propertiesFilePath;
 
 	/**
 	 * the defalut value of the path of properties file to be read
@@ -24,19 +24,25 @@ public class PropertiesReader {
 	private static final String defaultPropertiesFilePath = "ectec.properties";
 
 	/**
+	 * loaded properties
+	 */
+	private final Properties prop;
+
+	/**
 	 * initialize this reader with the specified file path
 	 * 
 	 * @param propertiesFilePath
 	 */
-	public PropertiesReader(final String propertiesFilePath) {
+	public PropertiesReader(final String propertiesFilePath) throws Exception {
 		this.propertiesFilePath = propertiesFilePath;
+		this.prop = read();
 	}
 
 	/**
 	 * initialize this reader with the default file path <br>
 	 * ("ectec.properties" in the current directory)
 	 */
-	public PropertiesReader() {
+	public PropertiesReader() throws Exception {
 		this(defaultPropertiesFilePath);
 	}
 
@@ -64,6 +70,25 @@ public class PropertiesReader {
 		}
 
 		return prop;
+	}
+
+	/**
+	 * get the value of the property having the given key
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public final String getProperty(final String key) {
+		return prop.getProperty(key);
+	}
+
+	/**
+	 * get the name of the loaded properties file
+	 * 
+	 * @return
+	 */
+	public final String getLoadedFileName() {
+		return this.propertiesFilePath;
 	}
 
 }

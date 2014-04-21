@@ -2,6 +2,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.SortedMap;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
@@ -13,38 +14,39 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
  * 
  */
 public class CodeFragmentRetriever extends
-		RangedElementRetriever<DBCodeFragmentInfo> {
+		AbstractUniqueElementRetriever<DBCodeFragmentInfo> {
 
 	public CodeFragmentRetriever(DBConnectionManager dbManager) {
 		super(dbManager);
 	}
 
 	@Override
-	protected DBCodeFragmentInfo createElement(ResultSet rs) throws SQLException {
+	protected DBCodeFragmentInfo createElement(ResultSet rs)
+			throws SQLException {
 		int column = 0;
 		final long id = rs.getLong(++column);
 		final long ownerFileId = rs.getLong(++column);
+		final long ownerRepositoryId = rs.getLong(++column);
 		final long crdId = rs.getLong(++column);
-		final long startRevisionId = rs.getLong(++column);
-		final long endRevisionId = rs.getLong(++column);
+		final long startCombinedRevisionId = rs.getLong(++column);
+		final long endCombinedRevisionId = rs.getLong(++column);
 		final long hash = rs.getLong(++column);
 		final long hashForClone = rs.getLong(++column);
 		final int startLine = rs.getInt(++column);
 		final int endLine = rs.getInt(++column);
 		final int size = rs.getInt(++column);
 
-		return new DBCodeFragmentInfo(id, ownerFileId, crdId, startRevisionId,
-				endRevisionId, hash, hashForClone, startLine, endLine, size);
+		return new DBCodeFragmentInfo(id, ownerFileId, ownerRepositoryId,
+				crdId, startCombinedRevisionId, endCombinedRevisionId, hash,
+				hashForClone, startLine, endLine, size);
 	}
 
-	@Override
 	protected String getStartRevisionIdColumnName() {
-		return "START_REVISION_ID";
+		return "START_COMBINED_REVISION_ID";
 	}
 
-	@Override
 	protected String getEndRevisionIdColumnName() {
-		return "END_REVISION_ID";
+		return "END_COMBINED_REVISION_ID";
 	}
 
 	@Override
@@ -55,6 +57,23 @@ public class CodeFragmentRetriever extends
 	@Override
 	protected String getIdColumnName() {
 		return "CODE_FRAGMENT_ID";
+	}
+
+	/**
+	 * retrieve elements that exist in the specified revision
+	 * 
+	 * @param combinedRevisionId
+	 * @return
+	 * @throws SQLException
+	 */
+	public synchronized SortedMap<Long, DBCodeFragmentInfo> retrieveElementsInSpecifiedCombinedRevision(
+			final long combinedRevisionId) throws SQLException {
+		final String query = "select * from " + getTableName() + " where "
+				+ getStartRevisionIdColumnName() + " <= " + combinedRevisionId
+				+ " AND " + getEndRevisionIdColumnName() + " >= "
+				+ combinedRevisionId;
+
+		return retrieve(query);
 	}
 
 }

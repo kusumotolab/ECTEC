@@ -24,7 +24,7 @@ public class BasicGenealogyAnalyzer {
 		final String output = args[2];
 
 		final GenealogyAnalyzer analyzer = GenealogyAnalyzer.setup(db,
-				repository, VersionControlSystem.SVN);
+				VersionControlSystem.SVN, true);
 
 		final IConstraint constraint = null; // change if needed
 

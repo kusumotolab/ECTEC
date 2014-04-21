@@ -2,6 +2,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.SortedMap;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
@@ -12,7 +13,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
  * @author k-hotta
  * 
  */
-public class FileRetriever extends RangedElementRetriever<DBFileInfo> {
+public class FileRetriever extends AbstractUniqueElementRetriever<DBFileInfo> {
 
 	public FileRetriever(DBConnectionManager dbManager) {
 		super(dbManager);
@@ -22,21 +23,21 @@ public class FileRetriever extends RangedElementRetriever<DBFileInfo> {
 	protected DBFileInfo createElement(ResultSet rs) throws SQLException {
 		int column = 0;
 		final long id = rs.getLong(++column);
+		final long repositoryId = rs.getLong(++column);
 		final String path = rs.getString(++column);
-		final long startRevisionId = rs.getLong(++column);
-		final long endRevisionId = rs.getLong(++column);
+		final long startCombinedRevisionId = rs.getLong(++column);
+		final long endCombinedRevisionId = rs.getLong(++column);
 
-		return new DBFileInfo(id, path, startRevisionId, endRevisionId);
+		return new DBFileInfo(id, repositoryId, path, startCombinedRevisionId,
+				endCombinedRevisionId);
 	}
 
-	@Override
 	protected String getStartRevisionIdColumnName() {
-		return "START_REVISION_ID";
+		return "START_COMBINED_REVISION_ID";
 	}
 
-	@Override
 	protected String getEndRevisionIdColumnName() {
-		return "END_REVISION_ID";
+		return "END_COMBINED_REVISION_ID";
 	}
 
 	@Override
@@ -47,6 +48,22 @@ public class FileRetriever extends RangedElementRetriever<DBFileInfo> {
 	@Override
 	protected String getIdColumnName() {
 		return "FILE_ID";
+	}
+
+	/**
+	 * retrieve elements that exist in the specified revision
+	 * 
+	 * @param revisionId
+	 * @return
+	 * @throws SQLException
+	 */
+	public synchronized SortedMap<Long, DBFileInfo> retrieveElementsInSpecifiedRevision(
+			final long revisionId) throws SQLException {
+		final String query = "select * from " + getTableName() + " where "
+				+ getStartRevisionIdColumnName() + " <= " + revisionId
+				+ " AND " + getEndRevisionIdColumnName() + " >= " + revisionId;
+
+		return retrieve(query);
 	}
 
 }

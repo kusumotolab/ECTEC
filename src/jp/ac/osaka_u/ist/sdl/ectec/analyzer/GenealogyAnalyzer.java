@@ -14,10 +14,10 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.manager.DataManagerManager;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.selector.CloneGenealogySelector;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.selector.IConstraint;
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.vcs.IRepositoryManager;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.vcs.RepositoryManagerManager;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRepositoryInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Constants;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.VersionControlSystem;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.RepositoryManagerManager;
 
 /**
  * A class that manages genealogy analyzer
@@ -50,13 +50,14 @@ public class GenealogyAnalyzer {
 	private GenealogyAnalyzer(final DBConnectionManager dbManager,
 			final DataManagerManager dataManagerManager,
 			final DBDataManagerManager dbDataManagerManager,
-			final IRepositoryManager repositoryManager,
+			final RepositoryManagerManager repositoryManagerManager,
 			final boolean isBlockMode) {
 		this.dbManager = dbManager;
 		this.dataManagerManager = dataManagerManager;
 		this.dbDataManagerManager = dbDataManagerManager;
 		this.concretizer = new Concretizer(dataManagerManager,
-				dbDataManagerManager, dbManager, repositoryManager, isBlockMode);
+				dbDataManagerManager, dbManager, repositoryManagerManager,
+				isBlockMode);
 	}
 
 	/**
@@ -71,8 +72,6 @@ public class GenealogyAnalyzer {
 	 * @return
 	 */
 	public static GenealogyAnalyzer setup(final String dbPath,
-			final String repositoryPath, final String userName,
-			final String passwd,
 			final VersionControlSystem versionControlSystem,
 			final boolean isBlockMode) {
 		boolean troubled = false;
@@ -84,16 +83,26 @@ public class GenealogyAnalyzer {
 					Constants.MAX_BATCH_COUNT);
 
 			// the additional path is always null
-			final RepositoryManagerManager repositoryManagerManager = new RepositoryManagerManager(
-					versionControlSystem, repositoryPath, userName, passwd,
-					null, 1);
-			final IRepositoryManager repositoryManager = repositoryManagerManager
-					.getRepositoryManager();
+			final RepositoryManagerManager repositoryManagerManager = new RepositoryManagerManager();
+			final Map<Long, DBRepositoryInfo> registeredRepositories = dbManager
+					.getRepositoryRetriever().retrieveAll();
+
+			for (final Map.Entry<Long, DBRepositoryInfo> entry : registeredRepositories
+					.entrySet()) {
+				final DBRepositoryInfo repository = entry.getValue();
+				try {
+					repositoryManagerManager.addRepositoryManager(repository,
+							versionControlSystem);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
 			final DataManagerManager dataManagerManager = new DataManagerManager();
 			final DBDataManagerManager dbDataManagerManager = new DBDataManagerManager();
 
 			return new GenealogyAnalyzer(dbManager, dataManagerManager,
-					dbDataManagerManager, repositoryManager, isBlockMode);
+					dbDataManagerManager, repositoryManagerManager, isBlockMode);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -106,55 +115,6 @@ public class GenealogyAnalyzer {
 				}
 			}
 		}
-	}
-
-	/**
-	 * set up the manager and return the initialized one
-	 * 
-	 * @param dbPath
-	 * @param repositoryPath
-	 * @param versionControlSystem
-	 * @param isBlockMode
-	 * @return
-	 */
-	public static GenealogyAnalyzer setup(final String dbPath,
-			final String repositoryPath,
-			final VersionControlSystem versionControlSystem,
-			final boolean isBlockMode) {
-		return setup(dbPath, repositoryPath, null, null, versionControlSystem,
-				isBlockMode);
-	}
-
-	/**
-	 * set up the manager and return the initialized one
-	 * 
-	 * @param dbPath
-	 * @param repositoryPath
-	 * @param userName
-	 * @param passwd
-	 * @param versionControlSystem
-	 * @return
-	 */
-	public static GenealogyAnalyzer setup(final String dbPath,
-			final String repositoryPath, final String userName,
-			final String passwd, final VersionControlSystem versionControlSystem) {
-		return setup(dbPath, repositoryPath, userName, passwd,
-				versionControlSystem, true);
-	}
-
-	/**
-	 * set up the manager and return the initialized one
-	 * 
-	 * @param dbPath
-	 * @param repositoryPath
-	 * @param versionControlSystem
-	 * @return
-	 */
-	public static GenealogyAnalyzer setup(final String dbPath,
-			final String repositoryPath,
-			final VersionControlSystem versionControlSystem) {
-		return setup(dbPath, repositoryPath, null, null, versionControlSystem,
-				true);
 	}
 
 	/**

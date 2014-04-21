@@ -28,9 +28,9 @@ public class CloneGenealogyInfoConcretizer {
 			final Map<Long, CloneSetLinkInfo> cloneLinks) {
 		final long id = dbGenealogy.getId();
 		final RevisionInfo startRevision = revisions.get(dbGenealogy
-				.getStartRevisionId());
+				.getStartCombinedRevisionId());
 		final RevisionInfo endRevision = revisions.get(dbGenealogy
-				.getEndRevisionId());
+				.getEndCombinedRevisionId());
 
 		final List<CloneSetInfo> clonesList = new ArrayList<CloneSetInfo>();
 		final List<Long> cloneIds = dbGenealogy.getElements();
@@ -44,14 +44,25 @@ public class CloneGenealogyInfoConcretizer {
 			cloneLinksList.add(cloneLinks.get(cloneLinkId));
 		}
 
-		final int numberOfChanges = dbGenealogy.getNumberOfChanges();
-		final int numberOfAdditions = dbGenealogy.getNumberOfAdditions();
-		final int numberOfDeletions = dbGenealogy.getNumberOfDeletions();
-		final boolean dead = dbGenealogy.isDead();
+		int numberOfChanges = 0;
+		int numberOfAdditions = 0;
+		int numberOfDeletions = 0;
+
+		for (final CloneSetLinkInfo cloneLink : cloneLinksList) {
+			if (cloneLink.getNumberOfChangedElements() != 0) {
+				numberOfChanges++;
+			}
+			if (cloneLink.getNumberOfAddedElements() != 0) {
+				numberOfAdditions++;
+			}
+			if (cloneLink.getNumberOfDeletedElements() != 0) {
+				numberOfDeletions++;
+			}
+		}
 
 		return new CloneGenealogyInfo(id, startRevision, endRevision,
 				clonesList, cloneLinksList, numberOfChanges, numberOfAdditions,
-				numberOfDeletions, dead);
+				numberOfDeletions);
 	}
 
 	public Map<Long, CloneGenealogyInfo> concretizeAll(

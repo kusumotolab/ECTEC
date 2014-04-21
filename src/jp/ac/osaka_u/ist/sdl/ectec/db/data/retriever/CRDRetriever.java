@@ -16,7 +16,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.util.StringUtils;
  * @author k-hotta
  * 
  */
-public class CRDRetriever extends AbstractElementRetriever<DBCrdInfo> {
+public class CRDRetriever extends AbstractUniqueElementRetriever<DBCrdInfo> {
 
 	public CRDRetriever(DBConnectionManager dbManager) {
 		super(dbManager);

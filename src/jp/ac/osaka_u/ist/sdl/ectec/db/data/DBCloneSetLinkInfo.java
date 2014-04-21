@@ -10,38 +10,18 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author k-hotta
  * 
  */
-public class DBCloneSetLinkInfo extends DBElementLinkInfo implements
+public class DBCloneSetLinkInfo extends AbstractDBElementLinkInfo implements
 		Comparable<DBCloneSetLinkInfo> {
 
 	/**
 	 * a counter to keep the number of created elements
 	 */
-	private static final AtomicLong count = new AtomicLong(0);
+	private static AtomicLong count = new AtomicLong(0);
 
 	/**
-	 * the number of changed elements
+	 * the list of ids of related fragment links
 	 */
-	private final int numberOfChangedElements;
-
-	/**
-	 * the number of added elements
-	 */
-	private final int numberOfAddedElements;
-
-	/**
-	 * the number of deleted elements
-	 */
-	private final int numberOfDeletedElements;
-
-	/**
-	 * the number of co-changed elements (in this clone set)
-	 */
-	private final int numberOfCoChangecElements;
-
-	/**
-	 * the list of the ids of code fragment links related to this clone set link
-	 */
-	private final List<Long> codeFragmentLinks;
+	private final List<Long> fragmentLinks;
 
 	/**
 	 * the constructor for elements that are retrieved from the db
@@ -49,27 +29,15 @@ public class DBCloneSetLinkInfo extends DBElementLinkInfo implements
 	 * @param id
 	 * @param beforeElementId
 	 * @param afterElementId
-	 * @param beforeRevisionId
-	 * @param afterRevisionId
-	 * @param numberOfChangedElements
-	 * @param numberOfAddedElements
-	 * @param numberOfDeletedElements
-	 * @param numberOfCoChangedElements
-	 * @param codeFragmentLinks
+	 * @param beforeCombinedRevisionId
+	 * @param afterCombinedRevisionId
 	 */
 	public DBCloneSetLinkInfo(final long id, final long beforeElementId,
-			final long afterElementId, final long beforeRevisionId,
-			final long afterRevisionId, final int numberOfChangedElements,
-			final int numberOfAddedElements, final int numberOfDeletedElements,
-			final int numberOfCoChangedElements,
-			final List<Long> codeFragmentLinks) {
-		super(id, beforeElementId, afterElementId, beforeRevisionId,
-				afterRevisionId);
-		this.numberOfChangedElements = numberOfChangedElements;
-		this.numberOfAddedElements = numberOfAddedElements;
-		this.numberOfDeletedElements = numberOfDeletedElements;
-		this.numberOfCoChangecElements = numberOfCoChangedElements;
-		this.codeFragmentLinks = codeFragmentLinks;
+			final long afterElementId, final long beforeCombinedRevisionId,
+			final long afterCombinedRevisionId, final List<Long> fragmentLinks) {
+		super(id, beforeElementId, afterElementId, beforeCombinedRevisionId,
+				afterCombinedRevisionId);
+		this.fragmentLinks = fragmentLinks;
 	}
 
 	/**
@@ -77,69 +45,34 @@ public class DBCloneSetLinkInfo extends DBElementLinkInfo implements
 	 * 
 	 * @param beforeElementId
 	 * @param afterElementId
-	 * @param beforeRevisionId
-	 * @param afterRevisionId
-	 * @param numberOfChangedElements
-	 * @param numberOfAddedElements
-	 * @param numberOfDeletedElements
-	 * @param numberOfCoChangedElements
+	 * @param beforeCombinedRevisionId
+	 * @param afterCombinedRevisionId
 	 * @param codeFragmentLinks
 	 */
 	public DBCloneSetLinkInfo(final long beforeElementId,
-			final long afterElementId, final long beforeRevisionId,
-			final long afterRevisionId, final int numberOfChangedElements,
-			final int numberOfAddedElements, final int numberOfDeletedElements,
-			final int numberOfCoChangedElements,
-			final List<Long> codeFragmentLinks) {
+			final long afterElementId, final long beforeCombinedRevisionId,
+			final long afterCombinedRevisionId, final List<Long> fragmentLinks) {
 		this(count.getAndIncrement(), beforeElementId, afterElementId,
-				beforeRevisionId, afterRevisionId, numberOfChangedElements,
-				numberOfAddedElements, numberOfDeletedElements,
-				numberOfCoChangedElements, codeFragmentLinks);
+				beforeCombinedRevisionId, afterCombinedRevisionId,
+				fragmentLinks);
 	}
 
 	/**
-	 * get the number of changed elements
-	 * 
-	 * @return
-	 */
-	public final int getNumberOfChangedElements() {
-		return this.numberOfChangedElements;
-	}
-
-	/**
-	 * get the number of added elements
-	 * 
-	 * @return
-	 */
-	public final int getNumberOfAddedElements() {
-		return this.numberOfAddedElements;
-	}
-
-	/**
-	 * get the number of deleted elements
-	 * 
-	 * @return
-	 */
-	public final int getNumberOfDeletedElements() {
-		return this.numberOfDeletedElements;
-	}
-
-	/**
-	 * get the number of co-changed elements
-	 * 
-	 * @return
-	 */
-	public final int getNumberOfCoChangedElements() {
-		return this.numberOfCoChangecElements;
-	}
-
-	/**
-	 * get the list of ids of code fragment links related to this clone set link
+	 * get the list of ids of related fragment links
 	 * 
 	 * @return
 	 */
 	public final List<Long> getCodeFragmentLinks() {
-		return Collections.unmodifiableList(codeFragmentLinks);
+		return Collections.unmodifiableList(fragmentLinks);
+	}
+
+	/**
+	 * reset the count with the given long value
+	 * 
+	 * @param l
+	 */
+	public static void resetCount(final long l) {
+		count = new AtomicLong(l);
 	}
 
 	@Override

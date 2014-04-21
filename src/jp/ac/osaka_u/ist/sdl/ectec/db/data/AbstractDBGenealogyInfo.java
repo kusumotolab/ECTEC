@@ -3,55 +3,56 @@ package jp.ac.osaka_u.ist.sdl.ectec.db.data;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class AbstractDBGenealogyInfo<T extends AbstractDBElement, U extends DBElementLinkInfo>
+public abstract class AbstractDBGenealogyInfo<T extends AbstractDBElement, U extends AbstractDBElementLinkInfo>
 		extends AbstractDBElement {
 
 	/**
-	 * the id of the start revision
+	 * the id of the start combined revision
 	 */
-	protected final long startRevisionId;
+	protected final long startCombinedRevisionId;
 
 	/**
-	 * the id of the end revision
+	 * the id of the end combined revision
 	 */
-	protected final long endRevisionId;
+	protected final long endCombinedRevisionId;
 
 	/**
 	 * the list of ids of elements included in this genealogy
 	 */
-	protected final List<Long> elements;
+	 protected final List<Long> elements;
 
 	/**
 	 * the list of ids of links included in this genealogy
 	 */
 	protected final List<Long> links;
 
-	public AbstractDBGenealogyInfo(final long id, final long startRevisionId,
-			final long endRevisionId, final List<Long> elements,
+	public AbstractDBGenealogyInfo(final long id,
+			final long startCombinedRevisionId,
+			final long endCombinedRevisionId, final List<Long> elements,
 			final List<Long> links) {
 		super(id);
-		this.startRevisionId = startRevisionId;
-		this.endRevisionId = endRevisionId;
-		this.elements = elements;
+		this.startCombinedRevisionId = startCombinedRevisionId;
+		this.endCombinedRevisionId = endCombinedRevisionId;
+		 this.elements = elements;
 		this.links = links;
 	}
 
 	/**
-	 * get the id of the start revision
+	 * get the id of the start combined revision
 	 * 
 	 * @return
 	 */
-	public final long getStartRevisionId() {
-		return startRevisionId;
+	public final long getStartCombinedRevisionId() {
+		return startCombinedRevisionId;
 	}
 
 	/**
-	 * get the id of the end revision
+	 * get the id of the end combined revision
 	 * 
 	 * @return
 	 */
-	public final long getEndRevisionId() {
-		return endRevisionId;
+	public final long getEndCombinedRevisionId() {
+		return endCombinedRevisionId;
 	}
 
 	/**

@@ -47,16 +47,10 @@ public class CloneGenealogyInfo extends AbstractElement implements
 	 */
 	private final int numberOfDeletions;
 
-	/**
-	 * whether this genealogy still be alive at the latest revision
-	 */
-	private final boolean dead;
-
 	public CloneGenealogyInfo(final long id, final RevisionInfo startRevision,
 			final RevisionInfo endRevision, final List<CloneSetInfo> clones,
 			final List<CloneSetLinkInfo> links, final int numberOfChanges,
-			final int numberOfAdditions, final int numberOfDeletions,
-			final boolean dead) {
+			final int numberOfAdditions, final int numberOfDeletions) {
 		super(id);
 		this.startRevision = startRevision;
 		this.endRevision = endRevision;
@@ -65,7 +59,6 @@ public class CloneGenealogyInfo extends AbstractElement implements
 		this.numberOfChanges = numberOfChanges;
 		this.numberOfAdditions = numberOfAdditions;
 		this.numberOfDeletions = numberOfDeletions;
-		this.dead = dead;
 	}
 
 	/**
@@ -136,8 +129,8 @@ public class CloneGenealogyInfo extends AbstractElement implements
 	 * 
 	 * @return true if it is NOT alive at the latest revision
 	 */
-	public final boolean isDead() {
-		return dead;
+	public final boolean isDead(final long combinedRevisionId) {
+		return this.endRevision.getId() < combinedRevisionId;
 	}
 
 	@Override

@@ -4,10 +4,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentGenealogyElementInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentGenealogyInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.util.StringUtils;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentGenealogyLinkElementInfo;
 
 /**
  * A class for retrieving fragment genealogies
@@ -16,10 +19,18 @@ import jp.ac.osaka_u.ist.sdl.ectec.util.StringUtils;
  * 
  */
 public class CodeFragmentGenealogyRetriever extends
-		RangedElementRetriever<DBCodeFragmentGenealogyInfo> {
+		AbstractUniqueElementRetriever<DBCodeFragmentGenealogyInfo> {
+
+	private final CodeFragmentGenealogyElementRetriever elementRetriever;
+
+	private final CodeFragmentGenealogyLinkElementRetriever linkRetriever;
 
 	public CodeFragmentGenealogyRetriever(DBConnectionManager dbManager) {
 		super(dbManager);
+		this.elementRetriever = dbManager
+				.getFragmentGenealogyElementRetriever();
+		this.linkRetriever = dbManager
+				.getFragmentGenealogyLinkElementRetriever();
 	}
 
 	@Override
@@ -27,27 +38,32 @@ public class CodeFragmentGenealogyRetriever extends
 			throws SQLException {
 		int column = 0;
 		final long id = rs.getLong(++column);
-		final long startRevisionId = rs.getLong(++column);
-		final long endRevisionId = rs.getLong(++column);
-		final String elementsStr = rs.getString(++column);
-		final String linksStr = rs.getString(++column);
-		final int changes = rs.getInt(++column);
+		final long startCombinedRevisionId = rs.getLong(++column);
+		final long endCombinedRevisionId = rs.getLong(++column);
 
-		final List<Long> elements = new ArrayList<Long>();
-		StringUtils.convertStringToCollection(elements, elementsStr);
-		final List<Long> links = new ArrayList<Long>();
-		StringUtils.convertStringToCollection(links, linksStr);
+		final Map<Long, DBCodeFragmentGenealogyElementInfo> elements = elementRetriever
+				.retrieveWithIds(id);
+		final List<Long> elementIds = new ArrayList<Long>();
+		for (final DBCodeFragmentGenealogyElementInfo element : elements
+				.values()) {
+			elementIds.add(element.getSubElementId());
+		}
 
-		return new DBCodeFragmentGenealogyInfo(id, startRevisionId,
-				endRevisionId, elements, links, changes);
+		final Map<Long, DBCodeFragmentGenealogyLinkElementInfo> links = linkRetriever
+				.retrieveWithIds(id);
+		final List<Long> linkIds = new ArrayList<Long>();
+		for (final DBCodeFragmentGenealogyLinkElementInfo link : links.values()) {
+			linkIds.add(link.getSubElementId());
+		}
+
+		return new DBCodeFragmentGenealogyInfo(id, startCombinedRevisionId,
+				endCombinedRevisionId, elementIds, linkIds);
 	}
 
-	@Override
 	protected String getStartRevisionIdColumnName() {
 		return "START_REVISION_ID";
 	}
 
-	@Override
 	protected String getEndRevisionIdColumnName() {
 		return "END_REVISION_ID";
 	}
@@ -60,6 +76,22 @@ public class CodeFragmentGenealogyRetriever extends
 	@Override
 	protected String getIdColumnName() {
 		return "CODE_FRAGMENT_GENEALOGY_ID";
+	}
+
+	/**
+	 * retrieve elements that exist in the specified revision
+	 * 
+	 * @param revisionId
+	 * @return
+	 * @throws SQLException
+	 */
+	public synchronized SortedMap<Long, DBCodeFragmentGenealogyInfo> retrieveElementsInSpecifiedRevision(
+			final long revisionId) throws SQLException {
+		final String query = "select * from " + getTableName() + " where "
+				+ getStartRevisionIdColumnName() + " <= " + revisionId
+				+ " AND " + getEndRevisionIdColumnName() + " >= " + revisionId;
+
+		return retrieve(query);
 	}
 
 }

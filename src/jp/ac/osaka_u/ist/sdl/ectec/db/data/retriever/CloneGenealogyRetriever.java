@@ -4,10 +4,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneGenealogyElementInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneGenealogyInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.util.StringUtils;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneGenealogyLinkElementInfo;
 
 /**
  * A class for retrieving clone genealogies
@@ -16,10 +19,16 @@ import jp.ac.osaka_u.ist.sdl.ectec.util.StringUtils;
  * 
  */
 public class CloneGenealogyRetriever extends
-		RangedElementRetriever<DBCloneGenealogyInfo> {
+		AbstractUniqueElementRetriever<DBCloneGenealogyInfo> {
+
+	private final CloneGenealogyElementRetriever elementRetriever;
+
+	private final CloneGenealogyLinkElementRetriever linkRetriever;
 
 	public CloneGenealogyRetriever(DBConnectionManager dbManager) {
 		super(dbManager);
+		this.elementRetriever = dbManager.getCloneGenealogyElementRetriever();
+		this.linkRetriever = dbManager.getCloneGenealogyLinkElementRetriever();
 	}
 
 	@Override
@@ -27,31 +36,31 @@ public class CloneGenealogyRetriever extends
 			throws SQLException {
 		int column = 0;
 		final long id = rs.getLong(++column);
-		final long startRevisionId = rs.getLong(++column);
-		final long endRevisionId = rs.getLong(++column);
-		final String clonesStr = rs.getString(++column);
-		final String cloneLinksStr = rs.getString(++column);
-		final int numberOfChanges = rs.getInt(++column);
-		final int numberOfAdditions = rs.getInt(++column);
-		final int numberOfDeletions = rs.getInt(++column);
-		final boolean dead = (rs.getInt(++column) == 1) ? true : false;
+		final long startCombinedRevisionId = rs.getLong(++column);
+		final long endCombinedRevisionId = rs.getLong(++column);
 
-		final List<Long> clones = new ArrayList<Long>();
-		StringUtils.convertStringToCollection(clones, clonesStr);
-		final List<Long> cloneLinks = new ArrayList<Long>();
-		StringUtils.convertStringToCollection(cloneLinks, cloneLinksStr);
+		final Map<Long, DBCloneGenealogyElementInfo> elements = elementRetriever
+				.retrieveWithIds(id);
+		final List<Long> elementIds = new ArrayList<Long>();
+		for (final DBCloneGenealogyElementInfo element : elements.values()) {
+			elementIds.add(element.getSubElementId());
+		}
 
-		return new DBCloneGenealogyInfo(id, startRevisionId, endRevisionId,
-				clones, cloneLinks, numberOfChanges, numberOfAdditions,
-				numberOfDeletions, dead);
+		final Map<Long, DBCloneGenealogyLinkElementInfo> links = linkRetriever
+				.retrieveWithIds(id);
+		final List<Long> linkIds = new ArrayList<Long>();
+		for (final DBCloneGenealogyLinkElementInfo link : links.values()) {
+			linkIds.add(link.getSubElementId());
+		}
+
+		return new DBCloneGenealogyInfo(id, startCombinedRevisionId,
+				endCombinedRevisionId, elementIds, linkIds);
 	}
 
-	@Override
 	protected String getStartRevisionIdColumnName() {
 		return "START_REVISION_ID";
 	}
 
-	@Override
 	protected String getEndRevisionIdColumnName() {
 		return "END_REVISION_ID";
 	}
@@ -64,6 +73,22 @@ public class CloneGenealogyRetriever extends
 	@Override
 	protected String getIdColumnName() {
 		return "CLONE_GENEALOGY_ID";
+	}
+
+	/**
+	 * retrieve elements that exist in the specified revision
+	 * 
+	 * @param revisionId
+	 * @return
+	 * @throws SQLException
+	 */
+	public synchronized SortedMap<Long, DBCloneGenealogyInfo> retrieveElementsInSpecifiedRevision(
+			final long revisionId) throws SQLException {
+		final String query = "select * from " + getTableName() + " where "
+				+ getStartRevisionIdColumnName() + " <= " + revisionId
+				+ " AND " + getEndRevisionIdColumnName() + " >= " + revisionId;
+
+		return retrieve(query);
 	}
 
 }

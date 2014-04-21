@@ -10,35 +10,34 @@ import java.util.concurrent.atomic.AtomicLong;
  * 
  */
 public class DBCodeFragmentGenealogyInfo extends
-		AbstractDBGenealogyInfo<DBCodeFragmentInfo, DBCodeFragmentLinkInfo> implements
-		Comparable<DBCodeFragmentGenealogyInfo> {
+		AbstractDBGenealogyInfo<DBCodeFragmentInfo, DBCodeFragmentLinkInfo>
+		implements Comparable<DBCodeFragmentGenealogyInfo> {
 
 	/**
-	 * the conter to have the number of created elements
+	 * the counter to have the number of created elements
 	 */
-	private static final AtomicLong count = new AtomicLong(0);
+	private static AtomicLong count = new AtomicLong(0);
 
-	/**
-	 * the number of changed
-	 */
-	private final int changedCount;
-
-	public DBCodeFragmentGenealogyInfo(final long id, final long startRevisionId,
-			final long endRevisionId, final List<Long> elements,
-			final List<Long> links, final int changedCount) {
+	public DBCodeFragmentGenealogyInfo(final long id,
+			final long startRevisionId, final long endRevisionId,
+			final List<Long> elements, final List<Long> links) {
 		super(id, startRevisionId, endRevisionId, elements, links);
-		this.changedCount = changedCount;
 	}
 
 	public DBCodeFragmentGenealogyInfo(final long startRevisionId,
 			final long endRevisionId, final List<Long> elements,
-			final List<Long> links, final int changedCount) {
+			final List<Long> links) {
 		this(count.getAndIncrement(), startRevisionId, endRevisionId, elements,
-				links, changedCount);
+				links);
 	}
 
-	public final int getChangedCount() {
-		return changedCount;
+	/**
+	 * reset the count with the given long value
+	 * 
+	 * @param l
+	 */
+	public static void resetCount(final long l) {
+		count = new AtomicLong(l);
 	}
 
 	@Override

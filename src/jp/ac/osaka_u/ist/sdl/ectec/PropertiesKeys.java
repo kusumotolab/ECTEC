@@ -37,9 +37,15 @@ public interface PropertiesKeys {
 	public static final String FRAGMENT_LINK = "ectec.fragment-link";
 
 	public static final String SIMILARITY_THRESHOLD = "ectec.similarity-threshold";
-	
+
 	public static final String GRANULARITY = "ectec.granularity";
-	
+
 	public static final String CLONE_SIZE_THRESHOLD = "ectec.clone-size";
+
+	public static final String CROSS_PROJECT_CLONES = "ectec.cross-project-clones";
+	
+	public static final String CROSS_PROJECT_LINKS = "ectec.cross-project-links";
+	
+	public static final String LINK_ONLY_BEFORE_CLONE = "ectec.link-only-before-clone";
 
 }

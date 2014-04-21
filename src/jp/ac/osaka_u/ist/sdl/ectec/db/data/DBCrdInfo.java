@@ -10,12 +10,13 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author k-hotta
  * 
  */
-public class DBCrdInfo extends AbstractDBElement implements Comparable<DBCrdInfo> {
+public class DBCrdInfo extends AbstractDBElement implements
+		Comparable<DBCrdInfo> {
 
 	/**
 	 * a counter to keep the number of created elements
 	 */
-	private static final AtomicLong count = new AtomicLong(0);
+	private static AtomicLong count = new AtomicLong(0);
 
 	/**
 	 * the type of this block
@@ -86,11 +87,20 @@ public class DBCrdInfo extends AbstractDBElement implements Comparable<DBCrdInfo
 	 * @param ancestors
 	 * @param fullText
 	 */
-	public DBCrdInfo(final BlockType type, final String head, final String anchor,
-			final String normalizedAnchor, final int cm,
+	public DBCrdInfo(final BlockType type, final String head,
+			final String anchor, final String normalizedAnchor, final int cm,
 			final List<Long> ancestors, final String fullText) {
 		this(count.getAndIncrement(), type, head, anchor, normalizedAnchor, cm,
 				ancestors, fullText);
+	}
+
+	/**
+	 * reset the count with the given long value
+	 * 
+	 * @param l
+	 */
+	public static void resetCount(final long l) {
+		count = new AtomicLong(l);
 	}
 
 	/**
@@ -162,7 +172,8 @@ public class DBCrdInfo extends AbstractDBElement implements Comparable<DBCrdInfo
 			return false;
 		}
 
-		return ((DBCrdInfo) o).getFullText().equals(this.getFullText());
+//		return ((DBCrdInfo) o).getFullText().equals(this.getFullText());
+		return ((DBCrdInfo) o).getId() == this.getId();
 	}
 
 	@Override

@@ -13,7 +13,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
  * 
  */
 public class CodeFragmentRegisterer extends
-		AbstractElementRegisterer<DBCodeFragmentInfo> {
+		AbstractUniqueElementRegisterer<DBCodeFragmentInfo> {
 
 	/**
 	 * the constructor
@@ -28,7 +28,7 @@ public class CodeFragmentRegisterer extends
 
 	@Override
 	protected String createPreparedStatementQueue() {
-		return "insert into CODE_FRAGMENT values (?,?,?,?,?,?,?,?,?,?)";
+		return "insert into CODE_FRAGMENT values (?,?,?,?,?,?,?,?,?,?,?)";
 	}
 
 	@Override
@@ -37,9 +37,10 @@ public class CodeFragmentRegisterer extends
 		int column = 0;
 		pstmt.setLong(++column, element.getId());
 		pstmt.setLong(++column, element.getOwnerFileId());
+		pstmt.setLong(++column, element.getOwnerRepositoryId());
 		pstmt.setLong(++column, element.getCrdId());
-		pstmt.setLong(++column, element.getStartRevisionId());
-		pstmt.setLong(++column, element.getEndRevisionId());
+		pstmt.setLong(++column, element.getStartCombinedRevisionId());
+		pstmt.setLong(++column, element.getEndCombinedRevisionId());
 		pstmt.setLong(++column, element.getHash());
 		pstmt.setLong(++column, element.getHashForClone());
 		pstmt.setInt(++column, element.getStartLine());

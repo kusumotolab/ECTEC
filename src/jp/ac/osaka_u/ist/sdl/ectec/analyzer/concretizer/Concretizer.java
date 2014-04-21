@@ -38,7 +38,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentLinkRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.FileRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.RevisionRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.vcs.IRepositoryManager;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.RepositoryManagerManager;
 
 /**
  * A class for concretizing elements
@@ -67,7 +67,7 @@ public class Concretizer {
 	/**
 	 * the manager of repository
 	 */
-	private final IRepositoryManager repositoryManager;
+	private final RepositoryManagerManager repositoryManagerManager;
 
 	/**
 	 * true if a code fragment corresponds to a block
@@ -77,12 +77,12 @@ public class Concretizer {
 	public Concretizer(final DataManagerManager dataManagerManager,
 			final DBDataManagerManager dbDataManagerManager,
 			final DBConnectionManager dbManager,
-			final IRepositoryManager repositoryManager,
+			final RepositoryManagerManager repositoryManagerManager,
 			final boolean isBlockMode) {
 		this.dataManagerManager = dataManagerManager;
 		this.dbDataManagerManager = dbDataManagerManager;
 		this.dbManager = dbManager;
-		this.repositoryManager = repositoryManager;
+		this.repositoryManagerManager = repositoryManagerManager;
 		this.isBlockMode = isBlockMode;
 	}
 
@@ -206,12 +206,12 @@ public class Concretizer {
 		final Set<Long> revisionIds = new HashSet<Long>();
 		for (final Map.Entry<Long, DBCloneSetInfo> entry : dbClones.entrySet()) {
 			final DBCloneSetInfo clone = entry.getValue();
-			revisionIds.add(clone.getRevisionId());
+			revisionIds.add(clone.getCombinedRevisionId());
 		}
 		for (final Map.Entry<Long, DBFileInfo> entry : dbFiles.entrySet()) {
 			final DBFileInfo file = entry.getValue();
-			revisionIds.add(file.getStartRevisionId());
-			revisionIds.add(file.getEndRevisionId());
+			revisionIds.add(file.getStartCombinedRevisionId());
+			revisionIds.add(file.getCombinedEndRevisionId());
 		}
 		final Map<Long, DBRevisionInfo> dbRevisions = retrieveRevisions(revisionIds);
 		dbDataManagerManager.getDbRevisionManager()
@@ -394,7 +394,8 @@ public class Concretizer {
 		final Map<Long, DBCodeFragmentLinkInfo> dbFragmentLinks = getDbFragmentLinks(dbCloneLinks);
 		final Map<Long, DBCrdInfo> dbCrds = getDbCrds(dbFragments);
 		final Map<Long, DBFileInfo> dbFiles = getDbFiles(dbFragments);
-		final Map<Long, DBRevisionInfo> dbRevisions = getDbRevisions(dbClones, dbFiles);
+		final Map<Long, DBRevisionInfo> dbRevisions = getDbRevisions(dbClones,
+				dbFiles);
 
 		// concretize revisions
 		final Map<Long, RevisionInfo> concretizedRevisions = getConcretizedRevisions(dbRevisions);
@@ -569,15 +570,17 @@ public class Concretizer {
 			final Map<Long, DBFileInfo> dbFiles) {
 		final Map<Long, DBRevisionInfo> dbRevisions = new TreeMap<Long, DBRevisionInfo>();
 		for (final Map.Entry<Long, DBCloneSetInfo> entry : dbClones.entrySet()) {
-			final long revisionId = entry.getValue().getRevisionId();
+			final long revisionId = entry.getValue().getCombinedRevisionId();
 			if (!dbRevisions.containsKey(revisionId)) {
 				dbRevisions.put(revisionId, dbDataManagerManager
 						.getDbRevisionManager().getElement(revisionId));
 			}
 		}
 		for (final Map.Entry<Long, DBFileInfo> entry : dbFiles.entrySet()) {
-			final long startRevisionId = entry.getValue().getStartRevisionId();
-			final long endRevisionId = entry.getValue().getEndRevisionId();
+			final long startRevisionId = entry.getValue()
+					.getStartCombinedRevisionId();
+			final long endRevisionId = entry.getValue()
+					.getCombinedEndRevisionId();
 			if (!dbRevisions.containsKey(startRevisionId)) {
 				dbRevisions.put(startRevisionId, dbDataManagerManager
 						.getDbRevisionManager().getElement(startRevisionId));
@@ -633,7 +636,7 @@ public class Concretizer {
 		final Map<Long, FileInfo> concretizedFiles = new TreeMap<Long, FileInfo>();
 
 		final FileInfoConcretizer fileConcretizer = new FileInfoConcretizer(
-				repositoryManager);
+				repositoryManagerManager);
 		for (final Map.Entry<Long, DBFileInfo> entry : dbFiles.entrySet()) {
 			final long fileId = entry.getKey();
 			if (fileManager.contains(fileId)) {

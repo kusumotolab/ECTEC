@@ -24,20 +24,20 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.TryStatementInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.WhileStatementInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.crd.CatchClauseCRDCreator;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.crd.ClassCRDCreator;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.crd.DoStatementCRDCreator;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.crd.ElseStatementCRDCreator;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.crd.EnhancedForStatementCRDCreator;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.crd.FinallyBlockCRDCreator;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.crd.ForStatementCRDCreator;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.crd.IfStatementCRDCreator;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.crd.MethodCRDCreator;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.crd.MetricsCalculator;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.crd.SwitchStatementCRDCreator;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.crd.SynchronizedStatementCRDCreator;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.crd.TryStatementCRDCreator;
-import jp.ac.osaka_u.ist.sdl.ectec.detector.sourceanalyzer.crd.WhileStatementCRDCreator;
+import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.crd.CatchClauseCRDCreator;
+import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.crd.ClassCRDCreator;
+import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.crd.DoStatementCRDCreator;
+import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.crd.ElseStatementCRDCreator;
+import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.crd.EnhancedForStatementCRDCreator;
+import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.crd.FinallyBlockCRDCreator;
+import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.crd.ForStatementCRDCreator;
+import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.crd.IfStatementCRDCreator;
+import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.crd.MethodCRDCreator;
+import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.crd.MetricsCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.crd.SwitchStatementCRDCreator;
+import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.crd.SynchronizedStatementCRDCreator;
+import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.crd.TryStatementCRDCreator;
+import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.crd.WhileStatementCRDCreator;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -71,9 +71,9 @@ public class BlockInfoConcretizer {
 		final FileInfo ownerFile = files.get(dbFragment.getOwnerFileId());
 		final CRD crd = crds.get(dbFragment.getCrdId());
 		final RevisionInfo startRevision = revisions.get(dbFragment
-				.getStartRevisionId());
+				.getStartCombinedRevisionId());
 		final RevisionInfo endRevision = revisions.get(dbFragment
-				.getEndRevisionId());
+				.getEndCombinedRevisionId());
 		final int startLine = dbFragment.getStartLine();
 		final int endLine = dbFragment.getEndLine();
 		final int size = dbFragment.getSize();

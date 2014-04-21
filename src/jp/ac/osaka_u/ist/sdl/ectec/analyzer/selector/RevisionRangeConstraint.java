@@ -106,8 +106,8 @@ public class RevisionRangeConstraint implements IConstraint {
 
 	@Override
 	public boolean satisfy(DBCloneGenealogyInfo genealogy) {
-		final long targetStartRevisionId = genealogy.getStartRevisionId();
-		final long targetEndRevisionId = genealogy.getEndRevisionId();
+		final long targetStartRevisionId = genealogy.getStartCombinedRevisionId();
+		final long targetEndRevisionId = genealogy.getEndCombinedRevisionId();
 
 		if (mustBeComprised) {
 			return (startRevisionId <= targetStartRevisionId && endRevisionId >= targetEndRevisionId);

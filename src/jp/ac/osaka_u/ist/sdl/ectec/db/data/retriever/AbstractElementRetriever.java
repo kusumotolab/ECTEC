@@ -40,15 +40,10 @@ public abstract class AbstractElementRetriever<T extends AbstractDBElement> {
 	 */
 	public synchronized SortedMap<Long, T> retrieve(final String query)
 			throws SQLException {
-		final SortedMap<Long, T> result = new TreeMap<Long, T>();
-
 		final Statement stmt = dbManager.createStatement();
 		final ResultSet rs = stmt.executeQuery(query);
 
-		while (rs.next()) {
-			final T element = createElement(rs);
-			result.put(element.getId(), element);
-		}
+		final SortedMap<Long, T> result = instantiate(rs);
 
 		stmt.close();
 		rs.close();
@@ -154,13 +149,39 @@ public abstract class AbstractElementRetriever<T extends AbstractDBElement> {
 	}
 
 	/**
-	 * build an instance of element from the given record
+	 * get the maximum number of ID
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
+	public synchronized long getMaximumId() throws SQLException {
+		final String query = "select MAX(" + getIdColumnName() + ") from "
+				+ getTableName();
+
+		final Statement stmt = dbManager.createStatement();
+		final ResultSet rs = stmt.executeQuery(query);
+
+		long result = 0;
+		while (rs.next()) {
+			result = rs.getLong(1);
+			break;
+		}
+
+		stmt.close();
+		rs.close();
+
+		return result;
+	}
+
+	/**
+	 * instantiate the given result set
 	 * 
 	 * @param rs
 	 * @return
 	 * @throws SQLException
 	 */
-	protected abstract T createElement(ResultSet rs) throws SQLException;
+	public abstract SortedMap<Long, T> instantiate(final ResultSet rs)
+			throws SQLException;
 
 	/**
 	 * get the name of the table

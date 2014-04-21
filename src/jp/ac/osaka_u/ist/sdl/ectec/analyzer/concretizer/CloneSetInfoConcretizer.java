@@ -24,7 +24,7 @@ public class CloneSetInfoConcretizer {
 			final Map<Long, RevisionInfo> revisions,
 			final Map<Long, CodeFragmentInfo> fragments) {
 		final long id = dbClone.getId();
-		final RevisionInfo revision = revisions.get(dbClone.getRevisionId());
+		final RevisionInfo revision = revisions.get(dbClone.getCombinedRevisionId());
 
 		final List<CodeFragmentInfo> fragmentsList = new ArrayList<CodeFragmentInfo>();
 		final List<Long> fragmentIds = dbClone.getElements();

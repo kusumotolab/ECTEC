@@ -28,9 +28,9 @@ public class CodeFragmentGenealogyConcretizer {
 			final Map<Long, CodeFragmentLinkInfo> fragmentLinks) {
 		final long id = dbGenealogy.getId();
 		final RevisionInfo startRevision = revisions.get(dbGenealogy
-				.getStartRevisionId());
+				.getStartCombinedRevisionId());
 		final RevisionInfo endRevision = revisions.get(dbGenealogy
-				.getEndRevisionId());
+				.getEndCombinedRevisionId());
 
 		final List<CodeFragmentInfo> fragmentsList = new ArrayList<CodeFragmentInfo>();
 		final List<Long> fragmentIds = dbGenealogy.getElements();
@@ -44,7 +44,12 @@ public class CodeFragmentGenealogyConcretizer {
 			fragmentLinksList.add(fragmentLinks.get(fragmentLinkId));
 		}
 
-		final int changeCount = dbGenealogy.getChangedCount();
+		int changeCount = 0;
+		for (final CodeFragmentLinkInfo fragmentLink : fragmentLinksList) {
+			if (fragmentLink.isChanged()) {
+				changeCount++;
+			}
+		}
 
 		return new CodeFragmentGenealogyInfo(id, startRevision, endRevision,
 				fragmentsList, fragmentLinksList, changeCount);

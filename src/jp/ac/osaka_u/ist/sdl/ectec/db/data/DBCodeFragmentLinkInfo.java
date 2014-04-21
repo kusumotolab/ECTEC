@@ -8,16 +8,16 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author k-hotta
  * 
  */
-public class DBCodeFragmentLinkInfo extends DBElementLinkInfo implements
+public class DBCodeFragmentLinkInfo extends AbstractDBElementLinkInfo implements
 		Comparable<DBCodeFragmentLinkInfo> {
 
 	/**
 	 * a counter to keep the number of created elements
 	 */
-	private static final AtomicLong count = new AtomicLong(0);
+	private static AtomicLong count = new AtomicLong(0);
 
 	/**
-	 * whether the code fragment was changed or not
+	 * whether this link changes the before element
 	 */
 	private final boolean changed;
 
@@ -27,15 +27,14 @@ public class DBCodeFragmentLinkInfo extends DBElementLinkInfo implements
 	 * @param id
 	 * @param beforeElementId
 	 * @param afterElementId
-	 * @param beforeRevisionId
-	 * @param afterRevisionId
-	 * @param changed
+	 * @param beforeCombinedRevisionId
+	 * @param afterCombinedRevisionId
 	 */
 	public DBCodeFragmentLinkInfo(final long id, final long beforeElementId,
-			final long afterElementId, final long beforeRevisionId,
-			final long afterRevisionId, final boolean changed) {
-		super(id, beforeElementId, afterElementId, beforeRevisionId,
-				afterRevisionId);
+			final long afterElementId, final long beforeCombinedRevisionId,
+			final long afterCombinedRevisionId, final boolean changed) {
+		super(id, beforeElementId, afterElementId, beforeCombinedRevisionId,
+				afterCombinedRevisionId);
 		this.changed = changed;
 	}
 
@@ -44,19 +43,27 @@ public class DBCodeFragmentLinkInfo extends DBElementLinkInfo implements
 	 * 
 	 * @param beforeElementId
 	 * @param afterElementId
-	 * @param beforeRevisionId
-	 * @param afterRevisionId
-	 * @param changed
+	 * @param beforeCombinedRevisionId
+	 * @param afterCombinedRevisionId
 	 */
 	public DBCodeFragmentLinkInfo(final long beforeElementId,
-			final long afterElementId, final long beforeRevisionId,
-			final long afterRevisionId, final boolean changed) {
+			final long afterElementId, final long beforeCombinedRevisionId,
+			final long afterCombinedRevisionId, final boolean changed) {
 		this(count.getAndIncrement(), beforeElementId, afterElementId,
-				beforeRevisionId, afterRevisionId, changed);
+				beforeCombinedRevisionId, afterCombinedRevisionId, changed);
 	}
 
 	/**
-	 * get whether this code fragment was changed or not
+	 * reset the count with the given long value
+	 * 
+	 * @param l
+	 */
+	public static void resetCount(final long l) {
+		count = new AtomicLong(l);
+	}
+
+	/**
+	 * whether this link changes the before element
 	 * 
 	 * @return
 	 */

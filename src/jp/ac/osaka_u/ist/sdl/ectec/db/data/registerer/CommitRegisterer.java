@@ -2,6 +2,8 @@ package jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Date;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
@@ -12,7 +14,8 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
  * @author k-hotta
  * 
  */
-public class CommitRegisterer extends AbstractElementRegisterer<DBCommitInfo> {
+public class CommitRegisterer extends
+		AbstractUniqueElementRegisterer<DBCommitInfo> {
 
 	public CommitRegisterer(DBConnectionManager dbManager, int maxBatchCount) {
 		super(dbManager, maxBatchCount);
@@ -20,7 +23,7 @@ public class CommitRegisterer extends AbstractElementRegisterer<DBCommitInfo> {
 
 	@Override
 	protected String createPreparedStatementQueue() {
-		return "insert into VCS_COMMIT values (?,?,?,?,?)";
+		return "insert into VCS_COMMIT values (?,?,?,?,?,?,?,?,?,?,?,?)";
 	}
 
 	@Override
@@ -28,10 +31,23 @@ public class CommitRegisterer extends AbstractElementRegisterer<DBCommitInfo> {
 			throws SQLException {
 		int column = 0;
 		pstmt.setLong(++column, element.getId());
+		pstmt.setLong(++column, element.getRepositoryId());
 		pstmt.setLong(++column, element.getBeforeRevisionId());
 		pstmt.setLong(++column, element.getAfterRevisionId());
 		pstmt.setString(++column, element.getBeforeRevisionIdentifier());
 		pstmt.setString(++column, element.getAfterRevisionIdentifier());
+
+		final Date date = element.getDate();
+		final Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+
+		pstmt.setInt(++column, calendar.get(Calendar.YEAR));
+		// "+1" is necessary to convert 0-11 to 1-12
+		pstmt.setInt(++column, calendar.get(Calendar.MONTH) + 1);
+		pstmt.setInt(++column, calendar.get(Calendar.DAY_OF_MONTH));
+		pstmt.setInt(++column, calendar.get(Calendar.HOUR));
+		pstmt.setInt(++column, calendar.get(Calendar.MINUTE));
+		pstmt.setInt(++column, calendar.get(Calendar.SECOND));
 	}
 
 }

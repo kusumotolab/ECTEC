@@ -13,7 +13,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
  * 
  */
 public class CodeFragmentLinkRegisterer extends
-		AbstractElementRegisterer<DBCodeFragmentLinkInfo> {
+		AbstractUniqueElementRegisterer<DBCodeFragmentLinkInfo> {
 
 	/**
 	 * the constructor
@@ -38,9 +38,11 @@ public class CodeFragmentLinkRegisterer extends
 		pstmt.setLong(++column, element.getId());
 		pstmt.setLong(++column, element.getBeforeElementId());
 		pstmt.setLong(++column, element.getAfterElementId());
-		pstmt.setLong(++column, element.getBeforeRevisionId());
-		pstmt.setLong(++column, element.getAfterRevisionId());
-		pstmt.setInt(++column, (element.isChanged()) ? 1 : 0);
+		pstmt.setLong(++column, element.getBeforeCombinedRevisionId());
+		pstmt.setLong(++column, element.getAfterCombinedRevisionId());
+
+		final int changed = (element.isChanged()) ? 1 : 0;
+		pstmt.setInt(++column, changed);
 	}
 
 }

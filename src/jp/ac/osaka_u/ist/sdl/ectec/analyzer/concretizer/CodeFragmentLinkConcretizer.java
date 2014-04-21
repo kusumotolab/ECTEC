@@ -24,9 +24,9 @@ public class CodeFragmentLinkConcretizer {
 			final Map<Long, CodeFragmentInfo> fragments) {
 		final long id = dbFragmentLink.getId();
 		final RevisionInfo beforeRevision = revisions.get(dbFragmentLink
-				.getBeforeRevisionId());
+				.getBeforeCombinedRevisionId());
 		final RevisionInfo afterRevision = revisions.get(dbFragmentLink
-				.getAfterRevisionId());
+				.getAfterCombinedRevisionId());
 		final CodeFragmentInfo beforeFragment = fragments.get(dbFragmentLink
 				.getBeforeElementId());
 		final CodeFragmentInfo afterFragment = fragments.get(dbFragmentLink

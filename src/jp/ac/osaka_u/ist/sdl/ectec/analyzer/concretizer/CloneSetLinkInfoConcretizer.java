@@ -5,10 +5,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CloneSetInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CloneSetLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CodeFragmentLinkInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.RevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetLinkInfo;
@@ -27,27 +30,48 @@ public class CloneSetLinkInfoConcretizer {
 			final Map<Long, CodeFragmentLinkInfo> fragmentLinks) {
 		final long id = dbCloneLink.getId();
 		final RevisionInfo beforeRevision = revisions.get(dbCloneLink
-				.getBeforeRevisionId());
+				.getBeforeCombinedRevisionId());
 		final RevisionInfo afterRevision = revisions.get(dbCloneLink
-				.getAfterRevisionId());
+				.getAfterCombinedRevisionId());
 		final CloneSetInfo beforeClone = clones.get(dbCloneLink
 				.getBeforeElementId());
 		final CloneSetInfo afterClone = clones.get(dbCloneLink
 				.getAfterElementId());
-		final int numberOfAddedElements = dbCloneLink
-				.getNumberOfAddedElements();
-		final int numberOfDeletedElements = dbCloneLink
-				.getNumberOfDeletedElements();
-		final int numberOfChangedElements = dbCloneLink
-				.getNumberOfChangedElements();
-		final int numberOfCoChangedElements = dbCloneLink
-				.getNumberOfCoChangedElements();
 
 		final List<CodeFragmentLinkInfo> fragmentLinksList = new ArrayList<CodeFragmentLinkInfo>();
 		final List<Long> fragmentLinkIds = dbCloneLink.getCodeFragmentLinks();
 		for (final long fragmentLinkId : fragmentLinkIds) {
 			fragmentLinksList.add(fragmentLinks.get(fragmentLinkId));
 		}
+
+		int numberOfChangedElements = 0;
+		int numberOfCoChangedElements = 0;
+
+		final Set<Long> beforeElements = new TreeSet<Long>();
+		for (final CodeFragmentInfo beforeClonedFragment : beforeClone
+				.getElements()) {
+			beforeElements.add(beforeClonedFragment.getId());
+		}
+		final Set<Long> afterElements = new TreeSet<Long>();
+		for (final CodeFragmentInfo afterClonedFragment : afterClone
+				.getElements()) {
+			afterElements.add(afterClonedFragment.getId());
+		}
+
+		final Set<Long> unchangedElements = new TreeSet<Long>(beforeElements);
+		unchangedElements.retainAll(afterElements);
+
+		for (final CodeFragmentLinkInfo fragmentLink : fragmentLinksList) {
+			if (fragmentLink.isChanged()) {
+				numberOfChangedElements++;
+				numberOfCoChangedElements++;
+			}
+		}
+
+		int numberOfAddedElements = afterElements.size()
+				- unchangedElements.size() - fragmentLinksList.size();
+		int numberOfDeletedElements = beforeElements.size()
+				- unchangedElements.size() - fragmentLinksList.size();
 
 		return new CloneSetLinkInfo(id, beforeRevision, afterRevision,
 				beforeClone, afterClone, numberOfAddedElements,

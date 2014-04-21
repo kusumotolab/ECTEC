@@ -12,7 +12,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
  * @author k-hotta
  * 
  */
-public class FileRegisterer extends AbstractElementRegisterer<DBFileInfo> {
+public class FileRegisterer extends AbstractUniqueElementRegisterer<DBFileInfo> {
 
 	/**
 	 * the constructor
@@ -26,7 +26,7 @@ public class FileRegisterer extends AbstractElementRegisterer<DBFileInfo> {
 
 	@Override
 	protected String createPreparedStatementQueue() {
-		return "insert into FILE values (?,?,?,?)";
+		return "insert into FILE values (?,?,?,?,?)";
 	}
 
 	@Override
@@ -34,9 +34,10 @@ public class FileRegisterer extends AbstractElementRegisterer<DBFileInfo> {
 			throws SQLException {
 		int column = 0;
 		pstmt.setLong(++column, element.getId());
+		pstmt.setLong(++column, element.getOwnerRepositoryId());
 		pstmt.setString(++column, element.getPath());
-		pstmt.setLong(++column, element.getStartRevisionId());
-		pstmt.setLong(++column, element.getEndRevisionId());
+		pstmt.setLong(++column, element.getStartCombinedRevisionId());
+		pstmt.setLong(++column, element.getCombinedEndRevisionId());
 	}
 
 }
