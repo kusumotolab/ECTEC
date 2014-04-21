@@ -2,9 +2,9 @@ package jp.ac.osaka_u.ist.sdl.ectec.settings;
 
 import java.io.InputStream;
 
-import jp.ac.osaka_u.ist.sdl.ectec.cdt.CPPLexer;
-import jp.ac.osaka_u.ist.sdl.ectec.cdt.JavaLexer;
-import jp.ac.osaka_u.ist.sdl.ectec.cdt.Lexer;
+import jp.ac.osaka_u.ist.sdl.instantcdt.CPPLexer;
+import jp.ac.osaka_u.ist.sdl.instantcdt.JavaLexer;
+import jp.ac.osaka_u.ist.sdl.instantcdt.Lexer;
 
 /**
  * An enum that represents target programming languages
