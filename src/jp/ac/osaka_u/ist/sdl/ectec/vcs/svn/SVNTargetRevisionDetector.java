@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.main.vcs.svn;
+package jp.ac.osaka_u.ist.sdl.ectec.vcs.svn;
 
 import java.util.Collections;
 import java.util.Date;
@@ -9,8 +9,8 @@ import java.util.TreeMap;
 import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.ITargetRevisionDetector;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.ITargetRevisionDetector;
 
 import org.apache.log4j.Logger;
 import org.tmatesoft.svn.core.ISVNLogEntryHandler;

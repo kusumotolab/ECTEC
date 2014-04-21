@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.main.vcs;
+package jp.ac.osaka_u.ist.sdl.ectec.vcs;
 
 /**
  * An exception class to represent the repository is not initialized

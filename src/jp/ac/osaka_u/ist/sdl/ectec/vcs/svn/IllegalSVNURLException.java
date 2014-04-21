@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.main.vcs.svn;
+package jp.ac.osaka_u.ist.sdl.ectec.vcs.svn;
 
 /**
  * An exception class to represent illegal url

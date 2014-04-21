@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.main.vcs.svn;
+package jp.ac.osaka_u.ist.sdl.ectec.vcs.svn;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.IChangedFilesDetector;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.IChangedFilesDetector;
 
 import org.tmatesoft.svn.core.ISVNLogEntryHandler;
 import org.tmatesoft.svn.core.SVNException;

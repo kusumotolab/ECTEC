@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.main.vcs.svn;
+package jp.ac.osaka_u.ist.sdl.ectec.vcs.svn;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -7,10 +7,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.IChangedFilesDetector;
-import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.IRepositoryManager;
-import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.ITargetRevisionDetector;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.IChangedFilesDetector;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.IRepositoryManager;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.ITargetRevisionDetector;
 
 import org.tmatesoft.svn.core.ISVNDirEntryHandler;
 import org.tmatesoft.svn.core.SVNDepth;

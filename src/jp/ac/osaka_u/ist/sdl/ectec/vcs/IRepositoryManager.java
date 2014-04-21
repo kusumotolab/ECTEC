@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.main.vcs;
+package jp.ac.osaka_u.ist.sdl.ectec.vcs;
 
 import java.util.Collection;
 import java.util.List;

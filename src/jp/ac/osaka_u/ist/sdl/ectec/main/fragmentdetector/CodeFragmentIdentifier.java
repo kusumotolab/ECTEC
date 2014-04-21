@@ -15,8 +15,8 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CRDRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CodeFragmentRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.hash.IHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.normalizer.NormalizerCreator;
-import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.IRepositoryManager;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.AnalyzeGranularity;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.IRepositoryManager;
 
 import org.apache.log4j.Logger;
 

@@ -14,10 +14,10 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.manager.DataManagerManager;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.selector.CloneGenealogySelector;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.selector.IConstraint;
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
-import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.IRepositoryManager;
-import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.RepositoryManagerManager;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Constants;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.VersionControlSystem;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.IRepositoryManager;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.RepositoryManagerManager;
 
 /**
  * A class that manages genealogy analyzer

@@ -38,7 +38,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentLinkRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.FileRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.RevisionRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.IRepositoryManager;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.IRepositoryManager;
 
 /**
  * A class for concretizing elements

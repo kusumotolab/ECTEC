@@ -6,8 +6,8 @@ import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRepositoryInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.main.IllegalStateException;
-import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.RepositoryManagerManager;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.VersionControlSystem;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.RepositoryManagerManager;
 
 import org.apache.log4j.Logger;
 

@@ -8,10 +8,10 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRepositoryInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.main.IllegalStateException;
-import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.IRepositoryManager;
-import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.ITargetRevisionDetector;
-import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.RepositoryManagerManager;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.IRepositoryManager;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.ITargetRevisionDetector;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.RepositoryManagerManager;
 
 import org.apache.log4j.Logger;
 

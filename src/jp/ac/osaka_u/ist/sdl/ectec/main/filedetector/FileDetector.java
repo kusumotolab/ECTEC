@@ -10,9 +10,9 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCombinedCommitInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.main.IllegalStateException;
-import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.IChangedFilesDetector;
-import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.IRepositoryManager;
-import jp.ac.osaka_u.ist.sdl.ectec.main.vcs.RepositoryManagerManager;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.IChangedFilesDetector;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.IRepositoryManager;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.RepositoryManagerManager;
 
 import org.apache.log4j.Logger;
 
