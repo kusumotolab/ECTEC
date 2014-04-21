@@ -38,13 +38,6 @@ public abstract class AbstractElementRegisterer<T extends AbstractDBElement> {
 	}
 
 	/**
-	 * get the query to create a prepared statement
-	 * 
-	 * @return
-	 */
-	protected abstract String createPreparedStatementQueue();
-
-	/**
 	 * the abstract method to perform registeration of elements
 	 * 
 	 * @param elements

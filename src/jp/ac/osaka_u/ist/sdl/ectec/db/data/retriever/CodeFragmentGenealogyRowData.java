@@ -12,18 +12,18 @@ class CodeFragmentGenealogyRowData extends AbstractRowData {
 
 	private final long endCombinedRevisionId;
 
-	private final long codeFragmentId;
+//	private final long codeFragmentId;
 
 	private final long codeFragmentLinkId;
 
 	CodeFragmentGenealogyRowData(final long id,
 			final long startCombinedRevisionId,
-			final long endCombinedRevisionId, final long codeFragmentId,
+			final long endCombinedRevisionId, // final long codeFragmentId,
 			final long codeFragmentLinkId) {
 		super(id);
 		this.startCombinedRevisionId = startCombinedRevisionId;
 		this.endCombinedRevisionId = endCombinedRevisionId;
-		this.codeFragmentId = codeFragmentId;
+//		this.codeFragmentId = codeFragmentId;
 		this.codeFragmentLinkId = codeFragmentLinkId;
 	}
 
@@ -35,9 +35,9 @@ class CodeFragmentGenealogyRowData extends AbstractRowData {
 		return endCombinedRevisionId;
 	}
 
-	final long getCodeFragmentId() {
-		return codeFragmentId;
-	}
+//	final long getCodeFragmentId() {
+//		return codeFragmentId;
+//	}
 
 	final long getCodeFragmentLinkId() {
 		return codeFragmentLinkId;

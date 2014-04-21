@@ -64,6 +64,9 @@ public class FragmentChainFinalizer
 		final DBCodeFragmentInfo endElement = elementsMap.get(endLink
 				.getAfterElementId());
 
+		// return new DBCodeFragmentGenealogyInfo(
+		// startElement.getStartCombinedRevisionId(),
+		// endElement.getEndCombinedRevisionId(), elements, links);
 		return new DBCodeFragmentGenealogyInfo(
 				startElement.getStartCombinedRevisionId(),
 				endElement.getEndCombinedRevisionId(), elements, links);
@@ -82,5 +85,4 @@ public class FragmentChainFinalizer
 		return new DBCodeFragmentGenealogyInfo(startRevisionId, endRevisionId,
 				elements, links);
 	}
-
 }

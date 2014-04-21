@@ -24,8 +24,6 @@ public class DBCloneGenealogyInfo extends
 	 * @param id
 	 * @param startRevisionId
 	 * @param endRevisionId
-	 * @param elements
-	 * @param links
 	 */
 	public DBCloneGenealogyInfo(final long id, final long startRevisionId,
 			final long endRevisionId, final List<Long> elements,

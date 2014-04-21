@@ -22,12 +22,12 @@ public class CombinedRevisionRegisterer extends
 	}
 
 	@Override
-	protected String createPreparedStatementQueue() {
+	protected String createPreparedStatementQuery() {
 		return "insert into COMBINED_REVISION values (?,?)";
 	}
 
 	@Override
-	protected int makePreparedStatements(PreparedStatement pstmt,
+	protected int fillPreparedStatement(PreparedStatement pstmt,
 			DBCombinedRevisionInfo element) throws SQLException {
 		final long elementId = element.getId();
 		final Collection<Long> originalRevisions = element.getOriginalRevisions();

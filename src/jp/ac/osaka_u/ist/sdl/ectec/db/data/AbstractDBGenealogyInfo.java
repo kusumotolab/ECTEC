@@ -19,20 +19,21 @@ public abstract class AbstractDBGenealogyInfo<T extends AbstractDBElement, U ext
 	/**
 	 * the list of ids of elements included in this genealogy
 	 */
-	protected final List<Long> elements;
+	 protected final List<Long> elements;
 
 	/**
 	 * the list of ids of links included in this genealogy
 	 */
 	protected final List<Long> links;
 
-	public AbstractDBGenealogyInfo(final long id, final long startCombinedRevisionId,
+	public AbstractDBGenealogyInfo(final long id,
+			final long startCombinedRevisionId,
 			final long endCombinedRevisionId, final List<Long> elements,
 			final List<Long> links) {
 		super(id);
 		this.startCombinedRevisionId = startCombinedRevisionId;
 		this.endCombinedRevisionId = endCombinedRevisionId;
-		this.elements = elements;
+		 this.elements = elements;
 		this.links = links;
 	}
 

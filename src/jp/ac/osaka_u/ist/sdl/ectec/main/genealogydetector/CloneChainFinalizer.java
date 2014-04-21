@@ -52,6 +52,8 @@ public class CloneChainFinalizer
 		//
 		// final boolean dead = (endRevisionId == lastRevisionId);
 
+		// return new DBCloneGenealogyInfo(startRevisionId, endRevisionId,
+		// elements, links);
 		return new DBCloneGenealogyInfo(startRevisionId, endRevisionId,
 				elements, links);
 	}

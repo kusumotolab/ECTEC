@@ -19,9 +19,9 @@ public class DBCloneSetLinkInfo extends AbstractDBElementLinkInfo implements
 	private static AtomicLong count = new AtomicLong(0);
 
 	/**
-	 * the list of the ids of code fragment links related to this clone set link
+	 * the list of ids of related fragment links
 	 */
-	private final List<Long> codeFragmentLinks;
+	private final List<Long> fragmentLinks;
 
 	/**
 	 * the constructor for elements that are retrieved from the db
@@ -31,15 +31,13 @@ public class DBCloneSetLinkInfo extends AbstractDBElementLinkInfo implements
 	 * @param afterElementId
 	 * @param beforeCombinedRevisionId
 	 * @param afterCombinedRevisionId
-	 * @param codeFragmentLinks
 	 */
 	public DBCloneSetLinkInfo(final long id, final long beforeElementId,
 			final long afterElementId, final long beforeCombinedRevisionId,
-			final long afterCombinedRevisionId,
-			final List<Long> codeFragmentLinks) {
+			final long afterCombinedRevisionId, final List<Long> fragmentLinks) {
 		super(id, beforeElementId, afterElementId, beforeCombinedRevisionId,
 				afterCombinedRevisionId);
-		this.codeFragmentLinks = codeFragmentLinks;
+		this.fragmentLinks = fragmentLinks;
 	}
 
 	/**
@@ -53,11 +51,19 @@ public class DBCloneSetLinkInfo extends AbstractDBElementLinkInfo implements
 	 */
 	public DBCloneSetLinkInfo(final long beforeElementId,
 			final long afterElementId, final long beforeCombinedRevisionId,
-			final long afterCombinedRevisionId,
-			final List<Long> codeFragmentLinks) {
+			final long afterCombinedRevisionId, final List<Long> fragmentLinks) {
 		this(count.getAndIncrement(), beforeElementId, afterElementId,
 				beforeCombinedRevisionId, afterCombinedRevisionId,
-				codeFragmentLinks);
+				fragmentLinks);
+	}
+
+	/**
+	 * get the list of ids of related fragment links
+	 * 
+	 * @return
+	 */
+	public final List<Long> getCodeFragmentLinks() {
+		return Collections.unmodifiableList(fragmentLinks);
 	}
 
 	/**
@@ -67,15 +73,6 @@ public class DBCloneSetLinkInfo extends AbstractDBElementLinkInfo implements
 	 */
 	public static void resetCount(final long l) {
 		count = new AtomicLong(l);
-	}
-
-	/**
-	 * get the list of ids of code fragment links related to this clone set link
-	 * 
-	 * @return
-	 */
-	public final List<Long> getCodeFragmentLinks() {
-		return Collections.unmodifiableList(codeFragmentLinks);
 	}
 
 	@Override

@@ -3,14 +3,14 @@ package jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.SortedMap;
-import java.util.TreeSet;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentGenealogyElementInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentGenealogyInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentGenealogyLinkElementInfo;
 
 /**
  * A class for retrieving fragment genealogies
@@ -18,59 +18,46 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentGenealogyInfo;
  * @author k-hotta
  * 
  */
-public class CodeFragmentGenealogyRetriever
-		extends
-		AbstractNonuniqueElementRetriever<DBCodeFragmentGenealogyInfo, CodeFragmentGenealogyRowData> {
+public class CodeFragmentGenealogyRetriever extends
+		AbstractUniqueElementRetriever<DBCodeFragmentGenealogyInfo> {
+
+	private final CodeFragmentGenealogyElementRetriever elementRetriever;
+
+	private final CodeFragmentGenealogyLinkElementRetriever linkRetriever;
 
 	public CodeFragmentGenealogyRetriever(DBConnectionManager dbManager) {
 		super(dbManager);
+		this.elementRetriever = dbManager
+				.getFragmentGenealogyElementRetriever();
+		this.linkRetriever = dbManager
+				.getFragmentGenealogyLinkElementRetriever();
 	}
 
 	@Override
-	protected CodeFragmentGenealogyRowData makeRowInstance(ResultSet rs)
+	protected DBCodeFragmentGenealogyInfo createElement(ResultSet rs)
 			throws SQLException {
 		int column = 0;
 		final long id = rs.getLong(++column);
 		final long startCombinedRevisionId = rs.getLong(++column);
 		final long endCombinedRevisionId = rs.getLong(++column);
-		final long codeFragmentId = rs.getLong(++column);
-		final long codeFragmentLinkId = rs.getLong(++column);
 
-		return new CodeFragmentGenealogyRowData(id, startCombinedRevisionId,
-				endCombinedRevisionId, codeFragmentId, codeFragmentLinkId);
-	}
-
-	@Override
-	protected DBCodeFragmentGenealogyInfo createElement(
-			Collection<CodeFragmentGenealogyRowData> rows) {
-		CodeFragmentGenealogyRowData aRow = null;
-		final Set<Long> codeFragmentIds = new TreeSet<Long>();
-		final Set<Long> codeFragmentLinkIds = new TreeSet<Long>();
-
-		for (final CodeFragmentGenealogyRowData row : rows) {
-			if (aRow == null) {
-				aRow = row;
-			}
-
-			codeFragmentIds.add(row.getCodeFragmentId());
-			codeFragmentLinkIds.add(row.getCodeFragmentLinkId());
+		final Map<Long, DBCodeFragmentGenealogyElementInfo> elements = elementRetriever
+				.retrieveWithIds(id);
+		final List<Long> elementIds = new ArrayList<Long>();
+		for (final DBCodeFragmentGenealogyElementInfo element : elements
+				.values()) {
+			elementIds.add(element.getSubElementId());
 		}
 
-		if (aRow == null) {
-			return null;
+		final Map<Long, DBCodeFragmentGenealogyLinkElementInfo> links = linkRetriever
+				.retrieveWithIds(id);
+		final List<Long> linkIds = new ArrayList<Long>();
+		for (final DBCodeFragmentGenealogyLinkElementInfo link : links.values()) {
+			linkIds.add(link.getSubElementId());
 		}
-
-		final long id = aRow.getId();
-		final long startCombinedRevisionId = aRow.getStartCombinedRevisionId();
-		final long endCombinedRevisionId = aRow.getEndCombinedRevisionId();
-		final List<Long> listOfCodeFragmentIds = new ArrayList<Long>(
-				codeFragmentIds);
-		final List<Long> listOfCodeFragmentLinkIds = new ArrayList<Long>(
-				codeFragmentLinkIds);
 
 		return new DBCodeFragmentGenealogyInfo(id, startCombinedRevisionId,
-				endCombinedRevisionId, listOfCodeFragmentIds,
-				listOfCodeFragmentLinkIds);
+				endCombinedRevisionId, elementIds, linkIds);
 	}
 
 	protected String getStartRevisionIdColumnName() {

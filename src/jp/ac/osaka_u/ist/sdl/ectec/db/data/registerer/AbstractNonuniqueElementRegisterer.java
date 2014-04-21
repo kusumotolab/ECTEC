@@ -23,15 +23,16 @@ public abstract class AbstractNonuniqueElementRegisterer<T extends AbstractDBEle
 	}
 
 	@Override
-	public synchronized void register(final Collection<T> elements) throws SQLException {
+	public synchronized void register(final Collection<T> elements)
+			throws SQLException {
 		final PreparedStatement pstmt = dbManager
-				.createPreparedStatement(createPreparedStatementQueue());
+				.createPreparedStatement(createPreparedStatementQuery());
 
 		int count = 0;
-
 		for (final T element : elements) {
-			count = makePreparedStatements(pstmt, element);
-			if ((++count - maxBatchCount) >= 0) {
+			count += fillPreparedStatement(pstmt, element);
+
+			if ((count - maxBatchCount) >= 0) {
 				pstmt.executeBatch();
 				pstmt.clearBatch();
 				count -= maxBatchCount;
@@ -40,11 +41,14 @@ public abstract class AbstractNonuniqueElementRegisterer<T extends AbstractDBEle
 
 		pstmt.executeBatch();
 		dbManager.commit();
-
 		pstmt.close();
 	}
 
-	protected abstract int makePreparedStatements(final PreparedStatement pstmt,
-			final T element) throws SQLException;
-	
+
+	protected abstract String createPreparedStatementQuery();
+
+	protected abstract int fillPreparedStatement(
+			final PreparedStatement pstmt, final T element)
+			throws SQLException;
+
 }

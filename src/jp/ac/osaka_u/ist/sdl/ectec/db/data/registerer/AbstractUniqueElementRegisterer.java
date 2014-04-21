@@ -55,6 +55,13 @@ public abstract class AbstractUniqueElementRegisterer<T extends AbstractDBElemen
 
 		pstmt.close();
 	}
+	
+	/**
+	 * get the query to create a prepared statement
+	 * 
+	 * @return
+	 */
+	protected abstract String createPreparedStatementQueue();
 
 	/**
 	 * set attributes in the given prepared statement

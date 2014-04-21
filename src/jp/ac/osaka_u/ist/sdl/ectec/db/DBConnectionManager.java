@@ -33,9 +33,14 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.FileRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.RepositoryRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.RevisionRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CRDRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CloneGenealogyElementRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CloneGenealogyLinkElementRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CloneGenealogyRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CloneSetLinkFragmentLinkRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CloneSetLinkRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CloneSetRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentGenealogyElementRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentGenealogyLinkElementRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentGenealogyRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentLinkRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentRetriever;
@@ -111,6 +116,16 @@ public final class DBConnectionManager {
 
 	private final CRDRetriever crdRetriever;
 
+	private final CloneGenealogyElementRetriever cloneGenealogyElementRetriever;
+
+	private final CloneGenealogyLinkElementRetriever cloneGenealogyLinkElementRetriever;
+
+	private final CloneSetLinkFragmentLinkRetriever cloneLinkFragmentLinkRetriever;
+
+	private final CodeFragmentGenealogyElementRetriever fragmentGenealogyElementRetriever;
+
+	private final CodeFragmentGenealogyLinkElementRetriever fragmentGenealogyLinkElementRetriever;
+
 	/**
 	 * the constructor
 	 * 
@@ -122,6 +137,18 @@ public final class DBConnectionManager {
 		Class.forName("org.sqlite.JDBC");
 		this.connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
 		this.connection.setAutoCommit(false);
+		
+		this.cloneGenealogyElementRetriever = new CloneGenealogyElementRetriever(
+				this);
+		this.cloneGenealogyLinkElementRetriever = new CloneGenealogyLinkElementRetriever(
+				this);
+		this.cloneLinkFragmentLinkRetriever = new CloneSetLinkFragmentLinkRetriever(
+				this);
+		this.fragmentGenealogyElementRetriever = new CodeFragmentGenealogyElementRetriever(
+				this);
+		this.fragmentGenealogyLinkElementRetriever = new CodeFragmentGenealogyLinkElementRetriever(
+				this);
+		
 		this.repositoryRegisterer = new RepositoryRegisterer(this,
 				maxBatchCount);
 		this.revisionRegisterer = new RevisionRegisterer(this, maxBatchCount);
@@ -261,6 +288,26 @@ public final class DBConnectionManager {
 
 	public final CRDRetriever getCrdRetriever() {
 		return crdRetriever;
+	}
+
+	public final CloneGenealogyElementRetriever getCloneGenealogyElementRetriever() {
+		return cloneGenealogyElementRetriever;
+	}
+
+	public final CloneGenealogyLinkElementRetriever getCloneGenealogyLinkElementRetriever() {
+		return cloneGenealogyLinkElementRetriever;
+	}
+
+	public final CloneSetLinkFragmentLinkRetriever getCloneLinkFragmentLinkRetriever() {
+		return cloneLinkFragmentLinkRetriever;
+	}
+
+	public final CodeFragmentGenealogyElementRetriever getFragmentGenealogyElementRetriever() {
+		return fragmentGenealogyElementRetriever;
+	}
+
+	public final CodeFragmentGenealogyLinkElementRetriever getFragmentGenealogyLinkElementRetriever() {
+		return fragmentGenealogyLinkElementRetriever;
 	}
 
 	/**

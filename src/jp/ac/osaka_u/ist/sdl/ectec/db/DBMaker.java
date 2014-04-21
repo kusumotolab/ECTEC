@@ -72,8 +72,13 @@ public class DBMaker {
 		dbManager.executeUpdate(getCloneSetTableQuery());
 		dbManager.executeUpdate(getCodeFragmentLinkTableQuery());
 		dbManager.executeUpdate(getCloneSetLinkTableQuery());
+		dbManager.executeUpdate(getCloneSetLinkFragmentLinkTableQuery());
 		dbManager.executeUpdate(getCloneGenealogyTableQuery());
+		dbManager.executeUpdate(getCloneGenealogyEelementTableQuery());
+		dbManager.executeUpdate(getCloneGenealogyLinkTableQuery());
 		dbManager.executeUpdate(getCodeFragmentGenealogyTableQuery());
+		dbManager.executeUpdate(getCodeFragmentGenealogyElementTableQuery());
+		dbManager.executeUpdate(getCodeFragmentGenealogyLinkTableQuery());
 	}
 
 	/**
@@ -123,13 +128,44 @@ public class DBMaker {
 		}
 
 		try {
+			dbManager.executeUpdate("DROP TABLE CLONE_SET_LINK_FRAGMENT_LINK");
+		} catch (Exception e) {
+			// e.printStackTrace();
+		}
+
+		try {
 			dbManager.executeUpdate("DROP TABLE CLONE_GENEALOGY");
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
 
 		try {
+			dbManager.executeUpdate("DROP TABLE CLONE_GENEALOGY_ELEMENT");
+		} catch (Exception e) {
+			// e.printStackTrace();
+		}
+
+		try {
+			dbManager.executeUpdate("DROP TABLE CLONE_GENEALOGY_LINK");
+		} catch (Exception e) {
+			// e.printStackTrace();
+		}
+
+		try {
 			dbManager.executeUpdate("DROP TABLE CODE_FRAGMENT_GENEALOGY");
+		} catch (Exception e) {
+			// e.printStackTrace();
+		}
+
+		try {
+			dbManager
+					.executeUpdate("DROP TABLE CODE_FRAGMENT_GENEALOGY_ELEMENT");
+		} catch (Exception e) {
+			// e.printStackTrace();
+		}
+
+		try {
+			dbManager.executeUpdate("DROP TABLE CODE_FRAGMENT_GENEALOGY_LINK");
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
@@ -159,8 +195,13 @@ public class DBMaker {
 		createCloneSetTableIndexes();
 		createCodeFragmentLinkTableIndexes();
 		createCloneSetLinkTableIndexes();
+		createCloneSetLinkFragmentLinkTableIndexes();
 		createCloneGenealogyTableIndexes();
+		createCloneGenealogyElementTableIndexes();
+		createCloneGenealogyLinkTableIndexes();
 		createCodeFragmentGenealogyTableIndexes();
+		createCodeFragmentGenealogyElementTableIndexes();
+		createCodeFragmentGenealogyLinkTableIndexes();
 	}
 
 	/*
@@ -567,18 +608,15 @@ public class DBMaker {
 		final StringBuilder builder = new StringBuilder();
 
 		builder.append("create table CLONE_SET_LINK(");
-		builder.append("CLONE_SET_LINK_ID LONG,");
+		builder.append("CLONE_SET_LINK_ID LONG PRIMARY KEY,");
 		builder.append("BEFORE_ELEMENT_ID LONG,");
 		builder.append("AFTER_ELEMENT_ID LONG,");
 		builder.append("BEFORE_COMBINED_REVISION_ID LONG,");
 		builder.append("AFTER_COMBINED_REVISION_ID LONG,");
-		builder.append("CODE_FRAGMENT_LINK_ID LONG,");
-		builder.append("PRIMARY KEY(CLONE_SET_LINK_ID, CODE_FRAGMENT_LINK_ID),");
 		builder.append("FOREIGN KEY(BEFORE_ELEMENT_ID) REFERENCES CLONE_SET(CLONE_SET_ID),");
 		builder.append("FOREIGN KEY(AFTER_ELEMENT_ID) REFERENCES CLONE_SET(CLONE_SET_ID),");
 		builder.append("FOREIGN KEY(BEFORE_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
-		builder.append("FOREIGN KEY(AFTER_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
-		builder.append("FOREIGN KEY(CODE_FRAGMENT_LINK_ID) REFERENCES CODE_FRAGMENT_LINK(CODE_FRAGMENT_LINK_ID)");
+		builder.append("FOREIGN KEY(AFTER_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID)");
 		builder.append(")");
 
 		return builder.toString();
@@ -600,8 +638,39 @@ public class DBMaker {
 				.executeUpdate("create index BEFORE_COMBINED_REVISION_ID_INDEX_CLONE_SET_LINK on CLONE_SET_LINK(BEFORE_COMBINED_REVISION_ID)");
 		dbManager
 				.executeUpdate("create index AFTER_COMBINED_REVISION_ID_INDEX_CLONE_SET_LINK on CLONE_SET_LINK(AFTER_COMBINED_REVISION_ID)");
+	}
+
+	/**
+	 * get the query to create the table for links of clone sets
+	 * 
+	 * @return
+	 */
+	private String getCloneSetLinkFragmentLinkTableQuery() {
+		final StringBuilder builder = new StringBuilder();
+
+		builder.append("create table CLONE_SET_LINK_FRAGMENT_LINK(");
+		builder.append("CLONE_SET_LINK_ID LONG,");
+		builder.append("CODE_FRAGMENT_LINK_ID LONG,");
+		builder.append("PRIMARY KEY(CLONE_SET_LINK_ID, CODE_FRAGMENT_LINK_ID),");
+		builder.append("FOREIGN KEY(CLONE_SET_LINK_ID) REFERENCES CLONE_SET_LINK(CLONE_SET_LINK_ID),");
+		builder.append("FOREIGN KEY(CODE_FRAGMENT_LINK_ID) REFERENCES CODE_FRAGMENT_LINK(CODE_FRAGMENT_LINK_ID)");
+		builder.append(")");
+
+		return builder.toString();
+	}
+
+	/**
+	 * create indexes on the clone link table
+	 * 
+	 * @throws Exception
+	 */
+	private void createCloneSetLinkFragmentLinkTableIndexes() throws Exception {
 		dbManager
-				.executeUpdate("create index CODE_FRAGMENT_LINK_INDEX_CLONE_SET_LINK on CLONE_SET_LINK(CODE_FRAGMENT_LINK_ID)");
+				.executeUpdate("create index CLONE_SET_LINK_ID_INDEX_CLONE_SET_LINK_FRAGMENT_LINK on CLONE_SET_LINK_FRAGMENT_LINK(CLONE_SET_LINK_ID)");
+		dbManager
+				.executeUpdate("create index CODE_FRAGMENT_LINK_INDEX_CLONE_SET_LINK_FRAGMENT_LINK on CLONE_SET_LINK_FRAGMENT_LINK(CODE_FRAGMENT_LINK_ID)");
+		dbManager
+				.executeUpdate("create index KEY_INDEX_CLONE_SET_LINK_FRAGMENT_LINK on CLONE_SET_LINK_FRAGMENT_LINK(CLONE_SET_LINK_ID, CODE_FRAGMENT_LINK_ID)");
 	}
 
 	/**
@@ -613,16 +682,11 @@ public class DBMaker {
 		final StringBuilder builder = new StringBuilder();
 
 		builder.append("create table CLONE_GENEALOGY(");
-		builder.append("CLONE_GENEALOGY_ID LONG,");
+		builder.append("CLONE_GENEALOGY_ID LONG PRIMARY KEY,");
 		builder.append("START_COMBINED_REVISION_ID LONG,");
 		builder.append("END_COMBINED_REVISION_ID LONG,");
-		builder.append("CLONE_SET_ID LONG,");
-		builder.append("CLONE_SET_LINK_ID LONG,");
-		builder.append("PRIMARY KEY(CLONE_GENEALOGY_ID,CLONE_SET_ID,CLONE_SET_LINK_ID),");
 		builder.append("FOREIGN KEY(START_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
-		builder.append("FOREIGN KEY(END_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
-		builder.append("FOREIGN KEY(CLONE_SET_ID) REFERENCES CLONE_SET(CLONE_SET_ID),");
-		builder.append("FOREIGN KEY(CLONE_SET_LINK_ID) REFERENCES CLONE_SET_LINK(CLONE_SET_LINK_ID)");
+		builder.append("FOREIGN KEY(END_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID)");
 		builder.append(")");
 
 		return builder.toString();
@@ -641,13 +705,73 @@ public class DBMaker {
 		dbManager
 				.executeUpdate("create index END_COMBINED_REVISION_ID_INDEX_CLONE_GENEALOGY on CLONE_GENEALOGY(END_COMBINED_REVISION_ID)");
 		dbManager
-				.executeUpdate("create index CLONE_SET_ID_INDEX_CLONE_GENEALOGY on CLONE_GENEALOGY(CLONE_SET_ID)");
-		dbManager
-				.executeUpdate("create index CLONE_SET_LINK_ID_INDEX_CLONE_GENEALOGY on CLONE_GENEALOGY(CLONE_SET_LINK_ID)");
-		dbManager
 				.executeUpdate("create index START_END_REVISION_ID_INDEX_CLONE_GENEALOGY on CLONE_GENEALOGY(START_COMBINED_REVISION_ID,END_COMBINED_REVISION_ID)");
+	}
+
+	/**
+	 * get the query to create the table for elements in genealogies of clones
+	 * 
+	 * @return
+	 */
+	private String getCloneGenealogyEelementTableQuery() {
+		final StringBuilder builder = new StringBuilder();
+
+		builder.append("create table CLONE_GENEALOGY_ELEMENT(");
+		builder.append("CLONE_GENEALOGY_ID LONG,");
+		builder.append("CLONE_SET_ID LONG,");
+		builder.append("PRIMARY KEY(CLONE_GENEALOGY_ID, CLONE_SET_ID),");
+		builder.append("FOREIGN KEY(CLONE_GENEALOGY_ID) REFERENCES CLONE_GENEALOGY(CLONE_GENEALOGY_ID),");
+		builder.append("FOREIGN KEY(CLONE_SET_ID) REFERENCES CLONE_SET(CLONE_SET_ID)");
+		builder.append(")");
+
+		return builder.toString();
+	}
+
+	/**
+	 * create indexes on the clone genealogy element table
+	 * 
+	 * @throws Exception
+	 */
+	private void createCloneGenealogyElementTableIndexes() throws Exception {
 		dbManager
-				.executeUpdate("create index KEYS_INDEX_CLONE_GENEALOGY on CLONE_GENEALOGY(CLONE_GENEALOGY_ID,CLONE_SET_ID,CLONE_SET_LINK_ID)");
+				.executeUpdate("create index CLONE_GENEALOGY_ID_INDEX_CLONE_GENEALOGY_ELEMENT on CLONE_GENEALOGY_ELEMENT(CLONE_GENEALOGY_ID)");
+		dbManager
+				.executeUpdate("create index CLONE_SET_ID_INDEX_CLONE_GENEALOGY_ELEMENT on CLONE_GENEALOGY_ELEMENT(CLONE_SET_ID)");
+		dbManager
+				.executeUpdate("create index KEY_INDEX_CLONE_GENEALOGY_ELEMENT on CLONE_GENEALOGY_ELEMENT(CLONE_GENEALOGY_ID, CLONE_SET_ID)");
+	}
+
+	/**
+	 * get the query to create the table for links in genealogies of clones
+	 * 
+	 * @return
+	 */
+	private String getCloneGenealogyLinkTableQuery() {
+		final StringBuilder builder = new StringBuilder();
+
+		builder.append("create table CLONE_GENEALOGY_LINK_ELEMENT(");
+		builder.append("CLONE_GENEALOGY_ID LONG,");
+		builder.append("CLONE_SET_LINK_ID LONG,");
+		builder.append("PRIMARY KEY(CLONE_GENEALOGY_ID, CLONE_SET_LINK_ID),");
+		builder.append("FOREIGN KEY(CLONE_GENEALOGY_ID) REFERENCES CLONE_GENEALOGY(CLONE_GENEALOGY_ID),");
+		builder.append("FOREIGN KEY(CLONE_SET_LINK_ID) REFERENCES CLONE_SET_LINK(CLONE_SET_LINK_ID)");
+		builder.append(")");
+
+		return builder.toString();
+	}
+
+	/**
+	 * create indexes on the clone genealogy element table
+	 * 
+	 * @throws Exception
+	 */
+	private void createCloneGenealogyLinkTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("create index CLONE_GENEALOGY_ID_INDEX_CLONE_GENEALOGY_LINK_ELEMENT on CLONE_GENEALOGY_LINK_ELEMENT(CLONE_GENEALOGY_ID)");
+		dbManager
+				.executeUpdate("create index CLONE_SET_LINK_ID_INDEX_CLONE_GENEALOGY_LINK_ELEMENT on CLONE_GENEALOGY_LINK_ELEMENT(CLONE_SET_LINK_ID)");
+		dbManager
+				.executeUpdate("create index KEY_INDEX_CLONE_GENEALOGY_LINK_ELEMENT on CLONE_GENEALOGY_LINK_ELEMENT(CLONE_GENEALOGY_ID, CLONE_SET_LINK_ID)");
 	}
 
 	/**
@@ -659,16 +783,11 @@ public class DBMaker {
 		final StringBuilder builder = new StringBuilder();
 
 		builder.append("create table CODE_FRAGMENT_GENEALOGY(");
-		builder.append("CODE_FRAGMENT_GENEALOGY_ID LONG,");
+		builder.append("CODE_FRAGMENT_GENEALOGY_ID LONG PRIMARY KEY,");
 		builder.append("START_COMBINED_REVISION_ID LONG,");
 		builder.append("END_COMBINED_REVISION_ID LONG,");
-		builder.append("CODE_FRAGMENT_ID LONG,");
-		builder.append("CODE_FRAGMENT_LINK_ID LONG,");
-		builder.append("PRIMARY KEY(CODE_FRAGMENT_GENEALOGY_ID,CODE_FRAGMENT_ID,CODE_FRAGMENT_LINK_ID),");
 		builder.append("FOREIGN KEY(START_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
-		builder.append("FOREIGN KEY(END_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
-		builder.append("FOREIGN KEY(CODE_FRAGMENT_ID) REFERENCES CODE_FRAGMENT(CODE_FRAGMENT_ID),");
-		builder.append("FOREIGN KEY(CODE_FRAGMENT_LINK_ID) REFERENCES CODE_FRAGMENT_LINK(CODE_FRAGMENT_LINK_ID)");
+		builder.append("FOREIGN KEY(END_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID)");
 		builder.append(")");
 
 		return builder.toString();
@@ -687,13 +806,76 @@ public class DBMaker {
 		dbManager
 				.executeUpdate("create index END_COMBINED_REVISION_ID_INDEX_CODE_FRAGMENT_GENEALOGY on CODE_FRAGMENT_GENEALOGY(END_COMBINED_REVISION_ID)");
 		dbManager
-				.executeUpdate("create index CODE_FRAGMENT_ID_INDEX_CODE_FRAGMENT_GENEALOGY on CODE_FRAGMENT_GENEALOGY(CODE_FRAGMENT_ID)");
-		dbManager
-				.executeUpdate("create index CODE_FRAGMENT_LINK_ID_INDEX_CODE_FRAGMENT_GENEALOGY on CODE_FRAGMENT_GENEALOGY(CODE_FRAGMENT_LINK_ID)");
-		dbManager
 				.executeUpdate("create index START_END_REVISION_ID_INDEX_CODE_FRAGMENT_GENEALOGY on CODE_FRAGMENT_GENEALOGY(START_COMBINED_REVISION_ID,END_COMBINED_REVISION_ID)");
+	}
+
+	/**
+	 * get the query to create the table for elements in genealogies of code
+	 * fragments
+	 * 
+	 * @return
+	 */
+	private String getCodeFragmentGenealogyElementTableQuery() {
+		final StringBuilder builder = new StringBuilder();
+
+		builder.append("create table CODE_FRAGMENT_GENEALOGY_ELEMENT(");
+		builder.append("CODE_FRAGMENT_GENEALOGY_ID LONG,");
+		builder.append("CODE_FRAGMENT_ID LONG,");
+		builder.append("PRIMARY KEY(CODE_FRAGMENT_GENEALOGY_ID, CODE_FRAGMENT_ID),");
+		builder.append("FOREIGN KEY(CODE_FRAGMENT_GENEALOGY_ID) REFERENCES CODE_FRAGMENT_GENEALOGY(CODE_FRAGMENT_GENEALOGY_ID),");
+		builder.append("FOREIGN KEY(CODE_FRAGMENT_ID) REFERENCES CODE_FRAGMENT(CODE_FRAGMENT_ID)");
+		builder.append(")");
+
+		return builder.toString();
+	}
+
+	/**
+	 * create indexes on the fragment genealogy table
+	 * 
+	 * @throws Exception
+	 */
+	private void createCodeFragmentGenealogyElementTableIndexes()
+			throws Exception {
 		dbManager
-				.executeUpdate("create index KEYS_INDEX_CODE_FRAGMENT_GENEALOGY on CODE_FRAGMENT_GENEALOGY(CODE_FRAGMENT_GENEALOGY_ID,CODE_FRAGMENT_ID,CODE_FRAGMENT_LINK_ID)");
+				.executeUpdate("create index CODE_FRAGMENT_GENEALOGY_ID_INDEX_CODE_FRAGMENT_GENEALOGY_ELEMENT on CODE_FRAGMENT_GENEALOGY_ELEMENT(CODE_FRAGMENT_GENEALOGY_ID)");
+		dbManager
+				.executeUpdate("create index CODE_FRAGMENT_ID_INDEX_CODE_FRAGMENT_GENEALOGY_ELEMENT on CODE_FRAGMENT_GENEALOGY_ELEMENT(CODE_FRAGMENT_ID)");
+		dbManager
+				.executeUpdate("create index KEY_INDEX_CODE_FRAGMENT_GENEALOGY_ELEMENT on CODE_FRAGMENT_GENEALOGY_ELEMENT(CODE_FRAGMENT_GENEALOGY_ID, CODE_FRAGMENT_ID)");
+	}
+
+	/**
+	 * get the query to create the table for elements in genealogies of code
+	 * fragments
+	 * 
+	 * @return
+	 */
+	private String getCodeFragmentGenealogyLinkTableQuery() {
+		final StringBuilder builder = new StringBuilder();
+
+		builder.append("create table CODE_FRAGMENT_GENEALOGY_LINK_ELEMENT(");
+		builder.append("CODE_FRAGMENT_GENEALOGY_ID LONG,");
+		builder.append("CODE_FRAGMENT_LINK_ID LONG,");
+		builder.append("PRIMARY KEY(CODE_FRAGMENT_GENEALOGY_ID, CODE_FRAGMENT_LINK_ID),");
+		builder.append("FOREIGN KEY(CODE_FRAGMENT_GENEALOGY_ID) REFERENCES CODE_FRAGMENT_GENEALOGY(CODE_FRAGMENT_GENEALOGY_ID),");
+		builder.append("FOREIGN KEY(CODE_FRAGMENT_LINK_ID) REFERENCES CODE_FRAGMENT_LINK(CODE_FRAGMENT_LINK_ID)");
+		builder.append(")");
+
+		return builder.toString();
+	}
+
+	/**
+	 * create indexes on the fragment genealogy table
+	 * 
+	 * @throws Exception
+	 */
+	private void createCodeFragmentGenealogyLinkTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("create index CODE_FRAGMENT_GENEALOGY_ID_INDEX_CODE_FRAGMENT_GENEALOGY_LINK_ELEMENT on CODE_FRAGMENT_GENEALOGY_LINK_ELEMENT(CODE_FRAGMENT_GENEALOGY_ID)");
+		dbManager
+				.executeUpdate("create index CODE_FRAGMENT_LINK_ID_INDEX_CODE_FRAGMENT_GENEALOGY_LINK_ELEMENT on CODE_FRAGMENT_GENEALOGY_LINK_ELEMENT(CODE_FRAGMENT_LINK_ID)");
+		dbManager
+				.executeUpdate("create index KEY_INDEX_CODE_FRAGMENT_GENEALOGY_LINK_ELEMENT on CODE_FRAGMENT_GENEALOGY_LINK_ELEMENT(CODE_FRAGMENT_GENEALOGY_ID, CODE_FRAGMENT_LINK_ID)");
 	}
 
 }

@@ -3,14 +3,14 @@ package jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.SortedMap;
-import java.util.TreeSet;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneGenealogyElementInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneGenealogyInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneGenealogyLinkElementInfo;
 
 /**
  * A class for retrieving clone genealogies
@@ -18,56 +18,43 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneGenealogyInfo;
  * @author k-hotta
  * 
  */
-public class CloneGenealogyRetriever
-		extends
-		AbstractNonuniqueElementRetriever<DBCloneGenealogyInfo, CloneGenealogyRowData> {
+public class CloneGenealogyRetriever extends
+		AbstractUniqueElementRetriever<DBCloneGenealogyInfo> {
+
+	private final CloneGenealogyElementRetriever elementRetriever;
+
+	private final CloneGenealogyLinkElementRetriever linkRetriever;
 
 	public CloneGenealogyRetriever(DBConnectionManager dbManager) {
 		super(dbManager);
+		this.elementRetriever = dbManager.getCloneGenealogyElementRetriever();
+		this.linkRetriever = dbManager.getCloneGenealogyLinkElementRetriever();
 	}
 
 	@Override
-	protected CloneGenealogyRowData makeRowInstance(ResultSet rs)
+	protected DBCloneGenealogyInfo createElement(ResultSet rs)
 			throws SQLException {
 		int column = 0;
 		final long id = rs.getLong(++column);
 		final long startCombinedRevisionId = rs.getLong(++column);
 		final long endCombinedRevisionId = rs.getLong(++column);
-		final long cloneSetId = rs.getLong(++column);
-		final long cloneSetLinkId = rs.getLong(++column);
 
-		return new CloneGenealogyRowData(id, startCombinedRevisionId,
-				endCombinedRevisionId, cloneSetId, cloneSetLinkId);
-	}
-
-	@Override
-	protected DBCloneGenealogyInfo createElement(
-			Collection<CloneGenealogyRowData> rows) {
-		final Set<Long> cloneSetIds = new TreeSet<Long>();
-		final Set<Long> cloneSetLinkIds = new TreeSet<Long>();
-		CloneGenealogyRowData aRow = null;
-
-		for (final CloneGenealogyRowData row : rows) {
-			if (aRow == null) {
-				aRow = row;
-			}
-			cloneSetIds.add(row.getCloneSetId());
-			cloneSetLinkIds.add(row.getCloneSetLinkId());
+		final Map<Long, DBCloneGenealogyElementInfo> elements = elementRetriever
+				.retrieveWithIds(id);
+		final List<Long> elementIds = new ArrayList<Long>();
+		for (final DBCloneGenealogyElementInfo element : elements.values()) {
+			elementIds.add(element.getSubElementId());
 		}
 
-		if (aRow == null) {
-			return null; // here shouldn't be reached
+		final Map<Long, DBCloneGenealogyLinkElementInfo> links = linkRetriever
+				.retrieveWithIds(id);
+		final List<Long> linkIds = new ArrayList<Long>();
+		for (final DBCloneGenealogyLinkElementInfo link : links.values()) {
+			linkIds.add(link.getSubElementId());
 		}
-
-		final long id = aRow.getId();
-		final long startCombinedRevisionId = aRow.getStartCombinedRevisionId();
-		final long endCombinedRevisionId = aRow.getEndCombinedRevisionId();
-		final List<Long> listOfCloneSetIds = new ArrayList<Long>(cloneSetIds);
-		final List<Long> listOfCloneSetLinkIds = new ArrayList<Long>(
-				cloneSetLinkIds);
 
 		return new DBCloneGenealogyInfo(id, startCombinedRevisionId,
-				endCombinedRevisionId, listOfCloneSetIds, listOfCloneSetLinkIds);
+				endCombinedRevisionId, elementIds, linkIds);
 	}
 
 	protected String getStartRevisionIdColumnName() {

@@ -2,9 +2,14 @@ package jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetLinkFragmentLinkInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetLinkInfo;
 
 /**
@@ -14,7 +19,23 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetLinkInfo;
  * 
  */
 public class CloneSetLinkRegisterer extends
-		AbstractNonuniqueElementRegisterer<DBCloneSetLinkInfo> {
+		AbstractWithSubTableElementRegisterer<DBCloneSetLinkInfo> {
+
+	private static final String subElementName = DBCloneSetLinkFragmentLinkInfo.class
+			.getSimpleName();
+
+	private static List<String> subElements;
+
+	private static Map<String, String> preparedStatementQueries;
+
+	static {
+		subElements = new ArrayList<String>();
+		subElements.add(subElementName);
+
+		preparedStatementQueries = new HashMap<String, String>();
+		preparedStatementQueries.put(subElementName,
+				"insert into CLONE_SET_LINK_FRAGMENT_LINK values(?,?)");
+	}
 
 	/**
 	 * the constructor
@@ -24,51 +45,50 @@ public class CloneSetLinkRegisterer extends
 	 */
 	public CloneSetLinkRegisterer(DBConnectionManager dbManager,
 			int maxBatchCount) {
-		super(dbManager, maxBatchCount);
+		super(dbManager, maxBatchCount, subElements, preparedStatementQueries);
 	}
 
 	@Override
-	protected String createPreparedStatementQueue() {
-		return "insert into CLONE_SET_LINK values(?,?,?,?,?,?)";
+	protected String createMainPreparedStatementQuery() {
+		return "insert into CLONE_SET_LINK values(?,?,?,?,?)";
 	}
 
 	@Override
-	protected int makePreparedStatements(PreparedStatement pstmt,
-			DBCloneSetLinkInfo element) throws SQLException {
+	protected void fillMainElementPreparedStatement(
+			PreparedStatement mainPstmt, DBCloneSetLinkInfo element)
+			throws SQLException {
+		int column = 0;
+		mainPstmt.setLong(++column, element.getId());
+		mainPstmt.setLong(++column, element.getBeforeElementId());
+		mainPstmt.setLong(++column, element.getAfterElementId());
+		mainPstmt.setLong(++column, element.getBeforeCombinedRevisionId());
+		mainPstmt.setLong(++column, element.getAfterCombinedRevisionId());
+
+		mainPstmt.addBatch();
+	}
+
+	@Override
+	protected Map<String, Integer> fillSubElementPreparedStatements(
+			DBCloneSetLinkInfo element,
+			Map<String, PreparedStatement> subPstmts,
+			Map<String, Integer> currentCount) throws SQLException {
 		final long elementId = element.getId();
-		final long beforeElementId = element.getBeforeElementId();
-		final long afterElementId = element.getAfterElementId();
-		final long beforeCombinedRevisionId = element
-				.getBeforeCombinedRevisionId();
-		final long afterCombinedRevisionId = element
-				.getAfterCombinedRevisionId();
 		final Collection<Long> fragmentLinks = element.getCodeFragmentLinks();
 
-		if (fragmentLinks.isEmpty()) {
+		final PreparedStatement pstmt = subPstmts
+				.get(DBCloneSetLinkFragmentLinkInfo.class.getSimpleName());
+
+		for (final long fragmentLink : fragmentLinks) {
 			int column = 0;
 			pstmt.setLong(++column, elementId);
-			pstmt.setLong(++column, beforeElementId);
-			pstmt.setLong(++column, afterElementId);
-			pstmt.setLong(++column, beforeCombinedRevisionId);
-			pstmt.setLong(++column, afterCombinedRevisionId);
-			pstmt.setLong(++column, (long) -1);
+			pstmt.setLong(++column, fragmentLink);
 
 			pstmt.addBatch();
-		} else {
-			for (final long fragmentLink : fragmentLinks) {
-				int column = 0;
-				pstmt.setLong(++column, elementId);
-				pstmt.setLong(++column, beforeElementId);
-				pstmt.setLong(++column, afterElementId);
-				pstmt.setLong(++column, beforeCombinedRevisionId);
-				pstmt.setLong(++column, afterCombinedRevisionId);
-				pstmt.setLong(++column, fragmentLink);
-
-				pstmt.addBatch();
-			}
 		}
 
-		return fragmentLinks.size();
-	}
+		final int beforeCount = currentCount.get(subElementName);
+		currentCount.put(subElementName, beforeCount + fragmentLinks.size());
 
+		return currentCount;
+	}
 }

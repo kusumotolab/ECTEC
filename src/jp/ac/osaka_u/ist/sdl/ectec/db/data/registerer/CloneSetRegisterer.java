@@ -27,12 +27,12 @@ public class CloneSetRegisterer extends
 	}
 
 	@Override
-	protected String createPreparedStatementQueue() {
+	protected String createPreparedStatementQuery() {
 		return "insert into CLONE_SET values (?,?,?)";
 	}
 
 	@Override
-	protected int makePreparedStatements(PreparedStatement pstmt,
+	protected int fillPreparedStatement(PreparedStatement pstmt,
 			DBCloneSetInfo element) throws SQLException {
 		final long elementId = element.getId();
 		final long ownerCombinedRevisionId = element.getCombinedRevisionId();
