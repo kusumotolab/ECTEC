@@ -38,7 +38,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentLinkRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.FileRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.RevisionRetriever;
-import jp.ac.osaka_u.ist.sdl.ectec.vcs.IRepositoryManager;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.RepositoryManagerManager;
 
 /**
  * A class for concretizing elements
@@ -67,7 +67,7 @@ public class Concretizer {
 	/**
 	 * the manager of repository
 	 */
-	private final IRepositoryManager repositoryManager;
+	private final RepositoryManagerManager repositoryManagerManager;
 
 	/**
 	 * true if a code fragment corresponds to a block
@@ -77,12 +77,12 @@ public class Concretizer {
 	public Concretizer(final DataManagerManager dataManagerManager,
 			final DBDataManagerManager dbDataManagerManager,
 			final DBConnectionManager dbManager,
-			final IRepositoryManager repositoryManager,
+			final RepositoryManagerManager repositoryManagerManager,
 			final boolean isBlockMode) {
 		this.dataManagerManager = dataManagerManager;
 		this.dbDataManagerManager = dbDataManagerManager;
 		this.dbManager = dbManager;
-		this.repositoryManager = repositoryManager;
+		this.repositoryManagerManager = repositoryManagerManager;
 		this.isBlockMode = isBlockMode;
 	}
 
@@ -394,7 +394,8 @@ public class Concretizer {
 		final Map<Long, DBCodeFragmentLinkInfo> dbFragmentLinks = getDbFragmentLinks(dbCloneLinks);
 		final Map<Long, DBCrdInfo> dbCrds = getDbCrds(dbFragments);
 		final Map<Long, DBFileInfo> dbFiles = getDbFiles(dbFragments);
-		final Map<Long, DBRevisionInfo> dbRevisions = getDbRevisions(dbClones, dbFiles);
+		final Map<Long, DBRevisionInfo> dbRevisions = getDbRevisions(dbClones,
+				dbFiles);
 
 		// concretize revisions
 		final Map<Long, RevisionInfo> concretizedRevisions = getConcretizedRevisions(dbRevisions);
@@ -576,8 +577,10 @@ public class Concretizer {
 			}
 		}
 		for (final Map.Entry<Long, DBFileInfo> entry : dbFiles.entrySet()) {
-			final long startRevisionId = entry.getValue().getStartCombinedRevisionId();
-			final long endRevisionId = entry.getValue().getCombinedEndRevisionId();
+			final long startRevisionId = entry.getValue()
+					.getStartCombinedRevisionId();
+			final long endRevisionId = entry.getValue()
+					.getCombinedEndRevisionId();
 			if (!dbRevisions.containsKey(startRevisionId)) {
 				dbRevisions.put(startRevisionId, dbDataManagerManager
 						.getDbRevisionManager().getElement(startRevisionId));
@@ -633,7 +636,7 @@ public class Concretizer {
 		final Map<Long, FileInfo> concretizedFiles = new TreeMap<Long, FileInfo>();
 
 		final FileInfoConcretizer fileConcretizer = new FileInfoConcretizer(
-				repositoryManager);
+				repositoryManagerManager);
 		for (final Map.Entry<Long, DBFileInfo> entry : dbFiles.entrySet()) {
 			final long fileId = entry.getKey();
 			if (fileManager.contains(fileId)) {

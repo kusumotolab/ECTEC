@@ -44,7 +44,12 @@ public class CodeFragmentGenealogyConcretizer {
 			fragmentLinksList.add(fragmentLinks.get(fragmentLinkId));
 		}
 
-		final int changeCount = dbGenealogy.getChangedCount();
+		int changeCount = 0;
+		for (final CodeFragmentLinkInfo fragmentLink : fragmentLinksList) {
+			if (fragmentLink.isChanged()) {
+				changeCount++;
+			}
+		}
 
 		return new CodeFragmentGenealogyInfo(id, startRevision, endRevision,
 				fragmentsList, fragmentLinksList, changeCount);
