@@ -8,7 +8,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.settings;
  */
 public enum VersionControlSystem {
 
-	SVN("svn"), OTHER("n/a");
+	SVN("svn"), GIT("git"), OTHER("n/a");
 
 	private final String str;
 
@@ -20,6 +20,8 @@ public enum VersionControlSystem {
 			final String str) {
 		if (str.equalsIgnoreCase(SVN.getStr())) {
 			return SVN;
+		} else if (str.equalsIgnoreCase(GIT.getStr())) {
+			return GIT;
 		} else {
 			return OTHER;
 		}
