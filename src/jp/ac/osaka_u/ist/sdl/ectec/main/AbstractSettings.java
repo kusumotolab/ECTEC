@@ -51,6 +51,11 @@ public abstract class AbstractSettings implements PropertiesKeys {
 	 */
 	private int maxBatchCount;
 
+	/**
+	 * the header of id
+	 */
+	private short headerOfId;
+
 	public final String getPropertyFilePath() {
 		return this.propertyFilePath;
 	}
@@ -65,6 +70,10 @@ public abstract class AbstractSettings implements PropertiesKeys {
 
 	public final int getMaxBatchCount() {
 		return this.maxBatchCount;
+	}
+
+	public final short getHeaderOfId() {
+		return this.headerOfId;
 	}
 
 	/**
@@ -126,6 +135,16 @@ public abstract class AbstractSettings implements PropertiesKeys {
 		logger.info("the maximum number of batched statements: "
 				+ maxBatchCount);
 
+		if (cmd.hasOption("id")) {
+			headerOfId = Short.parseShort(cmd.getOptionValue("id"));
+			if (headerOfId < 0) {
+				throw new IllegalSettingValueException(
+						"the header of id must not be a negative value");
+			}
+		} else {
+			headerOfId = -1;
+		}
+
 		// initialize other settings
 		initializeParticularSettings(cmd, propReader);
 	}
@@ -167,6 +186,13 @@ public abstract class AbstractSettings implements PropertiesKeys {
 			mb.setArgs(1);
 			mb.setRequired(false);
 			options.addOption(mb);
+		}
+
+		{
+			final Option id = new Option("id", "idhead", true, "header of id");
+			id.setArgs(1);
+			id.setRequired(false);
+			options.addOption(id);
 		}
 
 		return addParticularOptions(options);

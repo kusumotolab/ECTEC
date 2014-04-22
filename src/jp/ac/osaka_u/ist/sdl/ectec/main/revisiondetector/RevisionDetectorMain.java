@@ -67,7 +67,7 @@ public class RevisionDetectorMain {
 			postprocess();
 
 			logger.info("operations have finished.");
-			
+
 		} catch (Exception e) {
 			eLogger.fatal("operations failed.\n" + e.toString());
 		}
@@ -99,8 +99,8 @@ public class RevisionDetectorMain {
 		dbManager = new DBConnectionManager(settings.getDbPath(),
 				settings.getMaxBatchCount());
 		logger.info("connected to the db");
-		
-		dbManager.initializeElementCounters();
+
+		dbManager.initializeElementCounters(settings.getHeaderOfId());
 		logger.info("initialized counters of elements");
 
 		// initialize the manager of repository managers

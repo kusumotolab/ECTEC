@@ -19,6 +19,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRepositoryInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.IDManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CRDRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CloneGenealogyRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CloneSetLinkRegisterer;
@@ -137,7 +138,7 @@ public final class DBConnectionManager {
 		Class.forName("org.sqlite.JDBC");
 		this.connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
 		this.connection.setAutoCommit(false);
-		
+
 		this.cloneGenealogyElementRetriever = new CloneGenealogyElementRetriever(
 				this);
 		this.cloneGenealogyLinkElementRetriever = new CloneGenealogyLinkElementRetriever(
@@ -148,7 +149,7 @@ public final class DBConnectionManager {
 				this);
 		this.fragmentGenealogyLinkElementRetriever = new CodeFragmentGenealogyLinkElementRetriever(
 				this);
-		
+
 		this.repositoryRegisterer = new RepositoryRegisterer(this,
 				maxBatchCount);
 		this.revisionRegisterer = new RevisionRegisterer(this, maxBatchCount);
@@ -393,7 +394,15 @@ public final class DBConnectionManager {
 		stmt.close();
 	}
 
-	public void initializeElementCounters() throws Exception {
+	public void initializeElementCounters(final short header) throws Exception {
+		if (header < 0) {
+			initializeElementCountersWithMaximumIds();
+		} else {
+			initializeElementCountersWithHeader(header);
+		}
+	}
+
+	public void initializeElementCountersWithMaximumIds() throws Exception {
 		final long maxRepository = repositoryRetriever.getMaximumId();
 		DBRepositoryInfo.resetCount(maxRepository);
 
@@ -434,6 +443,24 @@ public final class DBConnectionManager {
 		final long maxFragmentGenealogy = fragmentGenealogyRetriever
 				.getMaximumId();
 		DBCodeFragmentGenealogyInfo.resetCount(maxFragmentGenealogy);
+	}
+
+	public void initializeElementCountersWithHeader(final short header) {
+		final long minimumId = IDManager.issuanceMinimumId(header);
+
+		DBRepositoryInfo.resetCount(minimumId);
+		DBRevisionInfo.resetCount(minimumId);
+		DBCommitInfo.resetCount(minimumId);
+		DBCombinedRevisionInfo.resetCount(minimumId);
+		DBCombinedCommitInfo.resetCount(minimumId);
+		DBFileInfo.resetCount(minimumId);
+		DBCrdInfo.resetCount(minimumId);
+		DBCodeFragmentInfo.resetCount(minimumId);
+		DBCloneSetInfo.resetCount(minimumId);
+		DBCodeFragmentLinkInfo.resetCount(minimumId);
+		DBCloneSetLinkInfo.resetCount(minimumId);
+		DBCloneGenealogyInfo.resetCount(minimumId);
+		DBCodeFragmentGenealogyInfo.resetCount(minimumId);
 	}
 
 }

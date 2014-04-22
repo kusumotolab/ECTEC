@@ -92,7 +92,7 @@ public class FileDetectorMain {
 				settings.getMaxBatchCount());
 		logger.info("connected to the db");
 
-		dbManager.initializeElementCounters();
+		dbManager.initializeElementCounters(settings.getHeaderOfId());
 		logger.info("initialized counters of elements");
 
 		// initialize the manager of repository managers

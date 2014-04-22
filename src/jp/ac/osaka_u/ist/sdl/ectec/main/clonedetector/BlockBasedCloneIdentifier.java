@@ -74,8 +74,8 @@ public class BlockBasedCloneIdentifier {
 				.values().toArray(new DBCombinedRevisionInfo[0]);
 
 		// the minimum number of thread is 2
-		final int tailoredThreadsCount = Math.min(combinedRevisions.size(),
-				Math.max(threadsCount, 2));
+		final int tailoredThreadsCount = Math.max(
+				Math.min(combinedRevisions.size(), threadsCount), 2);
 
 		final ConcurrentMap<Long, DBCloneSetInfo> detectedClones = new ConcurrentHashMap<Long, DBCloneSetInfo>();
 		final AtomicInteger index = new AtomicInteger(0);

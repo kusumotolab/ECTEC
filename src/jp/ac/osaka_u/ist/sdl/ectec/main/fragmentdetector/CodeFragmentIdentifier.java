@@ -93,7 +93,8 @@ public class CodeFragmentIdentifier {
 			final Collection<DBFileInfo> targetFiles,
 			final ConcurrentMap<Long, DBRevisionInfo> originalRevisions,
 			final ConcurrentMap<Long, DBCombinedRevisionInfo> combinedRevisions,
-			final int threadsCount, final CRDRegisterer crdRegisterer,
+			final int threadsCount,
+			final CRDRegisterer crdRegisterer,
 			final CodeFragmentRegisterer fragmentRegisterer,
 			final int maxElementsCount,
 			final ConcurrentMap<Long, AbstractRepositoryManager> repositoryManagers,
@@ -117,8 +118,8 @@ public class CodeFragmentIdentifier {
 		final DBFileInfo[] filesArray = targetFiles.toArray(new DBFileInfo[0]);
 
 		// the minimum number of thread is 2
-		final int tailoredThreadsCount = Math.min(targetFiles.size(),
-				Math.max(threadsCount, 2));
+		final int tailoredThreadsCount = Math.max(
+				Math.min(targetFiles.size(), threadsCount), 2);
 
 		final Thread[] threads = new Thread[tailoredThreadsCount - 1];
 

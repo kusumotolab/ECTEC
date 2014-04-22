@@ -81,7 +81,7 @@ public class CombinerMain {
 				settings.getMaxBatchCount());
 		logger.info("connected to the database");
 
-		dbManager.initializeElementCounters();
+		dbManager.initializeElementCounters(settings.getHeaderOfId());
 		logger.info("initialized counters of elements");
 	}
 

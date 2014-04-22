@@ -148,8 +148,8 @@ public class CodeFragmentLinkIdentifier {
 		final Map<Long, Collection<Long>> combinedRevisionAndRelatedCombinedCommits = detectCombinedRevisionAndRelatedCombinedCommits();
 
 		// the minimum number of thread is 2
-		final int tailoredThreadsCount = Math.min(combinedCommits.size(),
-				Math.max(threadsCount, 2));
+		final int tailoredThreadsCount = Math.max(
+				Math.min(combinedCommits.size(), threadsCount), 2);
 
 		final ConcurrentMap<Long, DBCodeFragmentLinkInfo> detectedLinks = new ConcurrentHashMap<Long, DBCodeFragmentLinkInfo>();
 		final ConcurrentMap<Long, Map<Long, DBCodeFragmentInfo>> codeFragments = new ConcurrentHashMap<Long, Map<Long, DBCodeFragmentInfo>>();

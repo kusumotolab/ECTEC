@@ -73,8 +73,8 @@ public class CloneSetLinkIdentifier {
 				.values().toArray(new DBCombinedCommitInfo[0]);
 
 		// the minimum number of thread is 2
-		final int tailoredThreadsCount = Math.min(combinedCommits.size(),
-				Math.max(threadsCount, 2));
+		final int tailoredThreadsCount = Math.max(
+				Math.min(combinedCommits.size(), threadsCount), 2);
 
 		final Map<Long, Collection<Long>> combinedRevisionAndRelatedCombinedCommits = detectCombinedRevisionAndRelatedCombinedCommits();
 

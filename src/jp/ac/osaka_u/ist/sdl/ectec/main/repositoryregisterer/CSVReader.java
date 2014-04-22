@@ -38,7 +38,7 @@ public class CSVReader {
 			while ((line = br.readLine()) != null) {
 				final String[] splitLine = line.split(",");
 
-				if (splitLine.length != 6) {
+				if (splitLine.length < 4 || splitLine.length > 6) {
 					throw new IllegalFileFormatException(
 							"the given file has an illegal format at + " + line
 									+ ".");
@@ -49,9 +49,16 @@ public class CSVReader {
 					final String name = splitLine[1];
 					final String url = splitLine[2];
 					final VersionControlSystem managingVcs = VersionControlSystem
-							.getCorrespondingVersionControlSystem(splitLine[3]);
-					final String userName = splitLine[4];
-					final String passwd = splitLine[5];
+							.getCorrespondingVersionControlSystem(splitLine[3]
+									.trim());
+					final String userNameStr = (splitLine.length > 4) ? splitLine[4]
+							.trim() : "";
+					final String userName = (userNameStr.isEmpty()) ? null
+							: userNameStr;
+					final String passwdStr = (splitLine.length > 5) ? splitLine[5]
+							.trim() : "";
+					final String passwd = (passwdStr.isEmpty()) ? null
+							: passwdStr;
 
 					if (managingVcs == null) {
 						throw new IllegalStateException(splitLine[3]

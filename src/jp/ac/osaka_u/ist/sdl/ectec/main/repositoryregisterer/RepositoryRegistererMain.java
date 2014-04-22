@@ -48,7 +48,7 @@ public class RepositoryRegistererMain {
 
 			// post processing
 			postprocess();
-			
+
 			logger.info("operations have finished.");
 
 		} catch (Exception e) {
@@ -81,8 +81,8 @@ public class RepositoryRegistererMain {
 		dbManager = new DBConnectionManager(settings.getDbPath(),
 				settings.getMaxBatchCount());
 		logger.info("connected to the database");
-		
-		dbManager.initializeElementCounters();
+
+		dbManager.initializeElementCounters(settings.getHeaderOfId());
 		logger.info("initialized counters of elements");
 	}
 

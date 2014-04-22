@@ -28,8 +28,8 @@ public class RepositoryRetriever extends
 		final String url = rs.getString(++column);
 		final VersionControlSystem managingVcs = VersionControlSystem
 				.getCorrespondingVersionControlSystem(rs.getString(++column));
-		final String userName = rs.getString(++column);
-		final String passwd = rs.getString(++column);
+		String userName = rs.getString(++column);
+		String passwd = rs.getString(++column);
 
 		return new DBRepositoryInfo(id, name, url, managingVcs, userName,
 				passwd);

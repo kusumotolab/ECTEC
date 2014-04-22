@@ -75,7 +75,7 @@ public class CodeFragmentLinkDetectorMain {
 				settings.getMaxBatchCount());
 		logger.info("connected to the db");
 
-		dbManager.initializeElementCounters();
+		dbManager.initializeElementCounters(settings.getHeaderOfId());
 		logger.info("initialized counters of elements");
 	}
 
