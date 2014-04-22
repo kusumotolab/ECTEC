@@ -16,7 +16,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.CodeFragmentRegisterer;
 import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.hash.IHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.normalizer.NormalizerCreator;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.AnalyzeGranularity;
-import jp.ac.osaka_u.ist.sdl.ectec.vcs.IRepositoryManager;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.AbstractRepositoryManager;
 
 import org.apache.log4j.Logger;
 
@@ -72,7 +72,7 @@ public class CodeFragmentIdentifier {
 	/**
 	 * the repository managers
 	 */
-	private final ConcurrentMap<Long, IRepositoryManager> repositoryManagers;
+	private final ConcurrentMap<Long, AbstractRepositoryManager> repositoryManagers;
 
 	/**
 	 * the granularity of the analysis
@@ -96,7 +96,7 @@ public class CodeFragmentIdentifier {
 			final int threadsCount, final CRDRegisterer crdRegisterer,
 			final CodeFragmentRegisterer fragmentRegisterer,
 			final int maxElementsCount,
-			final ConcurrentMap<Long, IRepositoryManager> repositoryManagers,
+			final ConcurrentMap<Long, AbstractRepositoryManager> repositoryManagers,
 			final AnalyzeGranularity granularity,
 			final NormalizerCreator blockAnalyzerCreator,
 			final IHashCalculator hashCalculator) {

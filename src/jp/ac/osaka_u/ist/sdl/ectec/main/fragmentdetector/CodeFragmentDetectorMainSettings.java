@@ -10,7 +10,6 @@ import jp.ac.osaka_u.ist.sdl.ectec.main.IllegalSettingValueException;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.AnalyzeGranularity;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.IDStringReader;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.StringNormalizeMode;
-import jp.ac.osaka_u.ist.sdl.ectec.settings.VersionControlSystem;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
@@ -32,11 +31,6 @@ public class CodeFragmentDetectorMainSettings extends AbstractSettings {
 	 * the mode to calculate hash values for clone detection
 	 */
 	private StringNormalizeMode cloneHashMode;
-
-	/**
-	 * the type of the version control system
-	 */
-	private VersionControlSystem vcs;
 
 	/**
 	 * get the list of file ids
@@ -63,15 +57,6 @@ public class CodeFragmentDetectorMainSettings extends AbstractSettings {
 	 */
 	public final StringNormalizeMode getCloneHashMode() {
 		return this.cloneHashMode;
-	}
-
-	/**
-	 * get the type of the version control system
-	 * 
-	 * @return
-	 */
-	public final VersionControlSystem getVcs() {
-		return this.vcs;
 	}
 
 	/**
@@ -103,14 +88,6 @@ public class CodeFragmentDetectorMainSettings extends AbstractSettings {
 			ch.setArgs(1);
 			ch.setRequired(false);
 			options.addOption(ch);
-		}
-
-		{
-			final Option vc = new Option("vcs", "version-control-system", true,
-					"version control system");
-			vc.setArgs(1);
-			vc.setRequired(false);
-			options.addOption(vc);
 		}
 
 		return options;
@@ -158,15 +135,5 @@ public class CodeFragmentDetectorMainSettings extends AbstractSettings {
 		}
 		logger.info("normalize mode for clone detection: "
 				+ cloneHashMode.toString());
-
-		final String vcsStr = (cmd.hasOption("vcs")) ? cmd
-				.getOptionValue("vcs") : propReader
-				.getProperty(VERSION_CONTROL_SYSTEM);
-		vcs = VersionControlSystem.getCorrespondingVersionControlSystem(vcsStr);
-		if (vcs == VersionControlSystem.OTHER) {
-			throw new IllegalSettingValueException(
-					"unknown version control system: " + vcsStr);
-		}
-		logger.info("the version control system: " + vcs.getStr());
 	}
 }

@@ -9,7 +9,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRepositoryInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.main.IllegalStateException;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
-import jp.ac.osaka_u.ist.sdl.ectec.vcs.IRepositoryManager;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.AbstractRepositoryManager;
 import jp.ac.osaka_u.ist.sdl.ectec.vcs.ITargetRevisionDetector;
 import jp.ac.osaka_u.ist.sdl.ectec.vcs.RepositoryManagerManager;
 
@@ -92,7 +92,7 @@ public class RevisionDetectThread implements Runnable {
 					+ "] processing the repository of " + repository.getName()
 					+ " (ID = " + repository.getId() + ")");
 			try {
-				final IRepositoryManager repositoryManager = repositoryManagerManager
+				final AbstractRepositoryManager repositoryManager = repositoryManagerManager
 						.getRepositoryManager(repository.getId());
 				if (repositoryManager == null) {
 					throw new IllegalStateException(
@@ -101,7 +101,7 @@ public class RevisionDetectThread implements Runnable {
 				}
 
 				final ITargetRevisionDetector detector = repositoryManager
-						.getTargetRevisionDetector();
+						.createTargetRevisionDetector();
 				detector.detect(language);
 
 				revisions.putAll(detector.getTargetRevisions());

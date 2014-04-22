@@ -13,7 +13,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.hash.IHashCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.normalizer.NormalizerCreator;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.AnalyzeGranularity;
-import jp.ac.osaka_u.ist.sdl.ectec.vcs.IRepositoryManager;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.AbstractRepositoryManager;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -60,7 +60,7 @@ public class CodeFragmentDetectingThread implements Runnable {
 	/**
 	 * the repository managers
 	 */
-	private final ConcurrentMap<Long, IRepositoryManager> repositoryManagers;
+	private final ConcurrentMap<Long, AbstractRepositoryManager> repositoryManagers;
 
 	/**
 	 * a map having target revisions
@@ -92,7 +92,7 @@ public class CodeFragmentDetectingThread implements Runnable {
 			final ConcurrentMap<Long, DBCodeFragmentInfo> detectedFragments,
 			final DBFileInfo[] targetFiles,
 			final AtomicInteger index,
-			final ConcurrentMap<Long, IRepositoryManager> repositoryManagers,
+			final ConcurrentMap<Long, AbstractRepositoryManager> repositoryManagers,
 			final ConcurrentMap<Long, DBRevisionInfo> originalRevisions,
 			final ConcurrentMap<Long, DBCombinedRevisionInfo> combinedRevisions,
 			final AnalyzeGranularity granularity,
@@ -127,7 +127,7 @@ public class CodeFragmentDetectingThread implements Runnable {
 			final DBCombinedRevisionInfo startCombinedRevision = combinedRevisions
 					.get(targetFile.getStartCombinedRevisionId());
 			try {
-				final IRepositoryManager repositoryManager = repositoryManagers
+				final AbstractRepositoryManager repositoryManager = repositoryManagers
 						.get(repositoryId);
 
 				if (repositoryManager == null) {

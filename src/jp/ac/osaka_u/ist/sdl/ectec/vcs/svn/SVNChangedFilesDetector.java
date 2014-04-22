@@ -43,7 +43,8 @@ public class SVNChangedFilesDetector implements IChangedFilesDetector {
 		// a special treat for the initial commit
 		if (commit.getBeforeRevisionId() == -1) {
 			final Map<String, Character> result = new HashMap<String, Character>();
-			final List<String> allFiles = manager.getListOfSourceFiles(revision, language);
+			final List<String> allFiles = manager.getListOfSourceFiles(
+					revision, language);
 			for (final String file : allFiles) {
 				result.put(file, 'A');
 				System.out.println(file);
@@ -57,8 +58,6 @@ public class SVNChangedFilesDetector implements IChangedFilesDetector {
 
 		final SVNRepository repository = manager.getRepository();
 
-		final String additionalUrl = manager.getAdditionalUrl();
-
 		repository.log(null, revision, revision, true, false,
 				new ISVNLogEntryHandler() {
 					public void handleLogEntry(SVNLogEntry logEntry)
@@ -69,13 +68,9 @@ public class SVNChangedFilesDetector implements IChangedFilesDetector {
 
 							// in the case that source files are updated
 							if (language.isTarget(entry.getKey())) {
-								if (additionalUrl == null
-										|| entry.getKey().substring(1)
-												.startsWith(additionalUrl)) {
-									result.put(entry.getKey().substring(1),
-											entry.getValue().getType());
-									continue;
-								}
+								result.put(entry.getKey().substring(1), entry
+										.getValue().getType());
+								continue;
 							}
 
 							// in the case that directories are deleted

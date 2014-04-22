@@ -6,7 +6,6 @@ import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRepositoryInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.main.IllegalStateException;
-import jp.ac.osaka_u.ist.sdl.ectec.settings.VersionControlSystem;
 import jp.ac.osaka_u.ist.sdl.ectec.vcs.RepositoryManagerManager;
 
 import org.apache.log4j.Logger;
@@ -111,8 +110,6 @@ public class CodeFragmentDetectorMain {
 		logger.info(registeredRepositories.size()
 				+ " repositories were retrieved.");
 
-		final VersionControlSystem vcs = settings.getVcs();
-
 		for (final Map.Entry<Long, DBRepositoryInfo> entry : registeredRepositories
 				.entrySet()) {
 			final DBRepositoryInfo repository = entry.getValue();
@@ -120,7 +117,7 @@ public class CodeFragmentDetectorMain {
 					+ repository.getName() + " - " + repository.getUrl());
 
 			try {
-				repositoryManagerManager.addRepositoryManager(repository, vcs);
+				repositoryManagerManager.addRepositoryManager(repository);
 			} catch (Exception e) {
 				eLogger.warn(e.toString());
 			}

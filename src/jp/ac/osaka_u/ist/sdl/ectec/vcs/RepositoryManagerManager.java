@@ -27,10 +27,10 @@ public class RepositoryManagerManager {
 	/**
 	 * the repository manager
 	 */
-	private final ConcurrentMap<Long, IRepositoryManager> repositoryManagers;
+	private final ConcurrentMap<Long, AbstractRepositoryManager> repositoryManagers;
 
 	public RepositoryManagerManager() {
-		this.repositoryManagers = new ConcurrentHashMap<Long, IRepositoryManager>();
+		this.repositoryManagers = new ConcurrentHashMap<Long, AbstractRepositoryManager>();
 	}
 
 	/**
@@ -40,10 +40,11 @@ public class RepositoryManagerManager {
 	 * @param vcs
 	 * @throws Exception
 	 */
-	public void addRepositoryManager(final DBRepositoryInfo repository,
-			final VersionControlSystem vcs) throws Exception {
-		addRepositoryManager(repository.getId(), repository.getUrl(), null,
-				null, null, repository.getName(), vcs);
+	public void addRepositoryManager(final DBRepositoryInfo repository)
+			throws Exception {
+		addRepositoryManager(repository.getId(), repository.getUrl(),
+				repository.getUserName(), repository.getPasswd(),
+				repository.getName(), repository.getManagingVcs());
 	}
 
 	/**
@@ -59,14 +60,14 @@ public class RepositoryManagerManager {
 	 */
 	public void addRepositoryManager(final long id, final String url,
 			final String userName, final String passwd,
-			final String additionalUrl, final String repositoryName,
-			final VersionControlSystem vcs) throws Exception {
-		IRepositoryManager repositoryManager = null;
+			final String repositoryName, final VersionControlSystem vcs)
+			throws Exception {
+		AbstractRepositoryManager repositoryManager = null;
 
 		switch (vcs) {
 		case SVN:
 			repositoryManager = new SVNRepositoryManager(url, userName, passwd,
-					additionalUrl, repositoryName, id);
+					repositoryName, id);
 			break;
 		default:
 			break;
@@ -87,7 +88,7 @@ public class RepositoryManagerManager {
 	 * @param id
 	 * @return
 	 */
-	public IRepositoryManager getRepositoryManager(final long id) {
+	public AbstractRepositoryManager getRepositoryManager(final long id) {
 		return repositoryManagers.get(id);
 	}
 
@@ -96,7 +97,7 @@ public class RepositoryManagerManager {
 	 * 
 	 * @return
 	 */
-	public final ConcurrentMap<Long, IRepositoryManager> getRepositoryManagers() {
+	public final ConcurrentMap<Long, AbstractRepositoryManager> getRepositoryManagers() {
 		return repositoryManagers;
 	}
 

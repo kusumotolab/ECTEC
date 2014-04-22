@@ -10,8 +10,8 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCombinedCommitInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.main.IllegalStateException;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.AbstractRepositoryManager;
 import jp.ac.osaka_u.ist.sdl.ectec.vcs.IChangedFilesDetector;
-import jp.ac.osaka_u.ist.sdl.ectec.vcs.IRepositoryManager;
 import jp.ac.osaka_u.ist.sdl.ectec.vcs.RepositoryManagerManager;
 
 import org.apache.log4j.Logger;
@@ -82,10 +82,10 @@ public class FileDetector {
 
 		logger.info("creating changed files detectors ... ");
 		final ConcurrentMap<Long, IChangedFilesDetector> changedFilesDetectors = new ConcurrentHashMap<Long, IChangedFilesDetector>();
-		final ConcurrentMap<Long, IRepositoryManager> repositoryManagers = repositoryManagerManager
+		final ConcurrentMap<Long, AbstractRepositoryManager> repositoryManagers = repositoryManagerManager
 				.getRepositoryManagers();
 
-		for (final Map.Entry<Long, IRepositoryManager> entry : repositoryManagers
+		for (final Map.Entry<Long, AbstractRepositoryManager> entry : repositoryManagers
 				.entrySet()) {
 			changedFilesDetectors.put(entry.getKey(), entry.getValue()
 					.createChangedFilesDetector());

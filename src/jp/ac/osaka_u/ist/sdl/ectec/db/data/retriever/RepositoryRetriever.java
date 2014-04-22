@@ -5,6 +5,7 @@ import java.sql.SQLException;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRepositoryInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.settings.VersionControlSystem;
 
 /**
  * A class for retrieving repositories
@@ -25,8 +26,13 @@ public class RepositoryRetriever extends
 		final long id = rs.getLong(++column);
 		final String name = rs.getString(++column);
 		final String url = rs.getString(++column);
+		final VersionControlSystem managingVcs = VersionControlSystem
+				.getCorrespondingVersionControlSystem(rs.getString(++column));
+		final String userName = rs.getString(++column);
+		final String passwd = rs.getString(++column);
 
-		return new DBRepositoryInfo(id, name, url);
+		return new DBRepositoryInfo(id, name, url, managingVcs, userName,
+				passwd);
 	}
 
 	@Override

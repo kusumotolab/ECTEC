@@ -2,6 +2,8 @@ package jp.ac.osaka_u.ist.sdl.ectec.db.data;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import jp.ac.osaka_u.ist.sdl.ectec.settings.VersionControlSystem;
+
 /**
  * A class that represents a repository
  * 
@@ -27,16 +29,36 @@ public class DBRepositoryInfo extends AbstractDBElement implements
 	private final String url;
 
 	/**
+	 * the version control system
+	 */
+	private final VersionControlSystem managingVcs;
+
+	/**
+	 * the user name to access the repository
+	 */
+	private final String userName;
+
+	/**
+	 * the password to access the repository
+	 */
+	private final String passwd;
+
+	/**
 	 * the constructor for elements that are retrieved from db
 	 * 
 	 * @param id
 	 * @param name
 	 * @param url
 	 */
-	public DBRepositoryInfo(final long id, final String name, final String url) {
+	public DBRepositoryInfo(final long id, final String name, final String url,
+			final VersionControlSystem managingVcs, final String userName,
+			final String passwd) {
 		super(id);
 		this.name = name;
 		this.url = url;
+		this.managingVcs = managingVcs;
+		this.userName = userName;
+		this.passwd = passwd;
 	}
 
 	/**
@@ -45,8 +67,10 @@ public class DBRepositoryInfo extends AbstractDBElement implements
 	 * @param name
 	 * @param url
 	 */
-	public DBRepositoryInfo(final String name, final String url) {
-		this(count.getAndIncrement(), name, url);
+	public DBRepositoryInfo(final String name, final String url,
+			final VersionControlSystem managingVcs, final String userName,
+			final String passwd) {
+		this(count.getAndIncrement(), name, url, managingVcs, userName, passwd);
 	}
 
 	/**
@@ -74,6 +98,33 @@ public class DBRepositoryInfo extends AbstractDBElement implements
 	 */
 	public final String getUrl() {
 		return this.url;
+	}
+
+	/**
+	 * get the version control system managing this repository
+	 * 
+	 * @return
+	 */
+	public final VersionControlSystem getManagingVcs() {
+		return this.managingVcs;
+	}
+
+	/**
+	 * get the user name to access the repository
+	 * 
+	 * @return
+	 */
+	public final String getUserName() {
+		return this.userName;
+	}
+
+	/**
+	 * get the password to access the repository
+	 * 
+	 * @return
+	 */
+	public final String getPasswd() {
+		return this.passwd;
 	}
 
 	@Override

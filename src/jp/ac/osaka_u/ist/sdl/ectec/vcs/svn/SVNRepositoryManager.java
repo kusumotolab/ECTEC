@@ -8,8 +8,8 @@ import java.util.Collections;
 import java.util.List;
 
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.AbstractRepositoryManager;
 import jp.ac.osaka_u.ist.sdl.ectec.vcs.IChangedFilesDetector;
-import jp.ac.osaka_u.ist.sdl.ectec.vcs.IRepositoryManager;
 import jp.ac.osaka_u.ist.sdl.ectec.vcs.ITargetRevisionDetector;
 
 import org.tmatesoft.svn.core.ISVNDirEntryHandler;
@@ -29,12 +29,7 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
  * @author k-hotta
  * 
  */
-public class SVNRepositoryManager implements IRepositoryManager {
-
-	/**
-	 * the target revision detector
-	 */
-	private final SVNTargetRevisionDetector targetRevisionDetector;
+public class SVNRepositoryManager extends AbstractRepositoryManager {
 
 	/**
 	 * the URL of the repository
@@ -46,51 +41,17 @@ public class SVNRepositoryManager implements IRepositoryManager {
 	 */
 	private final SVNRepository repository;
 
-	/**
-	 * the user name which is used to access the repository
-	 */
-	private final String userName;
+	public SVNRepositoryManager(final String urlStr, final String userName,
+			final String passwd, final String repositoryName,
+			final long repositoryId) throws Exception {
+		super(userName, passwd, repositoryName, repositoryId);
 
-	/**
-	 * the password which is used to access the repository
-	 */
-	private final String passwd;
-
-	/**
-	 * the additional URL
-	 */
-	private final String additionalUrl;
-
-	/**
-	 * the name of the repository
-	 */
-	private final String repositoryName;
-
-	/**
-	 * the id of the repository
-	 */
-	private final long repositoryId;
-
-	public SVNRepositoryManager(final String urlRoot, final String userName,
-			final String passwd, final String additionalUrl,
-			final String repositoryName, final long repositoryId)
-			throws Exception {
-		this.targetRevisionDetector = new SVNTargetRevisionDetector(this);
-
-		final String urlStr = (additionalUrl == null) ? urlRoot : urlRoot
-				+ additionalUrl;
 		this.url = SVNURL.parseURIDecoded(urlStr);
 
 		final RepositoryCreator creator = RepositoryCreator
 				.getCorrespondingInstance(urlStr);
 
 		this.repository = creator.create(url, userName, passwd);
-
-		this.userName = userName;
-		this.passwd = passwd;
-		this.additionalUrl = additionalUrl;
-		this.repositoryName = repositoryName;
-		this.repositoryId = repositoryId;
 	}
 
 	/**
@@ -100,8 +61,8 @@ public class SVNRepositoryManager implements IRepositoryManager {
 	 * @return
 	 */
 	@Override
-	public ITargetRevisionDetector getTargetRevisionDetector() {
-		return this.targetRevisionDetector;
+	public ITargetRevisionDetector createTargetRevisionDetector() {
+		return new SVNTargetRevisionDetector(this);
 	}
 
 	/**
@@ -131,33 +92,6 @@ public class SVNRepositoryManager implements IRepositoryManager {
 	}
 
 	/**
-	 * get the additional url
-	 * 
-	 * @return
-	 */
-	public String getAdditionalUrl() {
-		return additionalUrl;
-	}
-
-	/**
-	 * get the name of the repository
-	 * 
-	 * @return
-	 */
-	public final String getRepositoryName() {
-		return repositoryName;
-	}
-
-	/**
-	 * get the id of the repository
-	 * 
-	 * @return
-	 */
-	public final long getRepositoryId() {
-		return repositoryId;
-	}
-
-	/**
 	 * get the file contents
 	 * 
 	 * @param revisionIdentifier
@@ -182,16 +116,8 @@ public class SVNRepositoryManager implements IRepositoryManager {
 	public synchronized String getFileContents(final long revisionNum,
 			final String path) throws SVNException {
 		final StringBuilder builder = new StringBuilder();
-		final String normalizedPath = (path == null) ? "" : path;
 
-		String targetPath = null;
-		if (path != null && this.additionalUrl != null) {
-			targetPath = normalizedPath.substring(this.additionalUrl.length());
-		} else {
-			targetPath = path;
-		}
-
-		final SVNURL target = this.url.appendPath(targetPath, false);
+		final SVNURL target = this.url.appendPath(path, false);
 		final SVNWCClient wcClient = SVNClientManager.newInstance(null,
 				this.userName, this.passwd).getWCClient();
 		wcClient.doGetFileContents(target, SVNRevision.create(revisionNum),
@@ -269,8 +195,6 @@ public class SVNRepositoryManager implements IRepositoryManager {
 		final SVNLogClient logClient = SVNClientManager.newInstance(null,
 				this.userName, this.passwd).getLogClient();
 
-		final String additionalUrl = this.additionalUrl;
-
 		final SVNURL url = (target == null) ? this.url : this.url.appendPath(
 				target, false);
 
@@ -282,9 +206,7 @@ public class SVNRepositoryManager implements IRepositoryManager {
 					@Override
 					public void handleDirEntry(SVNDirEntry dirEntry)
 							throws SVNException {
-						final String path = (additionalUrl == null) ? dirEntry
-								.getRelativePath() : additionalUrl
-								+ dirEntry.getRelativePath();
+						final String path = dirEntry.getRelativePath();
 
 						if (lang.isTarget(path)) {
 							result.add(dirEntry.getRelativePath());

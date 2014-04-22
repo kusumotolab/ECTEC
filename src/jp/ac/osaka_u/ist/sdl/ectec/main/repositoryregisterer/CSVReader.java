@@ -9,6 +9,7 @@ import java.util.TreeMap;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRepositoryInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.main.IllegalFileFormatException;
+import jp.ac.osaka_u.ist.sdl.ectec.settings.VersionControlSystem;
 
 /**
  * 
@@ -37,7 +38,7 @@ public class CSVReader {
 			while ((line = br.readLine()) != null) {
 				final String[] splitLine = line.split(",");
 
-				if (splitLine.length != 3) {
+				if (splitLine.length != 6) {
 					throw new IllegalFileFormatException(
 							"the given file has an illegal format at + " + line
 									+ ".");
@@ -47,9 +48,18 @@ public class CSVReader {
 					final long id = Long.parseLong(splitLine[0]);
 					final String name = splitLine[1];
 					final String url = splitLine[2];
+					final VersionControlSystem managingVcs = VersionControlSystem
+							.getCorrespondingVersionControlSystem(splitLine[3]);
+					final String userName = splitLine[4];
+					final String passwd = splitLine[5];
+
+					if (managingVcs == null) {
+						throw new IllegalStateException(splitLine[3]
+								+ ": cannot find such a version control system");
+					}
 
 					final DBRepositoryInfo repository = new DBRepositoryInfo(
-							id, name, url);
+							id, name, url, managingVcs, userName, passwd);
 					result.put(repository.getId(), repository);
 
 				} catch (Exception e) {
