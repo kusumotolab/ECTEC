@@ -10,7 +10,6 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.GenealogyAnalyzer;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CloneGenealogyInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CloneSetInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.selector.IConstraint;
-import jp.ac.osaka_u.ist.sdl.ectec.settings.VersionControlSystem;
 
 public class BasicGenealogyAnalyzer {
 
@@ -23,8 +22,7 @@ public class BasicGenealogyAnalyzer {
 		final String repository = args[1];
 		final String output = args[2];
 
-		final GenealogyAnalyzer analyzer = GenealogyAnalyzer.setup(db,
-				VersionControlSystem.SVN, true);
+		final GenealogyAnalyzer analyzer = GenealogyAnalyzer.setup(db, true);
 
 		final IConstraint constraint = null; // change if needed
 

@@ -9,7 +9,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.FileInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.RevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.ast.ASTCreator;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.vcs.IRepositoryManager;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.AbstractRepositoryManager;
 import jp.ac.osaka_u.ist.sdl.ectec.vcs.RepositoryManagerManager;
 
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -45,7 +45,7 @@ public final class FileInfoConcretizer {
 				return null;
 			}
 
-			final IRepositoryManager repositoryManager = repositoryManagerManager
+			final AbstractRepositoryManager repositoryManager = repositoryManagerManager
 					.getRepositoryManager(dbFile.getOwnerRepositoryId());
 
 			final String src = repositoryManager.getFileContents(

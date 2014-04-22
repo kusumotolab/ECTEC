@@ -16,7 +16,6 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.selector.IConstraint;
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRepositoryInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Constants;
-import jp.ac.osaka_u.ist.sdl.ectec.settings.VersionControlSystem;
 import jp.ac.osaka_u.ist.sdl.ectec.vcs.RepositoryManagerManager;
 
 /**
@@ -72,7 +71,6 @@ public class GenealogyAnalyzer {
 	 * @return
 	 */
 	public static GenealogyAnalyzer setup(final String dbPath,
-			final VersionControlSystem versionControlSystem,
 			final boolean isBlockMode) {
 		boolean troubled = false;
 
@@ -91,8 +89,7 @@ public class GenealogyAnalyzer {
 					.entrySet()) {
 				final DBRepositoryInfo repository = entry.getValue();
 				try {
-					repositoryManagerManager.addRepositoryManager(repository,
-							versionControlSystem);
+					repositoryManagerManager.addRepositoryManager(repository);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
