@@ -2,15 +2,13 @@ package jp.ac.osaka_u.ist.sdl.ectec.vcs.svn;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
-import java.util.TreeMap;
 
 import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
-import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
-import jp.ac.osaka_u.ist.sdl.ectec.vcs.ITargetRevisionDetector;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.AbstractTargetRevisionDetector;
 
 import org.apache.log4j.Logger;
 import org.tmatesoft.svn.core.ISVNLogEntryHandler;
@@ -25,7 +23,8 @@ import org.tmatesoft.svn.core.io.SVNRepository;
  * @author k-hotta
  * 
  */
-public class SVNTargetRevisionDetector implements ITargetRevisionDetector {
+public class SVNTargetRevisionDetector extends
+		AbstractTargetRevisionDetector<SVNRepositoryManager> {
 
 	/**
 	 * the logger
@@ -38,34 +37,18 @@ public class SVNTargetRevisionDetector implements ITargetRevisionDetector {
 	 */
 	private static final Logger eLogger = LoggingManager.getLogger("error");
 
-	/**
-	 * the repository manager
-	 */
-	private final SVNRepositoryManager manager;
-
-	/**
-	 * detected target revisions
-	 */
-	private final Map<Long, DBRevisionInfo> targetRevisions;
-
-	/**
-	 * detected commits
-	 */
-	private final Map<Long, DBCommitInfo> commits;
-
 	public SVNTargetRevisionDetector(final SVNRepositoryManager manager) {
-		this.manager = manager;
-		this.targetRevisions = new TreeMap<Long, DBRevisionInfo>();
-		this.commits = new TreeMap<Long, DBCommitInfo>();
+		super(manager);
 	}
 
 	@Override
-	public void detect(final Language language) throws Exception {
+	protected Map<String, Date> detectRevisionsAfterTargetCommits(
+			final Language language) throws Exception {
 		final SVNRepository repository = manager.getRepository();
 
 		final long latestRevisionNum = repository.getLatestRevision();
 
-		final SortedMap<Long, Date> revisions = new TreeMap<Long, Date>();
+		final Map<String, Date> revisions = new HashMap<String, Date>();
 		final ISVNLogEntryHandler handler = new ISVNLogEntryHandler() {
 			public void handleLogEntry(SVNLogEntry logEntry)
 					throws SVNException {
@@ -76,7 +59,8 @@ public class SVNTargetRevisionDetector implements ITargetRevisionDetector {
 					// in the case that a target source file was
 					// changed
 					if (language.isTarget(entry.getKey())) {
-						final long revision = logEntry.getRevision();
+						final String revision = ((Long) logEntry.getRevision())
+								.toString();
 						revisions.put(revision, logEntry.getDate());
 						logger.debug("\t[" + manager.getRepositoryName()
 								+ "] revision " + revision
@@ -87,7 +71,8 @@ public class SVNTargetRevisionDetector implements ITargetRevisionDetector {
 					// in the case that a directory might be deleted
 					else if (('D' == entry.getValue().getType())
 							|| ('R' == entry.getValue().getType())) {
-						final long revision = logEntry.getRevision();
+						final String revision = ((Long) logEntry.getRevision())
+								.toString();
 						revisions.put(revision, logEntry.getDate());
 						logger.debug("\t[" + manager.getRepositoryName()
 								+ "] revision " + revision
@@ -109,33 +94,7 @@ public class SVNTargetRevisionDetector implements ITargetRevisionDetector {
 			}
 		}
 
-		final long repositoryId = manager.getRepositoryId();
-
-		DBRevisionInfo previousRevision = new DBRevisionInfo(-1, "INITIAL",
-				repositoryId);
-		for (final Map.Entry<Long, Date> entry : revisions.entrySet()) {
-			final DBRevisionInfo newRevision = new DBRevisionInfo(
-					((Long) entry.getKey()).toString(), repositoryId);
-			targetRevisions.put(newRevision.getId(), newRevision);
-
-			final DBCommitInfo commit = new DBCommitInfo(repositoryId,
-					previousRevision.getId(), newRevision.getId(),
-					previousRevision.getIdentifier(),
-					newRevision.getIdentifier(), entry.getValue());
-			commits.put(commit.getId(), commit);
-
-			previousRevision = newRevision;
-		}
-
+		return Collections.unmodifiableMap(revisions);
 	}
 
-	@Override
-	public Map<Long, DBRevisionInfo> getTargetRevisions() {
-		return Collections.unmodifiableMap(targetRevisions);
-	}
-
-	@Override
-	public Map<Long, DBCommitInfo> getCommits() {
-		return Collections.unmodifiableMap(commits);
-	}
 }

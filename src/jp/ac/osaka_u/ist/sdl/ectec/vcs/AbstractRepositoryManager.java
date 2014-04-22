@@ -64,7 +64,7 @@ public abstract class AbstractRepositoryManager {
 	 * 
 	 * @return
 	 */
-	public abstract ITargetRevisionDetector createTargetRevisionDetector();
+	public abstract AbstractTargetRevisionDetector<?> createTargetRevisionDetector();
 
 	/**
 	 * create a new detector for changed files

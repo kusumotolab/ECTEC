@@ -10,7 +10,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.main.IllegalStateException;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 import jp.ac.osaka_u.ist.sdl.ectec.vcs.AbstractRepositoryManager;
-import jp.ac.osaka_u.ist.sdl.ectec.vcs.ITargetRevisionDetector;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.AbstractTargetRevisionDetector;
 import jp.ac.osaka_u.ist.sdl.ectec.vcs.RepositoryManagerManager;
 
 import org.apache.log4j.Logger;
@@ -100,7 +100,7 @@ public class RevisionDetectThread implements Runnable {
 									+ repository.getId());
 				}
 
-				final ITargetRevisionDetector detector = repositoryManager
+				final AbstractTargetRevisionDetector<?> detector = repositoryManager
 						.createTargetRevisionDetector();
 				detector.detect(language);
 

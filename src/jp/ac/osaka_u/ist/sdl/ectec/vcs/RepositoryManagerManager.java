@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentMap;
 import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRepositoryInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.VersionControlSystem;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.git.GitRepositoryManager;
 import jp.ac.osaka_u.ist.sdl.ectec.vcs.svn.SVNRepositoryManager;
 
 import org.apache.log4j.Logger;
@@ -69,6 +70,9 @@ public class RepositoryManagerManager {
 			repositoryManager = new SVNRepositoryManager(url, userName, passwd,
 					repositoryName, id);
 			break;
+		case GIT:
+			repositoryManager = new GitRepositoryManager(url, userName,
+					repositoryName, id);
 		default:
 			break;
 		}
