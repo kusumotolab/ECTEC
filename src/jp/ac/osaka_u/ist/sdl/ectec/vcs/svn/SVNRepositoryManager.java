@@ -19,7 +19,6 @@ import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
-import org.tmatesoft.svn.core.wc.SVNDiffClient;
 import org.tmatesoft.svn.core.wc.SVNLogClient;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
@@ -46,11 +45,6 @@ public class SVNRepositoryManager implements IRepositoryManager {
 	 * the repository under managed by this manager
 	 */
 	private final SVNRepository repository;
-
-	/**
-	 * a string representation of the URL of the repository
-	 */
-	private final String urlStr;
 
 	/**
 	 * the user name which is used to access the repository
@@ -92,7 +86,6 @@ public class SVNRepositoryManager implements IRepositoryManager {
 
 		this.repository = creator.create(url, userName, passwd);
 
-		this.urlStr = urlStr;
 		this.userName = userName;
 		this.passwd = passwd;
 		this.additionalUrl = additionalUrl;
@@ -165,35 +158,6 @@ public class SVNRepositoryManager implements IRepositoryManager {
 	}
 
 	/**
-	 * get the first revision number (always equals to 1)
-	 */
-	@Override
-	public String getFirstRevision() throws Exception {
-		return ((Long) (long) 1).toString();
-	}
-
-	/**
-	 * get the revision number of the latest revision
-	 * 
-	 * @return
-	 * @throws SVNException
-	 */
-	public long getLatestRevisionAsLong() throws SVNException {
-		return this.repository.getLatestRevision();
-	}
-
-	/**
-	 * get the revision number of the latest revision
-	 * 
-	 * @return
-	 * @throws SVNException
-	 */
-	@Override
-	public String getLatestRevision() throws SVNException {
-		return ((Long) this.repository.getLatestRevision()).toString();
-	}
-
-	/**
 	 * get the file contents
 	 * 
 	 * @param revisionIdentifier
@@ -244,21 +208,6 @@ public class SVNRepositoryManager implements IRepositoryManager {
 	}
 
 	/**
-	 * get the list of source files
-	 * 
-	 * @param revisionIdentifier
-	 * @param language
-	 * @return
-	 * @throws Exception
-	 */
-	@Override
-	public synchronized List<String> getListOfSourceFiles(
-			final String revisionIdentifier, final Language lang)
-			throws Exception {
-		return getListOfSourceFiles(Long.parseLong(revisionIdentifier), lang);
-	}
-
-	/**
 	 * get the list of paths of all the source files in the given revision
 	 * 
 	 * @param revisionNum
@@ -303,40 +252,6 @@ public class SVNRepositoryManager implements IRepositoryManager {
 	public synchronized List<String> getListOfSourceFiles(
 			final long revisionNum, final Language lang,
 			final Collection<String> targets) throws SVNException {
-		// final SVNLogClient logClient = SVNClientManager.newInstance(null,
-		// this.userName, this.passwd).getLogClient();
-		//
-		// final String additionalUrl = this.additionalUrl;
-		//
-		// final List<String> result = new ArrayList<String>();
-		// logClient.doList(this.url, SVNRevision.create(revisionNum),
-		// SVNRevision.create(revisionNum), true, SVNDepth.INFINITY,
-		// SVNDirEntry.DIRENT_ALL, new ISVNDirEntryHandler() {
-		//
-		// @Override
-		// public void handleDirEntry(SVNDirEntry dirEntry)
-		// throws SVNException {
-		// final String path = (additionalUrl == null) ? dirEntry
-		// .getRelativePath() : additionalUrl
-		// + dirEntry.getRelativePath();
-		//
-		// if (lang.isTarget(path)) {
-		// if (targets == null) {
-		// result.add(dirEntry.getRelativePath());
-		// } else {
-		// for (final String target : targets) {
-		// if (path.contains(target)) {
-		// result.add(dirEntry.getRelativePath());
-		// break;
-		// }
-		// }
-		// }
-		// }
-		// }
-		//
-		// });
-		//
-		// return Collections.unmodifiableList(result);
 		final List<String> result = new ArrayList<String>();
 		for (final String target : targets) {
 			try {
@@ -379,45 +294,6 @@ public class SVNRepositoryManager implements IRepositoryManager {
 				});
 
 		return Collections.unmodifiableList(result);
-	}
-
-	/**
-	 * run diff
-	 * 
-	 * @param beforeRevisionIdentifier
-	 * @param afterRevisionIdentifier
-	 * @return
-	 * @throws Exception
-	 */
-	public String doDiff(final String beforeRevisionIdentifier,
-			final String afterRevisionIdentifier) throws Exception {
-		return doDiff(Long.parseLong(beforeRevisionIdentifier),
-				Long.parseLong(afterRevisionIdentifier));
-	}
-
-	/**
-	 * run diff
-	 * 
-	 * @param beforeRevNum
-	 * @param afterRevNum
-	 * @return
-	 * @throws SVNException
-	 */
-	public String doDiff(final long beforeRevNum, final long afterRevNum)
-			throws SVNException {
-		final SVNDiffClient diffClient = SVNClientManager.newInstance(null,
-				this.userName, this.passwd).getDiffClient();
-		final StringBuilder diffText = new StringBuilder();
-		diffClient.doDiff(this.url, SVNRevision.create(beforeRevNum), this.url,
-				SVNRevision.create(afterRevNum), SVNDepth.INFINITY, true,
-				new OutputStream() {
-					@Override
-					public void write(int arg0) throws IOException {
-						diffText.append((char) arg0);
-					}
-				});
-
-		return diffText.toString();
 	}
 
 }
