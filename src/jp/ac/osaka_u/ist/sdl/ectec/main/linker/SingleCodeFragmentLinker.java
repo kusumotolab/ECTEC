@@ -3,6 +3,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.main.linker;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,8 +11,8 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
@@ -25,12 +26,15 @@ import jp.ac.osaka_u.ist.sdl.ectec.util.Table;
  * @author k-hotta
  * 
  */
-public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
+public class SingleCodeFragmentLinker extends
+		AbstractLocationLimitedCodeFragmentLinker {
 
 	@Override
-	public Map<Long, DBCodeFragmentLinkInfo> detectFragmentPairs(
+	public Map<Long, DBCodeFragmentLinkInfo> detectFragmentPairsWithSortedElements(
 			Map<Long, DBCodeFragmentInfo> beforeFragments,
 			Map<Long, DBCodeFragmentInfo> afterFragments,
+			Map<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> beforeFragmentsSorted,
+			Map<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> afterFragmentsSorted,
 			ICRDSimilarityCalculator similarityCalculator,
 			double similarityThreshold, Map<Long, DBCrdInfo> crds,
 			long beforeRevisionId, long afterRevisionId,
@@ -39,9 +43,9 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 		final FragmentLinkConditionUmpire umpire = new FragmentLinkConditionUmpire(
 				similarityThreshold);
 		final Map<DBCodeFragmentInfo, DBCodeFragmentInfo> pairs = detectPairs(
-				beforeFragments, afterFragments, similarityCalculator, umpire,
-				crds, onlyFragmentInClonesInBeforeRevision,
-				clonesInBeforeRevision);
+				beforeFragments, afterFragments, beforeFragmentsSorted,
+				afterFragmentsSorted, similarityCalculator, umpire, crds,
+				onlyFragmentInClonesInBeforeRevision, clonesInBeforeRevision);
 
 		return makeLinkInstances(pairs, beforeRevisionId, afterRevisionId);
 	}
@@ -89,6 +93,8 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 	private Map<DBCodeFragmentInfo, DBCodeFragmentInfo> detectPairs(
 			Map<Long, DBCodeFragmentInfo> beforeFragments,
 			Map<Long, DBCodeFragmentInfo> afterFragments,
+			Map<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> beforeFragmentsSorted,
+			Map<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> afterFragmentsSorted,
 			ICRDSimilarityCalculator similarityCalculator,
 			FragmentLinkConditionUmpire umpire, Map<Long, DBCrdInfo> crds,
 			boolean onlyFragmentInClonesInBeforeRevision,
@@ -102,21 +108,8 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 		commonFragmentIds.retainAll(afterFragments.keySet());
 
 		// evacuate the original collections
-		final Set<DBCodeFragmentInfo> beforeFragmentsSet = new HashSet<DBCodeFragmentInfo>();
-		for (final Map.Entry<Long, DBCodeFragmentInfo> entry : getTargetFragmentsInBeforeRevision(
-				beforeFragments, clonesInBeforeRevision,
-				onlyFragmentInClonesInBeforeRevision).entrySet()) {
-			if (!commonFragmentIds.contains(entry.getKey())) {
-				beforeFragmentsSet.add(entry.getValue());
-			}
-		}
-		final Set<DBCodeFragmentInfo> afterFragmentsSet = new HashSet<DBCodeFragmentInfo>();
-		for (final Map.Entry<Long, DBCodeFragmentInfo> entry : afterFragments
-				.entrySet()) {
-			if (!commonFragmentIds.contains(entry.getKey())) {
-				afterFragmentsSet.add(entry.getValue());
-			}
-		}
+		removeCommonFragments(beforeFragmentsSorted, commonFragmentIds);
+		removeCommonFragments(afterFragmentsSorted, commonFragmentIds);
 
 		// detect pairs of fragments whose crds are equal to each other
 		// and remove them
@@ -130,11 +123,18 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 		final Table<Long, Long, Double> similarityTable = new Table<Long, Long, Double>();
 		final Map<DBCodeFragmentInfo, Queue<DBCodeFragmentInfo>> wishLists = new TreeMap<DBCodeFragmentInfo, Queue<DBCodeFragmentInfo>>();
 
-		fillSimilarityTableAndWishList(beforeFragmentsSet, afterFragmentsSet,
-				similarityTable, wishLists, similarityCalculator, umpire, crds);
+		fillSimilarityTableAndWishList(beforeFragmentsSorted,
+				afterFragmentsSorted, similarityTable, wishLists,
+				similarityCalculator, umpire, crds);
 
 		final List<DBCodeFragmentInfo> unmarriedBeforeFragments = new ArrayList<DBCodeFragmentInfo>();
-		unmarriedBeforeFragments.addAll(beforeFragmentsSet);
+		for (final Map.Entry<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> rootEntry : beforeFragmentsSorted
+				.entrySet()) {
+			for (final Map.Entry<Integer, List<DBCodeFragmentInfo>> childEntry : rootEntry
+					.getValue().entrySet()) {
+				unmarriedBeforeFragments.addAll(childEntry.getValue());
+			}
+		}
 
 		while (true) {
 
@@ -153,6 +153,45 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 		return result;
 	}
 
+	private void removeCommonFragments(
+			Map<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> fragmentsSorted,
+			final Set<Long> commonFragmentIds) {
+		final List<BlockType> toBeRemovedBlockTypes = new ArrayList<BlockType>();
+
+		for (final Map.Entry<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> rootEntry : fragmentsSorted
+				.entrySet()) {
+			final List<Integer> toBeRemovedIdentifyingNumbers = new ArrayList<Integer>();
+
+			for (final Map.Entry<Integer, List<DBCodeFragmentInfo>> childEntry : rootEntry
+					.getValue().entrySet()) {
+				final List<DBCodeFragmentInfo> originalFragments = childEntry
+						.getValue();
+				final List<DBCodeFragmentInfo> toBeRemovedFragments = new ArrayList<DBCodeFragmentInfo>();
+				for (final DBCodeFragmentInfo fragment : childEntry.getValue()) {
+					if (commonFragmentIds.contains(fragment.getId())) {
+						toBeRemovedFragments.add(fragment);
+					}
+				}
+				originalFragments.removeAll(toBeRemovedFragments);
+				if (originalFragments.isEmpty()) {
+					toBeRemovedIdentifyingNumbers.add(childEntry.getKey());
+				}
+			}
+
+			for (final int toBeRemovedIdentyfingNumber : toBeRemovedIdentifyingNumbers) {
+				rootEntry.getValue().remove(toBeRemovedIdentyfingNumber);
+			}
+
+			if (rootEntry.getValue().isEmpty()) {
+				toBeRemovedBlockTypes.add(rootEntry.getKey());
+			}
+		}
+
+		for (final BlockType toBeRemovedBlockType : toBeRemovedBlockTypes) {
+			fragmentsSorted.remove(toBeRemovedBlockType);
+		}
+	}
+
 	/**
 	 * initialize the given similarity table and the given wish lists with the
 	 * specified values
@@ -166,37 +205,142 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 	 * @param crds
 	 */
 	private void fillSimilarityTableAndWishList(
-			final Collection<DBCodeFragmentInfo> beforeFragments,
-			final Collection<DBCodeFragmentInfo> afterFragments,
+			final Map<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> beforeFragmentsSorted,
+			final Map<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> afterFragmentsSorted,
 			final Table<Long, Long, Double> similarityTable,
 			final Map<DBCodeFragmentInfo, Queue<DBCodeFragmentInfo>> wishLists,
 			final ICRDSimilarityCalculator similarityCalculator,
 			final FragmentLinkConditionUmpire umpire,
 			final Map<Long, DBCrdInfo> crds) {
-		for (final DBCodeFragmentInfo beforeFragment : beforeFragments) {
-			// fill a row of similarity table
-			final Map<DBCodeFragmentInfo, Double> similarities = new TreeMap<DBCodeFragmentInfo, Double>();
-			final DBCrdInfo beforeCrd = crds.get(beforeFragment.getCrdId());
-
-			for (final DBCodeFragmentInfo afterFragment : afterFragments) {
-				final DBCrdInfo afterCrd = crds.get(afterFragment.getCrdId());
-				final double similarity = similarityCalculator.calcSimilarity(
-						beforeCrd, afterCrd);
-
-				// register the similarity into the table
-				// if the similarity is equal to or over than the threshold
-				if (umpire
-						.satisfyAllConditions(beforeCrd, afterCrd, similarity)) {
-					similarityTable.changeValueAt(beforeFragment.getId(),
-							afterFragment.getId(), similarity);
-					similarities.put(afterFragment, similarity);
-				}
+		for (final Map.Entry<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> rootEntry : beforeFragmentsSorted
+				.entrySet()) {
+			final BlockType bType = rootEntry.getKey();
+			if (!afterFragmentsSorted.containsKey(bType)) {
+				continue;
 			}
 
-			// fill a wish list for the fragment under processing
-			final Queue<DBCodeFragmentInfo> wishList = sortWithValues(similarities);
-			wishLists.put(beforeFragment, wishList);
+			final Map<Integer, List<DBCodeFragmentInfo>> correspondingAfterFragments = afterFragmentsSorted
+					.get(bType);
+
+			if (bType == BlockType.METHOD) {
+				processMethods(
+						rootEntry.getValue().get(DEFAULT_IDENTFYING_NUMBER),
+						correspondingAfterFragments
+								.get(DEFAULT_IDENTFYING_NUMBER),
+						similarityCalculator, umpire, crds, similarityTable,
+						wishLists);
+			} else {
+				processOtherBlocks(rootEntry.getValue(),
+						correspondingAfterFragments, similarityCalculator,
+						umpire, crds, similarityTable, wishLists);
+			}
 		}
+	}
+
+	private void processMethods(final List<DBCodeFragmentInfo> beforeMethods,
+			final List<DBCodeFragmentInfo> afterMethods,
+			ICRDSimilarityCalculator similarityCalculator,
+			FragmentLinkConditionUmpire umpire, Map<Long, DBCrdInfo> crds,
+			final Table<Long, Long, Double> similarityTable,
+			final Map<DBCodeFragmentInfo, Queue<DBCodeFragmentInfo>> wishLists) {
+		final Map<Integer, List<DBCodeFragmentInfo>> afterMethodsByName = new HashMap<Integer, List<DBCodeFragmentInfo>>();
+		final Map<Integer, List<DBCodeFragmentInfo>> afterMethodsByParameters = new HashMap<Integer, List<DBCodeFragmentInfo>>();
+
+		for (final DBCodeFragmentInfo afterMethod : afterMethods) {
+			final DBCrdInfo afterCrd = crds.get(afterMethod.getCrdId());
+			final int nameHash = getMethodName(afterCrd).hashCode();
+			final int parametersHash = getParameters(afterCrd).hashCode();
+
+			if (afterMethodsByName.containsKey(nameHash)) {
+				afterMethodsByName.get(nameHash).add(afterMethod);
+			} else {
+				final List<DBCodeFragmentInfo> newList = new ArrayList<DBCodeFragmentInfo>();
+				newList.add(afterMethod);
+				afterMethodsByName.put(nameHash, newList);
+			}
+
+			if (afterMethodsByParameters.containsKey(parametersHash)) {
+				afterMethodsByParameters.get(parametersHash).add(afterMethod);
+			} else {
+				final List<DBCodeFragmentInfo> newList = new ArrayList<DBCodeFragmentInfo>();
+				newList.add(afterMethod);
+				afterMethodsByParameters.put(parametersHash, newList);
+			}
+		}
+
+		for (final DBCodeFragmentInfo beforeMethod : beforeMethods) {
+			final DBCrdInfo beforeCrd = crds.get(beforeMethod.getCrdId());
+			final int nameHash = getMethodName(beforeCrd).hashCode();
+			final int parametersHash = getParameters(beforeCrd).hashCode();
+
+			final Set<DBCodeFragmentInfo> afterCandidateMethods = new HashSet<DBCodeFragmentInfo>();
+			if (afterMethodsByName.containsKey(nameHash)) {
+				afterCandidateMethods.addAll(afterMethodsByName.get(nameHash));
+			}
+			if (afterMethodsByParameters.containsKey(parametersHash)) {
+				afterCandidateMethods.addAll(afterMethodsByParameters
+						.get(parametersHash));
+			}
+
+			fillRow(similarityCalculator, umpire, crds, similarityTable,
+					wishLists, beforeMethod, afterCandidateMethods);
+		}
+	}
+
+	private void processOtherBlocks(
+			final Map<Integer, List<DBCodeFragmentInfo>> beforeFragments,
+			final Map<Integer, List<DBCodeFragmentInfo>> afterFragments,
+			ICRDSimilarityCalculator similarityCalculator,
+			FragmentLinkConditionUmpire umpire, Map<Long, DBCrdInfo> crds,
+			final Table<Long, Long, Double> similarityTable,
+			final Map<DBCodeFragmentInfo, Queue<DBCodeFragmentInfo>> wishLists) {
+		for (final Map.Entry<Integer, List<DBCodeFragmentInfo>> childEntry : beforeFragments
+				.entrySet()) {
+			final int identifyingNumber = childEntry.getKey();
+
+			if (!afterFragments.containsKey(identifyingNumber)) {
+				continue;
+			}
+
+			final List<DBCodeFragmentInfo> beforeCandidates = childEntry
+					.getValue();
+			final List<DBCodeFragmentInfo> afterCandidates = afterFragments
+					.get(identifyingNumber);
+
+			for (final DBCodeFragmentInfo beforeCandidate : beforeCandidates) {
+				fillRow(similarityCalculator, umpire, crds, similarityTable,
+						wishLists, beforeCandidate, afterCandidates);
+			}
+		}
+	}
+
+	private void fillRow(ICRDSimilarityCalculator similarityCalculator,
+			FragmentLinkConditionUmpire umpire, Map<Long, DBCrdInfo> crds,
+			final Table<Long, Long, Double> similarityTable,
+			final Map<DBCodeFragmentInfo, Queue<DBCodeFragmentInfo>> wishLists,
+			final DBCodeFragmentInfo beforeCandidate,
+			final Collection<DBCodeFragmentInfo> afterCandidates) {
+		// fill a row of similarity table
+		final Map<DBCodeFragmentInfo, Double> similarities = new TreeMap<DBCodeFragmentInfo, Double>();
+		final DBCrdInfo beforeCrd = crds.get(beforeCandidate.getCrdId());
+
+		for (final DBCodeFragmentInfo afterFragment : afterCandidates) {
+			final DBCrdInfo afterCrd = crds.get(afterFragment.getCrdId());
+			final double similarity = similarityCalculator.calcSimilarity(
+					beforeCrd, afterCrd);
+
+			// register the similarity into the table
+			// if the similarity is equal to or over than the threshold
+			if (umpire.satisfyAllConditions(beforeCrd, afterCrd, similarity)) {
+				similarityTable.changeValueAt(beforeCandidate.getId(),
+						afterFragment.getId(), similarity);
+				similarities.put(afterFragment, similarity);
+			}
+		}
+
+		// fill a wish list for the fragment under processing
+		final Queue<DBCodeFragmentInfo> wishList = sortWithValues(similarities);
+		wishLists.put(beforeCandidate, wishList);
 	}
 
 	/**
@@ -291,7 +435,11 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 		 */
 		for (final DBCodeFragmentInfo proposingFragment : unmarriedBeforeFragments) {
 
-			// propose to the most favorite after fragment
+			if (!wishLists.containsKey(proposingFragment)) {
+				continue;
+			}
+			
+			// propose to the most favorite after fragment			
 			final DBCodeFragmentInfo proposedMethod = wishLists.get(
 					proposingFragment).poll();
 
@@ -377,34 +525,6 @@ public class SingleCodeFragmentLinker implements ICodeFragmentLinker {
 		}
 
 		return result;
-	}
-
-	public Map<Long, DBCodeFragmentInfo> getTargetFragmentsInBeforeRevision(
-			final Map<Long, DBCodeFragmentInfo> codeFragmentsInBeforeRevision,
-			final Map<Long, DBCloneSetInfo> clonesInBeforeRevision,
-			final boolean onlyFragmentInClonesInBeforeRevision) {
-		final Map<Long, DBCodeFragmentInfo> result = new TreeMap<Long, DBCodeFragmentInfo>();
-
-		if (onlyFragmentInClonesInBeforeRevision) {
-			final Set<Long> fragmentIdsInClones = new TreeSet<Long>();
-			for (final Map.Entry<Long, DBCloneSetInfo> cloneEntry : clonesInBeforeRevision
-					.entrySet()) {
-				fragmentIdsInClones.addAll(cloneEntry.getValue().getElements());
-			}
-
-			for (final Map.Entry<Long, DBCodeFragmentInfo> fragmentEntry : codeFragmentsInBeforeRevision
-					.entrySet()) {
-				final long fragmentId = fragmentEntry.getKey();
-				if (fragmentIdsInClones.contains(fragmentId)) {
-					result.put(fragmentEntry.getKey(), fragmentEntry.getValue());
-				}
-			}
-
-		} else {
-			result.putAll(codeFragmentsInBeforeRevision);
-		}
-
-		return Collections.unmodifiableMap(result);
 	}
 
 }

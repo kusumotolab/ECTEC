@@ -1,24 +1,36 @@
 package jp.ac.osaka_u.ist.sdl.ectec.main.linker;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
+import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.BlockType;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.similarity.ICRDSimilarityCalculator;
 
-public class MultipleCodeFragmentLinker implements ICodeFragmentLinker {
+import org.apache.log4j.Logger;
+
+public class MultipleCodeFragmentLinker extends
+		AbstractLocationLimitedCodeFragmentLinker {
+
+	private final static Logger logger = LoggingManager
+			.getLogger(MultipleCodeFragmentLinker.class.getName());
 
 	@Override
-	public Map<Long, DBCodeFragmentLinkInfo> detectFragmentPairs(
+	public Map<Long, DBCodeFragmentLinkInfo> detectFragmentPairsWithSortedElements(
 			Map<Long, DBCodeFragmentInfo> beforeFragments,
 			Map<Long, DBCodeFragmentInfo> afterFragments,
+			Map<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> beforeBlocksSorted,
+			Map<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> afterBlocksSorted,
 			ICRDSimilarityCalculator similarityCalculator,
 			double similarityThreshold, Map<Long, DBCrdInfo> crds,
 			long beforeRevisionId, long afterRevisionId,
@@ -27,55 +39,159 @@ public class MultipleCodeFragmentLinker implements ICodeFragmentLinker {
 		final FragmentLinkConditionUmpire umpire = new FragmentLinkConditionUmpire(
 				similarityThreshold);
 		final Map<DBCodeFragmentInfo, DBCodeFragmentInfo> pairs = detectPairs(
-				beforeFragments, afterFragments, similarityCalculator, umpire,
-				crds, onlyFragmentInClonesInBeforeRevision,
+				beforeBlocksSorted, afterBlocksSorted, similarityCalculator,
+				umpire, crds, onlyFragmentInClonesInBeforeRevision,
 				clonesInBeforeRevision);
 
 		return makeLinkInstances(pairs, beforeRevisionId, afterRevisionId);
 	}
 
 	private Map<DBCodeFragmentInfo, DBCodeFragmentInfo> detectPairs(
-			Map<Long, DBCodeFragmentInfo> beforeFragments,
-			Map<Long, DBCodeFragmentInfo> afterFragments,
+			Map<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> beforeFragmentsSorted,
+			Map<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> afterFragmentsSorted,
 			ICRDSimilarityCalculator similarityCalculator,
 			FragmentLinkConditionUmpire umpire, Map<Long, DBCrdInfo> crds,
 			boolean onlyFragmentInClonesInBeforeRevision,
 			Map<Long, DBCloneSetInfo> clonesInBeforeRevision) {
 		final Map<DBCodeFragmentInfo, DBCodeFragmentInfo> result = new TreeMap<DBCodeFragmentInfo, DBCodeFragmentInfo>();
 
-		// evacuate the original collections
-		final Set<DBCodeFragmentInfo> beforeFragmentsSet = new HashSet<DBCodeFragmentInfo>();
-		beforeFragmentsSet.addAll(getTargetFragmentsInBeforeRevision(
-				beforeFragments, clonesInBeforeRevision,
-				onlyFragmentInClonesInBeforeRevision).values());
-		final Set<DBCodeFragmentInfo> afterFragmentsSet = new HashSet<DBCodeFragmentInfo>();
-		afterFragmentsSet.addAll(afterFragments.values());
+		for (final Map.Entry<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> rootEntry : beforeFragmentsSorted
+				.entrySet()) {
+			final BlockType bType = rootEntry.getKey();
+			if (!afterFragmentsSorted.containsKey(bType)) {
+				continue;
+			}
 
-		for (final DBCodeFragmentInfo beforeFragment : beforeFragmentsSet) {
-			final DBCrdInfo beforeCrd = crds.get(beforeFragment.getCrdId());
+			// logger.debug("processing " + bType);
 
-			for (final DBCodeFragmentInfo afterFragment : afterFragmentsSet) {
-				final DBCrdInfo afterCrd = crds.get(afterFragment.getCrdId());
+			final Map<Integer, List<DBCodeFragmentInfo>> correspondingAfterElements = afterFragmentsSorted
+					.get(bType);
 
-				if (beforeCrd.equals(afterCrd)) {
-					continue;
-				}
-
-				if (!umpire.satisfyCrdConditions(beforeCrd, afterCrd)) {
-					continue;
-				}
-
-				final double similarity = similarityCalculator.calcSimilarity(
-						beforeCrd, afterCrd);
-
-				if (umpire
-						.satisfyAllConditions(beforeCrd, afterCrd, similarity)) {
-					result.put(beforeFragment, afterFragment);
-				}
+			if (bType == BlockType.METHOD) {
+				processMethods(
+						rootEntry.getValue().get(DEFAULT_IDENTFYING_NUMBER),
+						correspondingAfterElements
+								.get(DEFAULT_IDENTFYING_NUMBER),
+						similarityCalculator, umpire, crds, result);
+			} else {
+				processOtherBlocks(rootEntry.getValue(),
+						correspondingAfterElements, similarityCalculator,
+						umpire, crds, result);
 			}
 		}
 
 		return result;
+	}
+
+	private void processMethods(final List<DBCodeFragmentInfo> beforeMethods,
+			final List<DBCodeFragmentInfo> afterMethods,
+			ICRDSimilarityCalculator similarityCalculator,
+			FragmentLinkConditionUmpire umpire, Map<Long, DBCrdInfo> crds,
+			final Map<DBCodeFragmentInfo, DBCodeFragmentInfo> result) {
+		final Map<Integer, List<DBCodeFragmentInfo>> afterMethodsByName = new HashMap<Integer, List<DBCodeFragmentInfo>>();
+		final Map<Integer, List<DBCodeFragmentInfo>> afterMethodsByParameters = new HashMap<Integer, List<DBCodeFragmentInfo>>();
+
+		for (final DBCodeFragmentInfo afterMethod : afterMethods) {
+			final DBCrdInfo afterCrd = crds.get(afterMethod.getCrdId());
+			final int nameHash = getMethodName(afterCrd).hashCode();
+			final int parametersHash = getParameters(afterCrd).hashCode();
+
+			if (afterMethodsByName.containsKey(nameHash)) {
+				afterMethodsByName.get(nameHash).add(afterMethod);
+			} else {
+				final List<DBCodeFragmentInfo> newList = new ArrayList<DBCodeFragmentInfo>();
+				newList.add(afterMethod);
+				afterMethodsByName.put(nameHash, newList);
+			}
+
+			if (afterMethodsByParameters.containsKey(parametersHash)) {
+				afterMethodsByParameters.get(parametersHash).add(afterMethod);
+			} else {
+				final List<DBCodeFragmentInfo> newList = new ArrayList<DBCodeFragmentInfo>();
+				newList.add(afterMethod);
+				afterMethodsByParameters.put(parametersHash, newList);
+			}
+		}
+
+		for (final DBCodeFragmentInfo beforeMethod : beforeMethods) {
+			final DBCrdInfo beforeCrd = crds.get(beforeMethod.getCrdId());
+			final int nameHash = getMethodName(beforeCrd).hashCode();
+			final int parametersHash = getParameters(beforeCrd).hashCode();
+
+			final Set<DBCodeFragmentInfo> afterCandidateMethods = new HashSet<DBCodeFragmentInfo>();
+			if (afterMethodsByName.containsKey(nameHash)) {
+				afterCandidateMethods.addAll(afterMethodsByName.get(nameHash));
+			}
+			if (afterMethodsByParameters.containsKey(parametersHash)) {
+				afterCandidateMethods.addAll(afterMethodsByParameters
+						.get(parametersHash));
+			}
+
+			for (final DBCodeFragmentInfo afterMethod : afterCandidateMethods) {
+				final DBCrdInfo afterCrd = crds.get(afterMethod.getCrdId());
+
+				if (match(umpire, similarityCalculator, beforeCrd, afterCrd)) {
+					result.put(beforeMethod, afterMethod);
+				}
+			}
+
+		}
+	}
+
+	private void processOtherBlocks(
+			final Map<Integer, List<DBCodeFragmentInfo>> beforeFragments,
+			final Map<Integer, List<DBCodeFragmentInfo>> afterFragments,
+			ICRDSimilarityCalculator similarityCalculator,
+			FragmentLinkConditionUmpire umpire, Map<Long, DBCrdInfo> crds,
+			final Map<DBCodeFragmentInfo, DBCodeFragmentInfo> result) {
+		for (final Map.Entry<Integer, List<DBCodeFragmentInfo>> childEntry : beforeFragments
+				.entrySet()) {
+			final int identifyingNumber = childEntry.getKey();
+
+			if (!afterFragments.containsKey(identifyingNumber)) {
+				continue;
+			}
+
+			final List<DBCodeFragmentInfo> beforeCandidates = childEntry
+					.getValue();
+			final List<DBCodeFragmentInfo> afterCandidates = afterFragments
+					.get(identifyingNumber);
+
+			for (final DBCodeFragmentInfo beforeCandidate : beforeCandidates) {
+				final DBCrdInfo beforeCrd = crds
+						.get(beforeCandidate.getCrdId());
+
+				for (final DBCodeFragmentInfo afterCandidate : afterCandidates) {
+					final DBCrdInfo afterCrd = crds.get(afterCandidate
+							.getCrdId());
+
+					if (match(umpire, similarityCalculator, beforeCrd, afterCrd)) {
+						result.put(beforeCandidate, afterCandidate);
+					}
+				}
+			}
+		}
+	}
+
+	private final boolean match(final FragmentLinkConditionUmpire umpire,
+			final ICRDSimilarityCalculator similarityCalculator,
+			final DBCrdInfo beforeCrd, final DBCrdInfo afterCrd) {
+		if (beforeCrd.equals(afterCrd)) {
+			return false;
+		}
+
+		if (!umpire.satisfyCrdConditions(beforeCrd, afterCrd)) {
+			return false;
+		}
+
+		final double similarity = similarityCalculator.calcSimilarity(
+				beforeCrd, afterCrd);
+
+		if (umpire.satisfyAllConditions(beforeCrd, afterCrd, similarity)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -103,34 +219,6 @@ public class MultipleCodeFragmentLinker implements ICodeFragmentLinker {
 					beforeRevisionId, afterRevisionId, changed);
 			result.put(link.getId(), link);
 		}
-		return Collections.unmodifiableMap(result);
-	}
-
-	public Map<Long, DBCodeFragmentInfo> getTargetFragmentsInBeforeRevision(
-			final Map<Long, DBCodeFragmentInfo> codeFragmentsInBeforeRevision,
-			final Map<Long, DBCloneSetInfo> clonesInBeforeRevision,
-			final boolean onlyFragmentInClonesInBeforeRevision) {
-		final Map<Long, DBCodeFragmentInfo> result = new TreeMap<Long, DBCodeFragmentInfo>();
-
-		if (onlyFragmentInClonesInBeforeRevision) {
-			final Set<Long> fragmentIdsInClones = new TreeSet<Long>();
-			for (final Map.Entry<Long, DBCloneSetInfo> cloneEntry : clonesInBeforeRevision
-					.entrySet()) {
-				fragmentIdsInClones.addAll(cloneEntry.getValue().getElements());
-			}
-
-			for (final Map.Entry<Long, DBCodeFragmentInfo> fragmentEntry : codeFragmentsInBeforeRevision
-					.entrySet()) {
-				final long fragmentId = fragmentEntry.getKey();
-				if (fragmentIdsInClones.contains(fragmentId)) {
-					result.put(fragmentEntry.getKey(), fragmentEntry.getValue());
-				}
-			}
-
-		} else {
-			result.putAll(codeFragmentsInBeforeRevision);
-		}
-
 		return Collections.unmodifiableMap(result);
 	}
 
