@@ -207,6 +207,7 @@ public class CodeFragmentLinkDetectingThread implements Runnable {
 			} catch (Exception e) {
 				eLogger.warn("something is wrong in processing the combined commit "
 						+ targetCombinedCommit.getId());
+				e.printStackTrace();
 			}
 
 		}
