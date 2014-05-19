@@ -152,5 +152,44 @@ public abstract class AbstractLocationLimitedCodeFragmentLinker implements
 
 		return Collections.unmodifiableMap(result);
 	}
+	
+	protected void removeCommonFragments(
+			Map<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> fragmentsSorted,
+			final Set<Long> commonFragmentIds) {
+		final List<BlockType> toBeRemovedBlockTypes = new ArrayList<BlockType>();
+
+		for (final Map.Entry<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> rootEntry : fragmentsSorted
+				.entrySet()) {
+			final List<Integer> toBeRemovedIdentifyingNumbers = new ArrayList<Integer>();
+
+			for (final Map.Entry<Integer, List<DBCodeFragmentInfo>> childEntry : rootEntry
+					.getValue().entrySet()) {
+				final List<DBCodeFragmentInfo> originalFragments = childEntry
+						.getValue();
+				final List<DBCodeFragmentInfo> toBeRemovedFragments = new ArrayList<DBCodeFragmentInfo>();
+				for (final DBCodeFragmentInfo fragment : childEntry.getValue()) {
+					if (commonFragmentIds.contains(fragment.getId())) {
+						toBeRemovedFragments.add(fragment);
+					}
+				}
+				originalFragments.removeAll(toBeRemovedFragments);
+				if (originalFragments.isEmpty()) {
+					toBeRemovedIdentifyingNumbers.add(childEntry.getKey());
+				}
+			}
+
+			for (final int toBeRemovedIdentyfingNumber : toBeRemovedIdentifyingNumbers) {
+				rootEntry.getValue().remove(toBeRemovedIdentyfingNumber);
+			}
+
+			if (rootEntry.getValue().isEmpty()) {
+				toBeRemovedBlockTypes.add(rootEntry.getKey());
+			}
+		}
+
+		for (final BlockType toBeRemovedBlockType : toBeRemovedBlockTypes) {
+			fragmentsSorted.remove(toBeRemovedBlockType);
+		}
+	}
 
 }
