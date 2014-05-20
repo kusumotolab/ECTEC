@@ -18,7 +18,6 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.similarity.ICRDSimilarityCalculator;
 
 import org.apache.log4j.Logger;
-import org.tmatesoft.sqljet.core.internal.lang.SqlParser.con_subexpr_return;
 
 public class MultipleCodeFragmentLinker extends
 		AbstractLocationLimitedCodeFragmentLinker {
@@ -83,12 +82,18 @@ public class MultipleCodeFragmentLinker extends
 
 			final Map<Integer, List<DBCodeFragmentInfo>> correspondingAfterElements = afterFragmentsSorted
 					.get(bType);
-			
+
 			if (correspondingAfterElements.isEmpty()) {
 				continue;
 			}
 
-			if (bType == BlockType.METHOD) {
+			if (bType == BlockType.CLASS) {
+				processClassesBasedOnBeforeRevision(fragmentDeletedEntry
+						.getValue().get(DEFAULT_IDENTFYING_NUMBER),
+						correspondingAfterElements
+								.get(DEFAULT_IDENTFYING_NUMBER),
+						similarityCalculator, umpire, crds, result);
+			} else if (bType == BlockType.METHOD) {
 				processMethods(
 						fragmentDeletedEntry.getValue().get(
 								DEFAULT_IDENTFYING_NUMBER),
@@ -113,12 +118,19 @@ public class MultipleCodeFragmentLinker extends
 
 			final Map<Integer, List<DBCodeFragmentInfo>> correspondingBeforeElements = beforeFragmentsSorted
 					.get(bType);
-			
+
 			if (correspondingBeforeElements.isEmpty()) {
 				continue;
 			}
 
-			if (bType == BlockType.METHOD) {
+			if (bType == BlockType.CLASS) {
+				processClassesBasedOnAfterRevision(
+						correspondingBeforeElements
+								.get(DEFAULT_IDENTFYING_NUMBER),
+						fragmentAddedEntry.getValue().get(
+								DEFAULT_IDENTFYING_NUMBER),
+						similarityCalculator, umpire, crds, result);
+			} else if (bType == BlockType.METHOD) {
 				processMethods(
 						correspondingBeforeElements
 								.get(DEFAULT_IDENTFYING_NUMBER),
@@ -135,10 +147,117 @@ public class MultipleCodeFragmentLinker extends
 		return result;
 	}
 
+	private Map<Integer, List<DBCodeFragmentInfo>> sortClassesByName(
+			final List<DBCodeFragmentInfo> classes,
+			final Map<Long, DBCrdInfo> crds) {
+		final Map<Integer, List<DBCodeFragmentInfo>> classesByName = new TreeMap<Integer, List<DBCodeFragmentInfo>>();
+		for (final DBCodeFragmentInfo curentClass : classes) {
+			final DBCrdInfo crd = crds.get(curentClass.getCrdId());
+			final String name = crd.getAnchor();
+			final int hash = name.hashCode();
+
+			if (classesByName.containsKey(hash)) {
+				classesByName.get(hash).add(curentClass);
+			} else {
+				final List<DBCodeFragmentInfo> newList = new ArrayList<DBCodeFragmentInfo>();
+				newList.add(curentClass);
+				classesByName.put(hash, newList);
+			}
+		}
+
+		return classesByName;
+	}
+
+	private void processClassesBasedOnBeforeRevision(
+			final List<DBCodeFragmentInfo> beforeClasses,
+			final List<DBCodeFragmentInfo> afterClasses,
+			final ICRDSimilarityCalculator similarityCalculator,
+			final FragmentLinkConditionUmpire umpire,
+			final Map<Long, DBCrdInfo> crds,
+			final Map<DBCodeFragmentInfo, DBCodeFragmentInfo> result) {
+		final Map<Integer, List<DBCodeFragmentInfo>> afterClassesByName = sortClassesByName(
+				afterClasses, crds);
+
+		for (final DBCodeFragmentInfo beforeClass : beforeClasses) {
+			final DBCrdInfo beforeCrd = crds.get(beforeClass.getCrdId());
+
+			if (beforeClass.isFileDeletedAtEnd()) {
+				for (final DBCodeFragmentInfo afterClass : afterClasses) {
+					final DBCrdInfo afterCrd = crds.get(afterClass.getCrdId());
+
+					if (match(umpire, similarityCalculator, beforeCrd, afterCrd)) {
+						result.put(beforeClass, afterClass);
+					}
+				}
+
+			} else {
+				final String name = beforeCrd.getAnchor();
+				final int hash = name.hashCode();
+
+				if (afterClassesByName.containsKey(hash)) {
+					for (final DBCodeFragmentInfo afterClass : afterClassesByName
+							.get(hash)) {
+						final DBCrdInfo afterCrd = crds.get(afterClass
+								.getCrdId());
+
+						if (match(umpire, similarityCalculator, beforeCrd,
+								afterCrd)) {
+							result.put(beforeClass, afterClass);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private void processClassesBasedOnAfterRevision(
+			final List<DBCodeFragmentInfo> beforeClasses,
+			final List<DBCodeFragmentInfo> afterClasses,
+			final ICRDSimilarityCalculator similarityCalculator,
+			final FragmentLinkConditionUmpire umpire,
+			final Map<Long, DBCrdInfo> crds,
+			final Map<DBCodeFragmentInfo, DBCodeFragmentInfo> result) {
+		final Map<Integer, List<DBCodeFragmentInfo>> beforeClassesByName = sortClassesByName(
+				beforeClasses, crds);
+
+		for (final DBCodeFragmentInfo afterClass : afterClasses) {
+			final DBCrdInfo afterCrd = crds.get(afterClass.getCrdId());
+
+			if (afterClass.isFileAddedAtStart()) {
+				for (final DBCodeFragmentInfo beforeClass : beforeClasses) {
+					final DBCrdInfo beforeCrd = crds
+							.get(beforeClass.getCrdId());
+
+					if (match(umpire, similarityCalculator, beforeCrd, afterCrd)) {
+						result.put(beforeClass, afterClass);
+					}
+				}
+
+			} else {
+				final String name = afterCrd.getAnchor();
+				final int hash = name.hashCode();
+
+				if (beforeClassesByName.containsKey(hash)) {
+					for (final DBCodeFragmentInfo beforeClass : beforeClassesByName
+							.get(hash)) {
+						final DBCrdInfo beforeCrd = crds.get(beforeClass
+								.getCrdId());
+
+						if (match(umpire, similarityCalculator, beforeCrd,
+								afterCrd)) {
+							result.put(beforeClass, afterClass);
+						}
+					}
+				}
+			}
+		}
+	}
+
 	private void processMethods(final List<DBCodeFragmentInfo> beforeMethods,
 			final List<DBCodeFragmentInfo> afterMethods,
-			ICRDSimilarityCalculator similarityCalculator,
-			FragmentLinkConditionUmpire umpire, Map<Long, DBCrdInfo> crds,
+			final ICRDSimilarityCalculator similarityCalculator,
+			final FragmentLinkConditionUmpire umpire,
+			final Map<Long, DBCrdInfo> crds,
 			final Map<DBCodeFragmentInfo, DBCodeFragmentInfo> result) {
 		final Map<Integer, List<DBCodeFragmentInfo>> afterMethodsByName = new HashMap<Integer, List<DBCodeFragmentInfo>>();
 		final Map<Integer, List<DBCodeFragmentInfo>> afterMethodsByParameters = new HashMap<Integer, List<DBCodeFragmentInfo>>();
