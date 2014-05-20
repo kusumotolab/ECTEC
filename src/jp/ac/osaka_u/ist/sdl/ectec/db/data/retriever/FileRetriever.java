@@ -27,9 +27,11 @@ public class FileRetriever extends AbstractUniqueElementRetriever<DBFileInfo> {
 		final String path = rs.getString(++column);
 		final long startCombinedRevisionId = rs.getLong(++column);
 		final long endCombinedRevisionId = rs.getLong(++column);
+		final int deletedAtEndInt = rs.getInt(++column);
+		final boolean deletedAtEnd = (deletedAtEndInt == 1);
 
 		return new DBFileInfo(id, repositoryId, path, startCombinedRevisionId,
-				endCombinedRevisionId);
+				endCombinedRevisionId, deletedAtEnd);
 	}
 
 	protected String getStartRevisionIdColumnName() {

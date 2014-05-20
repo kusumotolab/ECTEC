@@ -118,7 +118,7 @@ public class FileInfoInstancesCreatingThread implements Runnable {
 							currentChange.getRepositoryId(), path,
 							currentChangeCombinedCommit
 									.getAfterCombinedRevisionId(),
-							previousCombinedRevisionId);
+							previousCombinedRevisionId, true);
 					files.put(addedFile.getId(), addedFile);
 					break;
 
@@ -127,7 +127,7 @@ public class FileInfoInstancesCreatingThread implements Runnable {
 							currentChange.getRepositoryId(), path,
 							currentChangeCombinedCommit
 									.getAfterCombinedRevisionId(),
-							previousCombinedRevisionId);
+							previousCombinedRevisionId, false);
 					files.put(changedFile.getId(), changedFile);
 					break;
 
@@ -148,7 +148,7 @@ public class FileInfoInstancesCreatingThread implements Runnable {
 				final DBFileInfo addedFile = new DBFileInfo(
 						currentChange.getRepositoryId(), path,
 						currentChangeCombinedCommit
-								.getAfterCombinedRevisionId(), lastRevisionId);
+								.getAfterCombinedRevisionId(), lastRevisionId, true);
 				files.put(addedFile.getId(), addedFile);
 				break;
 
@@ -156,7 +156,7 @@ public class FileInfoInstancesCreatingThread implements Runnable {
 				final DBFileInfo changedFile = new DBFileInfo(
 						currentChange.getRepositoryId(), path,
 						currentChangeCombinedCommit
-								.getAfterCombinedRevisionId(), lastRevisionId);
+								.getAfterCombinedRevisionId(), lastRevisionId, false);
 				files.put(changedFile.getId(), changedFile);
 				break;
 

@@ -37,6 +37,12 @@ public class DBFileInfo extends AbstractDBElement implements
 	private final long endCombinedRevisionid;
 
 	/**
+	 * whether this file was deleted at the end revision <br>
+	 * false indicates this file was modified at the end
+	 */
+	private final boolean deletedAtEnd;
+
+	/**
 	 * the constructor for elements that are retrieved from the db
 	 * 
 	 * @param id
@@ -44,15 +50,17 @@ public class DBFileInfo extends AbstractDBElement implements
 	 * @param path
 	 * @param startCombinedRevisionId
 	 * @param endCombinedRevisionId
+	 * @param deletedAtEnd
 	 */
 	public DBFileInfo(final long id, final long ownerRepositoryId,
 			final String path, final long startCombinedRevisionId,
-			final long endCombinedRevisionId) {
+			final long endCombinedRevisionId, final boolean deletedAtEnd) {
 		super(id);
 		this.ownerRepositoryId = ownerRepositoryId;
 		this.path = path;
 		this.startCombinedRevisionId = startCombinedRevisionId;
 		this.endCombinedRevisionid = endCombinedRevisionId;
+		this.deletedAtEnd = deletedAtEnd;
 	}
 
 	/**
@@ -62,11 +70,13 @@ public class DBFileInfo extends AbstractDBElement implements
 	 * @param path
 	 * @param startCombinedRevisionId
 	 * @param endCombinedRevisionId
+	 * @param deletedAtEnd
 	 */
 	public DBFileInfo(final long ownerRepositoryId, final String path,
-			final long startCombinedRevisionId, final long endCombinedRevisionId) {
+			final long startCombinedRevisionId,
+			final long endCombinedRevisionId, final boolean deletedAtEnd) {
 		this(count.getAndIncrement(), ownerRepositoryId, path,
-				startCombinedRevisionId, endCombinedRevisionId);
+				startCombinedRevisionId, endCombinedRevisionId, deletedAtEnd);
 	}
 
 	/**
@@ -112,6 +122,15 @@ public class DBFileInfo extends AbstractDBElement implements
 	 */
 	public final long getCombinedEndRevisionId() {
 		return this.endCombinedRevisionid;
+	}
+
+	/**
+	 * get whether this file was deleted at the end revision
+	 * 
+	 * @return
+	 */
+	public final boolean isDeletedAtEnd() {
+		return this.deletedAtEnd;
 	}
 
 	@Override
