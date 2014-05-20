@@ -35,10 +35,13 @@ public class CodeFragmentRetriever extends
 		final int startLine = rs.getInt(++column);
 		final int endLine = rs.getInt(++column);
 		final int size = rs.getInt(++column);
+		final int fileDeletedAtEndInt = rs.getInt(++column);
+
+		final boolean fileDeletedAtEnd = (fileDeletedAtEndInt == 1);
 
 		return new DBCodeFragmentInfo(id, ownerFileId, ownerRepositoryId,
 				crdId, startCombinedRevisionId, endCombinedRevisionId, hash,
-				hashForClone, startLine, endLine, size);
+				hashForClone, startLine, endLine, size, fileDeletedAtEnd);
 	}
 
 	protected String getStartRevisionIdColumnName() {

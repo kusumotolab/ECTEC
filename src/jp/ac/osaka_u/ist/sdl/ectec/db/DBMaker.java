@@ -489,6 +489,7 @@ public class DBMaker {
 		builder.append("START_LINE INTEGER,");
 		builder.append("END_LINE INTEGER,");
 		builder.append("SIZE INTEGER,");
+		builder.append("FILE_DELETED_AT_END INTEGER,");
 		builder.append("FOREIGN KEY(OWNER_FILE_ID) REFERENCES FILE(FILE_ID),");
 		builder.append("FOREIGN KEY(OWNER_REPOSITORY_ID) REFERENCES REPOSITORY(REPOSITORY_ID),");
 		builder.append("FOREIGN KEY(CRD_ID) REFERENCES CRD(CRD_ID),");
