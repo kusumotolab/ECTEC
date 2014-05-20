@@ -18,6 +18,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.similarity.ICRDSimilarityCalculator;
 
 import org.apache.log4j.Logger;
+import org.tmatesoft.sqljet.core.internal.lang.SqlParser.con_subexpr_return;
 
 public class MultipleCodeFragmentLinker extends
 		AbstractLocationLimitedCodeFragmentLinker {
@@ -29,8 +30,8 @@ public class MultipleCodeFragmentLinker extends
 	public Map<Long, DBCodeFragmentLinkInfo> detectFragmentPairsWithSortedElements(
 			Map<Long, DBCodeFragmentInfo> beforeFragments,
 			Map<Long, DBCodeFragmentInfo> afterFragments,
-			Map<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> beforeBlocksSorted,
-			Map<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> afterBlocksSorted,
+			Map<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> beforeFragmentsSorted,
+			Map<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> afterFragmentsSorted,
 			ICRDSimilarityCalculator similarityCalculator,
 			double similarityThreshold, Map<Long, DBCrdInfo> crds,
 			long beforeRevisionId, long afterRevisionId,
@@ -39,25 +40,41 @@ public class MultipleCodeFragmentLinker extends
 		final FragmentLinkConditionUmpire umpire = new FragmentLinkConditionUmpire(
 				similarityThreshold);
 		final Map<DBCodeFragmentInfo, DBCodeFragmentInfo> pairs = detectPairs(
-				beforeBlocksSorted, afterBlocksSorted, similarityCalculator,
-				umpire, crds, onlyFragmentInClonesInBeforeRevision,
-				clonesInBeforeRevision);
+				beforeFragments, afterFragments, beforeFragmentsSorted,
+				afterFragmentsSorted, similarityCalculator, umpire, crds,
+				onlyFragmentInClonesInBeforeRevision, clonesInBeforeRevision);
 
 		return makeLinkInstances(pairs, beforeRevisionId, afterRevisionId);
 	}
 
 	private Map<DBCodeFragmentInfo, DBCodeFragmentInfo> detectPairs(
+			Map<Long, DBCodeFragmentInfo> beforeFragments,
+			Map<Long, DBCodeFragmentInfo> afterFragments,
 			Map<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> beforeFragmentsSorted,
 			Map<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> afterFragmentsSorted,
 			ICRDSimilarityCalculator similarityCalculator,
 			FragmentLinkConditionUmpire umpire, Map<Long, DBCrdInfo> crds,
 			boolean onlyFragmentInClonesInBeforeRevision,
 			Map<Long, DBCloneSetInfo> clonesInBeforeRevision) {
+		final Set<Long> commonFragmentIds = new HashSet<Long>();
+		commonFragmentIds.addAll(beforeFragments.keySet());
+		commonFragmentIds.retainAll(afterFragments.keySet());
+
+		final Map<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> fragmentsDeleted = new HashMap<BlockType, Map<Integer, List<DBCodeFragmentInfo>>>();
+		fragmentsDeleted.putAll(beforeFragmentsSorted);
+
+		final Map<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> fragmentsAdded = new HashMap<BlockType, Map<Integer, List<DBCodeFragmentInfo>>>();
+		fragmentsAdded.putAll(afterFragmentsSorted);
+
+		// evacuate the original collections
+		removeCommonFragments(fragmentsDeleted, commonFragmentIds);
+		removeCommonFragments(fragmentsAdded, commonFragmentIds);
+
 		final Map<DBCodeFragmentInfo, DBCodeFragmentInfo> result = new TreeMap<DBCodeFragmentInfo, DBCodeFragmentInfo>();
 
-		for (final Map.Entry<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> rootEntry : beforeFragmentsSorted
+		for (final Map.Entry<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> fragmentDeletedEntry : fragmentsDeleted
 				.entrySet()) {
-			final BlockType bType = rootEntry.getKey();
+			final BlockType bType = fragmentDeletedEntry.getKey();
 			if (!afterFragmentsSorted.containsKey(bType)) {
 				continue;
 			}
@@ -66,16 +83,51 @@ public class MultipleCodeFragmentLinker extends
 
 			final Map<Integer, List<DBCodeFragmentInfo>> correspondingAfterElements = afterFragmentsSorted
 					.get(bType);
+			
+			if (correspondingAfterElements.isEmpty()) {
+				continue;
+			}
 
 			if (bType == BlockType.METHOD) {
 				processMethods(
-						rootEntry.getValue().get(DEFAULT_IDENTFYING_NUMBER),
+						fragmentDeletedEntry.getValue().get(
+								DEFAULT_IDENTFYING_NUMBER),
 						correspondingAfterElements
 								.get(DEFAULT_IDENTFYING_NUMBER),
 						similarityCalculator, umpire, crds, result);
 			} else {
-				processOtherBlocks(rootEntry.getValue(),
+				processOtherBlocks(fragmentDeletedEntry.getValue(),
 						correspondingAfterElements, similarityCalculator,
+						umpire, crds, result);
+			}
+		}
+
+		for (final Map.Entry<BlockType, Map<Integer, List<DBCodeFragmentInfo>>> fragmentAddedEntry : fragmentsAdded
+				.entrySet()) {
+			final BlockType bType = fragmentAddedEntry.getKey();
+			if (!beforeFragmentsSorted.containsKey(bType)) {
+				continue;
+			}
+
+			// logger.debug("processing " + bType);
+
+			final Map<Integer, List<DBCodeFragmentInfo>> correspondingBeforeElements = beforeFragmentsSorted
+					.get(bType);
+			
+			if (correspondingBeforeElements.isEmpty()) {
+				continue;
+			}
+
+			if (bType == BlockType.METHOD) {
+				processMethods(
+						correspondingBeforeElements
+								.get(DEFAULT_IDENTFYING_NUMBER),
+						fragmentAddedEntry.getValue().get(
+								DEFAULT_IDENTFYING_NUMBER),
+						similarityCalculator, umpire, crds, result);
+			} else {
+				processOtherBlocks(correspondingBeforeElements,
+						fragmentAddedEntry.getValue(), similarityCalculator,
 						umpire, crds, result);
 			}
 		}
