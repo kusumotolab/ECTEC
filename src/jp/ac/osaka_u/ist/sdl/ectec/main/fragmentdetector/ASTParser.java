@@ -125,6 +125,11 @@ public class ASTParser extends ASTVisitor {
 	private final int fragmentSizeThreshold;
 
 	/**
+	 * whether the owner file was added at start
+	 */
+	private final boolean fileAddedAtStart;
+
+	/**
 	 * whether the owner file was deleted at end
 	 */
 	private final boolean fileDeletedAtEnd;
@@ -134,7 +139,8 @@ public class ASTParser extends ASTVisitor {
 			final IHashCalculator hashCalculator, final CompilationUnit root,
 			final AnalyzeGranularity granularity,
 			final NormalizerCreator cloneHashCalculatorCreator,
-			final int fragmentSizeThreshold, final boolean fileDeletedAtEnd) {
+			final int fragmentSizeThreshold, final boolean fileAddedAtStart,
+			final boolean fileDeletedAtEnd) {
 		this.detectedCrds = new TreeMap<Long, DBCrdInfo>();
 		this.detectedFragments = new TreeMap<Long, DBCodeFragmentInfo>();
 		this.ownerFileId = ownerFileId;
@@ -149,6 +155,7 @@ public class ASTParser extends ASTVisitor {
 		this.cloneHashCalculatorCreator = cloneHashCalculatorCreator;
 		this.granularity = granularity;
 		this.fragmentSizeThreshold = fragmentSizeThreshold;
+		this.fileAddedAtStart = fileAddedAtStart;
 		this.fileDeletedAtEnd = fileDeletedAtEnd;
 	}
 
@@ -218,7 +225,7 @@ public class ASTParser extends ASTVisitor {
 
 		return new DBCodeFragmentInfo(ownerFileId, ownerRepositoryId, crdId,
 				startRevisionId, endRevisionId, hash, hashForClone, startLine,
-				endLine, size, fileDeletedAtEnd);
+				endLine, size, fileAddedAtStart, fileDeletedAtEnd);
 	}
 
 	/**

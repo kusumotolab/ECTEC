@@ -154,7 +154,8 @@ public class CodeFragmentDetectingThread implements Runnable {
 						repositoryId, targetFile.getStartCombinedRevisionId(),
 						targetFile.getCombinedEndRevisionId(), hashCalculator,
 						root, granularity, blockAnalyzerCreator,
-						fragmentSizeThreshold, targetFile.isDeletedAtEnd());
+						fragmentSizeThreshold, targetFile.isAddedAtStart(),
+						targetFile.isDeletedAtEnd());
 
 				root.accept(parser);
 
