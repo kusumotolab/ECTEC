@@ -89,6 +89,11 @@ public class CodeFragmentIdentifier {
 	 */
 	private final IHashCalculator hashCalculator;
 
+	/**
+	 * the lowest value of size to be considered
+	 */
+	private final int fragmentSizeThreshold;
+
 	public CodeFragmentIdentifier(
 			final Collection<DBFileInfo> targetFiles,
 			final ConcurrentMap<Long, DBRevisionInfo> originalRevisions,
@@ -100,7 +105,8 @@ public class CodeFragmentIdentifier {
 			final ConcurrentMap<Long, AbstractRepositoryManager> repositoryManagers,
 			final AnalyzeGranularity granularity,
 			final NormalizerCreator blockAnalyzerCreator,
-			final IHashCalculator hashCalculator) {
+			final IHashCalculator hashCalculator,
+			final int fragmentSizeThreshold) {
 		this.targetFiles = targetFiles;
 		this.originalRevisions = originalRevisions;
 		this.combinedRevisions = combinedRevisions;
@@ -112,6 +118,7 @@ public class CodeFragmentIdentifier {
 		this.granularity = granularity;
 		this.blockAnalyzerCreator = blockAnalyzerCreator;
 		this.hashCalculator = hashCalculator;
+		this.fragmentSizeThreshold = fragmentSizeThreshold;
 	}
 
 	public void run() throws Exception {
@@ -132,7 +139,8 @@ public class CodeFragmentIdentifier {
 			threads[i] = new Thread(new CodeFragmentDetectingThread(
 					detectedCrds, detectedFragments, filesArray, index,
 					repositoryManagers, originalRevisions, combinedRevisions,
-					granularity, blockAnalyzerCreator, hashCalculator));
+					granularity, blockAnalyzerCreator, hashCalculator,
+					fragmentSizeThreshold));
 			threads[i].start();
 			logger.info("thread " + threads[i].getName() + " started");
 		}

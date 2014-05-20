@@ -119,11 +119,17 @@ public class ASTParser extends ASTVisitor {
 	 */
 	private final AnalyzeGranularity granularity;
 
+	/**
+	 * the lowest value of size to be considered
+	 */
+	private final int fragmentSizeThreshold;
+
 	public ASTParser(final long ownerFileId, final long ownerRepositoryId,
 			final long startRevisionId, final long endRevisionId,
 			final IHashCalculator hashCalculator, final CompilationUnit root,
 			final AnalyzeGranularity granularity,
-			final NormalizerCreator cloneHashCalculatorCreator) {
+			final NormalizerCreator cloneHashCalculatorCreator,
+			final int fragmentSizeThreshold) {
 		this.detectedCrds = new TreeMap<Long, DBCrdInfo>();
 		this.detectedFragments = new TreeMap<Long, DBCodeFragmentInfo>();
 		this.ownerFileId = ownerFileId;
@@ -137,6 +143,7 @@ public class ASTParser extends ASTVisitor {
 		this.hashCalculator = hashCalculator;
 		this.cloneHashCalculatorCreator = cloneHashCalculatorCreator;
 		this.granularity = granularity;
+		this.fragmentSizeThreshold = fragmentSizeThreshold;
 	}
 
 	/**
@@ -235,7 +242,7 @@ public class ASTParser extends ASTVisitor {
 		detectedCrds.put(crd.getId(), crd);
 
 		final BlockType bType = crd.getType();
-		if (bType.isInterested(granularity)) {
+		if (bType.isInterested(granularity) && size >= fragmentSizeThreshold) {
 			final DBCodeFragmentInfo fragment = createCodeFragment(startLine,
 					endLine, rawStr, size, crd.getId(),
 					analyzer.getStringForCloneDetection());

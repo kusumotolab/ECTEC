@@ -90,7 +90,8 @@ public class CodeFragmentDetector {
 				dbManager.getFragmentRegisterer(), settings.getMaxBatchCount(),
 				repositoryManagerManager.getRepositoryManagers(),
 				settings.getGranularity(), new NormalizerCreator(
-						settings.getCloneHashMode()), hashCalculator);
+						settings.getCloneHashMode()), hashCalculator,
+				settings.getFragmentSizeThreshold());
 		identifier.run();
 		logger.info("complete");
 	}

@@ -50,5 +50,7 @@ public interface PropertiesKeys {
 	public static final String CROSS_PROJECT_LINKS = "ectec.cross-project-links";
 
 	public static final String LINK_ONLY_BEFORE_CLONE = "ectec.link-only-before-clone";
+	
+	public static final String FRAGMENT_SIZE_THRESHOLD = "ectec.fragment-size";
 
 }
