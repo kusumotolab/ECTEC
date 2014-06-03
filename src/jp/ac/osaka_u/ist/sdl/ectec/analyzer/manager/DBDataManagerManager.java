@@ -6,6 +6,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetLinkInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentGenealogyInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCombinedRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRepositoryInfo;
@@ -22,6 +23,8 @@ public class DBDataManagerManager {
 	private final DBDataManager<DBRepositoryInfo> dbRepositoryManager;
 
 	private final DBDataManager<DBRevisionInfo> dbRevisionManager;
+	
+	private final DBDataManager<DBCombinedRevisionInfo> dbCombinedRevisionManager;
 
 	private final DBDataManager<DBFileInfo> dbFileManager;
 
@@ -42,6 +45,7 @@ public class DBDataManagerManager {
 	public DBDataManagerManager() {
 		this.dbRepositoryManager = new DBDataManager<DBRepositoryInfo>();
 		this.dbRevisionManager = new DBDataManager<DBRevisionInfo>();
+		this.dbCombinedRevisionManager = new DBDataManager<DBCombinedRevisionInfo>();
 		this.dbFileManager = new DBDataManager<DBFileInfo>();
 		this.dbFragmentManager = new DBDataManager<DBCodeFragmentInfo>();
 		this.dbCloneManager = new DBDataManager<DBCloneSetInfo>();
@@ -60,6 +64,10 @@ public class DBDataManagerManager {
 		return dbRevisionManager;
 	}
 
+	public final DBDataManager<DBCombinedRevisionInfo> getDbCombinedRevisionManager() {
+		return dbCombinedRevisionManager;
+	}
+	
 	public final DBDataManager<DBFileInfo> getDbFileManager() {
 		return dbFileManager;
 	}

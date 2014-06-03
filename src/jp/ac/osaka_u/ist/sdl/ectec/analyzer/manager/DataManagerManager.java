@@ -7,6 +7,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CloneSetLinkInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CodeFragmentGenealogyInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CodeFragmentLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CombinedRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.FileInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.RepositoryInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.RevisionInfo;
@@ -18,10 +19,12 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.RevisionInfo;
  * 
  */
 public class DataManagerManager {
-	
+
 	private final DataManager<RepositoryInfo> repositoryManager;
 
 	private final DataManager<RevisionInfo> revisionManager;
+
+	private final DataManager<CombinedRevisionInfo> combinedRevisionManager;
 
 	private final DataManager<FileInfo> fileManager;
 
@@ -42,6 +45,7 @@ public class DataManagerManager {
 	public DataManagerManager() {
 		this.repositoryManager = new DataManager<RepositoryInfo>();
 		this.revisionManager = new DataManager<RevisionInfo>();
+		this.combinedRevisionManager = new DataManager<CombinedRevisionInfo>();
 		this.fileManager = new DataManager<FileInfo>();
 		this.fragmentManager = new DataManager<CodeFragmentInfo>();
 		this.cloneManager = new DataManager<CloneSetInfo>();
@@ -55,9 +59,13 @@ public class DataManagerManager {
 	public final DataManager<RepositoryInfo> getRepositoryManager() {
 		return repositoryManager;
 	}
-	
+
 	public final DataManager<RevisionInfo> getRevisionManager() {
 		return revisionManager;
+	}
+
+	public final DataManager<CombinedRevisionInfo> getCombinedRevisionManager() {
+		return combinedRevisionManager;
 	}
 
 	public final DataManager<FileInfo> getFileManager() {
