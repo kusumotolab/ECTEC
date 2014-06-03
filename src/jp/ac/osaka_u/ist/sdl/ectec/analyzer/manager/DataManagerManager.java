@@ -8,6 +8,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CodeFragmentGenealogyInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CodeFragmentLinkInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.FileInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.RepositoryInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.RevisionInfo;
 
 /**
@@ -17,6 +18,8 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.RevisionInfo;
  * 
  */
 public class DataManagerManager {
+	
+	private final DataManager<RepositoryInfo> repositoryManager;
 
 	private final DataManager<RevisionInfo> revisionManager;
 
@@ -37,6 +40,7 @@ public class DataManagerManager {
 	private final DataManager<CRD> crdManager;
 
 	public DataManagerManager() {
+		this.repositoryManager = new DataManager<RepositoryInfo>();
 		this.revisionManager = new DataManager<RevisionInfo>();
 		this.fileManager = new DataManager<FileInfo>();
 		this.fragmentManager = new DataManager<CodeFragmentInfo>();
@@ -48,6 +52,10 @@ public class DataManagerManager {
 		this.crdManager = new DataManager<CRD>();
 	}
 
+	public final DataManager<RepositoryInfo> getRepositoryManager() {
+		return repositoryManager;
+	}
+	
 	public final DataManager<RevisionInfo> getRevisionManager() {
 		return revisionManager;
 	}
