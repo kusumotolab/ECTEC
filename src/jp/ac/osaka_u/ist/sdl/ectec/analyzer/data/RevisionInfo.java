@@ -14,9 +14,16 @@ public class RevisionInfo extends AbstractElement implements
 	 */
 	private final String identifier;
 
-	public RevisionInfo(final long id, final String identifier) {
+	/**
+	 * the owner repository of this revision
+	 */
+	private final RepositoryInfo repository;
+
+	public RevisionInfo(final long id, final String identifier,
+			final RepositoryInfo repository) {
 		super(id);
 		this.identifier = identifier;
+		this.repository = repository;
 	}
 
 	@Override
@@ -33,4 +40,12 @@ public class RevisionInfo extends AbstractElement implements
 		return this.identifier;
 	}
 
+	/**
+	 * get the owner repository of this revision
+	 * 
+	 * @return
+	 */
+	public final RepositoryInfo getRepository() {
+		return this.repository;
+	}
 }

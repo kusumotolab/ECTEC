@@ -16,6 +16,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CloneSetLinkInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CodeFragmentLinkInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.FileInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.RepositoryInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.RevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.manager.DBDataManager;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.manager.DBDataManagerManager;
@@ -29,6 +30,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRepositoryInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CRDRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CloneGenealogyRetriever;
@@ -37,6 +39,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CloneSetRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentLinkRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.FileRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.RepositoryRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.RevisionRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.vcs.RepositoryManagerManager;
 
@@ -216,6 +219,18 @@ public class Concretizer {
 		final Map<Long, DBRevisionInfo> dbRevisions = retrieveRevisions(revisionIds);
 		dbDataManagerManager.getDbRevisionManager()
 				.addAll(dbRevisions.values());
+
+		// retrieve repositories
+		final Set<Long> repositoryIds = new HashSet<Long>();
+		for (final Map.Entry<Long, DBRevisionInfo> entry : dbRevisions
+				.entrySet()) {
+			final DBRevisionInfo revision = entry.getValue();
+			repositoryIds.add(revision.getRepositoryId());
+		}
+		final Map<Long, DBRepositoryInfo> dbRepositories = retrieveRepositories(repositoryIds);
+		dbDataManagerManager.getDbRepositoryManager().addAll(
+				dbRepositories.values());
+
 	}
 
 	/**
@@ -381,6 +396,29 @@ public class Concretizer {
 	}
 
 	/**
+	 * retrieve repositories that are not stored in the manager
+	 * 
+	 * @param repositoryIds
+	 * @return
+	 * @throws SQLException
+	 */
+	private Map<Long, DBRepositoryInfo> retrieveRepositories(
+			final Collection<Long> repositoryIds) throws SQLException {
+		final List<Long> repositoryIdsToBeRetrieved = new ArrayList<Long>();
+		final DBDataManager<DBRepositoryInfo> dbRepositoryManager = dbDataManagerManager
+				.getDbRepositoryManager();
+		for (final long repositoryId : repositoryIds) {
+			if (!dbRepositoryManager.contains(repositoryId)) {
+				repositoryIdsToBeRetrieved.add(repositoryId);
+			}
+		}
+		final RepositoryRetriever retriever = dbManager
+				.getRepositoryRetriever();
+
+		return retriever.retrieveWithoutIds(repositoryIdsToBeRetrieved);
+	}
+
+	/**
 	 * perform concretization and register the results
 	 * 
 	 * @param dbGenealogy
@@ -396,9 +434,14 @@ public class Concretizer {
 		final Map<Long, DBFileInfo> dbFiles = getDbFiles(dbFragments);
 		final Map<Long, DBRevisionInfo> dbRevisions = getDbRevisions(dbClones,
 				dbFiles);
+		final Map<Long, DBRepositoryInfo> dbRepositories = getDbRepositories(dbRevisions);
+
+		// concretize repositories
+		final Map<Long, RepositoryInfo> concretizedRepositories = getConcretizedRepositories(dbRepositories);
 
 		// concretize revisions
-		final Map<Long, RevisionInfo> concretizedRevisions = getConcretizedRevisions(dbRevisions);
+		final Map<Long, RevisionInfo> concretizedRevisions = getConcretizedRevisions(
+				dbRevisions, concretizedRepositories);
 
 		// concretize files
 		final Map<Long, FileInfo> concretizedFiles = getConcretizedFiles(
@@ -594,13 +637,64 @@ public class Concretizer {
 	}
 
 	/**
-	 * perform concretization for the given revisions
+	 * get db repositories that correspond to one of the given revisions
 	 * 
 	 * @param dbRevisions
 	 * @return
 	 */
-	private Map<Long, RevisionInfo> getConcretizedRevisions(
+	private Map<Long, DBRepositoryInfo> getDbRepositories(
 			final Map<Long, DBRevisionInfo> dbRevisions) {
+		final Map<Long, DBRepositoryInfo> dbRepositories = new TreeMap<Long, DBRepositoryInfo>();
+		for (final Map.Entry<Long, DBRevisionInfo> entry : dbRevisions
+				.entrySet()) {
+			final long repositoryId = entry.getValue().getRepositoryId();
+			if (!dbRepositories.containsKey(repositoryId)) {
+				dbRepositories.put(repositoryId, dbDataManagerManager
+						.getDbRepositoryManager().getElement(repositoryId));
+			}
+		}
+		return dbRepositories;
+	}
+
+	/**
+	 * perform concretization for the given repositories
+	 * 
+	 * @param dbRepositories
+	 * @return
+	 */
+	private Map<Long, RepositoryInfo> getConcretizedRepositories(
+			final Map<Long, DBRepositoryInfo> dbRepositories) {
+		final DataManager<RepositoryInfo> repositoryManager = dataManagerManager
+				.getRepositoryManager();
+		final RepositoryConcretizer repositoryConcretizer = new RepositoryConcretizer();
+		final Map<Long, RepositoryInfo> concretizedRepositories = new TreeMap<Long, RepositoryInfo>();
+		for (final Map.Entry<Long, DBRepositoryInfo> entry : dbRepositories
+				.entrySet()) {
+			final long repositoryId = entry.getKey();
+			if (repositoryManager.contains(repositoryId)) {
+				concretizedRepositories.put(repositoryId,
+						repositoryManager.getElement(repositoryId));
+			} else {
+				final RepositoryInfo concretizedRepository = repositoryConcretizer
+						.concretize(entry.getValue());
+				repositoryManager.add(concretizedRepository);
+				concretizedRepositories.put(entry.getKey(),
+						concretizedRepository);
+			}
+		}
+		return concretizedRepositories;
+	}
+
+	/**
+	 * perform concretization for the given revisions
+	 * 
+	 * @param dbRevisions
+	 * @param concretizedRepositories
+	 * @return
+	 */
+	private Map<Long, RevisionInfo> getConcretizedRevisions(
+			final Map<Long, DBRevisionInfo> dbRevisions,
+			final Map<Long, RepositoryInfo> concretizedRepositories) {
 		final DataManager<RevisionInfo> revisionManager = dataManagerManager
 				.getRevisionManager();
 		final RevisionInfoConcretizer revisionConcretizer = new RevisionInfoConcretizer();
@@ -613,7 +707,7 @@ public class Concretizer {
 						revisionManager.getElement(revisionId));
 			} else {
 				final RevisionInfo concretizedRevision = revisionConcretizer
-						.concretize(entry.getValue());
+						.concretize(entry.getValue(), concretizedRepositories);
 				revisionManager.add(concretizedRevision);
 				concretizedRevisions.put(entry.getKey(), concretizedRevision);
 			}
