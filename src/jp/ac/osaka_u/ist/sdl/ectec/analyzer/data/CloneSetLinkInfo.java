@@ -13,14 +13,14 @@ public class CloneSetLinkInfo extends AbstractElement implements
 		Comparable<CloneSetLinkInfo> {
 
 	/**
-	 * the before revision
+	 * the before combined revision
 	 */
-	private final RevisionInfo beforeRevision;
+	private final CombinedRevisionInfo beforeCombinedRevision;
 
 	/**
-	 * the after revision
+	 * the after combined revision
 	 */
-	private final RevisionInfo afterRevision;
+	private final CombinedRevisionInfo afterCombinedRevision;
 
 	/**
 	 * the before clone
@@ -57,16 +57,17 @@ public class CloneSetLinkInfo extends AbstractElement implements
 	 */
 	private final List<CodeFragmentLinkInfo> fragmentLinks;
 
-	public CloneSetLinkInfo(final long id, final RevisionInfo beforeRevision,
-			final RevisionInfo afterRevision, final CloneSetInfo beforeClone,
-			final CloneSetInfo afterClone, final int numberOfAddedElements,
-			final int numberOfDeletedElements,
+	public CloneSetLinkInfo(final long id,
+			final CombinedRevisionInfo beforeCombinedRevision,
+			final CombinedRevisionInfo afterCombinedRevision,
+			final CloneSetInfo beforeClone, final CloneSetInfo afterClone,
+			final int numberOfAddedElements, final int numberOfDeletedElements,
 			final int numberOfChangedElements,
 			final int numberOfCoChangedElements,
 			final List<CodeFragmentLinkInfo> fragmentLinks) {
 		super(id);
-		this.beforeRevision = beforeRevision;
-		this.afterRevision = afterRevision;
+		this.beforeCombinedRevision = beforeCombinedRevision;
+		this.afterCombinedRevision = afterCombinedRevision;
 		this.beforeClone = beforeClone;
 		this.afterClone = afterClone;
 		this.numberOfAddedElements = numberOfAddedElements;
@@ -77,21 +78,21 @@ public class CloneSetLinkInfo extends AbstractElement implements
 	}
 
 	/**
-	 * get the before revision
+	 * get the before combined revision
 	 * 
 	 * @return
 	 */
-	public final RevisionInfo getBeforeRevision() {
-		return beforeRevision;
+	public final CombinedRevisionInfo getBeforeCombinedRevision() {
+		return beforeCombinedRevision;
 	}
 
 	/**
-	 * get the after revision
+	 * get the after combined revision
 	 * 
 	 * @return
 	 */
-	public final RevisionInfo getAfterRevision() {
-		return afterRevision;
+	public final CombinedRevisionInfo getAfterCombinedRevision() {
+		return afterCombinedRevision;
 	}
 
 	/**
@@ -159,14 +160,14 @@ public class CloneSetLinkInfo extends AbstractElement implements
 
 	@Override
 	public int compareTo(CloneSetLinkInfo another) {
-		final int compareWithBeforeRev = beforeRevision.compareTo(another
-				.getBeforeRevision());
+		final int compareWithBeforeRev = beforeCombinedRevision
+				.compareTo(another.getBeforeCombinedRevision());
 		if (compareWithBeforeRev != 0) {
 			return compareWithBeforeRev;
 		}
 
-		final int compareWithAfterRev = afterRevision.compareTo(another
-				.getAfterRevision());
+		final int compareWithAfterRev = afterCombinedRevision.compareTo(another
+				.getAfterCombinedRevision());
 		if (compareWithAfterRev != 0) {
 			return compareWithAfterRev;
 		}
