@@ -7,8 +7,8 @@ import java.util.TreeMap;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CRD;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CodeFragmentInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CombinedRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.FileInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.RevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
 
 /**
@@ -20,32 +20,32 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
 public class CodeFragmentInfoConcretizer {
 
 	public CodeFragmentInfo concretize(final DBCodeFragmentInfo dbFragment,
-			final Map<Long, RevisionInfo> revisions,
+			final Map<Long, CombinedRevisionInfo> combinedRevisions,
 			final Map<Long, FileInfo> files, final Map<Long, CRD> crds) {
 		final long id = dbFragment.getId();
 		final FileInfo ownerFile = files.get(dbFragment.getOwnerFileId());
 		final CRD crd = crds.get(dbFragment.getCrdId());
-		final RevisionInfo startRevision = revisions.get(dbFragment
-				.getStartCombinedRevisionId());
-		final RevisionInfo endRevision = revisions.get(dbFragment
-				.getEndCombinedRevisionId());
+		final CombinedRevisionInfo startCombinedRevision = combinedRevisions
+				.get(dbFragment.getStartCombinedRevisionId());
+		final CombinedRevisionInfo endCombinedRevision = combinedRevisions
+				.get(dbFragment.getEndCombinedRevisionId());
 		final int startLine = dbFragment.getStartLine();
 		final int endLine = dbFragment.getEndLine();
 		final int size = dbFragment.getSize();
 
-		return new CodeFragmentInfo(id, ownerFile, crd, startRevision,
-				endRevision, startLine, endLine, size);
+		return new CodeFragmentInfo(id, ownerFile, crd, startCombinedRevision,
+				endCombinedRevision, startLine, endLine, size);
 	}
 
 	public Map<Long, CodeFragmentInfo> concretizeAll(
 			final Collection<DBCodeFragmentInfo> dbFragments,
-			final Map<Long, RevisionInfo> revisions,
+			final Map<Long, CombinedRevisionInfo> combinedRevisions,
 			final Map<Long, FileInfo> files, final Map<Long, CRD> crds) {
 		final Map<Long, CodeFragmentInfo> result = new TreeMap<Long, CodeFragmentInfo>();
 
 		for (final DBCodeFragmentInfo dbFragment : dbFragments) {
-			final CodeFragmentInfo fragment = concretize(dbFragment, revisions,
-					files, crds);
+			final CodeFragmentInfo fragment = concretize(dbFragment,
+					combinedRevisions, files, crds);
 			result.put(fragment.getId(), fragment);
 		}
 
@@ -54,9 +54,10 @@ public class CodeFragmentInfoConcretizer {
 
 	public Map<Long, CodeFragmentInfo> concretizeAll(
 			final Map<Long, DBCodeFragmentInfo> dbFragments,
-			final Map<Long, RevisionInfo> revisions,
+			final Map<Long, CombinedRevisionInfo> combinedRevisions,
 			final Map<Long, FileInfo> files, final Map<Long, CRD> crds) {
-		return concretizeAll(dbFragments.values(), revisions, files, crds);
+		return concretizeAll(dbFragments.values(), combinedRevisions, files,
+				crds);
 	}
 
 }
