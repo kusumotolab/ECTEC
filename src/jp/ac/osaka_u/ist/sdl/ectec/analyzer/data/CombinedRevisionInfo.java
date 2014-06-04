@@ -29,7 +29,7 @@ public class CombinedRevisionInfo extends AbstractElement implements
 		return Collections.unmodifiableList(originalRevisions);
 	}
 
-	public final RevisionInfo getOriginalRevisoin(
+	public final RevisionInfo getOriginalRevision(
 			final RepositoryInfo repository) {
 		for (final RevisionInfo originalRevision : originalRevisions) {
 			if (originalRevision.getRepository().equals(repository)) {
