@@ -9,6 +9,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.BlockInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CRD;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CatchClauseInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.ClassInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CombinedRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.DoStatementInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.ElseStatementInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.EnhancedForStatementInfo;
@@ -17,7 +18,6 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.FinallyBlockInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.ForStatementInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.IfStatementInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.MethodInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.RevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.SwitchStatementInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.SynchronizedStatementInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.TryStatementInfo;
@@ -65,15 +65,15 @@ import org.eclipse.jdt.core.dom.WhileStatement;
 public class BlockInfoConcretizer {
 
 	public BlockInfo<?> concretize(final DBCodeFragmentInfo dbFragment,
-			final Map<Long, RevisionInfo> revisions,
+			final Map<Long, CombinedRevisionInfo> combinedRevisions,
 			final Map<Long, FileInfo> files, final Map<Long, CRD> crds) {
 		final long id = dbFragment.getId();
 		final FileInfo ownerFile = files.get(dbFragment.getOwnerFileId());
 		final CRD crd = crds.get(dbFragment.getCrdId());
-		final RevisionInfo startRevision = revisions.get(dbFragment
-				.getStartCombinedRevisionId());
-		final RevisionInfo endRevision = revisions.get(dbFragment
-				.getEndCombinedRevisionId());
+		final CombinedRevisionInfo startCombinedRevision = combinedRevisions
+				.get(dbFragment.getStartCombinedRevisionId());
+		final CombinedRevisionInfo endCombinedRevision = combinedRevisions
+				.get(dbFragment.getEndCombinedRevisionId());
 		final int startLine = dbFragment.getStartLine();
 		final int endLine = dbFragment.getEndLine();
 		final int size = dbFragment.getSize();
@@ -88,62 +88,69 @@ public class BlockInfoConcretizer {
 
 		switch (bType) {
 		case CLASS:
-			return new ClassInfo(id, ownerFile, crd, startRevision,
-					endRevision, startLine, endLine, size,
+			return new ClassInfo(id, ownerFile, crd, startCombinedRevision,
+					endCombinedRevision, startLine, endLine, size,
 					(TypeDeclaration) node);
 
 		case METHOD:
-			return new MethodInfo(id, ownerFile, crd, startRevision,
-					endRevision, startLine, endLine, size,
+			return new MethodInfo(id, ownerFile, crd, startCombinedRevision,
+					endCombinedRevision, startLine, endLine, size,
 					(MethodDeclaration) node);
 
 		case CATCH:
-			return new CatchClauseInfo(id, ownerFile, crd, startRevision,
-					endRevision, startLine, endLine, size, (CatchClause) node);
+			return new CatchClauseInfo(id, ownerFile, crd,
+					startCombinedRevision, endCombinedRevision, startLine,
+					endLine, size, (CatchClause) node);
 
 		case DO:
-			return new DoStatementInfo(id, ownerFile, crd, startRevision,
-					endRevision, startLine, endLine, size, (DoStatement) node);
+			return new DoStatementInfo(id, ownerFile, crd,
+					startCombinedRevision, endCombinedRevision, startLine,
+					endLine, size, (DoStatement) node);
 
 		case ELSE:
-			return new ElseStatementInfo(id, ownerFile, crd, startRevision,
-					endRevision, startLine, endLine, size, (Statement) node);
+			return new ElseStatementInfo(id, ownerFile, crd,
+					startCombinedRevision, endCombinedRevision, startLine,
+					endLine, size, (Statement) node);
 
 		case ENHANCED_FOR:
 			return new EnhancedForStatementInfo(id, ownerFile, crd,
-					startRevision, endRevision, startLine, endLine, size,
-					(EnhancedForStatement) node);
+					startCombinedRevision, endCombinedRevision, startLine,
+					endLine, size, (EnhancedForStatement) node);
 
 		case FINALLY:
-			return new FinallyBlockInfo(id, ownerFile, crd, startRevision,
-					endRevision, startLine, endLine, size, (Block) node);
+			return new FinallyBlockInfo(id, ownerFile, crd,
+					startCombinedRevision, endCombinedRevision, startLine,
+					endLine, size, (Block) node);
 
 		case FOR:
-			return new ForStatementInfo(id, ownerFile, crd, startRevision,
-					endRevision, startLine, endLine, size, (ForStatement) node);
+			return new ForStatementInfo(id, ownerFile, crd,
+					startCombinedRevision, endCombinedRevision, startLine,
+					endLine, size, (ForStatement) node);
 
 		case IF:
-			return new IfStatementInfo(id, ownerFile, crd, startRevision,
-					endRevision, startLine, endLine, size, (IfStatement) node);
+			return new IfStatementInfo(id, ownerFile, crd,
+					startCombinedRevision, endCombinedRevision, startLine,
+					endLine, size, (IfStatement) node);
 
 		case SWITCH:
-			return new SwitchStatementInfo(id, ownerFile, crd, startRevision,
-					endRevision, startLine, endLine, size,
-					(SwitchStatement) node);
+			return new SwitchStatementInfo(id, ownerFile, crd,
+					startCombinedRevision, endCombinedRevision, startLine,
+					endLine, size, (SwitchStatement) node);
 
 		case SYNCHRONIZED:
 			return new SynchronizedStatementInfo(id, ownerFile, crd,
-					startRevision, endRevision, startLine, endLine, size,
-					(SynchronizedStatement) node);
+					startCombinedRevision, endCombinedRevision, startLine,
+					endLine, size, (SynchronizedStatement) node);
 
 		case TRY:
-			return new TryStatementInfo(id, ownerFile, crd, startRevision,
-					endRevision, startLine, endLine, size, (TryStatement) node);
+			return new TryStatementInfo(id, ownerFile, crd,
+					startCombinedRevision, endCombinedRevision, startLine,
+					endLine, size, (TryStatement) node);
 
 		case WHILE:
-			return new WhileStatementInfo(id, ownerFile, crd, startRevision,
-					endRevision, startLine, endLine, size,
-					(WhileStatement) node);
+			return new WhileStatementInfo(id, ownerFile, crd,
+					startCombinedRevision, endCombinedRevision, startLine,
+					endLine, size, (WhileStatement) node);
 
 		default:
 			return null;
@@ -152,13 +159,13 @@ public class BlockInfoConcretizer {
 
 	public Map<Long, BlockInfo<?>> concretizeAll(
 			final Collection<DBCodeFragmentInfo> dbFragments,
-			final Map<Long, RevisionInfo> revisions,
+			final Map<Long, CombinedRevisionInfo> combinedRevisions,
 			final Map<Long, FileInfo> files, final Map<Long, CRD> crds) {
 		final Map<Long, BlockInfo<?>> result = new TreeMap<Long, BlockInfo<?>>();
 
 		for (final DBCodeFragmentInfo dbFragment : dbFragments) {
-			final BlockInfo<?> block = concretize(dbFragment, revisions, files,
-					crds);
+			final BlockInfo<?> block = concretize(dbFragment,
+					combinedRevisions, files, crds);
 			result.put(block.getId(), block);
 		}
 
@@ -167,9 +174,10 @@ public class BlockInfoConcretizer {
 
 	public Map<Long, BlockInfo<?>> concretizeAll(
 			final Map<Long, DBCodeFragmentInfo> dbFragments,
-			final Map<Long, RevisionInfo> revisions,
+			final Map<Long, CombinedRevisionInfo> combinedRevisions,
 			final Map<Long, FileInfo> files, final Map<Long, CRD> crds) {
-		return concretizeAll(dbFragments.values(), revisions, files, crds);
+		return concretizeAll(dbFragments.values(), combinedRevisions, files,
+				crds);
 	}
 
 	/**
