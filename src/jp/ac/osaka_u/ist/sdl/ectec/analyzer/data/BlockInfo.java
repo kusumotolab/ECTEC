@@ -23,11 +23,11 @@ public abstract class BlockInfo<T extends ASTNode> extends CodeFragmentInfo {
 	protected final T node;
 
 	public BlockInfo(long id, FileInfo ownerFile, final CRD crd,
-			RevisionInfo startRevision, RevisionInfo endRevision,
-			int startLine, int endLine, int size, final BlockType blockType,
-			final T node) {
-		super(id, ownerFile, crd, startRevision, endRevision, startLine,
-				endLine, size);
+			CombinedRevisionInfo startCombinedRevision,
+			CombinedRevisionInfo endCombinedRevision, int startLine,
+			int endLine, int size, final BlockType blockType, final T node) {
+		super(id, ownerFile, crd, startCombinedRevision, endCombinedRevision,
+				startLine, endLine, size);
 		this.blockType = blockType;
 		this.node = node;
 	}

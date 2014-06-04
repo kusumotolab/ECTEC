@@ -13,10 +13,11 @@ import org.eclipse.jdt.core.dom.ForStatement;
 public class ForStatementInfo extends BlockInfo<ForStatement> {
 
 	public ForStatementInfo(long id, FileInfo ownerFile, CRD crd,
-			RevisionInfo startRevision, RevisionInfo endRevision,
-			int startLine, int endLine, int size, ForStatement node) {
-		super(id, ownerFile, crd, startRevision, endRevision, startLine,
-				endLine, size, BlockType.FOR, node);
+			CombinedRevisionInfo startCombinedRevision,
+			CombinedRevisionInfo endCombinedRevision, int startLine,
+			int endLine, int size, ForStatement node) {
+		super(id, ownerFile, crd, startCombinedRevision, endCombinedRevision,
+				startLine, endLine, size, BlockType.FOR, node);
 	}
 
 }

@@ -13,10 +13,11 @@ import org.eclipse.jdt.core.dom.TryStatement;
 public class TryStatementInfo extends BlockInfo<TryStatement> {
 
 	public TryStatementInfo(long id, FileInfo ownerFile, CRD crd,
-			RevisionInfo startRevision, RevisionInfo endRevision,
-			int startLine, int endLine, int size, TryStatement node) {
-		super(id, ownerFile, crd, startRevision, endRevision, startLine,
-				endLine, size, BlockType.TRY, node);
+			CombinedRevisionInfo startCombinedRevision,
+			CombinedRevisionInfo endCombinedRevision, int startLine,
+			int endLine, int size, TryStatement node) {
+		super(id, ownerFile, crd, startCombinedRevision, endCombinedRevision,
+				startLine, endLine, size, BlockType.TRY, node);
 	}
 
 }
