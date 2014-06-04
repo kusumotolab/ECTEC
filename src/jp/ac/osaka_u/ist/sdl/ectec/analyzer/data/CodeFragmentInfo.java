@@ -20,14 +20,14 @@ public class CodeFragmentInfo extends AbstractElement implements
 	protected final CRD crd;
 
 	/**
-	 * the start revision
+	 * the start combined revision
 	 */
-	protected final RevisionInfo startRevision;
+	protected final CombinedRevisionInfo startCombinedRevision;
 
 	/**
-	 * the end revision
+	 * the end combined revision
 	 */
-	protected final RevisionInfo endRevision;
+	protected final CombinedRevisionInfo endCombinedRevision;
 
 	/**
 	 * the start line
@@ -45,14 +45,14 @@ public class CodeFragmentInfo extends AbstractElement implements
 	protected final int size;
 
 	public CodeFragmentInfo(final long id, final FileInfo ownerFile,
-			final CRD crd, final RevisionInfo startRevision,
-			final RevisionInfo endRevision, final int startLine,
+			final CRD crd, final CombinedRevisionInfo startCombinedRevision,
+			final CombinedRevisionInfo endCombinedRevision, final int startLine,
 			final int endLine, final int size) {
 		super(id);
 		this.ownerFile = ownerFile;
 		this.crd = crd;
-		this.startRevision = startRevision;
-		this.endRevision = endRevision;
+		this.startCombinedRevision = startCombinedRevision;
+		this.endCombinedRevision = endCombinedRevision;
 		this.startLine = startLine;
 		this.endLine = endLine;
 		this.size = size;
@@ -77,21 +77,21 @@ public class CodeFragmentInfo extends AbstractElement implements
 	}
 
 	/**
-	 * get the start revision
+	 * get the start combined revision
 	 * 
 	 * @return
 	 */
-	public final RevisionInfo getStartRevision() {
-		return startRevision;
+	public final CombinedRevisionInfo getStartCombinedRevision() {
+		return startCombinedRevision;
 	}
 
 	/**
-	 * get the end revision
+	 * get the end combined revision
 	 * 
 	 * @return
 	 */
-	public final RevisionInfo getEndRevision() {
-		return endRevision;
+	public final CombinedRevisionInfo getEndCombinedRevision() {
+		return endCombinedRevision;
 	}
 
 	/**
