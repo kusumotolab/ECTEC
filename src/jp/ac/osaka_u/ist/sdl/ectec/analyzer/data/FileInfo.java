@@ -16,6 +16,11 @@ public class FileInfo extends AbstractElement implements Comparable<FileInfo> {
 	private final String path;
 
 	/**
+	 * the owner repository of this file
+	 */
+	private final RepositoryInfo ownerRepository;
+
+	/**
 	 * the start combined revision
 	 */
 	private final CombinedRevisionInfo startCombinedRevision;
@@ -31,11 +36,13 @@ public class FileInfo extends AbstractElement implements Comparable<FileInfo> {
 	private final CompilationUnit node;
 
 	public FileInfo(final long id, final String path,
+			final RepositoryInfo ownerRepository,
 			final CombinedRevisionInfo startCombinedRevision,
 			final CombinedRevisionInfo endCombinedRevision,
 			final CompilationUnit node) {
 		super(id);
 		this.path = path;
+		this.ownerRepository = ownerRepository;
 		this.startCombinedRevision = startCombinedRevision;
 		this.endCombinedRevision = endCombinedRevision;
 		this.node = node;
@@ -48,6 +55,15 @@ public class FileInfo extends AbstractElement implements Comparable<FileInfo> {
 	 */
 	public final String getPath() {
 		return path;
+	}
+
+	/**
+	 * get the owner repository of this file
+	 * 
+	 * @return
+	 */
+	public final RepositoryInfo getOwnerRepository() {
+		return ownerRepository;
 	}
 
 	/**
