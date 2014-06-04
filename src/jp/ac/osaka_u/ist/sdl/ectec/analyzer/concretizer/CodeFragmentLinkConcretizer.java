@@ -7,7 +7,7 @@ import java.util.TreeMap;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CodeFragmentLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.RevisionInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CombinedRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
 
 /**
@@ -20,32 +20,32 @@ public class CodeFragmentLinkConcretizer {
 
 	public CodeFragmentLinkInfo concretize(
 			final DBCodeFragmentLinkInfo dbFragmentLink,
-			final Map<Long, RevisionInfo> revisions,
+			final Map<Long, CombinedRevisionInfo> combinedRevisions,
 			final Map<Long, CodeFragmentInfo> fragments) {
 		final long id = dbFragmentLink.getId();
-		final RevisionInfo beforeRevision = revisions.get(dbFragmentLink
-				.getBeforeCombinedRevisionId());
-		final RevisionInfo afterRevision = revisions.get(dbFragmentLink
-				.getAfterCombinedRevisionId());
+		final CombinedRevisionInfo beforeCombinedRevision = combinedRevisions
+				.get(dbFragmentLink.getBeforeCombinedRevisionId());
+		final CombinedRevisionInfo afterCombinedRevision = combinedRevisions
+				.get(dbFragmentLink.getAfterCombinedRevisionId());
 		final CodeFragmentInfo beforeFragment = fragments.get(dbFragmentLink
 				.getBeforeElementId());
 		final CodeFragmentInfo afterFragment = fragments.get(dbFragmentLink
 				.getAfterElementId());
 		final boolean changed = dbFragmentLink.isChanged();
 
-		return new CodeFragmentLinkInfo(id, beforeRevision, afterRevision,
-				beforeFragment, afterFragment, changed);
+		return new CodeFragmentLinkInfo(id, beforeCombinedRevision,
+				afterCombinedRevision, beforeFragment, afterFragment, changed);
 	}
 
 	public Map<Long, CodeFragmentLinkInfo> concretizeAll(
 			final Collection<DBCodeFragmentLinkInfo> dbFragmentLinks,
-			final Map<Long, RevisionInfo> revisions,
+			final Map<Long, CombinedRevisionInfo> combinedRevisions,
 			final Map<Long, CodeFragmentInfo> fragments) {
 		final Map<Long, CodeFragmentLinkInfo> result = new TreeMap<Long, CodeFragmentLinkInfo>();
 
 		for (final DBCodeFragmentLinkInfo dbFragmentLink : dbFragmentLinks) {
 			final CodeFragmentLinkInfo fragmentLink = concretize(
-					dbFragmentLink, revisions, fragments);
+					dbFragmentLink, combinedRevisions, fragments);
 			result.put(fragmentLink.getId(), fragmentLink);
 		}
 
@@ -54,9 +54,10 @@ public class CodeFragmentLinkConcretizer {
 
 	public Map<Long, CodeFragmentLinkInfo> concretizeAll(
 			final Map<Long, DBCodeFragmentLinkInfo> dbFragmentLinks,
-			final Map<Long, RevisionInfo> revisions,
+			final Map<Long, CombinedRevisionInfo> combinedRevisions,
 			final Map<Long, CodeFragmentInfo> fragments) {
-		return concretizeAll(dbFragmentLinks.values(), revisions, fragments);
+		return concretizeAll(dbFragmentLinks.values(), combinedRevisions,
+				fragments);
 	}
 
 }
