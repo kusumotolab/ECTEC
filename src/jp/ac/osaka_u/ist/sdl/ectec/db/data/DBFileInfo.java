@@ -132,7 +132,7 @@ public class DBFileInfo extends AbstractDBElement implements
 	 * 
 	 * @return
 	 */
-	public final long getCombinedEndRevisionId() {
+	public final long getEndCombinedRevisionId() {
 		return this.endCombinedRevisionid;
 	}
 

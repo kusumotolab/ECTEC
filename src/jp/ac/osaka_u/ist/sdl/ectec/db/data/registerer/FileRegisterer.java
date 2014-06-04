@@ -37,7 +37,7 @@ public class FileRegisterer extends AbstractUniqueElementRegisterer<DBFileInfo> 
 		pstmt.setLong(++column, element.getOwnerRepositoryId());
 		pstmt.setString(++column, element.getPath());
 		pstmt.setLong(++column, element.getStartCombinedRevisionId());
-		pstmt.setLong(++column, element.getCombinedEndRevisionId());
+		pstmt.setLong(++column, element.getEndCombinedRevisionId());
 
 		final int addedAtStartInt = (element.isAddedAtStart()) ? 1 : 0;
 		pstmt.setInt(++column, addedAtStartInt);

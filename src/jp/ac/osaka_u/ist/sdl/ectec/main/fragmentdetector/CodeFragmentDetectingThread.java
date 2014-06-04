@@ -152,7 +152,7 @@ public class CodeFragmentDetectingThread implements Runnable {
 
 				final ASTParser parser = new ASTParser(targetFile.getId(),
 						repositoryId, targetFile.getStartCombinedRevisionId(),
-						targetFile.getCombinedEndRevisionId(), hashCalculator,
+						targetFile.getEndCombinedRevisionId(), hashCalculator,
 						root, granularity, blockAnalyzerCreator,
 						fragmentSizeThreshold, targetFile.isAddedAtStart(),
 						targetFile.isDeletedAtEnd());
