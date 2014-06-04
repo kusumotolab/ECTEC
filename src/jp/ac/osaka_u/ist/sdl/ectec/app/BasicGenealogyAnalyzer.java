@@ -38,8 +38,8 @@ public class BasicGenealogyAnalyzer {
 			pw.print(genealogy.getNumberOfAdditions() + ",");
 			pw.print(genealogy.getNumberOfChanges() + ",");
 			pw.print(genealogy.getNumberOfDeletions() + ",");
-			pw.print(genealogy.getCombinedStartRevision().getIdentifier() + ",");
-			pw.print(genealogy.getCombinedEndRevision().getIdentifier() + ",");
+//			pw.print(genealogy.getCombinedStartRevision().getIdentifier() + ",");
+//			pw.print(genealogy.getCombinedEndRevision().getIdentifier() + ",");
 
 			final CloneSetInfo latest = genealogy.getClones().get(
 					genealogy.getClones().size() - 1);

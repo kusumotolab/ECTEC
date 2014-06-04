@@ -44,7 +44,7 @@ public final class FileInfoConcretizer {
 			final CombinedRevisionInfo startCombinedRevision = combinedRevisions
 					.get(dbFile.getStartCombinedRevisionId());
 			final CombinedRevisionInfo endCombinedRevision = combinedRevisions
-					.get(dbFile.getCombinedEndRevisionId());
+					.get(dbFile.getEndCombinedRevisionId());
 			final RevisionInfo startOriginalRevision = startCombinedRevision
 					.getOriginalRevision(ownerRepository);
 

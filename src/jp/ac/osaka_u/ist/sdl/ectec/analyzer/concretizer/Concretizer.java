@@ -15,6 +15,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CloneSetInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CloneSetLinkInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CodeFragmentLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CombinedRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.FileInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.RepositoryInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.RevisionInfo;
@@ -28,6 +29,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetLinkInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCombinedRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRepositoryInfo;
@@ -38,6 +40,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CloneSetLinkRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CloneSetRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentLinkRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CodeFragmentRetriever;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.CombinedRevisionRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.FileRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.RepositoryRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.RevisionRetriever;
@@ -205,16 +208,27 @@ public class Concretizer {
 		final Map<Long, DBCrdInfo> dbCrds = retrieveCrds(crdIds);
 		dbDataManagerManager.getDbCrdManager().addAll(dbCrds.values());
 
-		// retrieve revisions
-		final Set<Long> revisionIds = new HashSet<Long>();
+		// retrieve combined revisions
+		final Set<Long> combinedRevisionIds = new HashSet<Long>();
 		for (final Map.Entry<Long, DBCloneSetInfo> entry : dbClones.entrySet()) {
 			final DBCloneSetInfo clone = entry.getValue();
-			revisionIds.add(clone.getCombinedRevisionId());
+			combinedRevisionIds.add(clone.getCombinedRevisionId());
 		}
 		for (final Map.Entry<Long, DBFileInfo> entry : dbFiles.entrySet()) {
 			final DBFileInfo file = entry.getValue();
-			revisionIds.add(file.getStartCombinedRevisionId());
-			revisionIds.add(file.getCombinedEndRevisionId());
+			combinedRevisionIds.add(file.getStartCombinedRevisionId());
+			combinedRevisionIds.add(file.getEndCombinedRevisionId());
+		}
+		final Map<Long, DBCombinedRevisionInfo> dbCombinedRevisions = retrieveCombinedRevisions(combinedRevisionIds);
+		dbDataManagerManager.getDbCombinedRevisionManager().addAll(
+				dbCombinedRevisions.values());
+
+		// retrieve revisions
+		final Set<Long> revisionIds = new HashSet<Long>();
+		for (final Map.Entry<Long, DBCombinedRevisionInfo> entry : dbCombinedRevisions
+				.entrySet()) {
+			final DBCombinedRevisionInfo combinedRevision = entry.getValue();
+			revisionIds.addAll(combinedRevision.getOriginalRevisions());
 		}
 		final Map<Long, DBRevisionInfo> dbRevisions = retrieveRevisions(revisionIds);
 		dbDataManagerManager.getDbRevisionManager()
@@ -374,9 +388,32 @@ public class Concretizer {
 	}
 
 	/**
+	 * retrieve combined revisions that are not stored in the manager
+	 * 
+	 * @param combiendRevisionIds
+	 * @return
+	 * @throws SQLException
+	 */
+	private Map<Long, DBCombinedRevisionInfo> retrieveCombinedRevisions(
+			final Collection<Long> combinedRevisionIds) throws SQLException {
+		final List<Long> combinedRevisionIdsToBeRetrieved = new ArrayList<Long>();
+		final DBDataManager<DBCombinedRevisionInfo> dbCombinedRevisionManager = dbDataManagerManager
+				.getDbCombinedRevisionManager();
+		for (final long combinedRevisionId : combinedRevisionIds) {
+			if (!dbCombinedRevisionManager.contains(combinedRevisionId)) {
+				combinedRevisionIdsToBeRetrieved.add(combinedRevisionId);
+			}
+		}
+		final CombinedRevisionRetriever retriever = dbManager
+				.getCombinedRevisionRetriever();
+
+		return retriever.retrieveWithIds(combinedRevisionIdsToBeRetrieved);
+	}
+
+	/**
 	 * retrieve revisions that are not stored in the manager
 	 * 
-	 * @param crdIds
+	 * @param revisionIds
 	 * @return
 	 * @throws SQLException
 	 */
@@ -432,8 +469,9 @@ public class Concretizer {
 		final Map<Long, DBCodeFragmentLinkInfo> dbFragmentLinks = getDbFragmentLinks(dbCloneLinks);
 		final Map<Long, DBCrdInfo> dbCrds = getDbCrds(dbFragments);
 		final Map<Long, DBFileInfo> dbFiles = getDbFiles(dbFragments);
-		final Map<Long, DBRevisionInfo> dbRevisions = getDbRevisions(dbClones,
-				dbFiles);
+		final Map<Long, DBCombinedRevisionInfo> dbCombinedRevisions = getDbCombinedRevisions(
+				dbClones, dbFiles);
+		final Map<Long, DBRevisionInfo> dbRevisions = getDbRevisions(dbCombinedRevisions);
 		final Map<Long, DBRepositoryInfo> dbRepositories = getDbRepositories(dbRevisions);
 
 		// concretize repositories
@@ -443,35 +481,40 @@ public class Concretizer {
 		final Map<Long, RevisionInfo> concretizedRevisions = getConcretizedRevisions(
 				dbRevisions, concretizedRepositories);
 
+		// concretize combined revisions
+		final Map<Long, CombinedRevisionInfo> concretizedCombinedRevisions = getConcretizedCombinedRevisions(
+				dbCombinedRevisions, concretizedRevisions);
+
 		// concretize files
 		final Map<Long, FileInfo> concretizedFiles = getConcretizedFiles(
-				dbFiles, concretizedRevisions);
+				dbFiles, concretizedRepositories, concretizedCombinedRevisions);
 
 		// concretize crds
 		final Map<Long, CRD> concretizedCrds = getConcretizedCrds(dbCrds);
 
 		// concretize code fragments
 		final Map<Long, CodeFragmentInfo> concretizedFragments = getConcretizedFragments(
-				dbFragments, concretizedRevisions, concretizedFiles,
+				dbFragments, concretizedCombinedRevisions, concretizedFiles,
 				concretizedCrds);
 
 		// concretize fragment links
 		final Map<Long, CodeFragmentLinkInfo> concretizedFragmentLinks = getConcretizedFragmentLinks(
-				dbFragmentLinks, concretizedRevisions, concretizedFragments);
+				dbFragmentLinks, concretizedCombinedRevisions,
+				concretizedFragments);
 
 		// concretize clones
 		final Map<Long, CloneSetInfo> concretizedClones = getConcretizedClones(
-				dbClones, concretizedRevisions, concretizedFragments);
+				dbClones, concretizedCombinedRevisions, concretizedFragments);
 
 		// concretize clone links
 		final Map<Long, CloneSetLinkInfo> concretizedCloneLinks = getConcretizedCloneLinks(
-				dbCloneLinks, concretizedRevisions, concretizedFragmentLinks,
-				concretizedClones);
+				dbCloneLinks, concretizedCombinedRevisions,
+				concretizedFragmentLinks, concretizedClones);
 
 		// concretize clone genealogy
 		final CloneGenealogyInfoConcretizer cloneGenealogyConcretizer = new CloneGenealogyInfoConcretizer();
 		final CloneGenealogyInfo concretizedGenealogy = cloneGenealogyConcretizer
-				.concretize(dbGenealogy, concretizedRevisions,
+				.concretize(dbGenealogy, concretizedCombinedRevisions,
 						concretizedClones, concretizedCloneLinks);
 		dataManagerManager.getCloneGenealogyManager().add(concretizedGenealogy);
 
@@ -603,34 +646,61 @@ public class Concretizer {
 	}
 
 	/**
-	 * get db revisions that correspond to one of the given clones
+	 * get db combined revisions that correspond to one of the given clones
 	 * 
 	 * @param dbClones
+	 * @param dbFiles
 	 * @return
 	 */
-	private Map<Long, DBRevisionInfo> getDbRevisions(
+	private Map<Long, DBCombinedRevisionInfo> getDbCombinedRevisions(
 			final Map<Long, DBCloneSetInfo> dbClones,
 			final Map<Long, DBFileInfo> dbFiles) {
-		final Map<Long, DBRevisionInfo> dbRevisions = new TreeMap<Long, DBRevisionInfo>();
+		final Map<Long, DBCombinedRevisionInfo> dbCombinedRevisions = new TreeMap<Long, DBCombinedRevisionInfo>();
 		for (final Map.Entry<Long, DBCloneSetInfo> entry : dbClones.entrySet()) {
-			final long revisionId = entry.getValue().getCombinedRevisionId();
-			if (!dbRevisions.containsKey(revisionId)) {
-				dbRevisions.put(revisionId, dbDataManagerManager
-						.getDbRevisionManager().getElement(revisionId));
+			final long combinedRevisionId = entry.getValue()
+					.getCombinedRevisionId();
+			if (!dbCombinedRevisions.containsKey(combinedRevisionId)) {
+				dbCombinedRevisions.put(combinedRevisionId,
+						dbDataManagerManager.getDbCombinedRevisionManager()
+								.getElement(combinedRevisionId));
 			}
 		}
 		for (final Map.Entry<Long, DBFileInfo> entry : dbFiles.entrySet()) {
-			final long startRevisionId = entry.getValue()
+			final long startCombinedRevisionId = entry.getValue()
 					.getStartCombinedRevisionId();
-			final long endRevisionId = entry.getValue()
-					.getCombinedEndRevisionId();
-			if (!dbRevisions.containsKey(startRevisionId)) {
-				dbRevisions.put(startRevisionId, dbDataManagerManager
-						.getDbRevisionManager().getElement(startRevisionId));
+			final long endCombinedRevisionId = entry.getValue()
+					.getEndCombinedRevisionId();
+			if (!dbCombinedRevisions.containsKey(startCombinedRevisionId)) {
+				dbCombinedRevisions.put(startCombinedRevisionId,
+						dbDataManagerManager.getDbCombinedRevisionManager()
+								.getElement(startCombinedRevisionId));
 			}
-			if (!dbRevisions.containsKey(endRevisionId)) {
-				dbRevisions.put(endRevisionId, dbDataManagerManager
-						.getDbRevisionManager().getElement(endRevisionId));
+			if (!dbCombinedRevisions.containsKey(endCombinedRevisionId)) {
+				dbCombinedRevisions.put(endCombinedRevisionId,
+						dbDataManagerManager.getDbCombinedRevisionManager()
+								.getElement(endCombinedRevisionId));
+			}
+		}
+		return dbCombinedRevisions;
+	}
+
+	/**
+	 * get db revisions that correspond to one of the given combined revisions
+	 * 
+	 * @param dbRevisions
+	 * @return
+	 */
+	private Map<Long, DBRevisionInfo> getDbRevisions(
+			final Map<Long, DBCombinedRevisionInfo> dbCombinedRevisions) {
+		final Map<Long, DBRevisionInfo> dbRevisions = new TreeMap<Long, DBRevisionInfo>();
+		for (final Map.Entry<Long, DBCombinedRevisionInfo> entry : dbCombinedRevisions
+				.entrySet()) {
+			for (final long revisionId : entry.getValue()
+					.getOriginalRevisions()) {
+				if (!dbRevisions.containsKey(revisionId)) {
+					dbRevisions.put(revisionId, dbDataManagerManager
+							.getDbRevisionManager().getElement(revisionId));
+				}
 			}
 		}
 		return dbRevisions;
@@ -716,15 +786,48 @@ public class Concretizer {
 	}
 
 	/**
+	 * perform concretization for the given combined revisions
+	 * 
+	 * @param dbCombinedRevisions
+	 * @param concretizedRepositories
+	 * @return
+	 */
+	private Map<Long, CombinedRevisionInfo> getConcretizedCombinedRevisions(
+			final Map<Long, DBCombinedRevisionInfo> dbCombinedRevisions,
+			final Map<Long, RevisionInfo> concretizedRevisions) {
+		final DataManager<CombinedRevisionInfo> combinedRevisionManager = dataManagerManager
+				.getCombinedRevisionManager();
+		final CombinedRevisionConcretizer combinedRevisionConcretizer = new CombinedRevisionConcretizer();
+		final Map<Long, CombinedRevisionInfo> concretizedCombinedRevisions = new TreeMap<Long, CombinedRevisionInfo>();
+		for (final Map.Entry<Long, DBCombinedRevisionInfo> entry : dbCombinedRevisions
+				.entrySet()) {
+			final long combinedRevisionId = entry.getKey();
+			if (combinedRevisionManager.contains(combinedRevisionId)) {
+				concretizedCombinedRevisions.put(combinedRevisionId,
+						combinedRevisionManager.getElement(combinedRevisionId));
+			} else {
+				final CombinedRevisionInfo concretizedCombinedRevision = combinedRevisionConcretizer
+						.concretize(entry.getValue(), concretizedRevisions);
+				combinedRevisionManager.add(concretizedCombinedRevision);
+				concretizedCombinedRevisions.put(entry.getKey(),
+						concretizedCombinedRevision);
+			}
+		}
+		return concretizedCombinedRevisions;
+	}
+
+	/**
 	 * perform concretization for the given files
 	 * 
 	 * @param dbFiles
-	 * @param concretizedRevisions
+	 * @param concretizedRepositories
+	 * @param concretizedCombinedRevisions
 	 * @return
 	 */
 	private Map<Long, FileInfo> getConcretizedFiles(
 			final Map<Long, DBFileInfo> dbFiles,
-			final Map<Long, RevisionInfo> concretizedRevisions) {
+			final Map<Long, RepositoryInfo> concretizedRepositories,
+			final Map<Long, CombinedRevisionInfo> concretizedCombinedRevisions) {
 		final DataManager<FileInfo> fileManager = dataManagerManager
 				.getFileManager();
 		final Map<Long, FileInfo> concretizedFiles = new TreeMap<Long, FileInfo>();
@@ -737,7 +840,8 @@ public class Concretizer {
 				concretizedFiles.put(fileId, fileManager.getElement(fileId));
 			} else {
 				final FileInfo concretizedFile = fileConcretizer.concretize(
-						entry.getValue(), concretizedRevisions);
+						entry.getValue(), concretizedRepositories,
+						concretizedCombinedRevisions);
 				concretizedFiles.put(fileId, concretizedFile);
 				fileManager.add(concretizedFile);
 			}
@@ -776,14 +880,14 @@ public class Concretizer {
 	 * perform concretization for the given fragments
 	 * 
 	 * @param dbFragments
-	 * @param concretizedRevisions
+	 * @param concretizedCombinedRevisions
 	 * @param concretizedFiles
 	 * @param concretizedCrds
 	 * @return
 	 */
 	private Map<Long, CodeFragmentInfo> getConcretizedFragments(
 			final Map<Long, DBCodeFragmentInfo> dbFragments,
-			final Map<Long, RevisionInfo> concretizedRevisions,
+			final Map<Long, CombinedRevisionInfo> concretizedCombinedRevisions,
 			final Map<Long, FileInfo> concretizedFiles,
 			final Map<Long, CRD> concretizedCrds) {
 		final DataManager<CodeFragmentInfo> fragmentManager = dataManagerManager
@@ -803,7 +907,8 @@ public class Concretizer {
 							fragmentManager.getElement(fragmentId));
 				} else {
 					final CodeFragmentInfo concretizedFragment = blockConcretizer
-							.concretize(dbFragment, concretizedRevisions,
+							.concretize(dbFragment,
+									concretizedCombinedRevisions,
 									concretizedFiles, concretizedCrds);
 					concretizedFragments.put(fragmentId, concretizedFragment);
 					fragmentManager.add(concretizedFragment);
@@ -822,7 +927,8 @@ public class Concretizer {
 							fragmentManager.getElement(fragmentId));
 				} else {
 					final CodeFragmentInfo concretizedFragment = fragmentConcretizer
-							.concretize(dbFragment, concretizedRevisions,
+							.concretize(dbFragment,
+									concretizedCombinedRevisions,
 									concretizedFiles, concretizedCrds);
 					concretizedFragments.put(fragmentId, concretizedFragment);
 					fragmentManager.add(concretizedFragment);
@@ -836,13 +942,13 @@ public class Concretizer {
 	 * perform concretization for the given fragment links
 	 * 
 	 * @param dbFragmentLinks
-	 * @param concretizedRevisions
+	 * @param concretizedCombinedRevisions
 	 * @param concretizedFragments
 	 * @return
 	 */
 	private Map<Long, CodeFragmentLinkInfo> getConcretizedFragmentLinks(
 			final Map<Long, DBCodeFragmentLinkInfo> dbFragmentLinks,
-			final Map<Long, RevisionInfo> concretizedRevisions,
+			final Map<Long, CombinedRevisionInfo> concretizedCombinedRevisions,
 			final Map<Long, CodeFragmentInfo> concretizedFragments) {
 		final DataManager<CodeFragmentLinkInfo> fragmentLinkManager = dataManagerManager
 				.getFragmentLinkManager();
@@ -859,7 +965,8 @@ public class Concretizer {
 						fragmentLinkManager.getElement(fragmentLinkId));
 			} else {
 				final CodeFragmentLinkInfo concretizedFragmentLink = fragmentLinkConcretizer
-						.concretize(dbFragmentLink, concretizedRevisions,
+						.concretize(dbFragmentLink,
+								concretizedCombinedRevisions,
 								concretizedFragments);
 				concretizedFragmentLinks.put(fragmentLinkId,
 						concretizedFragmentLink);
@@ -873,13 +980,13 @@ public class Concretizer {
 	 * perform concretization for the given clones
 	 * 
 	 * @param dbClones
-	 * @param concretizedRevisions
+	 * @param concretizedCombinedRevisions
 	 * @param concretizedFragments
 	 * @return
 	 */
 	private Map<Long, CloneSetInfo> getConcretizedClones(
 			final Map<Long, DBCloneSetInfo> dbClones,
-			final Map<Long, RevisionInfo> concretizedRevisions,
+			final Map<Long, CombinedRevisionInfo> concretizedCombinedRevisions,
 			final Map<Long, CodeFragmentInfo> concretizedFragments) {
 		final DataManager<CloneSetInfo> cloneManager = dataManagerManager
 				.getCloneManager();
@@ -896,7 +1003,7 @@ public class Concretizer {
 						.put(cloneId, cloneManager.getElement(cloneId));
 			} else {
 				final CloneSetInfo concretizedClone = cloneConcretizer
-						.concretize(dbClone, concretizedRevisions,
+						.concretize(dbClone, concretizedCombinedRevisions,
 								concretizedFragments);
 				concretizedClones.put(cloneId, concretizedClone);
 				cloneManager.add(concretizedClone);
@@ -909,14 +1016,14 @@ public class Concretizer {
 	 * perform concretization for the given clone links
 	 * 
 	 * @param dbCloneLinks
-	 * @param concretizedRevisions
+	 * @param concretizedCombinedRevisions
 	 * @param concretizedFragmentLinks
 	 * @param concretizedClones
 	 * @return
 	 */
 	private Map<Long, CloneSetLinkInfo> getConcretizedCloneLinks(
 			final Map<Long, DBCloneSetLinkInfo> dbCloneLinks,
-			final Map<Long, RevisionInfo> concretizedRevisions,
+			final Map<Long, CombinedRevisionInfo> concretizedCombinedRevisions,
 			final Map<Long, CodeFragmentLinkInfo> concretizedFragmentLinks,
 			final Map<Long, CloneSetInfo> concretizedClones) {
 		final DataManager<CloneSetLinkInfo> cloneLinkManager = dataManagerManager
@@ -934,7 +1041,7 @@ public class Concretizer {
 						cloneLinkManager.getElement(cloneLinkId));
 			} else {
 				final CloneSetLinkInfo concretizedCloneLink = cloneLinkConcretizer
-						.concretize(dbCloneLink, concretizedRevisions,
+						.concretize(dbCloneLink, concretizedCombinedRevisions,
 								concretizedClones, concretizedFragmentLinks);
 				concretizedCloneLinks.put(cloneLinkId, concretizedCloneLink);
 				cloneLinkManager.add(concretizedCloneLink);
