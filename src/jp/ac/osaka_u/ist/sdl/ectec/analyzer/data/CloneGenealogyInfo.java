@@ -66,7 +66,7 @@ public class CloneGenealogyInfo extends AbstractElement implements
 	 * 
 	 * @return
 	 */
-	public final CombinedRevisionInfo getStartRevision() {
+	public final CombinedRevisionInfo getCombinedStartRevision() {
 		return startCombinedRevision;
 	}
 
@@ -75,7 +75,7 @@ public class CloneGenealogyInfo extends AbstractElement implements
 	 * 
 	 * @return
 	 */
-	public final CombinedRevisionInfo getEndRevision() {
+	public final CombinedRevisionInfo getCombinedEndRevision() {
 		return endCombinedRevision;
 	}
 
@@ -136,13 +136,13 @@ public class CloneGenealogyInfo extends AbstractElement implements
 	@Override
 	public int compareTo(CloneGenealogyInfo another) {
 		final int compareWithStartRev = startCombinedRevision.compareTo(another
-				.getStartRevision());
+				.getCombinedStartRevision());
 		if (compareWithStartRev != 0) {
 			return compareWithStartRev;
 		}
 
 		final int compareWithEndRev = endCombinedRevision.compareTo(another
-				.getEndRevision());
+				.getCombinedEndRevision());
 		if (compareWithEndRev != 0) {
 			return compareWithEndRev;
 		}
