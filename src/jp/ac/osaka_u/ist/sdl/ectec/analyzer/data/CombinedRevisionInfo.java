@@ -3,6 +3,8 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer.data;
 import java.util.Collections;
 import java.util.List;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.ElementVisitor;
+
 /**
  * A class that represents combined revision
  * 
@@ -40,4 +42,9 @@ public class CombinedRevisionInfo extends AbstractElement implements
 		return null;
 	}
 
+	@Override
+	public void accept(final ElementVisitor visitor) {
+		visitor.visit(this);
+	}
+	
 }

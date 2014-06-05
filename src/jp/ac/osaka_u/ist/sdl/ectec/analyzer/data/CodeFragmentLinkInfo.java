@@ -1,5 +1,7 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.data;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.ElementVisitor;
+
 /**
  * A class that represents links of code fragments
  * 
@@ -119,6 +121,11 @@ public class CodeFragmentLinkInfo extends AbstractElement implements
 		}
 
 		return ((Long) id).compareTo(another.getId());
+	}
+
+	@Override
+	public void accept(final ElementVisitor visitor) {
+		visitor.visit(this);
 	}
 
 }

@@ -1,5 +1,7 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.data;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.ElementVisitor;
+
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
 /**
@@ -113,6 +115,11 @@ public class FileInfo extends AbstractElement implements Comparable<FileInfo> {
 		}
 
 		return ((Long) this.id).compareTo(another.getId());
+	}
+	
+	@Override
+	public void accept(final ElementVisitor visitor) {
+		visitor.visit(this);
 	}
 
 }

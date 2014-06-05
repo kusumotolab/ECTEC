@@ -3,6 +3,8 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer.data;
 import java.util.Collections;
 import java.util.List;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.ElementVisitor;
+
 /**
  * A class that represents genealogies of clones
  * 
@@ -110,6 +112,11 @@ public class CodeFragmentGenealogyInfo extends AbstractElement implements
 		}
 
 		return ((Long) id).compareTo(another.getId());
+	}
+	
+	@Override
+	public void accept(final ElementVisitor visitor) {
+		visitor.visit(this);
 	}
 
 }

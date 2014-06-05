@@ -1,5 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.data;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.ElementVisitor;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.VersionControlSystem;
 
 /**
@@ -57,4 +58,9 @@ public class RepositoryInfo extends AbstractElement implements
 		return passwd;
 	}
 
+	@Override
+	public void accept(final ElementVisitor visitor) {
+		visitor.visit(this);
+	}
+	
 }

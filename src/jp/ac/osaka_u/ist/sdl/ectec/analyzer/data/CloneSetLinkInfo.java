@@ -3,6 +3,8 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer.data;
 import java.util.Collections;
 import java.util.List;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.ElementVisitor;
+
 /**
  * A class that represents links of clones
  * 
@@ -187,4 +189,9 @@ public class CloneSetLinkInfo extends AbstractElement implements
 		return ((Long) id).compareTo(another.getId());
 	}
 
+	@Override
+	public void accept(final ElementVisitor visitor) {
+		visitor.visit(this);
+	}
+	
 }

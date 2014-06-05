@@ -1,5 +1,7 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.data;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.ElementVisitor;
+
 /**
  * A class that represents revision
  * 
@@ -48,4 +50,10 @@ public class RevisionInfo extends AbstractElement implements
 	public final RepositoryInfo getRepository() {
 		return this.repository;
 	}
+	
+	@Override
+	public void accept(final ElementVisitor visitor) {
+		visitor.visit(this);
+	}
+	
 }
