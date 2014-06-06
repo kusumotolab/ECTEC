@@ -9,6 +9,7 @@ import java.util.TreeMap;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.concretizer.Concretizer;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.concretizer.NotConcretizedException;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CloneGenealogyInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CodeFragmentGenealogyInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.manager.DBDataManagerManager;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.manager.DataManagerManager;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.selector.CloneGenealogySelector;
@@ -160,6 +161,18 @@ public class GenealogyAnalyzer {
 	public CloneGenealogyInfo concretizeCloneGenealogy(final long genealogyId)
 			throws NotConcretizedException {
 		return concretizer.concretizeCloneGenealogy(genealogyId);
+	}
+
+	/**
+	 * concretize a code fragment genealogy
+	 * 
+	 * @param genealogyId
+	 * @return
+	 * @throws NotConcretizedException
+	 */
+	public CodeFragmentGenealogyInfo concretizeFragmentGenealogy(
+			final long genealogyId) throws NotConcretizedException {
+		return concretizer.concretizeCodeFragmentGenealogy(genealogyId);
 	}
 
 	/**
