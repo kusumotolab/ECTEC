@@ -1,4 +1,4 @@
-package jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.similarity;
+package jp.ac.osaka_u.ist.sdl.ectec.main.linker.similarity;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.util.StringUtils;

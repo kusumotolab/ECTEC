@@ -1,7 +1,7 @@
 package jp.ac.osaka_u.ist.sdl.ectec.settings;
 
-import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.similarity.ICRDSimilarityCalculator;
-import jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.similarity.LevenshteinBasedCRDSimilarityCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.main.linker.similarity.ICRDSimilarityCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.main.linker.similarity.LevenshteinBasedCRDSimilarityCalculator;
 
 /**
  * An enum that represents how to calculate crd similarities
