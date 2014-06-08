@@ -134,7 +134,7 @@ public class MultipleCodeFragmentLinker extends
 				final DBCrdInfo candidateCrd = crds.get(pairCandidate
 						.getCrdId());
 
-				if (match(targetCrd, candidateCrd)) {
+				if (match(targetCrd, fragment, candidateCrd, pairCandidate)) {
 					final DBCodeFragmentLinkInfo link = (reversed) ? makeLinkInstance(
 							pairCandidate, fragment) : makeLinkInstance(
 							fragment, pairCandidate);

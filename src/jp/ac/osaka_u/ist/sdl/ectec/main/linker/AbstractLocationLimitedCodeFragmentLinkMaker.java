@@ -49,7 +49,8 @@ public abstract class AbstractLocationLimitedCodeFragmentLinkMaker {
 			final boolean reversed);
 
 	protected final boolean match(final DBCrdInfo beforeCrd,
-			final DBCrdInfo afterCrd) {
+			final DBCodeFragmentInfo beforeFragment, final DBCrdInfo afterCrd,
+			final DBCodeFragmentInfo afterFragment) {
 		if (beforeCrd.equals(afterCrd)) {
 			return false;
 		}
