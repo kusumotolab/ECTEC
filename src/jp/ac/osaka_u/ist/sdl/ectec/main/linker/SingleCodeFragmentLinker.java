@@ -275,7 +275,7 @@ public class SingleCodeFragmentLinker extends
 			for (final DBCodeFragmentInfo afterFragment : afterCandidates) {
 				final DBCrdInfo afterCrd = crds.get(afterFragment.getCrdId());
 				final double similarity = similarityCalculator.calcSimilarity(
-						beforeCrd, afterCrd);
+						beforeCrd, beforeCandidate, afterCrd, afterFragment);
 
 				// register the similarity into the table
 				// if the similarity is equal to or over than the threshold

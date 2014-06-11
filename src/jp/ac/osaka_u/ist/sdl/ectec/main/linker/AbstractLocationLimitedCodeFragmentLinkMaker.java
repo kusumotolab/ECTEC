@@ -60,7 +60,7 @@ public abstract class AbstractLocationLimitedCodeFragmentLinkMaker {
 		}
 
 		final double similarity = similarityCalculator.calcSimilarity(
-				beforeCrd, afterCrd);
+				beforeCrd, beforeFragment, afterCrd, afterFragment);
 
 		if (umpire.satisfyAllConditions(beforeCrd, afterCrd, similarity)) {
 			return true;

@@ -1,5 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.settings;
 
+import jp.ac.osaka_u.ist.sdl.ectec.main.linker.similarity.ContentBasedCRDSimilarityCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.main.linker.similarity.ICRDSimilarityCalculator;
 import jp.ac.osaka_u.ist.sdl.ectec.main.linker.similarity.LevenshteinBasedCRDSimilarityCalculator;
 
@@ -15,7 +16,10 @@ public enum CRDSimilarityCalculateMode {
 	 * calculate crd similarities with levenshtein distances
 	 */
 	LEVENSHTEIN(new String[] { "l", "levenshtein", "d", "default" },
-			new LevenshteinBasedCRDSimilarityCalculator());
+			new LevenshteinBasedCRDSimilarityCalculator()),
+
+	CONTENT_LEVENSHTEIN(new String[] { "c", "content" },
+			new ContentBasedCRDSimilarityCalculator());
 
 	private final String[] correspondingStrs;
 
@@ -44,6 +48,8 @@ public enum CRDSimilarityCalculateMode {
 			final String str) {
 		if (LEVENSHTEIN.correspond(str)) {
 			return LEVENSHTEIN;
+		} else if (CONTENT_LEVENSHTEIN.correspond(str)) {
+			return CONTENT_LEVENSHTEIN;
 		} else {
 			return null;
 		}
