@@ -404,45 +404,45 @@ public final class DBConnectionManager {
 
 	public void initializeElementCountersWithMaximumIds() throws Exception {
 		final long maxRepository = repositoryRetriever.getMaximumId();
-		DBRepositoryInfo.resetCount(maxRepository);
+		DBRepositoryInfo.resetCount(maxRepository + 1);
 
 		final long maxRevision = revisionRetriever.getMaximumId();
-		DBRevisionInfo.resetCount(maxRevision);
+		DBRevisionInfo.resetCount(maxRevision + 1);
 
 		final long maxCommit = commitRetriever.getMaximumId();
-		DBCommitInfo.resetCount(maxCommit);
+		DBCommitInfo.resetCount(maxCommit + 1);
 
 		final long maxCombinedRevision = combinedRevisionRetriever
 				.getMaximumId();
-		DBCombinedRevisionInfo.resetCount(maxCombinedRevision);
+		DBCombinedRevisionInfo.resetCount(maxCombinedRevision + 1);
 
 		final long maxCombinedCommit = combinedCommitRetriever.getMaximumId();
-		DBCombinedCommitInfo.resetCount(maxCombinedCommit);
+		DBCombinedCommitInfo.resetCount(maxCombinedCommit + 1);
 
 		final long maxFile = fileRetriever.getMaximumId();
-		DBFileInfo.resetCount(maxFile);
+		DBFileInfo.resetCount(maxFile + 1);
 
 		final long maxCrd = crdRetriever.getMaximumId();
-		DBCrdInfo.resetCount(maxCrd);
+		DBCrdInfo.resetCount(maxCrd + 1);
 
 		final long maxFragment = fragmentRetriever.getMaximumId();
-		DBCodeFragmentInfo.resetCount(maxFragment);
+		DBCodeFragmentInfo.resetCount(maxFragment + 1);
 
 		final long maxClone = cloneRetriever.getMaximumId();
-		DBCloneSetInfo.resetCount(maxClone);
+		DBCloneSetInfo.resetCount(maxClone + 1);
 
 		final long maxFragmentLink = fragmentLinkRetriever.getMaximumId();
-		DBCodeFragmentLinkInfo.resetCount(maxFragmentLink);
+		DBCodeFragmentLinkInfo.resetCount(maxFragmentLink + 1);
 
 		final long maxCloneLink = cloneLinkRetriever.getMaximumId();
-		DBCloneSetLinkInfo.resetCount(maxCloneLink);
+		DBCloneSetLinkInfo.resetCount(maxCloneLink + 1);
 
 		final long maxCloneGenealogy = cloneGenealogyRetriever.getMaximumId();
-		DBCloneGenealogyInfo.resetCount(maxCloneGenealogy);
+		DBCloneGenealogyInfo.resetCount(maxCloneGenealogy + 1);
 
 		final long maxFragmentGenealogy = fragmentGenealogyRetriever
 				.getMaximumId();
-		DBCodeFragmentGenealogyInfo.resetCount(maxFragmentGenealogy);
+		DBCodeFragmentGenealogyInfo.resetCount(maxFragmentGenealogy + 1);
 	}
 
 	public void initializeElementCountersWithHeader(final short header) {
