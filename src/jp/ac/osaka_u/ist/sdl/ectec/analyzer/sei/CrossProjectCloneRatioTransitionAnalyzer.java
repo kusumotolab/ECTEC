@@ -17,6 +17,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCombinedCommitInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRepositoryInfo;
@@ -49,28 +50,37 @@ public class CrossProjectCloneRatioTransitionAnalyzer {
 
 			final SortedMap<Long, DBCombinedCommitInfo> combinedCommits = dbManager
 					.getCombinedCommitRetriever().retrieveAll();
-			final Map<Long, DBCommitInfo> commits = dbManager.getCommitRetriever().retrieveAll();
-			
+			final Map<Long, DBCommitInfo> commits = dbManager
+					.getCommitRetriever().retrieveAll();
+
 			int count = 0;
 
 			for (final Map.Entry<Long, DBCombinedCommitInfo> entry : combinedCommits
 					.entrySet()) {
-				final long combinedRevisionId = entry.getValue().getAfterCombinedRevisionId();
-				final DBCommitInfo originalCommit = commits.get(entry.getValue().getOriginalCommitId());
-				
+				final long combinedRevisionId = entry.getValue()
+						.getAfterCombinedRevisionId();
+				final DBCommitInfo originalCommit = commits.get(entry
+						.getValue().getOriginalCommitId());
+
 				logger.info("[" + (++count) + "/" + combinedCommits.size()
 						+ "] analyzing combined commit " + entry.getKey());
-				
+
 				final Map<Long, DBCloneSetInfo> clones = dbManager
 						.getCloneRetriever()
 						.retrieveElementsInSpecifiedRevision(combinedRevisionId);
 				logger.debug(clones.size() + " clones");
-				
+
 				final Map<Long, DBCodeFragmentInfo> fragments = dbManager
 						.getFragmentRetriever()
 						.retrieveElementsInSpecifiedCombinedRevision(
 								combinedRevisionId);
 				logger.debug(fragments.size() + " fragments");
+
+				final Map<Long, DBCodeFragmentLinkInfo> fragmentLinks = dbManager
+						.getFragmentLinkRetriever()
+						.retrieveElementsWithAfterCombinedRevision(
+								combinedRevisionId);
+				logger.debug(fragmentLinks.size() + " fragment links");
 
 				final Map<Long, DBCloneSetInfo> crossProjectClones = getCrossProjectClones(
 						clones, fragments);
@@ -78,11 +88,13 @@ public class CrossProjectCloneRatioTransitionAnalyzer {
 				final Map<Long, Map<Long, Integer>> loc = getLoc(fragments);
 				final Map<Long, Map<Long, Set<Integer>>> clonedLines = getClonedLines(
 						crossProjectClones, fragments);
+				final Map<Long, Integer> clonedFragmentsCount = getClonedFragmentsCount(
+						crossProjectClones, fragments);
 
 				final StringBuilder builder = new StringBuilder();
 
 				builder.append(combinedRevisionId + ",");
-				
+
 				final Date date = originalCommit.getDate();
 				final Calendar cal = Calendar.getInstance();
 				cal.setTime(date);
@@ -92,8 +104,9 @@ public class CrossProjectCloneRatioTransitionAnalyzer {
 				final int hour = cal.get(Calendar.HOUR_OF_DAY);
 				final int minute = cal.get(Calendar.MINUTE);
 				final int second = cal.get(Calendar.SECOND);
-				builder.append(year + "/" + month + "/" + day + " " + hour + ":" + minute + ":" + second + ",");
-				
+				builder.append(year + "/" + month + "/" + day + " " + hour
+						+ ":" + minute + ":" + second + ",");
+
 				for (final Map.Entry<Long, DBRepositoryInfo> repositoryEntry : repositories
 						.entrySet()) {
 					builder.append(repositoryEntry.getKey() + ",");
@@ -123,9 +136,54 @@ public class CrossProjectCloneRatioTransitionAnalyzer {
 
 					builder.append(totalLoc + ",");
 					builder.append(totalCloneLoc + ",");
+					if (clonedFragmentsCount.containsKey(repositoryEntry
+							.getKey())) {
+						builder.append(clonedFragmentsCount.get(repositoryEntry
+								.getKey()) + ",");
+					} else {
+						builder.append("0,");
+					}
 				}
 
-				builder.deleteCharAt(builder.length() - 1);
+				final Set<Long> fragmentsInClone = new TreeSet<Long>();
+				for (final Map.Entry<Long, DBCloneSetInfo> cloneEntry : crossProjectClones
+						.entrySet()) {
+					fragmentsInClone
+							.addAll(cloneEntry.getValue().getElements());
+				}
+
+				int modInClone = 0;
+				int modInNon = 0;
+
+				final Set<Long> elementsInLink = new TreeSet<Long>();
+				for (final Map.Entry<Long, DBCodeFragmentLinkInfo> linkEntry : fragmentLinks
+						.entrySet()) {
+					final DBCodeFragmentLinkInfo link = linkEntry.getValue();
+					if (link.isChanged()) {
+						if (fragmentsInClone.contains(link.getAfterElementId())) {
+							modInClone++;
+						} else {
+							modInNon++;
+						}
+					}
+					elementsInLink.add(link.getAfterElementId());
+				}
+
+				for (final DBCodeFragmentInfo fragment : fragments.values()) {
+					if (fragment.getEndCombinedRevisionId() == combinedRevisionId) {
+						if (!elementsInLink.contains(fragment.getId())) {
+							if (fragmentsInClone.contains(fragment.getId())) {
+								modInClone++;
+							} else {
+								modInNon++;
+							}
+						}
+					}
+				}
+
+				builder.append(crossProjectClones.size() + ",");
+				builder.append(modInClone + "," + modInNon);
+				// builder.deleteCharAt(builder.length() - 1);
 				pw.println(builder.toString());
 			}
 
@@ -151,9 +209,12 @@ public class CrossProjectCloneRatioTransitionAnalyzer {
 				.entrySet()) {
 			builder.append("REPO" + entry.getKey() + "_LOC,");
 			builder.append("REPO" + entry.getKey() + "_CLONE_LOC,");
+			builder.append("REPO" + entry.getKey() + "_CLONED_FRAGMENTS,");
 		}
 
-		builder.deleteCharAt(builder.length() - 1);
+		// builder.deleteCharAt(builder.length() - 1);
+		builder.append("CLONE_SET_COUNT,");
+		builder.append("MOD_IN_CLONE,MOD_IN_NONCLONE");
 
 		return builder.toString();
 	}
@@ -246,6 +307,29 @@ public class CrossProjectCloneRatioTransitionAnalyzer {
 					fileLines.add(i);
 				}
 
+			}
+		}
+
+		return Collections.unmodifiableMap(result);
+	}
+
+	private static final Map<Long, Integer> getClonedFragmentsCount(
+			final Map<Long, DBCloneSetInfo> clones,
+			final Map<Long, DBCodeFragmentInfo> fragments) {
+		final Map<Long, Integer> result = new TreeMap<Long, Integer>();
+
+		for (final Map.Entry<Long, DBCloneSetInfo> entry : clones.entrySet()) {
+			for (final long fragmentId : entry.getValue().getElements()) {
+				final DBCodeFragmentInfo fragment = fragments.get(fragmentId);
+				final long repositoryId = fragment.getOwnerRepositoryId();
+
+				if (!result.containsKey(repositoryId)) {
+					result.put(repositoryId, 0);
+				}
+
+				final int currentValue = result.get(repositoryId);
+				result.remove(repositoryId);
+				result.put(repositoryId, (currentValue + 1));
 			}
 		}
 
