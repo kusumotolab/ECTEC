@@ -65,8 +65,8 @@ public class RevisionDetector {
 	 */
 	public final void run() throws Exception {
 		// the minimum number of thread is 2
-		final int threadsCount = Math.max(Math.min(targetRepositories.size(),
-			settings.getThreads()), 2);
+		final int threadsCount = Math.max(
+				Math.min(targetRepositories.size(), settings.getThreads()), 2);
 
 		final Thread[] threads = new Thread[threadsCount - 1];
 
@@ -79,7 +79,8 @@ public class RevisionDetector {
 		for (int i = 0; i < threadsCount - 1; i++) {
 			threads[i] = new Thread(new RevisionDetectThread(index,
 					repositories, repositoryManagerManager,
-					settings.getLanguage(), revisions, commits));
+					settings.getLanguage(), settings.getIgnoredRevisions(),
+					revisions, commits));
 			threads[i].start();
 			logger.info("thread " + threads[i].getName() + " started");
 		}

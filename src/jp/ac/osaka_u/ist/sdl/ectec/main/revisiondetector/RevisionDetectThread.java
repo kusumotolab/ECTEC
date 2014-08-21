@@ -1,5 +1,7 @@
 package jp.ac.osaka_u.ist.sdl.ectec.main.revisiondetector;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -55,6 +57,11 @@ public class RevisionDetectThread implements Runnable {
 	private final Language language;
 
 	/**
+	 * the list of revisions to be ignored
+	 */
+	private final ConcurrentMap<Long, Set<String>> ignoredList;
+
+	/**
 	 * detected revisions
 	 */
 	private final ConcurrentMap<Long, DBRevisionInfo> revisions;
@@ -68,12 +75,14 @@ public class RevisionDetectThread implements Runnable {
 			final DBRepositoryInfo[] repositories,
 			final RepositoryManagerManager repositoryManagerManager,
 			final Language language,
+			final ConcurrentMap<Long, Set<String>> ignoredList,
 			final ConcurrentMap<Long, DBRevisionInfo> revisions,
 			final ConcurrentMap<Long, DBCommitInfo> commits) {
 		this.index = index;
 		this.repositories = repositories;
 		this.repositoryManagerManager = repositoryManagerManager;
 		this.language = language;
+		this.ignoredList = ignoredList;
 		this.revisions = revisions;
 		this.commits = commits;
 	}
@@ -102,7 +111,10 @@ public class RevisionDetectThread implements Runnable {
 
 				final AbstractTargetRevisionDetector<?> detector = repositoryManager
 						.createTargetRevisionDetector();
-				detector.detect(language);
+				final Set<String> ignoredListForThisRepo = (ignoredList
+						.containsKey(repository.getId())) ? ignoredList
+						.get(repository.getId()) : new HashSet<String>();
+				detector.detect(language, ignoredListForThisRepo);
 
 				revisions.putAll(detector.getTargetRevisions());
 				commits.putAll(detector.getCommits());
