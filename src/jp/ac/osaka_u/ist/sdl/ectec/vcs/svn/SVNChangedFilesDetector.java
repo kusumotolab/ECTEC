@@ -47,7 +47,6 @@ public class SVNChangedFilesDetector implements IChangedFilesDetector {
 					revision, language);
 			for (final String file : allFiles) {
 				result.put(file, 'A');
-				System.out.println(file);
 			}
 			return Collections.unmodifiableMap(result);
 		}

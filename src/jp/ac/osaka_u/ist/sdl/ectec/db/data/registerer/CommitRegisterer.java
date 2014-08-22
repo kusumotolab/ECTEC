@@ -45,7 +45,7 @@ public class CommitRegisterer extends
 		// "+1" is necessary to convert 0-11 to 1-12
 		pstmt.setInt(++column, calendar.get(Calendar.MONTH) + 1);
 		pstmt.setInt(++column, calendar.get(Calendar.DAY_OF_MONTH));
-		pstmt.setInt(++column, calendar.get(Calendar.HOUR));
+		pstmt.setInt(++column, calendar.get(Calendar.HOUR_OF_DAY));
 		pstmt.setInt(++column, calendar.get(Calendar.MINUTE));
 		pstmt.setInt(++column, calendar.get(Calendar.SECOND));
 	}
