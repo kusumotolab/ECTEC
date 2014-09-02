@@ -47,8 +47,22 @@ public class CSVReader {
 				try {
 					final long id = Long.parseLong(splitLine[0]);
 					final String name = splitLine[1];
-					final String url = splitLine[2];
-					final String additionalUrlStr = splitLine[3];
+					String url = splitLine[2];
+					if (url.endsWith("/")) {
+						url = url.substring(0, url.length() - 1);
+					}
+
+					String additionalUrlStr = splitLine[3];
+					if (additionalUrlStr != null) {
+						if (!additionalUrlStr.startsWith("/")) {
+							additionalUrlStr = "/" + additionalUrlStr;
+						}
+						if (additionalUrlStr.endsWith("/")) {
+							additionalUrlStr = additionalUrlStr.substring(0,
+									additionalUrlStr.length() - 1);
+						}
+					}
+
 					final String additionalUrl = (additionalUrlStr.isEmpty() || additionalUrlStr
 							.equalsIgnoreCase("null")) ? null
 							: additionalUrlStr;
