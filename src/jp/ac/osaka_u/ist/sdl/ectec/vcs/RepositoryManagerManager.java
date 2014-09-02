@@ -44,35 +44,37 @@ public class RepositoryManagerManager {
 	public void addRepositoryManager(final DBRepositoryInfo repository)
 			throws Exception {
 		addRepositoryManager(repository.getId(), repository.getRootUrl(),
-				repository.getUserName(), repository.getPasswd(),
-				repository.getName(), repository.getManagingVcs());
+				repository.getAdditionalUrl(), repository.getUserName(),
+				repository.getPasswd(), repository.getName(),
+				repository.getManagingVcs());
 	}
 
 	/**
 	 * add a repository manager
 	 * 
 	 * @param id
-	 * @param url
+	 * @param rootUrl
+	 * @param additionalUrl
 	 * @param userName
 	 * @param passwd
-	 * @param additionalUrl
+	 * @param repositoryName
 	 * @param vcs
 	 * @throws Exception
 	 */
-	public void addRepositoryManager(final long id, final String url,
-			final String userName, final String passwd,
-			final String repositoryName, final VersionControlSystem vcs)
-			throws Exception {
+	public void addRepositoryManager(final long id, final String rootUrl,
+			final String additionalUrl, final String userName,
+			final String passwd, final String repositoryName,
+			final VersionControlSystem vcs) throws Exception {
 		AbstractRepositoryManager repositoryManager = null;
 
 		switch (vcs) {
 		case SVN:
-			repositoryManager = new SVNRepositoryManager(url, userName, passwd,
-					repositoryName, id);
+			repositoryManager = new SVNRepositoryManager(rootUrl,
+					additionalUrl, userName, passwd, repositoryName, id);
 			break;
 		case GIT:
-			repositoryManager = new GitRepositoryManager(url, userName,
-					repositoryName, id);
+			repositoryManager = new GitRepositoryManager(rootUrl,
+					additionalUrl, userName, passwd, repositoryName, id);
 		default:
 			break;
 		}

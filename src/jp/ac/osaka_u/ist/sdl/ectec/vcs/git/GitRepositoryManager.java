@@ -16,9 +16,11 @@ import jp.ac.osaka_u.ist.sdl.ectec.vcs.IChangedFilesDetector;
  */
 public class GitRepositoryManager extends AbstractRepositoryManager {
 
-	public GitRepositoryManager(String userName, String passwd,
-			String repositoryName, long repositoryId) {
-		super(userName, passwd, repositoryName, repositoryId);
+	public GitRepositoryManager(String rootUrl, String additionalUrl,
+			String userName, String passwd, String repositoryName,
+			long repositoryId) {
+		super(rootUrl, additionalUrl, userName, passwd, repositoryName,
+				repositoryId);
 	}
 
 	@Override
@@ -35,11 +37,12 @@ public class GitRepositoryManager extends AbstractRepositoryManager {
 	public String getFileContents(String revisionIdentifier, String path)
 			throws Exception {
 		// TODO implement me
-		
+
 		/*
-		 * return the content of the file in the specified revision as a string value
+		 * return the content of the file in the specified revision as a string
+		 * value
 		 */
-		
+
 		return null;
 	}
 
@@ -47,13 +50,15 @@ public class GitRepositoryManager extends AbstractRepositoryManager {
 	public List<String> getListOfSourceFiles(String revisionIdentifier,
 			Language language, Collection<String> targets) throws Exception {
 		// TODO implement me
-		
+
 		/*
-		 * return a list of string whose elements are paths of files in the given revision and written in the given language
-		 * the list must include only paths that start with any of strings in the given collection of string
-		 * if targets == null, then this method returns all the paths of source files in the given revision
+		 * return a list of string whose elements are paths of files in the
+		 * given revision and written in the given language the list must
+		 * include only paths that start with any of strings in the given
+		 * collection of string if targets == null, then this method returns all
+		 * the paths of source files in the given revision
 		 */
-		
+
 		return null;
 	}
 

@@ -41,10 +41,15 @@ public class SVNRepositoryManager extends AbstractRepositoryManager {
 	 */
 	private final SVNRepository repository;
 
-	public SVNRepositoryManager(final String urlStr, final String userName,
+	public SVNRepositoryManager(final String rootUrl,
+			final String additionalUrl, final String userName,
 			final String passwd, final String repositoryName,
 			final long repositoryId) throws Exception {
-		super(userName, passwd, repositoryName, repositoryId);
+		super(rootUrl, additionalUrl, userName, passwd, repositoryName,
+				repositoryId);
+
+		final String urlStr = (additionalUrl == null) ? rootUrl : rootUrl
+				+ additionalUrl;
 
 		this.url = SVNURL.parseURIDecoded(urlStr);
 
