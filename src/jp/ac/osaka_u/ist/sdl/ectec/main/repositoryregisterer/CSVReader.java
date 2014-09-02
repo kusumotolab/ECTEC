@@ -38,7 +38,7 @@ public class CSVReader {
 			while ((line = br.readLine()) != null) {
 				final String[] splitLine = line.split(",");
 
-				if (splitLine.length < 4 || splitLine.length > 6) {
+				if (splitLine.length < 5 || splitLine.length > 7) {
 					throw new IllegalFileFormatException(
 							"the given file has an illegal format at + " + line
 									+ ".");
@@ -48,14 +48,18 @@ public class CSVReader {
 					final long id = Long.parseLong(splitLine[0]);
 					final String name = splitLine[1];
 					final String url = splitLine[2];
+					final String additionalUrlStr = splitLine[3];
+					final String additionalUrl = (additionalUrlStr.isEmpty() || additionalUrlStr
+							.equalsIgnoreCase("null")) ? null
+							: additionalUrlStr;
 					final VersionControlSystem managingVcs = VersionControlSystem
-							.getCorrespondingVersionControlSystem(splitLine[3]
+							.getCorrespondingVersionControlSystem(splitLine[4]
 									.trim());
-					final String userNameStr = (splitLine.length > 4) ? splitLine[4]
+					final String userNameStr = (splitLine.length > 5) ? splitLine[5]
 							.trim() : "";
 					final String userName = (userNameStr.isEmpty()) ? null
 							: userNameStr;
-					final String passwdStr = (splitLine.length > 5) ? splitLine[5]
+					final String passwdStr = (splitLine.length > 6) ? splitLine[6]
 							.trim() : "";
 					final String passwd = (passwdStr.isEmpty()) ? null
 							: passwdStr;
@@ -66,7 +70,8 @@ public class CSVReader {
 					}
 
 					final DBRepositoryInfo repository = new DBRepositoryInfo(
-							id, name, url, managingVcs, userName, passwd);
+							id, name, url, additionalUrl, managingVcs,
+							userName, passwd);
 					result.put(repository.getId(), repository);
 
 				} catch (Exception e) {
