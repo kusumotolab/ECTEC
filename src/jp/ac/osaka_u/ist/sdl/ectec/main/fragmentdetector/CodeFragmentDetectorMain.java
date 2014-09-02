@@ -114,7 +114,8 @@ public class CodeFragmentDetectorMain {
 				.entrySet()) {
 			final DBRepositoryInfo repository = entry.getValue();
 			logger.debug("repository " + entry.getKey() + ": "
-					+ repository.getName() + " - " + repository.getRootUrl());
+					+ repository.getName() + " - " + repository.getRootUrl()
+					+ repository.getAdditionalUrl());
 
 			try {
 				repositoryManagerManager.addRepositoryManager(repository);
