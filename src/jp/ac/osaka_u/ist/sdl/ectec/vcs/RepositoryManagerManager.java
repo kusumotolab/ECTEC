@@ -43,7 +43,7 @@ public class RepositoryManagerManager {
 	 */
 	public void addRepositoryManager(final DBRepositoryInfo repository)
 			throws Exception {
-		addRepositoryManager(repository.getId(), repository.getUrl(),
+		addRepositoryManager(repository.getId(), repository.getRootUrl(),
 				repository.getUserName(), repository.getPasswd(),
 				repository.getName(), repository.getManagingVcs());
 	}

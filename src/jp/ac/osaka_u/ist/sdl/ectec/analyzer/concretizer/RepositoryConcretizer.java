@@ -20,7 +20,7 @@ public final class RepositoryConcretizer {
 	public RepositoryInfo concretize(final DBRepositoryInfo dbRepository) {
 		final long id = dbRepository.getId();
 		final String name = dbRepository.getName();
-		final String url = dbRepository.getUrl();
+		final String url = dbRepository.getRootUrl();
 		final VersionControlSystem vcs = dbRepository.getManagingVcs();
 		final String userName = dbRepository.getUserName();
 		final String passwd = dbRepository.getPasswd();

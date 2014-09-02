@@ -115,7 +115,7 @@ public class FileDetectorMain {
 				.entrySet()) {
 			final DBRepositoryInfo repository = entry.getValue();
 			logger.debug("repository " + entry.getKey() + ": "
-					+ repository.getName() + " - " + repository.getUrl());
+					+ repository.getName() + " - " + repository.getRootUrl());
 
 			try {
 				repositoryManagerManager.addRepositoryManager(repository);

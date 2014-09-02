@@ -24,9 +24,9 @@ public class DBRepositoryInfo extends AbstractDBElement implements
 	private final String name;
 
 	/**
-	 * the url of the repository
+	 * the root url of the repository
 	 */
-	private final String url;
+	private final String rootUrl;
 
 	/**
 	 * the additional url
@@ -53,14 +53,19 @@ public class DBRepositoryInfo extends AbstractDBElement implements
 	 * 
 	 * @param id
 	 * @param name
-	 * @param url
+	 * @param rootUrl
+	 * @param additionalUrl
+	 * @param managingVcs
+	 * @param userName
+	 * @param passwd
 	 */
-	public DBRepositoryInfo(final long id, final String name, final String url,
-			final String additionalUrl, final VersionControlSystem managingVcs,
-			final String userName, final String passwd) {
+	public DBRepositoryInfo(final long id, final String name,
+			final String rootUrl, final String additionalUrl,
+			final VersionControlSystem managingVcs, final String userName,
+			final String passwd) {
 		super(id);
 		this.name = name;
-		this.url = url;
+		this.rootUrl = rootUrl;
 		this.additionalUrl = additionalUrl;
 		this.managingVcs = managingVcs;
 		this.userName = userName;
@@ -71,13 +76,17 @@ public class DBRepositoryInfo extends AbstractDBElement implements
 	 * the constructor for newly created elements
 	 * 
 	 * @param name
-	 * @param url
+	 * @param rootUrl
+	 * @param additionalUrl
+	 * @param managingVcs
+	 * @param userName
+	 * @param passwd
 	 */
-	public DBRepositoryInfo(final String name, final String url,
+	public DBRepositoryInfo(final String name, final String rootUrl,
 			final String additionalUrl, final VersionControlSystem managingVcs,
 			final String userName, final String passwd) {
-		this(count.getAndIncrement(), name, url, additionalUrl, managingVcs,
-				userName, passwd);
+		this(count.getAndIncrement(), name, rootUrl, additionalUrl,
+				managingVcs, userName, passwd);
 	}
 
 	/**
@@ -99,12 +108,12 @@ public class DBRepositoryInfo extends AbstractDBElement implements
 	}
 
 	/**
-	 * get the url of the repository
+	 * get the root url of the repository
 	 * 
 	 * @return
 	 */
-	public final String getUrl() {
-		return this.url;
+	public final String getRootUrl() {
+		return this.rootUrl;
 	}
 
 	/**
