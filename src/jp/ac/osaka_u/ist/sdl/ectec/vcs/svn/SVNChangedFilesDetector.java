@@ -40,11 +40,11 @@ public class SVNChangedFilesDetector implements IChangedFilesDetector {
 		final long afterRevision = Long.parseLong(commit
 				.getAfterRevisionIdentifier());
 
-		final List<String> allFilesInAfterRev = manager.getListOfSourceFiles(
-				afterRevision, language);
-
 		// a special treat for the initial commit
 		if (commit.getBeforeRevisionId() == -1) {
+			final List<String> allFilesInAfterRev = manager.getListOfSourceFiles(
+					afterRevision, language);
+			
 			final Map<String, Character> result = new HashMap<String, Character>();
 
 			for (final String file : allFilesInAfterRev) {
@@ -68,12 +68,12 @@ public class SVNChangedFilesDetector implements IChangedFilesDetector {
 								.getChangedPaths().entrySet()) {
 
 							String targetStr = entry.getKey().substring(1);
-							for (final String sourceFilePath : allFilesInAfterRev) {
-								if (targetStr.endsWith(sourceFilePath)) {
-									targetStr = sourceFilePath;
-									break;
-								}
-							}
+//							for (final String sourceFilePath : allFilesInAfterRev) {
+//								if (targetStr.endsWith(sourceFilePath)) {
+//									targetStr = sourceFilePath;
+//									break;
+//								}
+//							}
 
 							// in the case that source files are updated
 							if (language.isTarget(entry.getKey())) {
