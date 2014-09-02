@@ -29,6 +29,11 @@ public class DBRepositoryInfo extends AbstractDBElement implements
 	private final String url;
 
 	/**
+	 * the additional url
+	 */
+	private final String additionalUrl;
+
+	/**
 	 * the version control system
 	 */
 	private final VersionControlSystem managingVcs;
@@ -51,11 +56,12 @@ public class DBRepositoryInfo extends AbstractDBElement implements
 	 * @param url
 	 */
 	public DBRepositoryInfo(final long id, final String name, final String url,
-			final VersionControlSystem managingVcs, final String userName,
-			final String passwd) {
+			final String additionalUrl, final VersionControlSystem managingVcs,
+			final String userName, final String passwd) {
 		super(id);
 		this.name = name;
 		this.url = url;
+		this.additionalUrl = additionalUrl;
 		this.managingVcs = managingVcs;
 		this.userName = userName;
 		this.passwd = passwd;
@@ -68,9 +74,10 @@ public class DBRepositoryInfo extends AbstractDBElement implements
 	 * @param url
 	 */
 	public DBRepositoryInfo(final String name, final String url,
-			final VersionControlSystem managingVcs, final String userName,
-			final String passwd) {
-		this(count.getAndIncrement(), name, url, managingVcs, userName, passwd);
+			final String additionalUrl, final VersionControlSystem managingVcs,
+			final String userName, final String passwd) {
+		this(count.getAndIncrement(), name, url, additionalUrl, managingVcs,
+				userName, passwd);
 	}
 
 	/**
@@ -98,6 +105,15 @@ public class DBRepositoryInfo extends AbstractDBElement implements
 	 */
 	public final String getUrl() {
 		return this.url;
+	}
+
+	/**
+	 * get the additional url of the repository
+	 * 
+	 * @return
+	 */
+	public final String getAdditionalUrl() {
+		return this.additionalUrl;
 	}
 
 	/**

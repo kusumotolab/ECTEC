@@ -220,6 +220,7 @@ public class DBMaker {
 		builder.append("REPOSITORY_ID LONG PRIMARY KEY,");
 		builder.append("REPOSITORY_NAME TEXT UNIQUE,");
 		builder.append("REPOSITORY_URL TEXT UNIQUE,");
+		builder.append("REPOSITORY_ADDITIONAL_URL TEXT,");
 		builder.append("VCS TEXT,");
 		builder.append("USER_NAME TEXT,");
 		builder.append("PASSWORD TEXT");
