@@ -42,9 +42,9 @@ public class SVNChangedFilesDetector implements IChangedFilesDetector {
 
 		// a special treat for the initial commit
 		if (commit.getBeforeRevisionId() == -1) {
-			final List<String> allFilesInAfterRev = manager.getListOfSourceFiles(
-					afterRevision, language);
-			
+			final List<String> allFilesInAfterRev = manager
+					.getListOfSourceFiles(afterRevision, language);
+
 			final Map<String, Character> result = new HashMap<String, Character>();
 
 			for (final String file : allFilesInAfterRev) {
@@ -67,13 +67,20 @@ public class SVNChangedFilesDetector implements IChangedFilesDetector {
 						for (final Map.Entry<String, SVNLogEntryPath> entry : logEntry
 								.getChangedPaths().entrySet()) {
 
-							String targetStr = entry.getKey().substring(1);
-//							for (final String sourceFilePath : allFilesInAfterRev) {
-//								if (targetStr.endsWith(sourceFilePath)) {
-//									targetStr = sourceFilePath;
-//									break;
-//								}
-//							}
+							final String targetStr;
+							if (manager.getAdditionalUrl() != null) {
+								targetStr = entry.getKey().substring(
+										manager.getAdditionalUrl().length() + 1);
+							} else {
+								targetStr = entry.getKey().substring(1);
+							}
+							// for (final String sourceFilePath :
+							// allFilesInAfterRev) {
+							// if (targetStr.endsWith(sourceFilePath)) {
+							// targetStr = sourceFilePath;
+							// break;
+							// }
+							// }
 
 							// in the case that source files are updated
 							if (language.isTarget(entry.getKey())) {
@@ -93,20 +100,25 @@ public class SVNChangedFilesDetector implements IChangedFilesDetector {
 				});
 
 		if (!deleted.isEmpty()) {
-			final List<String> sourceFilesInBeforeRev = manager
+			final List<String> sourceFilesInDeletedDir = manager
 					.getListOfSourceFiles(Long.parseLong(commit
-							.getBeforeRevisionIdentifier()), language);
+							.getBeforeRevisionIdentifier()), language, deleted);
 
-			for (final String deletedDir : deleted) {
-				for (final String deletedFile : sourceFilesInBeforeRev) {
-					final String dirName = deletedFile.substring(0, deletedFile.lastIndexOf("/"));
-					if (deletedDir.endsWith(dirName)) {
-						result.put(deletedFile, 'D');
-						break;
-					}
-				}
+			for (final String deletedFile : sourceFilesInDeletedDir) {
+				result.put(deletedFile, 'D');
 			}
-			
+
+			// for (final String deletedDir : deleted) {
+			// for (final String deletedFile : sourceFilesInBeforeRev) {
+			// final String dirName = deletedFile.substring(0,
+			// deletedFile.lastIndexOf("/"));
+			// if (deletedDir.endsWith(dirName)) {
+			// result.put(deletedFile, 'D');
+			// break;
+			// }
+			// }
+			// }
+
 		}
 
 		return Collections.unmodifiableMap(result);

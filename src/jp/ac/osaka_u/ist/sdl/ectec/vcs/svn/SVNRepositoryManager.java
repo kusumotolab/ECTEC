@@ -120,11 +120,13 @@ public class SVNRepositoryManager extends AbstractRepositoryManager {
 	 */
 	public synchronized String getFileContents(final long revisionNum,
 			final String path) throws SVNException {
+		
 		final StringBuilder builder = new StringBuilder();
 
 		final SVNURL target = this.url.appendPath(path, false);
-		final SVNWCClient wcClient = SVNClientManager.newInstance(null,
-				this.userName, this.passwd).getWCClient();
+		final SVNClientManager clientManager = SVNClientManager.newInstance(null,
+				this.userName, this.passwd);
+		final SVNWCClient wcClient = clientManager.getWCClient();
 		wcClient.doGetFileContents(target, SVNRevision.create(revisionNum),
 				SVNRevision.create(revisionNum), false, new OutputStream() {
 
@@ -134,7 +136,9 @@ public class SVNRepositoryManager extends AbstractRepositoryManager {
 					}
 
 				});
-
+		
+		clientManager.dispose();
+		
 		return builder.toString();
 	}
 
@@ -197,8 +201,9 @@ public class SVNRepositoryManager extends AbstractRepositoryManager {
 	public synchronized List<String> getListOfSourceFiles(
 			final long revisionNum, final Language lang, final String target)
 			throws SVNException {
-		final SVNLogClient logClient = SVNClientManager.newInstance(null,
-				this.userName, this.passwd).getLogClient();
+		final SVNClientManager clientManager = SVNClientManager.newInstance(null,
+				this.userName, this.passwd);
+		final SVNLogClient logClient = clientManager.getLogClient();
 
 		final SVNURL url = (target == null) ? this.url : this.url.appendPath(
 				target, false);
@@ -219,6 +224,8 @@ public class SVNRepositoryManager extends AbstractRepositoryManager {
 					}
 
 				});
+		
+		clientManager.dispose();
 
 		return Collections.unmodifiableList(result);
 	}
