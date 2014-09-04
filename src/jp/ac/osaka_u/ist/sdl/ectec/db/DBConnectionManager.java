@@ -143,64 +143,56 @@ public final class DBConnectionManager {
 	 */
 	public DBConnectionManager(final IDBConfig dbConfig, final int maxBatchCount)
 			throws Exception {
-		try {
-			this.connection = dbConfig.init();
+		this.connection = dbConfig.init();
 
-			this.connection.setAutoCommit(false);
+		this.connection.setAutoCommit(false);
 
-			this.cloneGenealogyElementRetriever = new CloneGenealogyElementRetriever(
-					this);
-			this.cloneGenealogyLinkElementRetriever = new CloneGenealogyLinkElementRetriever(
-					this);
-			this.cloneLinkFragmentLinkRetriever = new CloneSetLinkFragmentLinkRetriever(
-					this);
-			this.fragmentGenealogyElementRetriever = new CodeFragmentGenealogyElementRetriever(
-					this);
-			this.fragmentGenealogyLinkElementRetriever = new CodeFragmentGenealogyLinkElementRetriever(
-					this);
+		this.cloneGenealogyElementRetriever = new CloneGenealogyElementRetriever(
+				this);
+		this.cloneGenealogyLinkElementRetriever = new CloneGenealogyLinkElementRetriever(
+				this);
+		this.cloneLinkFragmentLinkRetriever = new CloneSetLinkFragmentLinkRetriever(
+				this);
+		this.fragmentGenealogyElementRetriever = new CodeFragmentGenealogyElementRetriever(
+				this);
+		this.fragmentGenealogyLinkElementRetriever = new CodeFragmentGenealogyLinkElementRetriever(
+				this);
 
-			this.repositoryRegisterer = new RepositoryRegisterer(this,
-					maxBatchCount);
-			this.revisionRegisterer = new RevisionRegisterer(this,
-					maxBatchCount);
-			this.commitRegisterer = new CommitRegisterer(this, maxBatchCount);
-			this.combinedRevisionRegisterer = new CombinedRevisionRegisterer(
-					this, maxBatchCount);
-			this.combinedCommitRegisterer = new CombinedCommitRegisterer(this,
-					maxBatchCount);
-			this.fileRegisterer = new FileRegisterer(this, maxBatchCount);
-			this.fragmentRegisterer = new CodeFragmentRegisterer(this,
-					maxBatchCount);
-			this.cloneRegisterer = new CloneSetRegisterer(this, maxBatchCount);
-			this.fragmentLinkRegisterer = new CodeFragmentLinkRegisterer(this,
-					maxBatchCount);
-			this.cloneLinkRegisterer = new CloneSetLinkRegisterer(this,
-					maxBatchCount);
-			this.cloneGenealogyRegisterer = new CloneGenealogyRegisterer(this,
-					maxBatchCount);
-			this.fragmentGenealogyRegisterer = new CodeFragmentGenealogyRegisterer(
-					this, maxBatchCount);
-			this.crdRegisterer = new CRDRegisterer(this, maxBatchCount);
-			this.repositoryRetriever = new RepositoryRetriever(this);
-			this.revisionRetriever = new RevisionRetriever(this);
-			this.commitRetriever = new CommitRetriever(this);
-			this.combinedRevisionRetriever = new CombinedRevisionRetriever(this);
-			this.combinedCommitRetriever = new CombinedCommitRetriever(this);
-			this.fileRetriever = new FileRetriever(this);
-			this.fragmentRetriever = new CodeFragmentRetriever(this);
-			this.cloneRetriever = new CloneSetRetriever(this);
-			this.fragmentLinkRetriever = new CodeFragmentLinkRetriever(this);
-			this.cloneLinkRetriever = new CloneSetLinkRetriever(this);
-			this.cloneGenealogyRetriever = new CloneGenealogyRetriever(this);
-			this.fragmentGenealogyRetriever = new CodeFragmentGenealogyRetriever(
-					this);
-			this.crdRetriever = new CRDRetriever(this);
-		} finally {
-			if (this.connection != null) {
-				this.connection.rollback();
-				this.connection.close();
-			}
-		}
+		this.repositoryRegisterer = new RepositoryRegisterer(this,
+				maxBatchCount);
+		this.revisionRegisterer = new RevisionRegisterer(this, maxBatchCount);
+		this.commitRegisterer = new CommitRegisterer(this, maxBatchCount);
+		this.combinedRevisionRegisterer = new CombinedRevisionRegisterer(this,
+				maxBatchCount);
+		this.combinedCommitRegisterer = new CombinedCommitRegisterer(this,
+				maxBatchCount);
+		this.fileRegisterer = new FileRegisterer(this, maxBatchCount);
+		this.fragmentRegisterer = new CodeFragmentRegisterer(this,
+				maxBatchCount);
+		this.cloneRegisterer = new CloneSetRegisterer(this, maxBatchCount);
+		this.fragmentLinkRegisterer = new CodeFragmentLinkRegisterer(this,
+				maxBatchCount);
+		this.cloneLinkRegisterer = new CloneSetLinkRegisterer(this,
+				maxBatchCount);
+		this.cloneGenealogyRegisterer = new CloneGenealogyRegisterer(this,
+				maxBatchCount);
+		this.fragmentGenealogyRegisterer = new CodeFragmentGenealogyRegisterer(
+				this, maxBatchCount);
+		this.crdRegisterer = new CRDRegisterer(this, maxBatchCount);
+		this.repositoryRetriever = new RepositoryRetriever(this);
+		this.revisionRetriever = new RevisionRetriever(this);
+		this.commitRetriever = new CommitRetriever(this);
+		this.combinedRevisionRetriever = new CombinedRevisionRetriever(this);
+		this.combinedCommitRetriever = new CombinedCommitRetriever(this);
+		this.fileRetriever = new FileRetriever(this);
+		this.fragmentRetriever = new CodeFragmentRetriever(this);
+		this.cloneRetriever = new CloneSetRetriever(this);
+		this.fragmentLinkRetriever = new CodeFragmentLinkRetriever(this);
+		this.cloneLinkRetriever = new CloneSetLinkRetriever(this);
+		this.cloneGenealogyRetriever = new CloneGenealogyRetriever(this);
+		this.fragmentGenealogyRetriever = new CodeFragmentGenealogyRetriever(
+				this);
+		this.crdRetriever = new CRDRetriever(this);
 	}
 
 	public final RepositoryRegisterer getRepositoryRegisterer() {
@@ -344,8 +336,10 @@ public final class DBConnectionManager {
 	 */
 	public void rollback() {
 		try {
-			this.connection.rollback();
-			logger.info("rollback operation was performed");
+			if (!this.connection.getAutoCommit()) {
+				this.connection.rollback();
+				logger.info("rollback operation was performed");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

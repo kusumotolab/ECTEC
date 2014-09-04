@@ -1,5 +1,9 @@
 package jp.ac.osaka_u.ist.sdl.ectec.db;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 
 import org.apache.log4j.Logger;
@@ -40,17 +44,18 @@ public class DBMaker {
 		try {
 			final DBMakerSettings settings = loadSettings(args);
 			final DBMaker maker = preprocess(settings);
-			maker.makeDb(true);
+			maker.makeDb(settings.isOverwrite());
 			logger.info("operations have finished.");
 		} catch (Exception e) {
 			eLogger.fatal("operations failed.\n" + e.toString());
+			e.printStackTrace();
 		}
 	}
 
 	private static DBMakerSettings loadSettings(final String[] args)
 			throws Exception {
 		final DBMakerSettings settings = new DBMakerSettings();
-		settings.load(args);
+		settings.load(args, false);
 		return settings;
 	}
 
@@ -59,7 +64,7 @@ public class DBMaker {
 		final DBConnectionManager dbManager = new DBConnectionManager(
 				settings.getDBConfig(), settings.getMaxBatchCount());
 		logger.info("connected to the db");
-		
+
 		return new DBMaker(dbManager);
 	}
 
@@ -75,12 +80,25 @@ public class DBMaker {
 		try {
 			dbManager.setAutoCommit(true);
 
-			if (overwrite) {
-				logger.info("dropping the existing tables");
-				dropTables();
+			if (!overwrite) {
+				logger.info("overwriting is prohibited");
+				logger.info("checking whether the db exists");
+				final boolean exists = isDBExists();
+				if (exists) {
+					eLogger.warn("the db has already existed! DBMaker will do nothing.");
+					return;
+				} else {
+					logger.info("confirmed that the db does not exist");
+				}
 			}
 
-			logger.info("creating new tables");
+			logger.info("dropping the existing tables if exist");
+			dropTables();
+
+			logger.info("dropping the existing indexes if exist");
+			dropIndexes();
+			
+			logger.info("creating new tables if not exist");
 			createNewTables();
 
 			logger.info("creating indexes");
@@ -93,6 +111,25 @@ public class DBMaker {
 		} finally {
 			if (this.dbManager != null) {
 				dbManager.close();
+			}
+		}
+	}
+
+	public boolean isDBExists() {
+		Statement stmt = null;
+		try {
+			stmt = dbManager.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM REPOSITORY");
+			return true;
+		} catch (Exception e) {
+			return false;
+		} finally {
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -128,98 +165,103 @@ public class DBMaker {
 	 */
 	public void dropTables() {
 		try {
-			dbManager.executeUpdate("DROP TABLE REVISION");
+			dbManager.executeUpdate("DROP TABLE IF EXISTS REVISION");
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
 
 		try {
-			dbManager.executeUpdate("DROP TABLE VCS_COMMIT");
+			dbManager.executeUpdate("DROP TABLE IF EXISTS VCS_COMMIT");
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
 
 		try {
-			dbManager.executeUpdate("DROP TABLE FILE");
+			dbManager.executeUpdate("DROP TABLE IF EXISTS FILE");
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
 
 		try {
-			dbManager.executeUpdate("DROP TABLE CODE_FRAGMENT");
+			dbManager.executeUpdate("DROP TABLE IF EXISTS CODE_FRAGMENT");
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
 
 		try {
-			dbManager.executeUpdate("DROP TABLE CLONE_SET");
+			dbManager.executeUpdate("DROP TABLE IF EXISTS CLONE_SET");
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
 
 		try {
-			dbManager.executeUpdate("DROP TABLE CODE_FRAGMENT_LINK");
+			dbManager.executeUpdate("DROP TABLE IF EXISTS CODE_FRAGMENT_LINK");
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
 
 		try {
-			dbManager.executeUpdate("DROP TABLE CLONE_SET_LINK");
-		} catch (Exception e) {
-			// e.printStackTrace();
-		}
-
-		try {
-			dbManager.executeUpdate("DROP TABLE CLONE_SET_LINK_FRAGMENT_LINK");
-		} catch (Exception e) {
-			// e.printStackTrace();
-		}
-
-		try {
-			dbManager.executeUpdate("DROP TABLE CLONE_GENEALOGY");
-		} catch (Exception e) {
-			// e.printStackTrace();
-		}
-
-		try {
-			dbManager.executeUpdate("DROP TABLE CLONE_GENEALOGY_ELEMENT");
-		} catch (Exception e) {
-			// e.printStackTrace();
-		}
-
-		try {
-			dbManager.executeUpdate("DROP TABLE CLONE_GENEALOGY_LINK");
-		} catch (Exception e) {
-			// e.printStackTrace();
-		}
-
-		try {
-			dbManager.executeUpdate("DROP TABLE CODE_FRAGMENT_GENEALOGY");
+			dbManager.executeUpdate("DROP TABLE IF EXISTS CLONE_SET_LINK");
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
 
 		try {
 			dbManager
-					.executeUpdate("DROP TABLE CODE_FRAGMENT_GENEALOGY_ELEMENT");
+					.executeUpdate("DROP TABLE IF EXISTS CLONE_SET_LINK_FRAGMENT_LINK");
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
 
 		try {
-			dbManager.executeUpdate("DROP TABLE CODE_FRAGMENT_GENEALOGY_LINK");
+			dbManager.executeUpdate("DROP TABLE IF EXISTS CLONE_GENEALOGY");
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
 
 		try {
-			dbManager.executeUpdate("DROP TABLE CRD");
+			dbManager
+					.executeUpdate("DROP TABLE IF EXISTS CLONE_GENEALOGY_ELEMENT");
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
 
 		try {
-			dbManager.executeUpdate("VACUUM");
+			dbManager
+					.executeUpdate("DROP TABLE IF EXISTS CLONE_GENEALOGY_LINK");
+		} catch (Exception e) {
+			// e.printStackTrace();
+		}
+
+		try {
+			dbManager
+					.executeUpdate("DROP TABLE IF EXISTS CODE_FRAGMENT_GENEALOGY");
+		} catch (Exception e) {
+			// e.printStackTrace();
+		}
+
+		try {
+			dbManager
+					.executeUpdate("DROP TABLE IF EXISTS CODE_FRAGMENT_GENEALOGY_ELEMENT");
+		} catch (Exception e) {
+			// e.printStackTrace();
+		}
+
+		try {
+			dbManager
+					.executeUpdate("DROP TABLE IF EXISTS CODE_FRAGMENT_GENEALOGY_LINK");
+		} catch (Exception e) {
+			// e.printStackTrace();
+		}
+
+		try {
+			dbManager.executeUpdate("DROP TABLE IF EXISTS CRD");
+		} catch (Exception e) {
+			// e.printStackTrace();
+		}
+
+		try {
+			// dbManager.executeUpdate("VACUUM");
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
@@ -246,6 +288,116 @@ public class DBMaker {
 		createCodeFragmentGenealogyLinkTableIndexes();
 	}
 
+	public void dropIndexes() throws Exception {
+		try {
+			dropRepositoryTableIndexes();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			dropRevisionTableIndexes();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			dropCommitTableIndexes();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			dropCombinedRevisionTableIndexes();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			dropCombinedCommitTableIndexes();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			dropFileTableIndexes();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			dropCrdTableIndexes();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			dropCodeFragmentTableIndexes();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			dropCloneSetTableIndexes();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			dropCodeFragmentLinkTableIndexes();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			dropCloneSetLinkTableIndexes();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			dropCloneSetLinkFragmentLinkTableIndexes();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			dropCloneGenealogyTableIndexes();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			dropCloneGenealogyElementTableIndexes();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			dropCloneGenealogyLinkTableIndexes();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			dropCodeFragmentGenealogyTableIndexes();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			dropCodeFragmentGenealogyElementTableIndexes();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			dropCodeFragmentGenealogyLinkTableIndexes();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	/*
 	 * definitions of each table follow
 	 */
@@ -258,7 +410,7 @@ public class DBMaker {
 	private String getRepositoryTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
-		builder.append("create table REPOSITORY(");
+		builder.append("create table if not exists REPOSITORY(");
 		builder.append("REPOSITORY_ID BIGINT PRIMARY KEY,");
 		builder.append("REPOSITORY_NAME TEXT UNIQUE,");
 		builder.append("REPOSITORY_ROOT_URL TEXT UNIQUE,");
@@ -282,14 +434,24 @@ public class DBMaker {
 	}
 
 	/**
-	 * get the query to create the revision tabledcx
+	 * drop indexes on the repository table
+	 * 
+	 * @throws Exception
+	 */
+	private void dropRepositoryTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("drop index if exists REPOSITORY_ID_INDEX_REPOSITORY");
+	}
+
+	/**
+	 * get the query to create the revision table
 	 * 
 	 * @return
 	 */
 	private String getRevisionTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
-		builder.append("create table REVISION(");
+		builder.append("create table if not exists REVISION(");
 		builder.append("REVISION_ID BIGINT PRIMARY KEY,");
 		builder.append("REVISION_IDENTIFIER TEXT,");
 		builder.append("REPOSITORY_ID BIGINT,");
@@ -312,6 +474,18 @@ public class DBMaker {
 	}
 
 	/**
+	 * drop indexes on the revision table
+	 * 
+	 * @throws Exception
+	 */
+	private void dropRevisionTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("drop index if exists REVISION_ID_INDEX_REVISION");
+		dbManager
+				.executeUpdate("drop index if exists REPOSITORY_ID_INDEX_REVISION");
+	}
+
+	/**
 	 * get the query to create the commit table
 	 * 
 	 * @return
@@ -319,7 +493,7 @@ public class DBMaker {
 	private String getCommitTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
-		builder.append("create table VCS_COMMIT(");
+		builder.append("create table if not exists VCS_COMMIT(");
 		builder.append("VCS_COMMIT_ID BIGINT PRIMARY KEY,");
 		builder.append("REPOSITORY_ID BIGINT,");
 		builder.append("BEFORE_REVISION_ID BIGINT,");
@@ -373,6 +547,29 @@ public class DBMaker {
 	}
 
 	/**
+	 * drop indexes on the commit table
+	 * 
+	 * @throws Exception
+	 */
+	private void dropCommitTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("drop index if exists VCS_COMMIT_ID_INDEX_VCS_COMMIT");
+		dbManager
+				.executeUpdate("drop index if exists REPOSITORY_ID_INDEX_VCS_COMMIT");
+		dbManager
+				.executeUpdate("drop index if exists BEFORE_REVISION_ID_INDEX_VCS_COMMIT");
+		dbManager
+				.executeUpdate("drop index if exists AFTER_REVISION_ID_INDEX_VCS_COMMIT");
+		dbManager.executeUpdate("drop index if exists YEAR_INDEX_VCS_COMMIT");
+		dbManager.executeUpdate("drop index if exists MONTH_INDEX_VCS_COMMIT");
+		dbManager.executeUpdate("drop index if exists DAY_INDEX_VCS_COMMIT");
+		dbManager.executeUpdate("drop index if exists HOUR_INDEX_VCS_COMMIT");
+		dbManager.executeUpdate("drop index if exists MINUTE_INDEX_VCS_COMMIT");
+		dbManager.executeUpdate("drop index if exists SECOND_INDEX_VCS_COMMIT");
+		dbManager.executeUpdate("drop index if exists DATE_INDEX_VCS_COMMIT");
+	}
+
+	/**
 	 * get the query to create the combined revision table
 	 * 
 	 * @return
@@ -380,7 +577,7 @@ public class DBMaker {
 	private String getCombinedRevisionTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
-		builder.append("create table COMBINED_REVISION(");
+		builder.append("create table if not exists COMBINED_REVISION(");
 		builder.append("COMBINED_REVISION_ID BIGINT,");
 		builder.append("REVISION_ID BIGINT,");
 		builder.append("PRIMARY KEY(COMBINED_REVISION_ID, REVISION_ID)");
@@ -405,6 +602,20 @@ public class DBMaker {
 	}
 
 	/**
+	 * drop indexes on the revision table
+	 * 
+	 * @throws Exception
+	 */
+	private void dropCombinedRevisionTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("drop index if exists COMBINED_REVISION_ID_INDEX_COMBINED_REVISION");
+		dbManager
+				.executeUpdate("drop index if exists REVISION_ID_INDEX_COMBINED_REVISION");
+		dbManager
+				.executeUpdate("drop index if exists COMBINED_REVISION_ID_REVISION_ID_INDEX_COMBINED_REVISION");
+	}
+
+	/**
 	 * get the query to create the combined revision table
 	 * 
 	 * @return
@@ -412,7 +623,7 @@ public class DBMaker {
 	private String getCombinedCommitTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
-		builder.append("create table COMBINED_COMMIT(");
+		builder.append("create table if not exists COMBINED_COMMIT(");
 		builder.append("COMBINED_COMMIT_ID BIGINT PRIMARY KEY,");
 		builder.append("BEFORE_COMBINED_REVISION_ID BIGINT,");
 		builder.append("AFTER_COMBINED_REVISION_ID BIGINT,");
@@ -442,6 +653,22 @@ public class DBMaker {
 	}
 
 	/**
+	 * drop indexes on the combined commit table
+	 * 
+	 * @throws Exception
+	 */
+	private void dropCombinedCommitTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("drop index if exists COMBINED_COMMIT_ID_INDEX_COMBINED_COMMIT");
+		dbManager
+				.executeUpdate("drop index if exists BEFORE_COMBINED_REVISION_ID_INDEX_COMBINED_COMMIT");
+		dbManager
+				.executeUpdate("drop index if exists AFTER_COMBINED_REVISION_ID_INDEX_COMBINED_COMMIT");
+		dbManager
+				.executeUpdate("drop index if exists VCS_COMMIT_ID_INDEX_COMBINED_COMMIT");
+	}
+
+	/**
 	 * get the query to create the file table
 	 * 
 	 * @return
@@ -449,7 +676,7 @@ public class DBMaker {
 	private String getFileTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
-		builder.append("create table FILE(");
+		builder.append("create table if not exists FILE(");
 		builder.append("FILE_ID BIGINT PRIMARY KEY,");
 		builder.append("REPOSITORY_ID BIGINT,");
 		builder.append("FILE_PATH TEXT NOT NULL,");
@@ -482,6 +709,21 @@ public class DBMaker {
 	}
 
 	/**
+	 * drop indexes on the file table
+	 * 
+	 * @throws Exception
+	 */
+	private void dropFileTableIndexes() throws Exception {
+		dbManager.executeUpdate("drop index if exists FILE_ID_INDEX_FILE");
+		dbManager
+				.executeUpdate("drop index if exists REPOSITORY_ID_INDEX_FILE");
+		dbManager
+				.executeUpdate("drop index if exists START_COMBINED_REVISION_ID_INDEX_FILE");
+		dbManager
+				.executeUpdate("drop index if exists END_COMBINED_REVISION_ID_INDEX_FILE");
+	}
+
+	/**
 	 * get the query to create the table for crds
 	 * 
 	 * @return
@@ -489,7 +731,7 @@ public class DBMaker {
 	private String getCrdQuery() {
 		final StringBuilder builder = new StringBuilder();
 
-		builder.append("create table CRD(");
+		builder.append("create table if not exists CRD(");
 		builder.append("CRD_ID BIGINT PRIMARY KEY,");
 		builder.append("TYPE TEXT NOT NULL,");
 		builder.append("HEAD TEXT NOT NULL,");
@@ -514,6 +756,16 @@ public class DBMaker {
 	}
 
 	/**
+	 * drop indexes on the crd table
+	 * 
+	 * @throws Exception
+	 */
+	private void dropCrdTableIndexes() throws Exception {
+		dbManager.executeUpdate("drop index if exists CRD_ID_INDEX_CRD");
+		dbManager.executeUpdate("drop index if exists CM_INDEX_CRD");
+	}
+
+	/**
 	 * get the query to create the code fragment table
 	 * 
 	 * @return
@@ -521,7 +773,7 @@ public class DBMaker {
 	private String getCodeFragmentTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
-		builder.append("create table CODE_FRAGMENT(");
+		builder.append("create table if not exists CODE_FRAGMENT(");
 		builder.append("CODE_FRAGMENT_ID BIGINT PRIMARY KEY,");
 		builder.append("OWNER_FILE_ID BIGINT,");
 		builder.append("OWNER_REPOSITORY_ID BIGINT,");
@@ -572,6 +824,32 @@ public class DBMaker {
 	}
 
 	/**
+	 * drop indexes on the code fragment table
+	 * 
+	 * @throws Exception
+	 */
+	private void dropCodeFragmentTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("drop index if exists CODE_FRAGMENT_ID_INDEX_CODE_FRAGMENT");
+		dbManager
+				.executeUpdate("drop index if exists START_COMBINED_REVISION_ID_INDEX_CODE_FRAGMENT");
+		dbManager
+				.executeUpdate("drop index if exists END_COMBINED_REVISION_ID_INDEX_CODE_FRAGMENT");
+		dbManager
+				.executeUpdate("drop index if exists HASH_INDEX_CODE_FRAGMENT");
+		dbManager
+				.executeUpdate("drop index if exists HASH_FOR_CLONE_INDEX_CODE_FRAGMENT");
+		dbManager
+				.executeUpdate("drop index if exists START_LINE_INDEX_CODE_FRAGMENT");
+		dbManager
+				.executeUpdate("drop index if exists END_LINE_INDEX_CODE_FRAGMENT");
+		dbManager
+				.executeUpdate("drop index if exists SIZE_INDEX_CODE_FRAGMENT");
+		dbManager
+				.executeUpdate("drop index if exists START_END_REVISION_ID_INDEX_CODE_FRAGMENT");
+	}
+
+	/**
 	 * get the query to create the clone set table
 	 * 
 	 * @return
@@ -579,7 +857,7 @@ public class DBMaker {
 	private String getCloneSetTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
-		builder.append("create table CLONE_SET(");
+		builder.append("create table if not exists CLONE_SET(");
 		builder.append("CLONE_SET_ID BIGINT,");
 		builder.append("OWNER_COMBINED_REVISION_ID BIGINT,");
 		builder.append("ELEMENT BIGINT,");
@@ -605,6 +883,21 @@ public class DBMaker {
 				.executeUpdate("create index ELEMENT_INDEX_CLONE_SET on CLONE_SET(ELEMENT)");
 		dbManager
 				.executeUpdate("create index CLONE_SET_ID_ELEMENT_INDEX_CLONE_SET on CLONE_SET(CLONE_SET_ID,ELEMENT)");
+	}
+
+	/**
+	 * drop indexes on the clone set table
+	 * 
+	 * @throws Exception
+	 */
+	private void dropCloneSetTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("drop index if exists CLONE_SET_ID_INDEX_CLONE_SET");
+		dbManager
+				.executeUpdate("drop index if exists OWNER_COMBINED_REVISION_ID_INDEX_CLONE_SET");
+		dbManager.executeUpdate("drop index if exists ELEMENT_INDEX_CLONE_SET");
+		dbManager
+				.executeUpdate("drop index if exists CLONE_SET_ID_ELEMENT_INDEX_CLONE_SET");
 	}
 
 	/**
@@ -650,6 +943,24 @@ public class DBMaker {
 	}
 
 	/**
+	 * drop indexes on the fragment link table
+	 * 
+	 * @throws Exception
+	 */
+	private void dropCodeFragmentLinkTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("drop index if exists CODE_FRAGMENT_LINK_ID_INDEX_CODE_FRAGMENT_LINK");
+		dbManager
+				.executeUpdate("drop index if exists BEFORE_ELEMENT_ID_INDEX_CODE_FRAGMENT_LINK");
+		dbManager
+				.executeUpdate("drop index if exists AFTER_ELEMENT_ID_INDEX_CODE_FRAGMENT_LINK");
+		dbManager
+				.executeUpdate("drop index if exists BEFORE_COMBINED_REVISION_ID_INDEX_CODE_FRAGMENT_LINK");
+		dbManager
+				.executeUpdate("drop index if exists AFTER_COMBINED_REVISION_ID_INDEX_CODE_FRAGMENT_LINK");
+	}
+
+	/**
 	 * get the query to create the table for links of clone sets
 	 * 
 	 * @return
@@ -657,7 +968,7 @@ public class DBMaker {
 	private String getCloneSetLinkTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
-		builder.append("create table CLONE_SET_LINK(");
+		builder.append("create table if not exists CLONE_SET_LINK(");
 		builder.append("CLONE_SET_LINK_ID BIGINT PRIMARY KEY,");
 		builder.append("BEFORE_ELEMENT_ID BIGINT,");
 		builder.append("AFTER_ELEMENT_ID BIGINT,");
@@ -691,6 +1002,24 @@ public class DBMaker {
 	}
 
 	/**
+	 * drop indexes on the clone link table
+	 * 
+	 * @throws Exception
+	 */
+	private void dropCloneSetLinkTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("drop index if exists CLONE_SET_LINK_ID_INDEX_CLONE_SET_LINK");
+		dbManager
+				.executeUpdate("drop index if exists BEFORE_ELEMENT_ID_INDEX_CLONE_SET_LINK");
+		dbManager
+				.executeUpdate("drop index if exists AFTER_ELEMENT_ID_INDEX_CLONE_SET_LINK");
+		dbManager
+				.executeUpdate("drop index if exists BEFORE_COMBINED_REVISION_ID_INDEX_CLONE_SET_LINK");
+		dbManager
+				.executeUpdate("drop index if exists AFTER_COMBINED_REVISION_ID_INDEX_CLONE_SET_LINK");
+	}
+
+	/**
 	 * get the query to create the table for links of clone sets
 	 * 
 	 * @return
@@ -698,7 +1027,7 @@ public class DBMaker {
 	private String getCloneSetLinkFragmentLinkTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
-		builder.append("create table CLONE_SET_LINK_FRAGMENT_LINK(");
+		builder.append("create table if not exists CLONE_SET_LINK_FRAGMENT_LINK(");
 		builder.append("CLONE_SET_LINK_ID BIGINT,");
 		builder.append("CODE_FRAGMENT_LINK_ID BIGINT,");
 		builder.append("PRIMARY KEY(CLONE_SET_LINK_ID, CODE_FRAGMENT_LINK_ID),");
@@ -724,6 +1053,20 @@ public class DBMaker {
 	}
 
 	/**
+	 * drop indexes on the clone link table
+	 * 
+	 * @throws Exception
+	 */
+	private void dropCloneSetLinkFragmentLinkTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("drop index if exists CLONE_SET_LINK_ID_INDEX_CLONE_SET_LINK_FRAGMENT_LINK");
+		dbManager
+				.executeUpdate("drop index if exists CODE_FRAGMENT_LINK_INDEX_CLONE_SET_LINK_FRAGMENT_LINK");
+		dbManager
+				.executeUpdate("drop index if exists KEY_INDEX_CLONE_SET_LINK_FRAGMENT_LINK");
+	}
+
+	/**
 	 * get the query to create the table for genealogies of clones
 	 * 
 	 * @return
@@ -731,7 +1074,7 @@ public class DBMaker {
 	private String getCloneGenealogyTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
-		builder.append("create table CLONE_GENEALOGY(");
+		builder.append("create table if not exists CLONE_GENEALOGY(");
 		builder.append("CLONE_GENEALOGY_ID BIGINT PRIMARY KEY,");
 		builder.append("START_COMBINED_REVISION_ID BIGINT,");
 		builder.append("END_COMBINED_REVISION_ID BIGINT");
@@ -759,6 +1102,22 @@ public class DBMaker {
 	}
 
 	/**
+	 * drop indexes on the clone genealogy table
+	 * 
+	 * @throws Exception
+	 */
+	private void dropCloneGenealogyTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("drop index if exists CLONE_GENEALOGY_ID_INDEX_CLONE_GENEALOGY");
+		dbManager
+				.executeUpdate("drop index if exists START_COMBINED_REVISION_ID_INDEX_CLONE_GENEALOGY");
+		dbManager
+				.executeUpdate("drop index if exists END_COMBINED_REVISION_ID_INDEX_CLONE_GENEALOGY");
+		dbManager
+				.executeUpdate("drop index if exists START_END_REVISION_ID_INDEX_CLONE_GENEALOGY");
+	}
+
+	/**
 	 * get the query to create the table for elements in genealogies of clones
 	 * 
 	 * @return
@@ -766,7 +1125,7 @@ public class DBMaker {
 	private String getCloneGenealogyEelementTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
-		builder.append("create table CLONE_GENEALOGY_ELEMENT(");
+		builder.append("create table if not exists CLONE_GENEALOGY_ELEMENT(");
 		builder.append("CLONE_GENEALOGY_ID BIGINT,");
 		builder.append("CLONE_SET_ID BIGINT,");
 		builder.append("PRIMARY KEY(CLONE_GENEALOGY_ID, CLONE_SET_ID),");
@@ -792,6 +1151,20 @@ public class DBMaker {
 	}
 
 	/**
+	 * drop indexes on the clone genealogy element table
+	 * 
+	 * @throws Exception
+	 */
+	private void dropCloneGenealogyElementTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("drop index if exists CLONE_GENEALOGY_ID_INDEX_CLONE_GENEALOGY_ELEMENT");
+		dbManager
+				.executeUpdate("drop index if exists CLONE_SET_ID_INDEX_CLONE_GENEALOGY_ELEMENT");
+		dbManager
+				.executeUpdate("drop index if exists KEY_INDEX_CLONE_GENEALOGY_ELEMENT");
+	}
+
+	/**
 	 * get the query to create the table for links in genealogies of clones
 	 * 
 	 * @return
@@ -799,7 +1172,7 @@ public class DBMaker {
 	private String getCloneGenealogyLinkTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
-		builder.append("create table CLONE_GENEALOGY_LINK_ELEMENT(");
+		builder.append("create table if not exists CLONE_GENEALOGY_LINK_ELEMENT(");
 		builder.append("CLONE_GENEALOGY_ID BIGINT,");
 		builder.append("CLONE_SET_LINK_ID BIGINT,");
 		builder.append("PRIMARY KEY(CLONE_GENEALOGY_ID, CLONE_SET_LINK_ID),");
@@ -825,6 +1198,20 @@ public class DBMaker {
 	}
 
 	/**
+	 * drop indexes on the clone genealogy element table
+	 * 
+	 * @throws Exception
+	 */
+	private void dropCloneGenealogyLinkTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("drop index if exists CLONE_GENEALOGY_ID_INDEX_CLONE_GENEALOGY_LINK_ELEMENT");
+		dbManager
+				.executeUpdate("drop index if exists CLONE_SET_LINK_ID_INDEX_CLONE_GENEALOGY_LINK_ELEMENT");
+		dbManager
+				.executeUpdate("drop index if exists KEY_INDEX_CLONE_GENEALOGY_LINK_ELEMENT");
+	}
+
+	/**
 	 * get the query to create the table for genealogies of code fragments
 	 * 
 	 * @return
@@ -832,7 +1219,7 @@ public class DBMaker {
 	private String getCodeFragmentGenealogyTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
-		builder.append("create table CODE_FRAGMENT_GENEALOGY(");
+		builder.append("create table if not exists CODE_FRAGMENT_GENEALOGY(");
 		builder.append("CODE_FRAGMENT_GENEALOGY_ID BIGINT PRIMARY KEY,");
 		builder.append("START_COMBINED_REVISION_ID BIGINT,");
 		builder.append("END_COMBINED_REVISION_ID BIGINT");
@@ -860,6 +1247,22 @@ public class DBMaker {
 	}
 
 	/**
+	 * drop indexes on the fragment genealogy table
+	 * 
+	 * @throws Exception
+	 */
+	private void dropCodeFragmentGenealogyTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("drop index if exists CODE_FRAGMENT_GENEALOGY_ID_INDEX_CODE_FRAGMENT_GENEALOGY");
+		dbManager
+				.executeUpdate("drop index if exists START_COMBINED_REVISION_ID_INDEX_CODE_FRAGMENT_GENEALOGY");
+		dbManager
+				.executeUpdate("drop index if exists END_COMBINED_REVISION_ID_INDEX_CODE_FRAGMENT_GENEALOGY");
+		dbManager
+				.executeUpdate("drop index if exists START_END_REVISION_ID_INDEX_CODE_FRAGMENT_GENEALOGY");
+	}
+
+	/**
 	 * get the query to create the table for elements in genealogies of code
 	 * fragments
 	 * 
@@ -868,7 +1271,7 @@ public class DBMaker {
 	private String getCodeFragmentGenealogyElementTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
-		builder.append("create table CODE_FRAGMENT_GENEALOGY_ELEMENT(");
+		builder.append("create table if not exists CODE_FRAGMENT_GENEALOGY_ELEMENT(");
 		builder.append("CODE_FRAGMENT_GENEALOGY_ID BIGINT,");
 		builder.append("CODE_FRAGMENT_ID BIGINT,");
 		builder.append("PRIMARY KEY(CODE_FRAGMENT_GENEALOGY_ID, CODE_FRAGMENT_ID),");
@@ -895,6 +1298,21 @@ public class DBMaker {
 	}
 
 	/**
+	 * drop indexes on the fragment genealogy table
+	 * 
+	 * @throws Exception
+	 */
+	private void dropCodeFragmentGenealogyElementTableIndexes()
+			throws Exception {
+		dbManager
+				.executeUpdate("drop index if exists CODE_FRAGMENT_GENEALOGY_ID_INDEX_CODE_FRAGMENT_GENEALOGY_ELEMENT");
+		dbManager
+				.executeUpdate("drop index if exists CODE_FRAGMENT_ID_INDEX_CODE_FRAGMENT_GENEALOGY_ELEMENT");
+		dbManager
+				.executeUpdate("drop index if exists KEY_INDEX_CODE_FRAGMENT_GENEALOGY_ELEMENT");
+	}
+
+	/**
 	 * get the query to create the table for elements in genealogies of code
 	 * fragments
 	 * 
@@ -903,7 +1321,7 @@ public class DBMaker {
 	private String getCodeFragmentGenealogyLinkTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
-		builder.append("create table CODE_FRAGMENT_GENEALOGY_LINK_ELEMENT(");
+		builder.append("create table if not exists CODE_FRAGMENT_GENEALOGY_LINK_ELEMENT(");
 		builder.append("CODE_FRAGMENT_GENEALOGY_ID BIGINT,");
 		builder.append("CODE_FRAGMENT_LINK_ID BIGINT,");
 		builder.append("PRIMARY KEY(CODE_FRAGMENT_GENEALOGY_ID, CODE_FRAGMENT_LINK_ID),");
@@ -926,6 +1344,15 @@ public class DBMaker {
 				.executeUpdate("create index CODE_FRAGMENT_LINK_ID_INDEX_CODE_FRAGMENT_GENEALOGY_LINK_ELEMENT on CODE_FRAGMENT_GENEALOGY_LINK_ELEMENT(CODE_FRAGMENT_LINK_ID)");
 		dbManager
 				.executeUpdate("create index KEY_INDEX_CODE_FRAGMENT_GENEALOGY_LINK_ELEMENT on CODE_FRAGMENT_GENEALOGY_LINK_ELEMENT(CODE_FRAGMENT_GENEALOGY_ID, CODE_FRAGMENT_LINK_ID)");
+	}
+
+	private void dropCodeFragmentGenealogyLinkTableIndexes() throws Exception {
+		dbManager
+				.executeUpdate("drop index if exists CODE_FRAGMENT_GENEALOGY_ID_INDEX_CODE_FRAGMENT_GENEALOGY_LINK_ELEMENT");
+		dbManager
+				.executeUpdate("drop index if exists CODE_FRAGMENT_LINK_ID_INDEX_CODE_FRAGMENT_GENEALOGY_LINK_ELEMENT");
+		dbManager
+				.executeUpdate("drop index if exists KEY_INDEX_CODE_FRAGMENT_GENEALOGY_LINK_ELEMENT");
 	}
 
 }

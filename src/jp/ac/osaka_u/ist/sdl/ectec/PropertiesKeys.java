@@ -58,5 +58,7 @@ public interface PropertiesKeys {
 	public static final String DB_USERNAME = "ectec.db.username";
 	
 	public static final String DB_PASSWD = "ectec.db.passwd";
+	
+	public static final String DB_OVERWRITE = "ectec.db.overwrite";
 
 }

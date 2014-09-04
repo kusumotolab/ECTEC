@@ -45,6 +45,11 @@ public class CloneDetectorMain {
 		} catch (Exception e) {
 			eLogger.fatal("operations failed.\n" + e.toString());
 			e.printStackTrace();
+			
+			if (dbManager != null) {
+				dbManager.rollback();
+			}
+			postprocess();
 		}
 	}
 

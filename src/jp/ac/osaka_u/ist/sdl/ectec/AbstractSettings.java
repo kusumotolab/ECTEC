@@ -90,8 +90,21 @@ public abstract class AbstractSettings implements PropertiesKeys {
 	 * parse and load the given arguments
 	 * 
 	 * @param args
+	 * @throws Exception
 	 */
 	public void load(final String[] args) throws Exception {
+		load(args, true);
+	}
+
+	/**
+	 * parse and load the given arguments
+	 * 
+	 * @param args
+	 * @param dbMustExist
+	 * @throws Exception
+	 */
+	public void load(final String[] args, final boolean dbMustExist)
+			throws Exception {
 		final Options options = defineOptions();
 
 		final CommandLineParser parser = new PosixParser();
@@ -114,7 +127,7 @@ public abstract class AbstractSettings implements PropertiesKeys {
 			throw new IllegalSettingValueException("dbPath must not be null.");
 		}
 		final File dbFile = new File(dbPath);
-		if (!dbFile.exists()) {
+		if (dbMustExist && !dbFile.exists()) {
 			throw new IllegalSettingValueException(dbPath + " doesn't exist.");
 		}
 
