@@ -2,9 +2,9 @@ package jp.ac.osaka_u.ist.sdl.ectec.db;
 
 /**
  * A class for create
- * 
+ *
  * @author k-hotta
- * 
+ *
  */
 public class DBMaker {
 
@@ -35,7 +35,7 @@ public class DBMaker {
 
 	/**
 	 * make the db
-	 * 
+	 *
 	 * @param overwrite
 	 *            if true, the existing db is overwritten by the new one (the
 	 *            existing db will be deleted)
@@ -57,7 +57,7 @@ public class DBMaker {
 
 	/**
 	 * create new tables
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void createNewTables() throws Exception {
@@ -210,14 +210,14 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the repository table
-	 * 
+	 *
 	 * @return
 	 */
 	private String getRepositoryTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
 		builder.append("create table REPOSITORY(");
-		builder.append("REPOSITORY_ID LONG PRIMARY KEY,");
+		builder.append("REPOSITORY_ID BIGINT PRIMARY KEY,");
 		builder.append("REPOSITORY_NAME TEXT UNIQUE,");
 		builder.append("REPOSITORY_URL TEXT UNIQUE,");
 		builder.append("VCS TEXT,");
@@ -230,7 +230,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the repository table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createRepositoryTableIndexes() throws Exception {
@@ -239,17 +239,17 @@ public class DBMaker {
 	}
 
 	/**
-	 * get the query to create the revision table
-	 * 
+	 * get the query to create the revision tabledcx
+	 *
 	 * @return
 	 */
 	private String getRevisionTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
 		builder.append("create table REVISION(");
-		builder.append("REVISION_ID LONG PRIMARY KEY,");
+		builder.append("REVISION_ID BIGINT PRIMARY KEY,");
 		builder.append("REVISION_IDENTIFIER TEXT,");
-		builder.append("REPOSITORY_ID LONG,");
+		builder.append("REPOSITORY_ID BIGINT,");
 		builder.append("FOREIGN KEY(REPOSITORY_ID) REFERENCES REPOSITORY(REPOSITORY_ID)");
 		builder.append(")");
 
@@ -258,7 +258,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the revision table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createRevisionTableIndexes() throws Exception {
@@ -270,17 +270,17 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the commit table
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCommitTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
 		builder.append("create table VCS_COMMIT(");
-		builder.append("VCS_COMMIT_ID LONG PRIMARY KEY,");
-		builder.append("REPOSITORY_ID LONG,");
-		builder.append("BEFORE_REVISION_ID LONG,");
-		builder.append("AFTER_REVISION_ID LONG,");
+		builder.append("VCS_COMMIT_ID BIGINT PRIMARY KEY,");
+		builder.append("REPOSITORY_ID BIGINT,");
+		builder.append("BEFORE_REVISION_ID BIGINT,");
+		builder.append("AFTER_REVISION_ID BIGINT,");
 		builder.append("BEFORE_REVISION_IDENTIFIER TEXT NOT NULL,");
 		builder.append("AFTER_REVISION_IDENTIFIER TEXT NOT NULL,");
 		builder.append("YEAR INTEGER CHECK(YEAR > 0),");
@@ -289,11 +289,11 @@ public class DBMaker {
 		builder.append("HOUR INTEGER CHECK(HOUR >= 0 AND HOUR <= 23),");
 		builder.append("MINUTE INTEGER CHECK(MINUTE >= 0 AND MINUTE <= 59),");
 		builder.append("SECOND INTEGER CHECK(SECOND >= 0 AND SECOND <= 59),");
-		builder.append("FOREIGN KEY(REPOSITORY_ID) REFERENCES REPOSITORY(REPOSITORY_ID),");
-		builder.append("FOREIGN KEY(BEFORE_REVISION_ID) REFERENCES REVISION(REVISION_ID),");
-		builder.append("FOREIGN KEY(AFTER_REVISION_ID) REFERENCES REVISION(REVISION_ID),");
-		builder.append("FOREIGN KEY(BEFORE_REVISION_IDENTIFIER) REFERENCES REVISION(REVISION_IDENTIFIER),");
-		builder.append("FOREIGN KEY(AFTER_REVISION_IDENTIFIER) REFERENCES REVISION(REVISION_IDENTIFIER)");
+		builder.append("FOREIGN KEY(REPOSITORY_ID) REFERENCES REPOSITORY(REPOSITORY_ID)");
+		//builder.append("FOREIGN KEY(BEFORE_REVISION_ID) REFERENCES REVISION(REVISION_ID),");
+		//builder.append("FOREIGN KEY(AFTER_REVISION_ID) REFERENCES REVISION(REVISION_ID)");
+		//builder.append("FOREIGN KEY(BEFORE_REVISION_IDENTIFIER) REFERENCES REVISION(REVISION_IDENTIFIER),");
+		//builder.append("FOREIGN KEY(AFTER_REVISION_IDENTIFIER) REFERENCES REVISION(REVISION_IDENTIFIER)");
 		builder.append(")");
 
 		return builder.toString();
@@ -301,7 +301,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the commit table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCommitTableIndexes() throws Exception {
@@ -331,17 +331,17 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the combined revision table
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCombinedRevisionTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
 		builder.append("create table COMBINED_REVISION(");
-		builder.append("COMBINED_REVISION_ID LONG,");
-		builder.append("REVISION_ID LONG,");
-		builder.append("PRIMARY KEY(COMBINED_REVISION_ID, REVISION_ID),");
-		builder.append("FOREIGN KEY(REVISION_ID) REFERENCES REVISION(REVISION_ID)");
+		builder.append("COMBINED_REVISION_ID BIGINT,");
+		builder.append("REVISION_ID BIGINT,");
+		builder.append("PRIMARY KEY(COMBINED_REVISION_ID, REVISION_ID)");
+		//builder.append("FOREIGN KEY(REVISION_ID) REFERENCES REVISION(REVISION_ID)");
 		builder.append(")");
 
 		return builder.toString();
@@ -349,7 +349,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the revision table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCombinedRevisionTableIndexes() throws Exception {
@@ -363,19 +363,19 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the combined revision table
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCombinedCommitTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
 		builder.append("create table COMBINED_COMMIT(");
-		builder.append("COMBINED_COMMIT_ID LONG PRIMARY KEY,");
-		builder.append("BEFORE_COMBINED_REVISION_ID LONG,");
-		builder.append("AFTER_COMBINED_REVISION_ID LONG,");
-		builder.append("VCS_COMMIT_ID LONG,");
-		builder.append("FOREIGN KEY(BEFORE_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
-		builder.append("FOREIGN KEY(AFTER_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
+		builder.append("COMBINED_COMMIT_ID BIGINT PRIMARY KEY,");
+		builder.append("BEFORE_COMBINED_REVISION_ID BIGINT,");
+		builder.append("AFTER_COMBINED_REVISION_ID BIGINT,");
+		builder.append("VCS_COMMIT_ID BIGINT,");
+		//builder.append("FOREIGN KEY(BEFORE_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
+		//builder.append("FOREIGN KEY(AFTER_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
 		builder.append("FOREIGN KEY(VCS_COMMIT_ID) REFERENCES VCS_COMMIT(VCS_COMMIT_ID)");
 		builder.append(")");
 
@@ -384,7 +384,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the revision table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCombinedCommitTableIndexes() throws Exception {
@@ -400,21 +400,21 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the file table
-	 * 
+	 *
 	 * @return
 	 */
 	private String getFileTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
 		builder.append("create table FILE(");
-		builder.append("FILE_ID LONG PRIMARY KEY,");
-		builder.append("REPOSITORY_ID LONG,");
+		builder.append("FILE_ID BIGINT PRIMARY KEY,");
+		builder.append("REPOSITORY_ID BIGINT,");
 		builder.append("FILE_PATH TEXT NOT NULL,");
-		builder.append("START_COMBINED_REVISION_ID LONG,");
-		builder.append("END_COMBINED_REVISION_ID LONG,");
-		builder.append("FOREIGN KEY(REPOSITORY_ID) REFERENCES REPOSITORY(REPOSITORY_ID),");
-		builder.append("FOREIGN KEY(START_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
-		builder.append("FOREIGN KEY(END_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID)");
+		builder.append("START_COMBINED_REVISION_ID BIGINT,");
+		builder.append("END_COMBINED_REVISION_ID BIGINT,");
+		builder.append("FOREIGN KEY(REPOSITORY_ID) REFERENCES REPOSITORY(REPOSITORY_ID)");
+		//builder.append("FOREIGN KEY(START_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
+		//builder.append("FOREIGN KEY(END_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID)");
 		builder.append(")");
 
 		return builder.toString();
@@ -422,7 +422,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the file table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createFileTableIndexes() throws Exception {
@@ -438,14 +438,14 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the table for crds
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCrdQuery() {
 		final StringBuilder builder = new StringBuilder();
 
 		builder.append("create table CRD(");
-		builder.append("CRD_ID LONG PRIMARY KEY,");
+		builder.append("CRD_ID BIGINT PRIMARY KEY,");
 		builder.append("TYPE TEXT NOT NULL,");
 		builder.append("HEAD TEXT NOT NULL,");
 		builder.append("ANCHOR TEXT NOT NULL,");
@@ -460,7 +460,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the crd table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCrdTableIndexes() throws Exception {
@@ -470,29 +470,29 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the code fragment table
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCodeFragmentTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
 		builder.append("create table CODE_FRAGMENT(");
-		builder.append("CODE_FRAGMENT_ID LONG PRIMARY KEY,");
-		builder.append("OWNER_FILE_ID LONG,");
-		builder.append("OWNER_REPOSITORY_ID LONG,");
-		builder.append("CRD_ID LONG,");
-		builder.append("START_COMBINED_REVISION_ID LONG,");
-		builder.append("END_COMBINED_REVISION_ID LONG,");
-		builder.append("HASH LONG,");
-		builder.append("HASH_FOR_CLONE LONG,");
+		builder.append("CODE_FRAGMENT_ID BIGINT PRIMARY KEY,");
+		builder.append("OWNER_FILE_ID BIGINT,");
+		builder.append("OWNER_REPOSITORY_ID BIGINT,");
+		builder.append("CRD_ID BIGINT,");
+		builder.append("START_COMBINED_REVISION_ID BIGINT,");
+		builder.append("END_COMBINED_REVISION_ID BIGINT,");
+		builder.append("HASH BIGINT,");
+		builder.append("HASH_FOR_CLONE BIGINT,");
 		builder.append("START_LINE INTEGER,");
 		builder.append("END_LINE INTEGER,");
 		builder.append("SIZE INTEGER,");
 		builder.append("FOREIGN KEY(OWNER_FILE_ID) REFERENCES FILE(FILE_ID),");
 		builder.append("FOREIGN KEY(OWNER_REPOSITORY_ID) REFERENCES REPOSITORY(REPOSITORY_ID),");
-		builder.append("FOREIGN KEY(CRD_ID) REFERENCES CRD(CRD_ID),");
-		builder.append("FOREIGN KEY(START_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
-		builder.append("FOREIGN KEY(END_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID)");
+		builder.append("FOREIGN KEY(CRD_ID) REFERENCES CRD(CRD_ID)");
+		//builder.append("FOREIGN KEY(START_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
+		//builder.append("FOREIGN KEY(END_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID)");
 		builder.append(")");
 
 		return builder.toString();
@@ -500,7 +500,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the code fragment table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCodeFragmentTableIndexes() throws Exception {
@@ -526,18 +526,18 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the clone set table
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCloneSetTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
 		builder.append("create table CLONE_SET(");
-		builder.append("CLONE_SET_ID LONG,");
-		builder.append("OWNER_COMBINED_REVISION_ID LONG,");
-		builder.append("ELEMENT LONG,");
+		builder.append("CLONE_SET_ID BIGINT,");
+		builder.append("OWNER_COMBINED_REVISION_ID BIGINT,");
+		builder.append("ELEMENT BIGINT,");
 		builder.append("PRIMARY KEY(CLONE_SET_ID, ELEMENT),");
-		builder.append("FOREIGN KEY(OWNER_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(OWNER_COMBINED_REVISION_ID),");
+		//builder.append("FOREIGN KEY(OWNER_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(OWNER_COMBINED_REVISION_ID),");
 		builder.append("FOREIGN KEY(ELEMENT) REFERENCES CODE_FRAGMENT(CODE_FRAGMENT_ID)");
 		builder.append(")");
 
@@ -546,7 +546,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the clone set table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCloneSetTableIndexes() throws Exception {
@@ -562,23 +562,23 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the table for links of code fragments
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCodeFragmentLinkTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
 		builder.append("create table CODE_FRAGMENT_LINK(");
-		builder.append("CODE_FRAGMENT_LINK_ID LONG PRIMARY KEY,");
-		builder.append("BEFORE_ELEMENT_ID LONG,");
-		builder.append("AFTER_ELEMENT_ID LONG,");
-		builder.append("BEFORE_COMBINED_REVISION_ID LONG,");
-		builder.append("AFTER_COMBINED_REVISION_ID LONG,");
-		builder.append("CHANGED INTEGER,");
-		builder.append("FOREIGN KEY(BEFORE_ELEMENT_ID) REFERENCES CODE_FRAGMENT(CODE_FRAGMENT_ID),");
-		builder.append("FOREIGN KEY(AFTER_ELEMENT_ID) REFERENCES CODE_FRAGMENT(CODE_FRAGMENT_ID),");
-		builder.append("FOREIGN KEY(BEFORE_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
-		builder.append("FOREIGN KEY(AFTER_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID)");
+		builder.append("CODE_FRAGMENT_LINK_ID BIGINT PRIMARY KEY,");
+		builder.append("BEFORE_ELEMENT_ID BIGINT,");
+		builder.append("AFTER_ELEMENT_ID BIGINT,");
+		builder.append("BEFORE_COMBINED_REVISION_ID BIGINT,");
+		builder.append("AFTER_COMBINED_REVISION_ID BIGINT,");
+		builder.append("CHANGED INTEGER");
+		//builder.append("FOREIGN KEY(BEFORE_ELEMENT_ID) REFERENCES CODE_FRAGMENT(CODE_FRAGMENT_ID),");
+		//builder.append("FOREIGN KEY(AFTER_ELEMENT_ID) REFERENCES CODE_FRAGMENT(CODE_FRAGMENT_ID),");
+		//builder.append("FOREIGN KEY(BEFORE_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
+		//builder.append("FOREIGN KEY(AFTER_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID)");
 		builder.append(")");
 
 		return builder.toString();
@@ -586,7 +586,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the fragment link table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCodeFragmentLinkTableIndexes() throws Exception {
@@ -604,22 +604,22 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the table for links of clone sets
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCloneSetLinkTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
 		builder.append("create table CLONE_SET_LINK(");
-		builder.append("CLONE_SET_LINK_ID LONG PRIMARY KEY,");
-		builder.append("BEFORE_ELEMENT_ID LONG,");
-		builder.append("AFTER_ELEMENT_ID LONG,");
-		builder.append("BEFORE_COMBINED_REVISION_ID LONG,");
-		builder.append("AFTER_COMBINED_REVISION_ID LONG,");
-		builder.append("FOREIGN KEY(BEFORE_ELEMENT_ID) REFERENCES CLONE_SET(CLONE_SET_ID),");
-		builder.append("FOREIGN KEY(AFTER_ELEMENT_ID) REFERENCES CLONE_SET(CLONE_SET_ID),");
-		builder.append("FOREIGN KEY(BEFORE_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
-		builder.append("FOREIGN KEY(AFTER_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID)");
+		builder.append("CLONE_SET_LINK_ID BIGINT PRIMARY KEY,");
+		builder.append("BEFORE_ELEMENT_ID BIGINT,");
+		builder.append("AFTER_ELEMENT_ID BIGINT,");
+		builder.append("BEFORE_COMBINED_REVISION_ID BIGINT,");
+		builder.append("AFTER_COMBINED_REVISION_ID BIGINT");
+		//builder.append("FOREIGN KEY(BEFORE_ELEMENT_ID) REFERENCES CLONE_SET(CLONE_SET_ID),");
+		//builder.append("FOREIGN KEY(AFTER_ELEMENT_ID) REFERENCES CLONE_SET(CLONE_SET_ID),");
+		//builder.append("FOREIGN KEY(BEFORE_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
+		//builder.append("FOREIGN KEY(AFTER_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID)");
 		builder.append(")");
 
 		return builder.toString();
@@ -627,7 +627,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the clone link table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCloneSetLinkTableIndexes() throws Exception {
@@ -645,15 +645,15 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the table for links of clone sets
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCloneSetLinkFragmentLinkTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
 		builder.append("create table CLONE_SET_LINK_FRAGMENT_LINK(");
-		builder.append("CLONE_SET_LINK_ID LONG,");
-		builder.append("CODE_FRAGMENT_LINK_ID LONG,");
+		builder.append("CLONE_SET_LINK_ID BIGINT,");
+		builder.append("CODE_FRAGMENT_LINK_ID BIGINT,");
 		builder.append("PRIMARY KEY(CLONE_SET_LINK_ID, CODE_FRAGMENT_LINK_ID),");
 		builder.append("FOREIGN KEY(CLONE_SET_LINK_ID) REFERENCES CLONE_SET_LINK(CLONE_SET_LINK_ID),");
 		builder.append("FOREIGN KEY(CODE_FRAGMENT_LINK_ID) REFERENCES CODE_FRAGMENT_LINK(CODE_FRAGMENT_LINK_ID)");
@@ -664,7 +664,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the clone link table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCloneSetLinkFragmentLinkTableIndexes() throws Exception {
@@ -678,18 +678,18 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the table for genealogies of clones
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCloneGenealogyTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
 		builder.append("create table CLONE_GENEALOGY(");
-		builder.append("CLONE_GENEALOGY_ID LONG PRIMARY KEY,");
-		builder.append("START_COMBINED_REVISION_ID LONG,");
-		builder.append("END_COMBINED_REVISION_ID LONG,");
-		builder.append("FOREIGN KEY(START_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
-		builder.append("FOREIGN KEY(END_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID)");
+		builder.append("CLONE_GENEALOGY_ID BIGINT PRIMARY KEY,");
+		builder.append("START_COMBINED_REVISION_ID BIGINT,");
+		builder.append("END_COMBINED_REVISION_ID BIGINT");
+		//builder.append("FOREIGN KEY(START_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
+		//builder.append("FOREIGN KEY(END_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID)");
 		builder.append(")");
 
 		return builder.toString();
@@ -697,7 +697,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the clone genealogy table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCloneGenealogyTableIndexes() throws Exception {
@@ -713,18 +713,18 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the table for elements in genealogies of clones
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCloneGenealogyEelementTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
 		builder.append("create table CLONE_GENEALOGY_ELEMENT(");
-		builder.append("CLONE_GENEALOGY_ID LONG,");
-		builder.append("CLONE_SET_ID LONG,");
+		builder.append("CLONE_GENEALOGY_ID BIGINT,");
+		builder.append("CLONE_SET_ID BIGINT,");
 		builder.append("PRIMARY KEY(CLONE_GENEALOGY_ID, CLONE_SET_ID),");
-		builder.append("FOREIGN KEY(CLONE_GENEALOGY_ID) REFERENCES CLONE_GENEALOGY(CLONE_GENEALOGY_ID),");
-		builder.append("FOREIGN KEY(CLONE_SET_ID) REFERENCES CLONE_SET(CLONE_SET_ID)");
+		builder.append("FOREIGN KEY(CLONE_GENEALOGY_ID) REFERENCES CLONE_GENEALOGY(CLONE_GENEALOGY_ID)");
+		//builder.append("FOREIGN KEY(CLONE_SET_ID) REFERENCES CLONE_SET(CLONE_SET_ID)");
 		builder.append(")");
 
 		return builder.toString();
@@ -732,7 +732,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the clone genealogy element table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCloneGenealogyElementTableIndexes() throws Exception {
@@ -746,15 +746,15 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the table for links in genealogies of clones
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCloneGenealogyLinkTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
 		builder.append("create table CLONE_GENEALOGY_LINK_ELEMENT(");
-		builder.append("CLONE_GENEALOGY_ID LONG,");
-		builder.append("CLONE_SET_LINK_ID LONG,");
+		builder.append("CLONE_GENEALOGY_ID BIGINT,");
+		builder.append("CLONE_SET_LINK_ID BIGINT,");
 		builder.append("PRIMARY KEY(CLONE_GENEALOGY_ID, CLONE_SET_LINK_ID),");
 		builder.append("FOREIGN KEY(CLONE_GENEALOGY_ID) REFERENCES CLONE_GENEALOGY(CLONE_GENEALOGY_ID),");
 		builder.append("FOREIGN KEY(CLONE_SET_LINK_ID) REFERENCES CLONE_SET_LINK(CLONE_SET_LINK_ID)");
@@ -765,7 +765,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the clone genealogy element table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCloneGenealogyLinkTableIndexes() throws Exception {
@@ -779,18 +779,18 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the table for genealogies of code fragments
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCodeFragmentGenealogyTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
 		builder.append("create table CODE_FRAGMENT_GENEALOGY(");
-		builder.append("CODE_FRAGMENT_GENEALOGY_ID LONG PRIMARY KEY,");
-		builder.append("START_COMBINED_REVISION_ID LONG,");
-		builder.append("END_COMBINED_REVISION_ID LONG,");
-		builder.append("FOREIGN KEY(START_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
-		builder.append("FOREIGN KEY(END_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID)");
+		builder.append("CODE_FRAGMENT_GENEALOGY_ID BIGINT PRIMARY KEY,");
+		builder.append("START_COMBINED_REVISION_ID BIGINT,");
+		builder.append("END_COMBINED_REVISION_ID BIGINT");
+		//builder.append("FOREIGN KEY(START_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID),");
+		//builder.append("FOREIGN KEY(END_COMBINED_REVISION_ID) REFERENCES COMBINED_REVISION(COMBINED_REVISION_ID)");
 		builder.append(")");
 
 		return builder.toString();
@@ -798,7 +798,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the fragment genealogy table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCodeFragmentGenealogyTableIndexes() throws Exception {
@@ -815,15 +815,15 @@ public class DBMaker {
 	/**
 	 * get the query to create the table for elements in genealogies of code
 	 * fragments
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCodeFragmentGenealogyElementTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
 		builder.append("create table CODE_FRAGMENT_GENEALOGY_ELEMENT(");
-		builder.append("CODE_FRAGMENT_GENEALOGY_ID LONG,");
-		builder.append("CODE_FRAGMENT_ID LONG,");
+		builder.append("CODE_FRAGMENT_GENEALOGY_ID BIGINT,");
+		builder.append("CODE_FRAGMENT_ID BIGINT,");
 		builder.append("PRIMARY KEY(CODE_FRAGMENT_GENEALOGY_ID, CODE_FRAGMENT_ID),");
 		builder.append("FOREIGN KEY(CODE_FRAGMENT_GENEALOGY_ID) REFERENCES CODE_FRAGMENT_GENEALOGY(CODE_FRAGMENT_GENEALOGY_ID),");
 		builder.append("FOREIGN KEY(CODE_FRAGMENT_ID) REFERENCES CODE_FRAGMENT(CODE_FRAGMENT_ID)");
@@ -834,7 +834,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the fragment genealogy table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCodeFragmentGenealogyElementTableIndexes()
@@ -850,15 +850,15 @@ public class DBMaker {
 	/**
 	 * get the query to create the table for elements in genealogies of code
 	 * fragments
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCodeFragmentGenealogyLinkTableQuery() {
 		final StringBuilder builder = new StringBuilder();
 
 		builder.append("create table CODE_FRAGMENT_GENEALOGY_LINK_ELEMENT(");
-		builder.append("CODE_FRAGMENT_GENEALOGY_ID LONG,");
-		builder.append("CODE_FRAGMENT_LINK_ID LONG,");
+		builder.append("CODE_FRAGMENT_GENEALOGY_ID BIGINT,");
+		builder.append("CODE_FRAGMENT_LINK_ID BIGINT,");
 		builder.append("PRIMARY KEY(CODE_FRAGMENT_GENEALOGY_ID, CODE_FRAGMENT_LINK_ID),");
 		builder.append("FOREIGN KEY(CODE_FRAGMENT_GENEALOGY_ID) REFERENCES CODE_FRAGMENT_GENEALOGY(CODE_FRAGMENT_GENEALOGY_ID),");
 		builder.append("FOREIGN KEY(CODE_FRAGMENT_LINK_ID) REFERENCES CODE_FRAGMENT_LINK(CODE_FRAGMENT_LINK_ID)");
@@ -869,7 +869,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the fragment genealogy table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCodeFragmentGenealogyLinkTableIndexes() throws Exception {

@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneGenealogyInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
@@ -54,9 +55,9 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.RevisionRetriever;
 
 /**
  * A class to manage the connection between the db
- * 
+ *
  * @author k-hotta
- * 
+ *
  */
 public final class DBConnectionManager {
 
@@ -127,16 +128,74 @@ public final class DBConnectionManager {
 
 	private final CodeFragmentGenealogyLinkElementRetriever fragmentGenealogyLinkElementRetriever;
 
+	// 決まり文句 (ドライバクラス)
+		final private static String PostgresJDBCDriver = "org.postgresql.Driver";
+
+		// 下記の変数を正しく設定する
+		// DBNAME, DBDIR, USER, PASS, JDBCDriver, DBURL
+
+
+			// PostgreSQL 用デフォルト
+			// Eclipse で PostgreSQL を使いたいときは，次の手順で，WebContent\WEB-INF\lib にインポートしておく．
+			//     WebContent\WEB-INF\lib を右クリック．「一般」→「ファイルシステム」
+			//     その後インポートすべきファイルとして，次のファイルを指定
+			//       C:\Program Files\psqlJDBC\postgresql-8.3-603.jdbc4.jar
+			final private static String JDBCDriver = PostgresJDBCDriver;
+			final private static String user = "sa";
+			final private static String pass = "";
+
 	/**
 	 * the constructor
-	 * 
+	 *
 	 * @param dbPath
 	 * @throws Exception
 	 */
 	public DBConnectionManager(final String dbPath, final int maxBatchCount)
 			throws Exception {
-		Class.forName("org.sqlite.JDBC");
-		this.connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
+		//Class.forName("org.sqlite.JDBC");
+		//this.connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
+		try {
+			// JDBC Driver Loading
+			Class.forName(JDBCDriver).newInstance();
+			System.setProperty("jdbc.driver",JDBCDriver);
+		}
+
+		catch (Exception e) {
+			// Error Message and Error Code
+			System.out.print(e.toString());
+			if (e instanceof SQLException) {
+				System.out.println("Error Code:" + ((SQLException)e).getErrorCode());
+			}
+			// Print Stack Trace
+			e.printStackTrace();
+		}
+		try {
+			// Connection
+			if ( user.isEmpty() && pass.isEmpty() ) {
+				this.connection = DriverManager.getConnection("jdbc:postgresql://localhost/" + dbPath);
+			}
+			else {
+				Properties prop = new Properties();
+				prop.put("user", user);
+				prop.put("password", pass);
+				this.connection = DriverManager.getConnection("jdbc:postgresql://localhost/" + dbPath,prop);
+			}
+		}
+		catch (Exception e) {
+			// Error Message and Error Code
+			System.out.print(e.toString());
+			if (e instanceof SQLException) {
+				System.out.println("Error Code:" + ((SQLException)e).getErrorCode());
+			}
+			// Print Stack Trace
+			e.printStackTrace();
+			if (this.connection != null) {
+				this.connection.rollback();
+				this.connection.close();
+			}
+		}
+
+
 		this.connection.setAutoCommit(false);
 
 		this.cloneGenealogyElementRetriever = new CloneGenealogyElementRetriever(
@@ -324,7 +383,7 @@ public final class DBConnectionManager {
 
 	/**
 	 * create a statement
-	 * 
+	 *
 	 * @return
 	 */
 	public Statement createStatement() {
@@ -339,7 +398,7 @@ public final class DBConnectionManager {
 
 	/**
 	 * create a prepared statement with the specified query
-	 * 
+	 *
 	 * @param query
 	 * @return
 	 */
@@ -371,7 +430,7 @@ public final class DBConnectionManager {
 
 	/**
 	 * enables/disables auto commit
-	 * 
+	 *
 	 * @param autoCommit
 	 */
 	public void setAutoCommit(boolean autoCommit) {
@@ -384,7 +443,7 @@ public final class DBConnectionManager {
 
 	/**
 	 * execute the query
-	 * 
+	 *
 	 * @param query
 	 * @throws Exception
 	 */
