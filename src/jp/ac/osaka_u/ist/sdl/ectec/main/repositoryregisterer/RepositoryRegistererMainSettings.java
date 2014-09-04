@@ -2,8 +2,8 @@ package jp.ac.osaka_u.ist.sdl.ectec.main.repositoryregisterer;
 
 import java.io.File;
 
+import jp.ac.osaka_u.ist.sdl.ectec.AbstractSettings;
 import jp.ac.osaka_u.ist.sdl.ectec.PropertiesReader;
-import jp.ac.osaka_u.ist.sdl.ectec.main.AbstractSettings;
 import jp.ac.osaka_u.ist.sdl.ectec.main.IllegalSettingValueException;
 
 import org.apache.commons.cli.CommandLine;

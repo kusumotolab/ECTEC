@@ -8,8 +8,8 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
+import jp.ac.osaka_u.ist.sdl.ectec.AbstractSettings;
 import jp.ac.osaka_u.ist.sdl.ectec.PropertiesReader;
-import jp.ac.osaka_u.ist.sdl.ectec.main.AbstractSettings;
 import jp.ac.osaka_u.ist.sdl.ectec.main.IllegalSettingValueException;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.CRDSimilarityCalculateMode;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.CodeFragmentLinkMode;

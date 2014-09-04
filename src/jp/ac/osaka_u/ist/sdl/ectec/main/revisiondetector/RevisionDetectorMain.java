@@ -70,6 +70,11 @@ public class RevisionDetectorMain {
 
 		} catch (Exception e) {
 			eLogger.fatal("operations failed.\n" + e.toString());
+			
+			if (dbManager != null) {
+				dbManager.rollback();
+			}
+			postprocess();
 		}
 	}
 
@@ -96,7 +101,7 @@ public class RevisionDetectorMain {
 	private static void preprocess(final RevisionDetectorMainSettings settings)
 			throws Exception {
 		// make a connection between the db file
-		dbManager = new DBConnectionManager(settings.getDbPath(),
+		dbManager = new DBConnectionManager(settings.getDBConfig(),
 				settings.getMaxBatchCount());
 		logger.info("connected to the db");
 

@@ -70,7 +70,7 @@ public class CloneDetectorMain {
 	private static void preprocess(final CloneDetectorMainSettings settings)
 			throws Exception {
 		// make a connection between the db file
-		dbManager = new DBConnectionManager(settings.getDbPath(),
+		dbManager = new DBConnectionManager(settings.getDBConfig(),
 				settings.getMaxBatchCount());
 		logger.info("connected to the db");
 

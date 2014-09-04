@@ -1,5 +1,9 @@
 package jp.ac.osaka_u.ist.sdl.ectec.db;
 
+import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
+
+import org.apache.log4j.Logger;
+
 /**
  * A class for create
  * 
@@ -7,6 +11,17 @@ package jp.ac.osaka_u.ist.sdl.ectec.db;
  * 
  */
 public class DBMaker {
+
+	/**
+	 * the logger
+	 */
+	private static final Logger logger = LoggingManager.getLogger(DBMaker.class
+			.getName());
+
+	/**
+	 * the logger for errors
+	 */
+	private static final Logger eLogger = LoggingManager.getLogger("error");
 
 	/**
 	 * the manager for the connection between the db
@@ -23,14 +38,29 @@ public class DBMaker {
 
 	public static void main(String[] args) {
 		try {
-			final String dbPath = args[0];
-			final DBConnectionManager dbManager = new DBConnectionManager(
-					dbPath, 10000);
-			final DBMaker maker = new DBMaker(dbManager);
+			final DBMakerSettings settings = loadSettings(args);
+			final DBMaker maker = preprocess(settings);
 			maker.makeDb(true);
+			logger.info("operations have finished.");
 		} catch (Exception e) {
-			e.printStackTrace();
+			eLogger.fatal("operations failed.\n" + e.toString());
 		}
+	}
+
+	private static DBMakerSettings loadSettings(final String[] args)
+			throws Exception {
+		final DBMakerSettings settings = new DBMakerSettings();
+		settings.load(args);
+		return settings;
+	}
+
+	private static DBMaker preprocess(final DBMakerSettings settings)
+			throws Exception {
+		final DBConnectionManager dbManager = new DBConnectionManager(
+				settings.getDBConfig(), settings.getMaxBatchCount());
+		logger.info("connected to the db");
+		
+		return new DBMaker(dbManager);
 	}
 
 	/**
@@ -42,17 +72,29 @@ public class DBMaker {
 	 * @throws Exception
 	 */
 	public void makeDb(final boolean overwrite) throws Exception {
-		dbManager.setAutoCommit(true);
+		try {
+			dbManager.setAutoCommit(true);
 
-		if (overwrite) {
-			dropTables();
+			if (overwrite) {
+				logger.info("dropping the existing tables");
+				dropTables();
+			}
+
+			logger.info("creating new tables");
+			createNewTables();
+
+			logger.info("creating indexes");
+			createIndexes();
+
+			dbManager.setAutoCommit(false);
+		} catch (Exception e) {
+			dbManager.rollback();
+			throw e;
+		} finally {
+			if (this.dbManager != null) {
+				dbManager.close();
+			}
 		}
-
-		createNewTables();
-
-		createIndexes();
-
-		dbManager.setAutoCommit(false);
 	}
 
 	/**

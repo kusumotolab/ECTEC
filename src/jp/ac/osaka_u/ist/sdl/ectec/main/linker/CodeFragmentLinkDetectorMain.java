@@ -52,6 +52,11 @@ public class CodeFragmentLinkDetectorMain {
 		} catch (Exception e) {
 			eLogger.fatal("operations failed.\n" + e.toString());
 			e.printStackTrace();
+			
+			if (dbManager != null) {
+				dbManager.rollback();
+			}
+			postprocess();
 		}
 	}
 
@@ -78,7 +83,7 @@ public class CodeFragmentLinkDetectorMain {
 			final CodeFragmentLinkDetectorMainSettings settings)
 			throws Exception {
 		// make a connection between the db file
-		dbManager = new DBConnectionManager(settings.getDbPath(),
+		dbManager = new DBConnectionManager(settings.getDBConfig(),
 				settings.getMaxBatchCount());
 		logger.info("connected to the db");
 

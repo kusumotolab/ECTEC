@@ -15,6 +15,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.manager.DataManagerManager;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.selector.CloneGenealogySelector;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.selector.IConstraint;
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
+import jp.ac.osaka_u.ist.sdl.ectec.db.SQLiteDBConfig;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRepositoryInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Constants;
 import jp.ac.osaka_u.ist.sdl.ectec.vcs.RepositoryManagerManager;
@@ -78,7 +79,7 @@ public class GenealogyAnalyzer {
 		DBConnectionManager dbManager = null;
 
 		try {
-			dbManager = new DBConnectionManager(dbPath,
+			dbManager = new DBConnectionManager(new SQLiteDBConfig(dbPath),
 					Constants.MAX_BATCH_COUNT);
 
 			// the additional path is always null

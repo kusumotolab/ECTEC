@@ -1,12 +1,11 @@
 package jp.ac.osaka_u.ist.sdl.ectec.db;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
 
+import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneGenealogyInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetLinkInfo;
@@ -53,13 +52,21 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.FileRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.RepositoryRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.RevisionRetriever;
 
+import org.apache.log4j.Logger;
+
 /**
  * A class to manage the connection between the db
- *
+ * 
  * @author k-hotta
- *
+ * 
  */
 public final class DBConnectionManager {
+
+	/**
+	 * the logger
+	 */
+	private static final Logger logger = LoggingManager
+			.getLogger(DBConnectionManager.class.getName());
 
 	/**
 	 * the connection between the db
@@ -128,122 +135,72 @@ public final class DBConnectionManager {
 
 	private final CodeFragmentGenealogyLinkElementRetriever fragmentGenealogyLinkElementRetriever;
 
-	// 決まり文句 (ドライバクラス)
-		final private static String PostgresJDBCDriver = "org.postgresql.Driver";
-
-		// 下記の変数を正しく設定する
-		// DBNAME, DBDIR, USER, PASS, JDBCDriver, DBURL
-
-
-			// PostgreSQL 用デフォルト
-			// Eclipse で PostgreSQL を使いたいときは，次の手順で，WebContent\WEB-INF\lib にインポートしておく．
-			//     WebContent\WEB-INF\lib を右クリック．「一般」→「ファイルシステム」
-			//     その後インポートすべきファイルとして，次のファイルを指定
-			//       C:\Program Files\psqlJDBC\postgresql-8.3-603.jdbc4.jar
-			final private static String JDBCDriver = PostgresJDBCDriver;
-			final private static String user = "sa";
-			final private static String pass = "";
-
 	/**
 	 * the constructor
-	 *
+	 * 
 	 * @param dbPath
 	 * @throws Exception
 	 */
-	public DBConnectionManager(final String dbPath, final int maxBatchCount)
+	public DBConnectionManager(final IDBConfig dbConfig, final int maxBatchCount)
 			throws Exception {
-		//Class.forName("org.sqlite.JDBC");
-		//this.connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
 		try {
-			// JDBC Driver Loading
-			Class.forName(JDBCDriver).newInstance();
-			System.setProperty("jdbc.driver",JDBCDriver);
-		}
+			this.connection = dbConfig.init();
 
-		catch (Exception e) {
-			// Error Message and Error Code
-			System.out.print(e.toString());
-			if (e instanceof SQLException) {
-				System.out.println("Error Code:" + ((SQLException)e).getErrorCode());
-			}
-			// Print Stack Trace
-			e.printStackTrace();
-		}
-		try {
-			// Connection
-			if ( user.isEmpty() && pass.isEmpty() ) {
-				this.connection = DriverManager.getConnection("jdbc:postgresql://localhost/" + dbPath);
-			}
-			else {
-				Properties prop = new Properties();
-				prop.put("user", user);
-				prop.put("password", pass);
-				this.connection = DriverManager.getConnection("jdbc:postgresql://localhost/" + dbPath,prop);
-			}
-		}
-		catch (Exception e) {
-			// Error Message and Error Code
-			System.out.print(e.toString());
-			if (e instanceof SQLException) {
-				System.out.println("Error Code:" + ((SQLException)e).getErrorCode());
-			}
-			// Print Stack Trace
-			e.printStackTrace();
+			this.connection.setAutoCommit(false);
+
+			this.cloneGenealogyElementRetriever = new CloneGenealogyElementRetriever(
+					this);
+			this.cloneGenealogyLinkElementRetriever = new CloneGenealogyLinkElementRetriever(
+					this);
+			this.cloneLinkFragmentLinkRetriever = new CloneSetLinkFragmentLinkRetriever(
+					this);
+			this.fragmentGenealogyElementRetriever = new CodeFragmentGenealogyElementRetriever(
+					this);
+			this.fragmentGenealogyLinkElementRetriever = new CodeFragmentGenealogyLinkElementRetriever(
+					this);
+
+			this.repositoryRegisterer = new RepositoryRegisterer(this,
+					maxBatchCount);
+			this.revisionRegisterer = new RevisionRegisterer(this,
+					maxBatchCount);
+			this.commitRegisterer = new CommitRegisterer(this, maxBatchCount);
+			this.combinedRevisionRegisterer = new CombinedRevisionRegisterer(
+					this, maxBatchCount);
+			this.combinedCommitRegisterer = new CombinedCommitRegisterer(this,
+					maxBatchCount);
+			this.fileRegisterer = new FileRegisterer(this, maxBatchCount);
+			this.fragmentRegisterer = new CodeFragmentRegisterer(this,
+					maxBatchCount);
+			this.cloneRegisterer = new CloneSetRegisterer(this, maxBatchCount);
+			this.fragmentLinkRegisterer = new CodeFragmentLinkRegisterer(this,
+					maxBatchCount);
+			this.cloneLinkRegisterer = new CloneSetLinkRegisterer(this,
+					maxBatchCount);
+			this.cloneGenealogyRegisterer = new CloneGenealogyRegisterer(this,
+					maxBatchCount);
+			this.fragmentGenealogyRegisterer = new CodeFragmentGenealogyRegisterer(
+					this, maxBatchCount);
+			this.crdRegisterer = new CRDRegisterer(this, maxBatchCount);
+			this.repositoryRetriever = new RepositoryRetriever(this);
+			this.revisionRetriever = new RevisionRetriever(this);
+			this.commitRetriever = new CommitRetriever(this);
+			this.combinedRevisionRetriever = new CombinedRevisionRetriever(this);
+			this.combinedCommitRetriever = new CombinedCommitRetriever(this);
+			this.fileRetriever = new FileRetriever(this);
+			this.fragmentRetriever = new CodeFragmentRetriever(this);
+			this.cloneRetriever = new CloneSetRetriever(this);
+			this.fragmentLinkRetriever = new CodeFragmentLinkRetriever(this);
+			this.cloneLinkRetriever = new CloneSetLinkRetriever(this);
+			this.cloneGenealogyRetriever = new CloneGenealogyRetriever(this);
+			this.fragmentGenealogyRetriever = new CodeFragmentGenealogyRetriever(
+					this);
+			this.crdRetriever = new CRDRetriever(this);
+		} finally {
 			if (this.connection != null) {
 				this.connection.rollback();
 				this.connection.close();
 			}
 		}
-
-
-		this.connection.setAutoCommit(false);
-
-		this.cloneGenealogyElementRetriever = new CloneGenealogyElementRetriever(
-				this);
-		this.cloneGenealogyLinkElementRetriever = new CloneGenealogyLinkElementRetriever(
-				this);
-		this.cloneLinkFragmentLinkRetriever = new CloneSetLinkFragmentLinkRetriever(
-				this);
-		this.fragmentGenealogyElementRetriever = new CodeFragmentGenealogyElementRetriever(
-				this);
-		this.fragmentGenealogyLinkElementRetriever = new CodeFragmentGenealogyLinkElementRetriever(
-				this);
-
-		this.repositoryRegisterer = new RepositoryRegisterer(this,
-				maxBatchCount);
-		this.revisionRegisterer = new RevisionRegisterer(this, maxBatchCount);
-		this.commitRegisterer = new CommitRegisterer(this, maxBatchCount);
-		this.combinedRevisionRegisterer = new CombinedRevisionRegisterer(this,
-				maxBatchCount);
-		this.combinedCommitRegisterer = new CombinedCommitRegisterer(this,
-				maxBatchCount);
-		this.fileRegisterer = new FileRegisterer(this, maxBatchCount);
-		this.fragmentRegisterer = new CodeFragmentRegisterer(this,
-				maxBatchCount);
-		this.cloneRegisterer = new CloneSetRegisterer(this, maxBatchCount);
-		this.fragmentLinkRegisterer = new CodeFragmentLinkRegisterer(this,
-				maxBatchCount);
-		this.cloneLinkRegisterer = new CloneSetLinkRegisterer(this,
-				maxBatchCount);
-		this.cloneGenealogyRegisterer = new CloneGenealogyRegisterer(this,
-				maxBatchCount);
-		this.fragmentGenealogyRegisterer = new CodeFragmentGenealogyRegisterer(
-				this, maxBatchCount);
-		this.crdRegisterer = new CRDRegisterer(this, maxBatchCount);
-		this.repositoryRetriever = new RepositoryRetriever(this);
-		this.revisionRetriever = new RevisionRetriever(this);
-		this.commitRetriever = new CommitRetriever(this);
-		this.combinedRevisionRetriever = new CombinedRevisionRetriever(this);
-		this.combinedCommitRetriever = new CombinedCommitRetriever(this);
-		this.fileRetriever = new FileRetriever(this);
-		this.fragmentRetriever = new CodeFragmentRetriever(this);
-		this.cloneRetriever = new CloneSetRetriever(this);
-		this.fragmentLinkRetriever = new CodeFragmentLinkRetriever(this);
-		this.cloneLinkRetriever = new CloneSetLinkRetriever(this);
-		this.cloneGenealogyRetriever = new CloneGenealogyRetriever(this);
-		this.fragmentGenealogyRetriever = new CodeFragmentGenealogyRetriever(
-				this);
-		this.crdRetriever = new CRDRetriever(this);
 	}
 
 	public final RepositoryRegisterer getRepositoryRegisterer() {
@@ -376,6 +333,19 @@ public final class DBConnectionManager {
 	public void close() {
 		try {
 			this.connection.close();
+			logger.info("db connection was closed");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * rollback
+	 */
+	public void rollback() {
+		try {
+			this.connection.rollback();
+			logger.info("rollback operation was performed");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -383,7 +353,7 @@ public final class DBConnectionManager {
 
 	/**
 	 * create a statement
-	 *
+	 * 
 	 * @return
 	 */
 	public Statement createStatement() {
@@ -398,7 +368,7 @@ public final class DBConnectionManager {
 
 	/**
 	 * create a prepared statement with the specified query
-	 *
+	 * 
 	 * @param query
 	 * @return
 	 */
@@ -430,7 +400,7 @@ public final class DBConnectionManager {
 
 	/**
 	 * enables/disables auto commit
-	 *
+	 * 
 	 * @param autoCommit
 	 */
 	public void setAutoCommit(boolean autoCommit) {
@@ -443,7 +413,7 @@ public final class DBConnectionManager {
 
 	/**
 	 * execute the query
-	 *
+	 * 
 	 * @param query
 	 * @throws Exception
 	 */

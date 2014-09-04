@@ -10,6 +10,7 @@ import java.util.Map;
 
 import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
+import jp.ac.osaka_u.ist.sdl.ectec.db.SQLiteDBConfig;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentGenealogyInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
@@ -34,7 +35,7 @@ public class SeiGenealogyAnalyzer {
 			pw.println(getHeader());
 
 			final DBConnectionManager dbManager = new DBConnectionManager(
-					dbPath, 100000);
+					new SQLiteDBConfig(dbPath), 100000);
 
 			final Map<Long, DBCodeFragmentGenealogyInfo> genealogies = dbManager
 					.getFragmentGenealogyRetriever().retrieveAll();

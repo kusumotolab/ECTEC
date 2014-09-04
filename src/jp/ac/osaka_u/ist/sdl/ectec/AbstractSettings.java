@@ -1,10 +1,11 @@
-package jp.ac.osaka_u.ist.sdl.ectec.main;
+package jp.ac.osaka_u.ist.sdl.ectec;
 
 import java.io.File;
 
-import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
-import jp.ac.osaka_u.ist.sdl.ectec.PropertiesKeys;
-import jp.ac.osaka_u.ist.sdl.ectec.PropertiesReader;
+import jp.ac.osaka_u.ist.sdl.ectec.db.IDBConfig;
+import jp.ac.osaka_u.ist.sdl.ectec.db.PostgreSQLDBConfig;
+import jp.ac.osaka_u.ist.sdl.ectec.db.SQLiteDBConfig;
+import jp.ac.osaka_u.ist.sdl.ectec.main.IllegalSettingValueException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -56,6 +57,11 @@ public abstract class AbstractSettings implements PropertiesKeys {
 	 */
 	private short headerOfId;
 
+	/**
+	 * the configuration of db
+	 */
+	private IDBConfig dbConfig;
+
 	public final String getPropertyFilePath() {
 		return this.propertyFilePath;
 	}
@@ -74,6 +80,10 @@ public abstract class AbstractSettings implements PropertiesKeys {
 
 	public final short getHeaderOfId() {
 		return this.headerOfId;
+	}
+
+	public final IDBConfig getDBConfig() {
+		return dbConfig;
 	}
 
 	/**
@@ -143,6 +153,34 @@ public abstract class AbstractSettings implements PropertiesKeys {
 			}
 		} else {
 			headerOfId = -1;
+		}
+
+		dbConfig = null;
+		final String dbms = propReader.getProperty(DBMS);
+		if (dbms != null) {
+			if (dbms.equalsIgnoreCase("postgre")
+					|| dbms.equalsIgnoreCase("PostgreSQL")
+					|| dbms.equalsIgnoreCase("p")) {
+				final String dbUserName = propReader.getProperty(DB_USERNAME);
+				final String dbPasswd = propReader.getProperty(DB_PASSWD);
+
+				dbConfig = new PostgreSQLDBConfig(this.dbPath, dbUserName,
+						dbPasswd);
+
+				String hiddenPasswd = "";
+				for (int count = 0; count < dbPasswd.length(); count++) {
+					hiddenPasswd = hiddenPasswd + "*";
+				}
+
+				logger.info("the specified DBMS: PostgreSQL");
+				logger.info("the user name of DB: " + dbUserName);
+				logger.info("the password of DB: " + hiddenPasswd);
+			}
+		}
+
+		if (dbConfig == null) {
+			dbConfig = new SQLiteDBConfig(this.dbPath);
+			logger.info("the specified DBMS: SQLite");
 		}
 
 		// initialize other settings
