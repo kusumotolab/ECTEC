@@ -2,3 +2,5 @@ bin/*
 *.class
 ectec.properties
 /bin
+*.csv
+/repositories

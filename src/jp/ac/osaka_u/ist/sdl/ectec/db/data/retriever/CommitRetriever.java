@@ -96,6 +96,7 @@ public class CommitRetriever extends
 		final Statement stmt = dbManager.createStatement();
 		final ResultSet rs = stmt.executeQuery(query);
 
+		rs.next();
 		final int result = rs.getInt(1);
 
 		stmt.close();

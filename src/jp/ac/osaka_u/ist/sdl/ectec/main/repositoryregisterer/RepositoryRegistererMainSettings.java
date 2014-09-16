@@ -12,9 +12,9 @@ import org.apache.commons.cli.Options;
 
 /**
  * A class to have settings for repository registerer
- * 
+ *
  * @author k-hotta
- * 
+ *
  */
 public class RepositoryRegistererMainSettings extends AbstractSettings {
 
@@ -25,7 +25,7 @@ public class RepositoryRegistererMainSettings extends AbstractSettings {
 
 	/**
 	 * get the path
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getFilePath() {

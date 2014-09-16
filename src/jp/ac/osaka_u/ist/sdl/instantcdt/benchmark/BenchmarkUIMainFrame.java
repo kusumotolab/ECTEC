@@ -84,16 +84,16 @@ public class BenchmarkUIMainFrame extends JFrame {
 
 		JSplitPane splitPane_1 = new JSplitPane();
 		splitPane.setRightComponent(splitPane_1);
-		
+
 		JScrollPane scrollPane_2 = new JScrollPane();
 		splitPane_1.setLeftComponent(scrollPane_2);
-		
+
 		leftTextPane = new JTextPane();
 		scrollPane_2.setViewportView(leftTextPane);
-		
+
 		scrollPane_3 = new JScrollPane();
 		splitPane_1.setRightComponent(scrollPane_3);
-		
+
 		rightTextPane = new JTextPane();
 		scrollPane_3.setViewportView(rightTextPane);
 
@@ -192,11 +192,11 @@ public class BenchmarkUIMainFrame extends JFrame {
 
 			final String originalPath = referenceFragment.getOwnerFile();
 			final String appendedPath = dir + "/" + originalPath;
-			
+
 			FileSystem fs = FileSystems.getDefault();
 			final Path path = fs.getPath(appendedPath);
 			final String tailoredPath = path.toString();
-			
+
 			BufferedReader reader = new BufferedReader(new FileReader(new File(
 					tailoredPath)));
 
