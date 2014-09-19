@@ -5,6 +5,7 @@
 \usepackage{tree}
 \usepackage[dvipdfmx]{graphicx}
 \usepackage{subfigure}
+\usepackage{url}
 
 \renewcommand{\baselinestretch}{0.85}
 \setlength{\topmargin}{-10mm}
@@ -13,7 +14,7 @@
 \setlength{\textheight}{23.6cm}
 \setlength{\textwidth}{16cm}
 
-\newcommand{\bookTitle}{使い方}
+\newcommand{\bookTitle}{How to use ECTEC}
 
 \newcommand{\sstack}[1]{\fbox{\shortstack{#1}}}
 \newcommand{\treeroot}[2]{\tree \sstack{#1}#2 \endtree}
@@ -56,28 +57,145 @@
 \section{まえがき}
 \label{sec:overview}
 
-このドキュメントは，コードクローン追跡システム ECTEC の使用方法並びに内部で行われている処理内容について述べているドキュメントである．
-ECTEC は Java で記述されており，内部でリレーショナルデータベースを用いている．
-
-このドキュメントを執筆した時点における ECTEC の動作環境，並びに分析対象は以下の通りである．
+このドキュメントは，コードクローン追跡システム ECTEC ({\bf E}nhanced {\bf C}RD-based {\bf T}racker for {\bf E}volution of {\bf C}lones) の使用方法並びに内部で行われている処理内容について述べているドキュメントです．
+このドキュメントは以下のように構成されています．
 
 \begin{description}
 
-\item[対象言語: ] Java
+\item[\ref{sec:summary}章 - 概要]\mbox{ }\\
+このツールが何をするツールなのかを簡単に説明すると共に，適用対象に関する制限について言及します．
 
-\item[対象バージョン管理システム: ] Subversion
+\item[\ref{sec:quick-start}章 - クイックスタート]\mbox{ }\\
+インストール方法や動作環境について説明し，実行方法について簡単に説明します．
+
 
 \end{description}
 
-以降の本ドキュメントの構成は次の通り．
-はじめに\ref{sec:quick-start}で ECTEC の簡単な使用方法について述べる．
-次に\ref{sec:processing}において内部で行われている処理内容について述べ，
-\ref{sec:data-structure}でデータ構造について説明する．
-最後に\ref{sec:how-to-use}において ECTEC の使用方法について詳細に述べる．
-%最後に\ref{sec:project}で ECTEC のプロジェクト構成について言及する．
+\section{概要}
+\label{sec:summary}
+
+\subsection{入出力}
+
+コードクローン追跡ツール ECTEC はソフトウェアの開発履歴情報を入力とし，そこからコード片やコードクローンの系譜を特定して出力するツールです．
+
+\begin{description}
+
+\item[開発履歴情報：]\mbox{ }\\
+ECTEC が入力として受け付ける``開発履歴情報''とは，{\sf Subversion}や{\sf git}等のバージョン管理システムで管理されているソースコードリポジトリのことを指します．
+バージョン管理システムを用いたソフトウェア開発では，ソースコードリポジトリに保存されているソースコード(やその他関連ファイル)を開発者が取得し，そこに適宜変更を加えて，変更した内容をソースコードリポジトリに反映させる，という流れで開発が進んでいきます．
+変更した内容をソースコードリポジトリに反映させる操作のことを，``コミット''と呼びます．
+コミットが行われるたびに，ソースコードリポジトリにはコミット後のソースコードのスナップショットが保存されます\footnote{厳密には必ずしもスナップショットが保存されるわけではありませんが，スナップショットを取得することが可能なので，ECTECを使う際にはこのようなイメージを持っていただければよいと思います．}．
+ソースコードリポジトリに保存されているそれぞれのスナップショットのことを，``リビジョン''と呼びます．
+開発履歴情報を用いることで，任意のリビジョンのソースコードを取得することができますので，ソースコードがどのような進化・変遷を辿ってきたのかを分析することが可能になります．
+
+\item[コード片やコードクローンの系譜：]\mbox{ }\\
+ECTECが出力する``コード片やコードクローンの系譜 (genealogies)''とは，開発履歴情報に蓄積された各リビジョンに存在するコード片やコードクローンを時系列順につなぎ合わせたものです．
+コード片やコードクローンの系譜図のようなものであり，系譜を分析することでそれぞれのコード片やコードクローンがいつ(どのコミットで)生成され，どのような進化・変遷を辿り(どのコミットでどのように修正され)，いつ(どのコミットで)消滅したのかを知ることができます．
+
+\end{description}
+
+ECTEC は与えられたソースコードリポジトリを分析し，特定した系譜に関する情報をデータベースに保存します．
+出力されたデータベースに保存されている情報を取得・加工することで，コード片やコードクローンの進化の様子を分析することができます．
+
+\subsection{制限}
+
+現在のところ，ECTEC を適用できるソフトウェアは以下のように制限されています．
+
+\begin{description}
+
+\item[言語：]Javaで記述されたソフトウェアのみ．複数の言語を併用して構成されているソフトウェアの場合，Java以外の言語で記述されたソースコードはすべて無視されます．
+
+\item[バージョン管理システム：]{\sf Subversion}のみ．他のバージョン管理システム({\sf git}など)で管理されているソフトウェアの場合，リポジトリを{\sf Subversion}リポジトリに変換する必要があります．
+
+\end{description}
 
 \section{クイックスタート}
 \label{sec:quick-start}
+
+\subsection{インストール}
+
+ECTEC は Java で記述されており，Java Runtime Environment 1.7.0 以降のバージョンで動作します．
+内部で使用しているライブラリ等はすべてプロジェクト中にインポートされています．
+従って，Java が動作する環境が構築されていれば，ECTEC は動作します．
+
+ECTEC が行う処理はいくつかのステップに分かれており，それぞれにメインクラスが定義されています．
+ECTEC を動作させる際は，それぞれのステップのメインクラスに必要な引数を与えて実行します．
+それぞれのステップの実行方法については後述します．
+
+ECTEC のそれぞれのステップについて，実行可能 jar ファイルを用意しています．
+実行の際は，以下のURLより実行可能 jar ファイルを入手してください．
+
+\begin{quote}
+
+\url{http://sdl.ist.osaka-u.ac.jp/~k-hotta/files/ECTEC-jars.zip}
+
+\end{quote}
+
+圧縮ファイルの中には，すべてのステップの実行可能 jar ファイルが含まれています．
+
+また，ECTEC は GitHub プロジェクト\footnote{\url{https://github.com/kusumotolab/ECTEC}}として公開されています．
+ソースコードをご覧になりたい場合は，こちらから入手してください．
+
+\subsection{実行手順}
+
+ここでは，小規模なリポジトリを対象として，実際に ECTEC を動かす手順について説明します．
+説明に用いるリポジトリは，このツールの開発者が以前に製作したソフトウェアの{\sf Subversion}リポジトリです．
+このリポジトリは \url{http://sdl.ist.osaka-u.ac.jp/~k-hotta/files/repository-ScorpioTM.zip} よりダウンロードできます．
+本節で説明する手順を再現する場合は，ダウンロードした圧縮ファイルを解凍し，ローカルに配置してください．
+
+以降の説明では，以下の環境を想定しています．
+
+\begin{description}
+
+\item[OS: ] Windows 7
+
+\item[リポジトリの場所: ] C:\verb|\|ECTEC\verb|\|repository-ScorpioTM
+
+\item[実行可能 jar ファイル: ] すべてカレントディレクトリに配置
+
+\item[実行結果の出力先データベースファイル: ] C:\verb|\|ECTEC\verb|\|result.db
+
+\end{description}
+
+\subsubsection*{実行の前に}
+
+ECTEC は各ステップの起動時に，設定情報が記述されたプロパティファイル({\tt *.properties})を参照します．
+デフォルトでは，カレントディレクトリの{\tt ectec.properties}というファイルを参照するように設定されています．
+プロジェクトのルートディレクトリ直下に{\tt ectec-sample.properties}というファイルがありますので，ひとまずはそのファイルの名前を変更して使用してください．
+
+\subsubsection*{STEP1: データベースファイルの作成}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ECTEC が行う処理は，事前分析とライブラリ呼び出しに大別される\footnote{詳細については \ref{sec:processing} で述べる}．
 先に事前分析を行いデータベースを構築した後，ライブラリ呼び出しを行うことでコードクローンの系譜に関する情報を得ることができる．

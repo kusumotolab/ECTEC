@@ -87,6 +87,11 @@ public class CodeFragmentDetectingThread implements Runnable {
 	 */
 	private final IHashCalculator hashCalculator;
 
+	/**
+	 * the lowest value of size to be considered
+	 */
+	private final int fragmentSizeThreshold;
+
 	public CodeFragmentDetectingThread(
 			final ConcurrentMap<Long, DBCrdInfo> detectedCrds,
 			final ConcurrentMap<Long, DBCodeFragmentInfo> detectedFragments,
@@ -97,7 +102,8 @@ public class CodeFragmentDetectingThread implements Runnable {
 			final ConcurrentMap<Long, DBCombinedRevisionInfo> combinedRevisions,
 			final AnalyzeGranularity granularity,
 			final NormalizerCreator blockAnalyzerCreator,
-			final IHashCalculator hashCalculator) {
+			final IHashCalculator hashCalculator,
+			final int fragmentSizeThreshold) {
 		this.detectedCrds = detectedCrds;
 		this.detectedFragments = detectedFragments;
 		this.targetFiles = targetFiles;
@@ -108,6 +114,7 @@ public class CodeFragmentDetectingThread implements Runnable {
 		this.blockAnalyzerCreator = blockAnalyzerCreator;
 		this.granularity = granularity;
 		this.hashCalculator = hashCalculator;
+		this.fragmentSizeThreshold = fragmentSizeThreshold;
 	}
 
 	@Override
@@ -145,8 +152,10 @@ public class CodeFragmentDetectingThread implements Runnable {
 
 				final ASTParser parser = new ASTParser(targetFile.getId(),
 						repositoryId, targetFile.getStartCombinedRevisionId(),
-						targetFile.getCombinedEndRevisionId(), hashCalculator,
-						root, granularity, blockAnalyzerCreator);
+						targetFile.getEndCombinedRevisionId(), hashCalculator,
+						root, granularity, blockAnalyzerCreator,
+						fragmentSizeThreshold, targetFile.isAddedAtStart(),
+						targetFile.isDeletedAtEnd());
 
 				root.accept(parser);
 

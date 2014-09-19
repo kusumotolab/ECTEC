@@ -13,10 +13,11 @@ import org.eclipse.jdt.core.dom.SwitchStatement;
 public class SwitchStatementInfo extends BlockInfo<SwitchStatement> {
 
 	public SwitchStatementInfo(long id, FileInfo ownerFile, CRD crd,
-			RevisionInfo startRevision, RevisionInfo endRevision,
-			int startLine, int endLine, int size, SwitchStatement node) {
-		super(id, ownerFile, crd, startRevision, endRevision, startLine,
-				endLine, size, BlockType.SWITCH, node);
+			CombinedRevisionInfo startCombinedRevision,
+			CombinedRevisionInfo endCombinedRevision, int startLine,
+			int endLine, int size, SwitchStatement node) {
+		super(id, ownerFile, crd, startCombinedRevision, endCombinedRevision,
+				startLine, endLine, size, BlockType.SWITCH, node);
 	}
 
 }

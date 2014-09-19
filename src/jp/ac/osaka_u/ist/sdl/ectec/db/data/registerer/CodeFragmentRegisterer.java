@@ -28,7 +28,7 @@ public class CodeFragmentRegisterer extends
 
 	@Override
 	protected String createPreparedStatementQueue() {
-		return "insert into CODE_FRAGMENT values (?,?,?,?,?,?,?,?,?,?,?)";
+		return "insert into CODE_FRAGMENT values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	}
 
 	@Override
@@ -46,6 +46,11 @@ public class CodeFragmentRegisterer extends
 		pstmt.setInt(++column, element.getStartLine());
 		pstmt.setInt(++column, element.getEndLine());
 		pstmt.setInt(++column, element.getSize());
-	}
 
+		final int fileAddedAtStartInt = (element.isFileAddedAtStart()) ? 1 : 0;
+		pstmt.setInt(++column, fileAddedAtStartInt);
+
+		final int fileDeletedAtEndInt = (element.isFileDeletedAtEnd()) ? 1 : 0;
+		pstmt.setInt(++column, fileDeletedAtEndInt);
+	}
 }

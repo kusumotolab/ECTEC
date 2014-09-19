@@ -1,5 +1,7 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.data;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.ElementVisitor;
+
 /**
  * A class that represents a data element
  * 
@@ -37,4 +39,6 @@ public abstract class AbstractElement {
 		return this.id == another.getId();
 	}
 
+	public abstract void accept(final ElementVisitor visitor);
+	
 }

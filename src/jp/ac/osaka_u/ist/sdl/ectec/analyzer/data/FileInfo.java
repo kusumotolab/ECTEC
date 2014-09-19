@@ -1,5 +1,7 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.data;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.ElementVisitor;
+
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
 /**
@@ -16,14 +18,19 @@ public class FileInfo extends AbstractElement implements Comparable<FileInfo> {
 	private final String path;
 
 	/**
-	 * the start revision
+	 * the owner repository of this file
 	 */
-	private final RevisionInfo startRevision;
+	private final RepositoryInfo ownerRepository;
 
 	/**
-	 * the end revision
+	 * the start combined revision
 	 */
-	private final RevisionInfo endRevision;
+	private final CombinedRevisionInfo startCombinedRevision;
+
+	/**
+	 * the end combined revision
+	 */
+	private final CombinedRevisionInfo endCombinedRevision;
 
 	/**
 	 * the root node of AST for this file
@@ -31,12 +38,15 @@ public class FileInfo extends AbstractElement implements Comparable<FileInfo> {
 	private final CompilationUnit node;
 
 	public FileInfo(final long id, final String path,
-			final RevisionInfo startRevision, final RevisionInfo endRevision,
+			final RepositoryInfo ownerRepository,
+			final CombinedRevisionInfo startCombinedRevision,
+			final CombinedRevisionInfo endCombinedRevision,
 			final CompilationUnit node) {
 		super(id);
 		this.path = path;
-		this.startRevision = startRevision;
-		this.endRevision = endRevision;
+		this.ownerRepository = ownerRepository;
+		this.startCombinedRevision = startCombinedRevision;
+		this.endCombinedRevision = endCombinedRevision;
 		this.node = node;
 	}
 
@@ -50,21 +60,30 @@ public class FileInfo extends AbstractElement implements Comparable<FileInfo> {
 	}
 
 	/**
-	 * get the start revision of this file
+	 * get the owner repository of this file
 	 * 
 	 * @return
 	 */
-	public final RevisionInfo getStartRevision() {
-		return startRevision;
+	public final RepositoryInfo getOwnerRepository() {
+		return ownerRepository;
 	}
 
 	/**
-	 * get the end revision of this file
+	 * get the start combined revision of this file
 	 * 
 	 * @return
 	 */
-	public final RevisionInfo getEndRevision() {
-		return endRevision;
+	public final CombinedRevisionInfo getStartCombinedRevision() {
+		return startCombinedRevision;
+	}
+
+	/**
+	 * get the end combined revision of this file
+	 * 
+	 * @return
+	 */
+	public final CombinedRevisionInfo getEndCombinedRevision() {
+		return endCombinedRevision;
 	}
 
 	/**
@@ -83,19 +102,24 @@ public class FileInfo extends AbstractElement implements Comparable<FileInfo> {
 			return compareWithPath;
 		}
 
-		final int compareWithStartRev = this.startRevision.compareTo(another
-				.getStartRevision());
+		final int compareWithStartRev = this.startCombinedRevision
+				.compareTo(another.getStartCombinedRevision());
 		if (compareWithStartRev != 0) {
 			return compareWithStartRev;
 		}
 
-		final int compareWithEndRev = this.endRevision.compareTo(another
-				.getEndRevision());
+		final int compareWithEndRev = this.endCombinedRevision
+				.compareTo(another.getEndCombinedRevision());
 		if (compareWithEndRev != 0) {
 			return compareWithEndRev;
 		}
 
 		return ((Long) this.id).compareTo(another.getId());
+	}
+	
+	@Override
+	public void accept(final ElementVisitor visitor) {
+		visitor.visit(this);
 	}
 
 }

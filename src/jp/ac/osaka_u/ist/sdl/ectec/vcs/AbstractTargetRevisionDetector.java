@@ -3,6 +3,7 @@ package jp.ac.osaka_u.ist.sdl.ectec.vcs;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -40,8 +41,10 @@ public abstract class AbstractTargetRevisionDetector<M extends AbstractRepositor
 		this.commits = new TreeMap<Long, DBCommitInfo>();
 	}
 
-	public void detect(final Language language) throws Exception {
-		final Map<String, Date> revisions = detectRevisionsAfterTargetCommits(language);
+	public void detect(final Language language, final Set<String> ignoredList)
+			throws Exception {
+		final Map<String, Date> revisions = detectRevisionsAfterTargetCommits(
+				language, ignoredList);
 
 		final SortedSet<TemporaryRevision> temporaryRevisions = new TreeSet<TemporaryRevision>();
 		for (final Map.Entry<String, Date> entry : revisions.entrySet()) {
@@ -70,7 +73,8 @@ public abstract class AbstractTargetRevisionDetector<M extends AbstractRepositor
 	}
 
 	protected abstract Map<String, Date> detectRevisionsAfterTargetCommits(
-			final Language language) throws Exception;
+			final Language language, final Set<String> ignoredList)
+			throws Exception;
 
 	public Map<Long, DBRevisionInfo> getTargetRevisions() {
 		return Collections.unmodifiableMap(targetRevisions);

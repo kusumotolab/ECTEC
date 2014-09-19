@@ -3,6 +3,8 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer.data;
 import java.util.Collections;
 import java.util.List;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.ElementVisitor;
+
 /**
  * A class that represents genealogies of clones
  * 
@@ -13,14 +15,14 @@ public class CloneGenealogyInfo extends AbstractElement implements
 		Comparable<CloneGenealogyInfo> {
 
 	/**
-	 * the start revision
+	 * the start combined revision
 	 */
-	private final RevisionInfo startRevision;
+	private final CombinedRevisionInfo startCombinedRevision;
 
 	/**
-	 * the end revision
+	 * the end combined revision
 	 */
-	private final RevisionInfo endRevision;
+	private final CombinedRevisionInfo endCombinedRevision;
 
 	/**
 	 * the list of clones
@@ -47,13 +49,13 @@ public class CloneGenealogyInfo extends AbstractElement implements
 	 */
 	private final int numberOfDeletions;
 
-	public CloneGenealogyInfo(final long id, final RevisionInfo startRevision,
-			final RevisionInfo endRevision, final List<CloneSetInfo> clones,
+	public CloneGenealogyInfo(final long id, final CombinedRevisionInfo startCombinedRevision,
+			final CombinedRevisionInfo endCombinedRevision, final List<CloneSetInfo> clones,
 			final List<CloneSetLinkInfo> links, final int numberOfChanges,
 			final int numberOfAdditions, final int numberOfDeletions) {
 		super(id);
-		this.startRevision = startRevision;
-		this.endRevision = endRevision;
+		this.startCombinedRevision = startCombinedRevision;
+		this.endCombinedRevision = endCombinedRevision;
 		this.clones = clones;
 		this.links = links;
 		this.numberOfChanges = numberOfChanges;
@@ -62,21 +64,21 @@ public class CloneGenealogyInfo extends AbstractElement implements
 	}
 
 	/**
-	 * get the start revision
+	 * get the start combined revision
 	 * 
 	 * @return
 	 */
-	public final RevisionInfo getStartRevision() {
-		return startRevision;
+	public final CombinedRevisionInfo getCombinedStartRevision() {
+		return startCombinedRevision;
 	}
 
 	/**
-	 * get the end revision
+	 * get the end combined revision
 	 * 
 	 * @return
 	 */
-	public final RevisionInfo getEndRevision() {
-		return endRevision;
+	public final CombinedRevisionInfo getCombinedEndRevision() {
+		return endCombinedRevision;
 	}
 
 	/**
@@ -130,24 +132,29 @@ public class CloneGenealogyInfo extends AbstractElement implements
 	 * @return true if it is NOT alive at the latest revision
 	 */
 	public final boolean isDead(final long combinedRevisionId) {
-		return this.endRevision.getId() < combinedRevisionId;
+		return this.endCombinedRevision.getId() < combinedRevisionId;
 	}
 
 	@Override
 	public int compareTo(CloneGenealogyInfo another) {
-		final int compareWithStartRev = startRevision.compareTo(another
-				.getStartRevision());
+		final int compareWithStartRev = startCombinedRevision.compareTo(another
+				.getCombinedStartRevision());
 		if (compareWithStartRev != 0) {
 			return compareWithStartRev;
 		}
 
-		final int compareWithEndRev = endRevision.compareTo(another
-				.getEndRevision());
+		final int compareWithEndRev = endCombinedRevision.compareTo(another
+				.getCombinedEndRevision());
 		if (compareWithEndRev != 0) {
 			return compareWithEndRev;
 		}
 
 		return ((Long) id).compareTo(another.getId());
+	}
+	
+	@Override
+	public void accept(final ElementVisitor visitor) {
+		visitor.visit(this);
 	}
 
 }

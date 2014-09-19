@@ -13,7 +13,7 @@ import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CloneSetInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CloneSetLinkInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CodeFragmentLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.RevisionInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CombinedRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetLinkInfo;
 
 /**
@@ -25,14 +25,14 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetLinkInfo;
 public class CloneSetLinkInfoConcretizer {
 
 	public CloneSetLinkInfo concretize(final DBCloneSetLinkInfo dbCloneLink,
-			final Map<Long, RevisionInfo> revisions,
+			final Map<Long, CombinedRevisionInfo> combinedRevisions,
 			final Map<Long, CloneSetInfo> clones,
 			final Map<Long, CodeFragmentLinkInfo> fragmentLinks) {
 		final long id = dbCloneLink.getId();
-		final RevisionInfo beforeRevision = revisions.get(dbCloneLink
-				.getBeforeCombinedRevisionId());
-		final RevisionInfo afterRevision = revisions.get(dbCloneLink
-				.getAfterCombinedRevisionId());
+		final CombinedRevisionInfo beforeCombinedRevision = combinedRevisions
+				.get(dbCloneLink.getBeforeCombinedRevisionId());
+		final CombinedRevisionInfo afterCombinedRevision = combinedRevisions
+				.get(dbCloneLink.getAfterCombinedRevisionId());
 		final CloneSetInfo beforeClone = clones.get(dbCloneLink
 				.getBeforeElementId());
 		final CloneSetInfo afterClone = clones.get(dbCloneLink
@@ -73,22 +73,23 @@ public class CloneSetLinkInfoConcretizer {
 		int numberOfDeletedElements = beforeElements.size()
 				- unchangedElements.size() - fragmentLinksList.size();
 
-		return new CloneSetLinkInfo(id, beforeRevision, afterRevision,
-				beforeClone, afterClone, numberOfAddedElements,
-				numberOfDeletedElements, numberOfChangedElements,
-				numberOfCoChangedElements, fragmentLinksList);
+		return new CloneSetLinkInfo(id, beforeCombinedRevision,
+				afterCombinedRevision, beforeClone, afterClone,
+				numberOfAddedElements, numberOfDeletedElements,
+				numberOfChangedElements, numberOfCoChangedElements,
+				fragmentLinksList);
 	}
 
 	public Map<Long, CloneSetLinkInfo> concretizeAll(
 			final Collection<DBCloneSetLinkInfo> dbCloneLinks,
-			final Map<Long, RevisionInfo> revisions,
+			final Map<Long, CombinedRevisionInfo> combinedRevisions,
 			final Map<Long, CloneSetInfo> clones,
 			final Map<Long, CodeFragmentLinkInfo> fragmentLinks) {
 		final Map<Long, CloneSetLinkInfo> result = new TreeMap<Long, CloneSetLinkInfo>();
 
 		for (final DBCloneSetLinkInfo dbCloneLink : dbCloneLinks) {
 			final CloneSetLinkInfo cloneLink = concretize(dbCloneLink,
-					revisions, clones, fragmentLinks);
+					combinedRevisions, clones, fragmentLinks);
 			result.put(cloneLink.getId(), cloneLink);
 		}
 
@@ -97,10 +98,10 @@ public class CloneSetLinkInfoConcretizer {
 
 	public Map<Long, CloneSetLinkInfo> concretizeAll(
 			final Map<Long, DBCloneSetLinkInfo> dbCloneLinks,
-			final Map<Long, RevisionInfo> revisions,
+			final Map<Long, CombinedRevisionInfo> combinedRevisions,
 			final Map<Long, CloneSetInfo> clones,
 			final Map<Long, CodeFragmentLinkInfo> fragmentLinks) {
-		return concretizeAll(dbCloneLinks.values(), revisions, clones,
+		return concretizeAll(dbCloneLinks.values(), combinedRevisions, clones,
 				fragmentLinks);
 	}
 

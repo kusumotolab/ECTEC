@@ -3,6 +3,8 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer.data;
 import java.util.Collections;
 import java.util.List;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.ElementVisitor;
+
 /**
  * A class that represents genealogies of clones
  * 
@@ -13,14 +15,14 @@ public class CodeFragmentGenealogyInfo extends AbstractElement implements
 		Comparable<CodeFragmentGenealogyInfo> {
 
 	/**
-	 * the start revision
+	 * the start combined revision
 	 */
-	private final RevisionInfo startRevision;
+	private final CombinedRevisionInfo startCombinedRevision;
 
 	/**
-	 * the end revision
+	 * the end combined revision
 	 */
-	private final RevisionInfo endRevision;
+	private final CombinedRevisionInfo endCombinedRevision;
 
 	/**
 	 * the list of fragments
@@ -38,33 +40,34 @@ public class CodeFragmentGenealogyInfo extends AbstractElement implements
 	private final int changeCount;
 
 	public CodeFragmentGenealogyInfo(final long id,
-			final RevisionInfo startRevision, final RevisionInfo endRevision,
+			final CombinedRevisionInfo startCombinedRevision,
+			final CombinedRevisionInfo endCombinedRevision,
 			final List<CodeFragmentInfo> fragments,
 			final List<CodeFragmentLinkInfo> links, final int changeCount) {
 		super(id);
-		this.startRevision = startRevision;
-		this.endRevision = endRevision;
+		this.startCombinedRevision = startCombinedRevision;
+		this.endCombinedRevision = endCombinedRevision;
 		this.fragments = fragments;
 		this.links = links;
 		this.changeCount = changeCount;
 	}
 
 	/**
-	 * get the start revision
+	 * get the start combined revision
 	 * 
 	 * @return
 	 */
-	public final RevisionInfo getStartRevision() {
-		return startRevision;
+	public final CombinedRevisionInfo getStartCombinedRevision() {
+		return startCombinedRevision;
 	}
 
 	/**
-	 * get the end revision
+	 * get the end combined revision
 	 * 
 	 * @return
 	 */
-	public final RevisionInfo getEndRevision() {
-		return endRevision;
+	public final CombinedRevisionInfo getEndCombinedRevision() {
+		return endCombinedRevision;
 	}
 
 	/**
@@ -96,19 +99,24 @@ public class CodeFragmentGenealogyInfo extends AbstractElement implements
 
 	@Override
 	public int compareTo(CodeFragmentGenealogyInfo another) {
-		final int compareWithStartRev = startRevision.compareTo(another
-				.getStartRevision());
+		final int compareWithStartRev = startCombinedRevision.compareTo(another
+				.getStartCombinedRevision());
 		if (compareWithStartRev != 0) {
 			return compareWithStartRev;
 		}
 
-		final int compareWithEndRev = endRevision.compareTo(another
-				.getEndRevision());
+		final int compareWithEndRev = endCombinedRevision.compareTo(another
+				.getEndCombinedRevision());
 		if (compareWithEndRev != 0) {
 			return compareWithEndRev;
 		}
 
 		return ((Long) id).compareTo(another.getId());
+	}
+	
+	@Override
+	public void accept(final ElementVisitor visitor) {
+		visitor.visit(this);
 	}
 
 }

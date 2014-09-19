@@ -9,11 +9,13 @@ import java.util.TreeMap;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.concretizer.Concretizer;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.concretizer.NotConcretizedException;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CloneGenealogyInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CodeFragmentGenealogyInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.manager.DBDataManagerManager;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.manager.DataManagerManager;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.selector.CloneGenealogySelector;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.selector.IConstraint;
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
+import jp.ac.osaka_u.ist.sdl.ectec.db.SQLiteDBConfig;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRepositoryInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Constants;
 import jp.ac.osaka_u.ist.sdl.ectec.vcs.RepositoryManagerManager;
@@ -77,7 +79,7 @@ public class GenealogyAnalyzer {
 		DBConnectionManager dbManager = null;
 
 		try {
-			dbManager = new DBConnectionManager(dbPath,
+			dbManager = new DBConnectionManager(new SQLiteDBConfig(dbPath),
 					Constants.MAX_BATCH_COUNT);
 
 			// the additional path is always null
@@ -160,6 +162,18 @@ public class GenealogyAnalyzer {
 	public CloneGenealogyInfo concretizeCloneGenealogy(final long genealogyId)
 			throws NotConcretizedException {
 		return concretizer.concretizeCloneGenealogy(genealogyId);
+	}
+
+	/**
+	 * concretize a code fragment genealogy
+	 * 
+	 * @param genealogyId
+	 * @return
+	 * @throws NotConcretizedException
+	 */
+	public CodeFragmentGenealogyInfo concretizeFragmentGenealogy(
+			final long genealogyId) throws NotConcretizedException {
+		return concretizer.concretizeCodeFragmentGenealogy(genealogyId);
 	}
 
 	/**

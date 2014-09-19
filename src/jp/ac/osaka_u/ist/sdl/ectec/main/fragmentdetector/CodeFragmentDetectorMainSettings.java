@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import jp.ac.osaka_u.ist.sdl.ectec.AbstractSettings;
 import jp.ac.osaka_u.ist.sdl.ectec.PropertiesReader;
-import jp.ac.osaka_u.ist.sdl.ectec.main.AbstractSettings;
 import jp.ac.osaka_u.ist.sdl.ectec.main.IllegalSettingValueException;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.AnalyzeGranularity;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.IDStringReader;
@@ -33,6 +33,11 @@ public class CodeFragmentDetectorMainSettings extends AbstractSettings {
 	private StringNormalizeMode cloneHashMode;
 
 	/**
+	 * the lowest value of size to be considered
+	 */
+	private int fragmentSizeThreshold;
+
+	/**
 	 * get the list of file ids
 	 * 
 	 * @return
@@ -57,6 +62,15 @@ public class CodeFragmentDetectorMainSettings extends AbstractSettings {
 	 */
 	public final StringNormalizeMode getCloneHashMode() {
 		return this.cloneHashMode;
+	}
+
+	/**
+	 * get the lowest value of size to be considered
+	 * 
+	 * @return
+	 */
+	public final int getFragmentSizeThreshold() {
+		return this.fragmentSizeThreshold;
 	}
 
 	/**
@@ -88,6 +102,14 @@ public class CodeFragmentDetectorMainSettings extends AbstractSettings {
 			ch.setArgs(1);
 			ch.setRequired(false);
 			options.addOption(ch);
+		}
+
+		{
+			final Option fst = new Option("fst", "fragment-size-threshold", true,
+					"the lowest value of size to be considered");
+			fst.setArgs(1);
+			fst.setRequired(false);
+			options.addOption(fst);
 		}
 
 		return options;
@@ -135,5 +157,16 @@ public class CodeFragmentDetectorMainSettings extends AbstractSettings {
 		}
 		logger.info("normalize mode for clone detection: "
 				+ cloneHashMode.toString());
+
+		final String sizeThresholdStr = cmd.hasOption("fst") ? cmd
+				.getOptionValue("fst") : propReader
+				.getProperty(FRAGMENT_SIZE_THRESHOLD);
+		try {
+			fragmentSizeThreshold = Integer.parseInt(sizeThresholdStr);
+		} catch (Exception e) {
+			throw new IllegalSettingValueException("illegal value "
+					+ " for -fst, it must be an integer value");
+		}
+		logger.info("fragment size threshold: " + fragmentSizeThreshold);
 	}
 }

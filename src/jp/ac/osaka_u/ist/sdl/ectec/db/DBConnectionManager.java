@@ -1,12 +1,11 @@
 package jp.ac.osaka_u.ist.sdl.ectec.db;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
 
+import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneGenealogyInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetLinkInfo;
@@ -53,13 +52,21 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.FileRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.RepositoryRetriever;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.retriever.RevisionRetriever;
 
+import org.apache.log4j.Logger;
+
 /**
  * A class to manage the connection between the db
- *
+ * 
  * @author k-hotta
- *
+ * 
  */
 public final class DBConnectionManager {
+
+	/**
+	 * the logger
+	 */
+	private static final Logger logger = LoggingManager
+			.getLogger(DBConnectionManager.class.getName());
 
 	/**
 	 * the connection between the db
@@ -128,73 +135,15 @@ public final class DBConnectionManager {
 
 	private final CodeFragmentGenealogyLinkElementRetriever fragmentGenealogyLinkElementRetriever;
 
-	// 決まり文句 (ドライバクラス)
-		final private static String PostgresJDBCDriver = "org.postgresql.Driver";
-
-		// 下記の変数を正しく設定する
-		// DBNAME, DBDIR, USER, PASS, JDBCDriver, DBURL
-
-
-			// PostgreSQL 用デフォルト
-			// Eclipse で PostgreSQL を使いたいときは，次の手順で，WebContent\WEB-INF\lib にインポートしておく．
-			//     WebContent\WEB-INF\lib を右クリック．「一般」→「ファイルシステム」
-			//     その後インポートすべきファイルとして，次のファイルを指定
-			//       C:\Program Files\psqlJDBC\postgresql-8.3-603.jdbc4.jar
-			final private static String JDBCDriver = PostgresJDBCDriver;
-			final private static String user = "sa";
-			final private static String pass = "";
-
 	/**
 	 * the constructor
-	 *
+	 * 
 	 * @param dbPath
 	 * @throws Exception
 	 */
-	public DBConnectionManager(final String dbPath, final int maxBatchCount)
+	public DBConnectionManager(final IDBConfig dbConfig, final int maxBatchCount)
 			throws Exception {
-		//Class.forName("org.sqlite.JDBC");
-		//this.connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
-		try {
-			// JDBC Driver Loading
-			Class.forName(JDBCDriver).newInstance();
-			System.setProperty("jdbc.driver",JDBCDriver);
-		}
-
-		catch (Exception e) {
-			// Error Message and Error Code
-			System.out.print(e.toString());
-			if (e instanceof SQLException) {
-				System.out.println("Error Code:" + ((SQLException)e).getErrorCode());
-			}
-			// Print Stack Trace
-			e.printStackTrace();
-		}
-		try {
-			// Connection
-			if ( user.isEmpty() && pass.isEmpty() ) {
-				this.connection = DriverManager.getConnection("jdbc:postgresql://localhost/" + dbPath);
-			}
-			else {
-				Properties prop = new Properties();
-				prop.put("user", user);
-				prop.put("password", pass);
-				this.connection = DriverManager.getConnection("jdbc:postgresql://localhost/" + dbPath,prop);
-			}
-		}
-		catch (Exception e) {
-			// Error Message and Error Code
-			System.out.print(e.toString());
-			if (e instanceof SQLException) {
-				System.out.println("Error Code:" + ((SQLException)e).getErrorCode());
-			}
-			// Print Stack Trace
-			e.printStackTrace();
-			if (this.connection != null) {
-				this.connection.rollback();
-				this.connection.close();
-			}
-		}
-
+		this.connection = dbConfig.init();
 
 		this.connection.setAutoCommit(false);
 
@@ -376,6 +325,21 @@ public final class DBConnectionManager {
 	public void close() {
 		try {
 			this.connection.close();
+			logger.info("db connection was closed");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * rollback
+	 */
+	public void rollback() {
+		try {
+			if (!this.connection.getAutoCommit()) {
+				this.connection.rollback();
+				logger.info("rollback operation was performed");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -383,7 +347,7 @@ public final class DBConnectionManager {
 
 	/**
 	 * create a statement
-	 *
+	 * 
 	 * @return
 	 */
 	public Statement createStatement() {
@@ -398,7 +362,7 @@ public final class DBConnectionManager {
 
 	/**
 	 * create a prepared statement with the specified query
-	 *
+	 * 
 	 * @param query
 	 * @return
 	 */
@@ -430,7 +394,7 @@ public final class DBConnectionManager {
 
 	/**
 	 * enables/disables auto commit
-	 *
+	 * 
 	 * @param autoCommit
 	 */
 	public void setAutoCommit(boolean autoCommit) {
@@ -443,7 +407,7 @@ public final class DBConnectionManager {
 
 	/**
 	 * execute the query
-	 *
+	 * 
 	 * @param query
 	 * @throws Exception
 	 */
@@ -463,45 +427,45 @@ public final class DBConnectionManager {
 
 	public void initializeElementCountersWithMaximumIds() throws Exception {
 		final long maxRepository = repositoryRetriever.getMaximumId();
-		DBRepositoryInfo.resetCount(maxRepository);
+		DBRepositoryInfo.resetCount(maxRepository + 1);
 
 		final long maxRevision = revisionRetriever.getMaximumId();
-		DBRevisionInfo.resetCount(maxRevision);
+		DBRevisionInfo.resetCount(maxRevision + 1);
 
 		final long maxCommit = commitRetriever.getMaximumId();
-		DBCommitInfo.resetCount(maxCommit);
+		DBCommitInfo.resetCount(maxCommit + 1);
 
 		final long maxCombinedRevision = combinedRevisionRetriever
 				.getMaximumId();
-		DBCombinedRevisionInfo.resetCount(maxCombinedRevision);
+		DBCombinedRevisionInfo.resetCount(maxCombinedRevision + 1);
 
 		final long maxCombinedCommit = combinedCommitRetriever.getMaximumId();
-		DBCombinedCommitInfo.resetCount(maxCombinedCommit);
+		DBCombinedCommitInfo.resetCount(maxCombinedCommit + 1);
 
 		final long maxFile = fileRetriever.getMaximumId();
-		DBFileInfo.resetCount(maxFile);
+		DBFileInfo.resetCount(maxFile + 1);
 
 		final long maxCrd = crdRetriever.getMaximumId();
-		DBCrdInfo.resetCount(maxCrd);
+		DBCrdInfo.resetCount(maxCrd + 1);
 
 		final long maxFragment = fragmentRetriever.getMaximumId();
-		DBCodeFragmentInfo.resetCount(maxFragment);
+		DBCodeFragmentInfo.resetCount(maxFragment + 1);
 
 		final long maxClone = cloneRetriever.getMaximumId();
-		DBCloneSetInfo.resetCount(maxClone);
+		DBCloneSetInfo.resetCount(maxClone + 1);
 
 		final long maxFragmentLink = fragmentLinkRetriever.getMaximumId();
-		DBCodeFragmentLinkInfo.resetCount(maxFragmentLink);
+		DBCodeFragmentLinkInfo.resetCount(maxFragmentLink + 1);
 
 		final long maxCloneLink = cloneLinkRetriever.getMaximumId();
-		DBCloneSetLinkInfo.resetCount(maxCloneLink);
+		DBCloneSetLinkInfo.resetCount(maxCloneLink + 1);
 
 		final long maxCloneGenealogy = cloneGenealogyRetriever.getMaximumId();
-		DBCloneGenealogyInfo.resetCount(maxCloneGenealogy);
+		DBCloneGenealogyInfo.resetCount(maxCloneGenealogy + 1);
 
 		final long maxFragmentGenealogy = fragmentGenealogyRetriever
 				.getMaximumId();
-		DBCodeFragmentGenealogyInfo.resetCount(maxFragmentGenealogy);
+		DBCodeFragmentGenealogyInfo.resetCount(maxFragmentGenealogy + 1);
 	}
 
 	public void initializeElementCountersWithHeader(final short header) {

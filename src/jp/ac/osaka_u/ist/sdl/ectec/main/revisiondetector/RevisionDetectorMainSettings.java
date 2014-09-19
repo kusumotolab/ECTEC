@@ -1,11 +1,14 @@
 package jp.ac.osaka_u.ist.sdl.ectec.main.revisiondetector;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
+import jp.ac.osaka_u.ist.sdl.ectec.AbstractSettings;
 import jp.ac.osaka_u.ist.sdl.ectec.PropertiesReader;
-import jp.ac.osaka_u.ist.sdl.ectec.main.AbstractSettings;
 import jp.ac.osaka_u.ist.sdl.ectec.main.IllegalSettingValueException;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 
@@ -32,6 +35,11 @@ public class RevisionDetectorMainSettings extends AbstractSettings {
 	private Set<Long> repositoryIds;
 
 	/**
+	 * the map between repository ids and the set of revisions to be ignored
+	 */
+	private ConcurrentMap<Long, Set<String>> ignoredRevisions;
+
+	/**
 	 * get the target programming language
 	 * 
 	 * @return
@@ -47,6 +55,15 @@ public class RevisionDetectorMainSettings extends AbstractSettings {
 	 */
 	public final Set<Long> getRepositoryIds() {
 		return Collections.unmodifiableSet(this.repositoryIds);
+	}
+
+	/**
+	 * get the map between repository id and revisions to be ignored
+	 * 
+	 * @return
+	 */
+	public final ConcurrentMap<Long, Set<String>> getIgnoredRevisions() {
+		return ignoredRevisions;
 	}
 
 	@Override
@@ -65,6 +82,15 @@ public class RevisionDetectorMainSettings extends AbstractSettings {
 			r.setArgs(1);
 			r.setRequired(false);
 			options.addOption(r);
+		}
+
+		{
+
+			final Option igl = new Option("igl", "ignore list", true,
+					"list of revisions to be ignored");
+			igl.setArgs(1);
+			igl.setRequired(false);
+			options.addOption(igl);
 		}
 
 		return options;
@@ -105,6 +131,22 @@ public class RevisionDetectorMainSettings extends AbstractSettings {
 		} else {
 			logger.info("-r doesn't specified");
 			logger.info("targets all the repositories registered into the db");
+		}
+
+		if (cmd.hasOption("igl")) {
+			final String ignoreListPath = cmd.getOptionValue("igl");
+			final File ignoreListFile = new File(ignoreListPath);
+			if (!ignoreListFile.exists()) {
+				throw new IllegalSettingValueException("cannot find "
+						+ ignoreListPath);
+			}
+
+			ignoredRevisions = new ConcurrentHashMap<Long, Set<String>>();
+			ignoredRevisions.putAll(IgnoreListReader.read(ignoreListFile));
+			logger.info("loaded ignored list: " + ignoreListPath);
+		} else {
+			logger.info("-igl doesn't specified");
+			logger.info("targets all the revisions");
 		}
 
 	}

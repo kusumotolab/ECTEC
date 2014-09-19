@@ -1,6 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.main.combiner;
 
-import jp.ac.osaka_u.ist.sdl.ectec.main.AbstractSettings;
+import jp.ac.osaka_u.ist.sdl.ectec.AbstractSettings;
 
 /**
  * A class that has settings for combiner

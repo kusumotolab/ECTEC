@@ -4,3 +4,4 @@ ectec.properties
 /bin
 *.csv
 /repositories
+/doc

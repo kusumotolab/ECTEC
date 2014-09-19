@@ -13,10 +13,11 @@ import org.eclipse.jdt.core.dom.EnhancedForStatement;
 public class EnhancedForStatementInfo extends BlockInfo<EnhancedForStatement> {
 
 	public EnhancedForStatementInfo(long id, FileInfo ownerFile, CRD crd,
-			RevisionInfo startRevision, RevisionInfo endRevision,
-			int startLine, int endLine, int size, EnhancedForStatement node) {
-		super(id, ownerFile, crd, startRevision, endRevision, startLine,
-				endLine, size, BlockType.ENHANCED_FOR, node);
+			CombinedRevisionInfo startCombinedRevision,
+			CombinedRevisionInfo endCombinedRevision, int startLine,
+			int endLine, int size, EnhancedForStatement node) {
+		super(id, ownerFile, crd, startCombinedRevision, endCombinedRevision,
+				startLine, endLine, size, BlockType.ENHANCED_FOR, node);
 	}
 
 }

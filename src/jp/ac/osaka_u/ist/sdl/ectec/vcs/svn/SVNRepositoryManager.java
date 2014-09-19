@@ -41,10 +41,15 @@ public class SVNRepositoryManager extends AbstractRepositoryManager {
 	 */
 	private final SVNRepository repository;
 
-	public SVNRepositoryManager(final String urlStr, final String userName,
+	public SVNRepositoryManager(final String rootUrl,
+			final String additionalUrl, final String userName,
 			final String passwd, final String repositoryName,
 			final long repositoryId) throws Exception {
-		super(userName, passwd, repositoryName, repositoryId);
+		super(rootUrl, additionalUrl, userName, passwd, repositoryName,
+				repositoryId);
+
+		final String urlStr = (additionalUrl == null) ? rootUrl : rootUrl
+				+ additionalUrl;
 
 		this.url = SVNURL.parseURIDecoded(urlStr);
 
@@ -115,11 +120,13 @@ public class SVNRepositoryManager extends AbstractRepositoryManager {
 	 */
 	public synchronized String getFileContents(final long revisionNum,
 			final String path) throws SVNException {
+		
 		final StringBuilder builder = new StringBuilder();
 
 		final SVNURL target = this.url.appendPath(path, false);
-		final SVNWCClient wcClient = SVNClientManager.newInstance(null,
-				this.userName, this.passwd).getWCClient();
+		final SVNClientManager clientManager = SVNClientManager.newInstance(null,
+				this.userName, this.passwd);
+		final SVNWCClient wcClient = clientManager.getWCClient();
 		wcClient.doGetFileContents(target, SVNRevision.create(revisionNum),
 				SVNRevision.create(revisionNum), false, new OutputStream() {
 
@@ -129,7 +136,9 @@ public class SVNRepositoryManager extends AbstractRepositoryManager {
 					}
 
 				});
-
+		
+		clientManager.dispose();
+		
 		return builder.toString();
 	}
 
@@ -192,8 +201,9 @@ public class SVNRepositoryManager extends AbstractRepositoryManager {
 	public synchronized List<String> getListOfSourceFiles(
 			final long revisionNum, final Language lang, final String target)
 			throws SVNException {
-		final SVNLogClient logClient = SVNClientManager.newInstance(null,
-				this.userName, this.passwd).getLogClient();
+		final SVNClientManager clientManager = SVNClientManager.newInstance(null,
+				this.userName, this.passwd);
+		final SVNLogClient logClient = clientManager.getLogClient();
 
 		final SVNURL url = (target == null) ? this.url : this.url.appendPath(
 				target, false);
@@ -214,6 +224,8 @@ public class SVNRepositoryManager extends AbstractRepositoryManager {
 					}
 
 				});
+		
+		clientManager.dispose();
 
 		return Collections.unmodifiableList(result);
 	}

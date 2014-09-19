@@ -63,6 +63,11 @@ public class FileDetectorMain {
 		} catch (Exception e) {
 			eLogger.fatal("operations failed.\n" + e.toString());
 			e.printStackTrace();
+			
+			if (dbManager != null) {
+				dbManager.rollback();
+			}
+			postprocess();
 		}
 	}
 
@@ -88,7 +93,7 @@ public class FileDetectorMain {
 	private static void preprocess(final FileDetectorMainSettings settings)
 			throws Exception {
 		// make a connection between the db file
-		dbManager = new DBConnectionManager(settings.getDbPath(),
+		dbManager = new DBConnectionManager(settings.getDBConfig(),
 				settings.getMaxBatchCount());
 		logger.info("connected to the db");
 
@@ -115,7 +120,8 @@ public class FileDetectorMain {
 				.entrySet()) {
 			final DBRepositoryInfo repository = entry.getValue();
 			logger.debug("repository " + entry.getKey() + ": "
-					+ repository.getName() + " - " + repository.getUrl());
+					+ repository.getName() + " - " + repository.getRootUrl()
+					+ repository.getAdditionalUrl());
 
 			try {
 				repositoryManagerManager.addRepositoryManager(repository);

@@ -10,7 +10,7 @@ import java.util.TreeMap;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CloneGenealogyInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CloneSetInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CloneSetLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.RevisionInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CombinedRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneGenealogyInfo;
 
 /**
@@ -23,14 +23,14 @@ public class CloneGenealogyInfoConcretizer {
 
 	public CloneGenealogyInfo concretize(
 			final DBCloneGenealogyInfo dbGenealogy,
-			final Map<Long, RevisionInfo> revisions,
+			final Map<Long, CombinedRevisionInfo> combinedRevisions,
 			final Map<Long, CloneSetInfo> clones,
 			final Map<Long, CloneSetLinkInfo> cloneLinks) {
 		final long id = dbGenealogy.getId();
-		final RevisionInfo startRevision = revisions.get(dbGenealogy
-				.getStartCombinedRevisionId());
-		final RevisionInfo endRevision = revisions.get(dbGenealogy
-				.getEndCombinedRevisionId());
+		final CombinedRevisionInfo startCombinedRevision = combinedRevisions
+				.get(dbGenealogy.getStartCombinedRevisionId());
+		final CombinedRevisionInfo endCombinedRevision = combinedRevisions
+				.get(dbGenealogy.getEndCombinedRevisionId());
 
 		final List<CloneSetInfo> clonesList = new ArrayList<CloneSetInfo>();
 		final List<Long> cloneIds = dbGenealogy.getElements();
@@ -60,21 +60,21 @@ public class CloneGenealogyInfoConcretizer {
 			}
 		}
 
-		return new CloneGenealogyInfo(id, startRevision, endRevision,
-				clonesList, cloneLinksList, numberOfChanges, numberOfAdditions,
-				numberOfDeletions);
+		return new CloneGenealogyInfo(id, startCombinedRevision,
+				endCombinedRevision, clonesList, cloneLinksList,
+				numberOfChanges, numberOfAdditions, numberOfDeletions);
 	}
 
 	public Map<Long, CloneGenealogyInfo> concretizeAll(
 			final Collection<DBCloneGenealogyInfo> dbGenealogies,
-			final Map<Long, RevisionInfo> revisions,
+			final Map<Long, CombinedRevisionInfo> combinedRevisions,
 			final Map<Long, CloneSetInfo> clones,
 			final Map<Long, CloneSetLinkInfo> cloneLinks) {
 		final Map<Long, CloneGenealogyInfo> result = new TreeMap<Long, CloneGenealogyInfo>();
 
 		for (final DBCloneGenealogyInfo dbGenealogy : dbGenealogies) {
 			final CloneGenealogyInfo genealogy = concretize(dbGenealogy,
-					revisions, clones, cloneLinks);
+					combinedRevisions, clones, cloneLinks);
 			result.put(genealogy.getId(), genealogy);
 		}
 
@@ -83,10 +83,10 @@ public class CloneGenealogyInfoConcretizer {
 
 	public Map<Long, CloneGenealogyInfo> concretizeAll(
 			final Map<Long, DBCloneGenealogyInfo> dbGenealogies,
-			final Map<Long, RevisionInfo> revisions,
+			final Map<Long, CombinedRevisionInfo> combinedRevisions,
 			final Map<Long, CloneSetInfo> clones,
 			final Map<Long, CloneSetLinkInfo> cloneLinks) {
-		return concretizeAll(dbGenealogies.values(), revisions, clones,
+		return concretizeAll(dbGenealogies.values(), combinedRevisions, clones,
 				cloneLinks);
 	}
 

@@ -12,13 +12,13 @@ import org.junit.Test;
 public class DBMakerTest {
 
 	private static DBConnectionManager manager;
-	
+
 	private static DBMaker maker;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		manager = new DBConnectionManager("test-resources" + File.separator
-				+ "db" + File.separator + "test.db", 10000);
+		manager = new DBConnectionManager(new SQLiteDBConfig("test-resources"
+				+ File.separator + "db" + File.separator + "test.db"), 10000);
 		maker = new DBMaker(manager);
 	}
 

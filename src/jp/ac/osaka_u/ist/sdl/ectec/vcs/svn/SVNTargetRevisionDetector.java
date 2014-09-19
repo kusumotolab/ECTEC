@@ -4,7 +4,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.SortedMap;
+import java.util.Set;
+import java.util.TreeSet;
 
 import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
@@ -43,7 +44,8 @@ public class SVNTargetRevisionDetector extends
 
 	@Override
 	protected Map<String, Date> detectRevisionsAfterTargetCommits(
-			final Language language) throws Exception {
+			final Language language, final Set<String> ignoredList)
+			throws Exception {
 		final SVNRepository repository = manager.getRepository();
 
 		final long latestRevisionNum = repository.getLatestRevision();
@@ -83,8 +85,21 @@ public class SVNTargetRevisionDetector extends
 			}
 		};
 
+		final Set<Long> ignoredRevisionNums = new TreeSet<Long>();
+		for (final String ignoredRevision : ignoredList) {
+			ignoredRevisionNums.add(Long.parseLong(ignoredRevision));
+		}
+
 		for (long currentRevisionNum = 1; currentRevisionNum <= latestRevisionNum; currentRevisionNum++) {
 			try {
+				if (ignoredRevisionNums.contains(currentRevisionNum)) {
+					logger.debug("\t["
+							+ manager.getRepositoryName()
+							+ "] revision "
+							+ currentRevisionNum
+							+ " was ignored because it is included in the ignored list");
+					continue;
+				}
 				repository.log(null, currentRevisionNum, currentRevisionNum,
 						true, false, handler);
 			} catch (Exception e) {

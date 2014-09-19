@@ -52,6 +52,11 @@ public class CombinerMain {
 
 		} catch (Exception e) {
 			eLogger.fatal("operations failed.\n" + e.toString());
+			
+			if (dbManager != null) {
+				dbManager.rollback();
+			}
+			postprocess();
 		}
 	}
 
@@ -77,7 +82,7 @@ public class CombinerMain {
 	 */
 	private static void preprocess(final CombinerMainSettings settings)
 			throws Exception {
-		dbManager = new DBConnectionManager(settings.getDbPath(),
+		dbManager = new DBConnectionManager(settings.getDBConfig(),
 				settings.getMaxBatchCount());
 		logger.info("connected to the database");
 

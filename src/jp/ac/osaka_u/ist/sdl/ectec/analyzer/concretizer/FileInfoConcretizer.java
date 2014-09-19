@@ -5,7 +5,9 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CombinedRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.FileInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.RepositoryInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.RevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.ast.ASTCreator;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
@@ -33,15 +35,22 @@ public final class FileInfoConcretizer {
 	}
 
 	public FileInfo concretize(final DBFileInfo dbFile,
-			final Map<Long, RevisionInfo> revisions) {
+			final Map<Long, RepositoryInfo> repositories,
+			final Map<Long, CombinedRevisionInfo> combinedRevisions) {
 		try {
 			final long id = dbFile.getId();
-			final RevisionInfo startRevision = revisions.get(dbFile
-					.getStartCombinedRevisionId());
-			final RevisionInfo endRevision = revisions.get(dbFile
-					.getCombinedEndRevisionId());
+			final RepositoryInfo ownerRepository = repositories.get(dbFile
+					.getOwnerRepositoryId());
+			final CombinedRevisionInfo startCombinedRevision = combinedRevisions
+					.get(dbFile.getStartCombinedRevisionId());
+			final CombinedRevisionInfo endCombinedRevision = combinedRevisions
+					.get(dbFile.getEndCombinedRevisionId());
+			final RevisionInfo startOriginalRevision = startCombinedRevision
+					.getOriginalRevision(ownerRepository);
 
-			if (startRevision == null || endRevision == null) {
+			if (ownerRepository == null || startCombinedRevision == null
+					|| endCombinedRevision == null
+					|| startOriginalRevision == null) {
 				return null;
 			}
 
@@ -49,12 +58,12 @@ public final class FileInfoConcretizer {
 					.getRepositoryManager(dbFile.getOwnerRepositoryId());
 
 			final String src = repositoryManager.getFileContents(
-					startRevision.getIdentifier(), dbFile.getPath());
+					startOriginalRevision.getIdentifier(), dbFile.getPath());
 
 			final CompilationUnit root = ASTCreator.createAST(src);
 
-			return new FileInfo(id, dbFile.getPath(), startRevision,
-					endRevision, root);
+			return new FileInfo(id, dbFile.getPath(), ownerRepository,
+					startCombinedRevision, endCombinedRevision, root);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -64,11 +73,13 @@ public final class FileInfoConcretizer {
 
 	public final Map<Long, FileInfo> concretizeAll(
 			final Collection<DBFileInfo> dbFiles,
-			final Map<Long, RevisionInfo> revisions) {
+			final Map<Long, RepositoryInfo> repositories,
+			final Map<Long, CombinedRevisionInfo> combinedRevisions) {
 		final Map<Long, FileInfo> result = new TreeMap<Long, FileInfo>();
 
 		for (final DBFileInfo dbFile : dbFiles) {
-			final FileInfo file = concretize(dbFile, revisions);
+			final FileInfo file = concretize(dbFile, repositories,
+					combinedRevisions);
 			if (file != null) {
 				result.put(file.getId(), file);
 			}
@@ -79,8 +90,9 @@ public final class FileInfoConcretizer {
 
 	public final Map<Long, FileInfo> concretizeAll(
 			final Map<Long, DBFileInfo> dbFiles,
-			final Map<Long, RevisionInfo> revisions) {
-		return concretizeAll(dbFiles.values(), revisions);
+			final Map<Long, RepositoryInfo> repositories,
+			final Map<Long, CombinedRevisionInfo> combinedRevisions) {
+		return concretizeAll(dbFiles.values(), repositories, combinedRevisions);
 	}
 
 }

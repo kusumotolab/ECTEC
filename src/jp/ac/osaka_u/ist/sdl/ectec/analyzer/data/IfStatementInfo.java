@@ -13,10 +13,11 @@ import org.eclipse.jdt.core.dom.IfStatement;
 public class IfStatementInfo extends BlockInfo<IfStatement> {
 
 	public IfStatementInfo(long id, FileInfo ownerFile, CRD crd,
-			RevisionInfo startRevision, RevisionInfo endRevision,
-			int startLine, int endLine, int size, IfStatement node) {
-		super(id, ownerFile, crd, startRevision, endRevision, startLine,
-				endLine, size, BlockType.IF, node);
+			CombinedRevisionInfo startCombinedRevision,
+			CombinedRevisionInfo endCombinedRevision, int startLine,
+			int endLine, int size, IfStatement node) {
+		super(id, ownerFile, crd, startCombinedRevision, endCombinedRevision,
+				startLine, endLine, size, BlockType.IF, node);
 	}
 
 }

@@ -1,98 +1,105 @@
 \relax 
 \@writefile{toc}{\contentsline {section}{\numberline {1}まえがき}{3}}
 \newlabel{sec:overview}{{1}{3}}
-\@writefile{toc}{\contentsline {section}{\numberline {2}クイックスタート}{3}}
-\newlabel{sec:quick-start}{{2}{3}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}事前分析}{3}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}ライブラリ呼び出し}{4}}
-\@writefile{toc}{\contentsline {section}{\numberline {3}処理}{4}}
-\newlabel{sec:processing}{{3}{4}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}概要}{4}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces 処理の全体像}}{5}}
-\newlabel{fig:processing-overview}{{1}{5}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}STEP1: 事前分析}{5}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.1}STEP1-1: 分析対象コミットの特定}{5}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces 分析対象ソースファイル特定の例}}{6}}
-\newlabel{fig:files-example}{{2}{6}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2}STEP1-2: 分析対象ソースファイルの特定}{6}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.3}STEP1-3: ブロックの特定}{6}}
+\@writefile{toc}{\contentsline {section}{\numberline {2}概要}{3}}
+\newlabel{sec:summary}{{2}{3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}入出力}{3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}制限}{3}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}クイックスタート}{4}}
+\newlabel{sec:quick-start}{{3}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}インストール}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}実行の前に}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}実行手順}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}事前分析}{5}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}ライブラリ呼び出し}{5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces 処理の全体像}}{6}}
+\newlabel{fig:processing-overview}{{1}{6}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}処理}{6}}
+\newlabel{sec:processing}{{4}{6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}概要}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces 分析対象ソースファイル特定の例}}{7}}
+\newlabel{fig:files-example}{{2}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}STEP1: 事前分析}{7}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.1}STEP1-1: 分析対象コミットの特定}{7}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.2}STEP1-2: 分析対象ソースファイルの特定}{7}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces ブロック特定の例}}{8}}
+\newlabel{fig:blocks-example}{{3}{8}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.3}STEP1-3: ブロックの特定}{8}}
 \citation{dualaekoko2010tosem}
 \citation{higo2013iwpse}
 \citation{higo2013iwpse}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces ブロック特定の例}}{7}}
-\newlabel{fig:blocks-example}{{3}{7}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces ブロックリンク特定の例}}{7}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {ブロック間の類似度}}}{7}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {Single}}}{7}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {Multiple}}}{7}}
-\newlabel{fig:block-links}{{4}{7}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.4}STEP1-4: ブロックリンクの特定}{7}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces ソースコードの正規化}}{8}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {元のソースコード}}}{8}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {完全一致(正規化なし)}}}{8}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {変数名，リテラルの正規化}}}{8}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces {サブブロックの正規化}}}{8}}
-\newlabel{fig:normalization}{{5}{8}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.5}STEP1-5: コードクローンの特定}{8}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.6}STEP1-6: コードクローンリンクの特定}{9}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.7}STEP1-7: コードクローンの系譜の特定}{9}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}STEP2: ライブラリ呼び出し}{9}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}データ構造}{9}}
-\newlabel{sec:data-structure}{{4}{9}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}データベース}{9}}
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces REVISIONテーブルのスキーマ}}{10}}
-\newlabel{table:revision}{{1}{10}}
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces VCS\_COMMITテーブルのスキーマ}}{10}}
-\newlabel{table:vcs_commit}{{2}{10}}
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces FILEテーブルのスキーマ}}{10}}
-\newlabel{table:file}{{3}{10}}
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces CODE\_FRAGMENTテーブルのスキーマ}}{10}}
-\newlabel{table:code_fragment}{{4}{10}}
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces CLONE\_SETテーブルのスキーマ}}{10}}
-\newlabel{table:clone_set}{{5}{10}}
-\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces CODE\_FRAGMENT\_LINKテーブルのスキーマ}}{10}}
-\newlabel{table:code_fragment_link}{{6}{10}}
-\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces CLONE\_SET\_LINKテーブルのスキーマ}}{11}}
-\newlabel{table:clone_set_link}{{7}{11}}
-\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces CLONE\_GENEALOGYテーブルのスキーマ}}{11}}
-\newlabel{table:clone_genealogy}{{8}{11}}
-\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces CRDテーブルのスキーマ}}{11}}
-\newlabel{table:crd}{{9}{11}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}具体化後}{13}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.1}{\tt  CloneGenealogyInfo}}{14}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.2}{\tt  CloneSetLinkInfo}}{14}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.3}{\tt  CloneSetInfo}}{14}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.4}{\tt  CodeFragmentLinkInfo}}{14}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.5}{\tt  BlockInfo}}{15}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.6}{\tt  FileInfo}}{15}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.7}{\tt  RevisionInfo}}{15}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}使用方法}{15}}
-\newlabel{sec:how-to-use}{{5}{15}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}事前分析}{15}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.1}-r (必須)}{15}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.2}-d (必須)}{16}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.3}-a}{16}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.4}-l}{16}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.5}-th}{16}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.6}-u}{17}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.7}-pw}{17}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.8}-s}{17}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.9}-e}{17}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.10}-v}{18}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.11}-vc}{18}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.12}-ow}{18}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.13}-mb}{18}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.14}-ch}{19}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.15}-cs}{19}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.16}-fl}{19}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.17}-st}{19}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.18}-g}{20}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.19}-cst}{20}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.20}-p}{20}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}ライブラリ呼び出し}{20}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.1}データへのアクセス}{20}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces ブロックリンク特定の例}}{9}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {ブロック間の類似度}}}{9}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {Single}}}{9}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {Multiple}}}{9}}
+\newlabel{fig:block-links}{{4}{9}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.4}STEP1-4: ブロックリンクの特定}{9}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.5}STEP1-5: コードクローンの特定}{9}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces ソースコードの正規化}}{10}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {元のソースコード}}}{10}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {完全一致(正規化なし)}}}{10}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {変数名，リテラルの正規化}}}{10}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces {サブブロックの正規化}}}{10}}
+\newlabel{fig:normalization}{{5}{10}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.6}STEP1-6: コードクローンリンクの特定}{10}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.7}STEP1-7: コードクローンの系譜の特定}{10}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}STEP2: ライブラリ呼び出し}{11}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}データ構造}{11}}
+\newlabel{sec:data-structure}{{5}{11}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}データベース}{11}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces REVISIONテーブルのスキーマ}}{12}}
+\newlabel{table:revision}{{1}{12}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces VCS\_COMMITテーブルのスキーマ}}{12}}
+\newlabel{table:vcs_commit}{{2}{12}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces FILEテーブルのスキーマ}}{12}}
+\newlabel{table:file}{{3}{12}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces CODE\_FRAGMENTテーブルのスキーマ}}{12}}
+\newlabel{table:code_fragment}{{4}{12}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces CLONE\_SETテーブルのスキーマ}}{12}}
+\newlabel{table:clone_set}{{5}{12}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces CODE\_FRAGMENT\_LINKテーブルのスキーマ}}{12}}
+\newlabel{table:code_fragment_link}{{6}{12}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces CLONE\_SET\_LINKテーブルのスキーマ}}{13}}
+\newlabel{table:clone_set_link}{{7}{13}}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces CLONE\_GENEALOGYテーブルのスキーマ}}{13}}
+\newlabel{table:clone_genealogy}{{8}{13}}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces CRDテーブルのスキーマ}}{13}}
+\newlabel{table:crd}{{9}{13}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}具体化後}{15}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.1}{\tt  CloneGenealogyInfo}}{15}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.2}{\tt  CloneSetLinkInfo}}{16}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.3}{\tt  CloneSetInfo}}{16}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.4}{\tt  CodeFragmentLinkInfo}}{16}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.5}{\tt  BlockInfo}}{16}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.6}{\tt  FileInfo}}{16}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.7}{\tt  RevisionInfo}}{17}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}使用方法}{17}}
+\newlabel{sec:how-to-use}{{6}{17}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}事前分析}{17}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.1}-r (必須)}{17}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.2}-d (必須)}{17}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.3}-a}{17}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.4}-l}{18}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.5}-th}{18}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.6}-u}{18}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.7}-pw}{18}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.8}-s}{18}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.9}-e}{19}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.10}-v}{19}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.11}-vc}{19}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.12}-ow}{19}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.13}-mb}{20}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.14}-ch}{20}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.15}-cs}{20}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.16}-fl}{20}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.17}-st}{21}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.18}-g}{21}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.19}-cst}{21}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.20}-p}{21}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}ライブラリ呼び出し}{21}}
 \bibstyle{unsrt}
 \bibdata{literature}
 \bibcite{dualaekoko2010tosem}{1}
 \bibcite{higo2013iwpse}{2}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.2}制約記述}{21}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.2.1}データへのアクセス}{22}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.2.2}制約記述}{22}}

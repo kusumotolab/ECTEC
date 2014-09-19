@@ -14,6 +14,16 @@ import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 public abstract class AbstractRepositoryManager {
 
 	/**
+	 * the root url of the repository
+	 */
+	protected final String rootUrl;
+
+	/**
+	 * the additional url
+	 */
+	protected final String additionalUrl;
+
+	/**
 	 * the user name which is used to access the repository
 	 */
 	protected final String userName;
@@ -33,13 +43,24 @@ public abstract class AbstractRepositoryManager {
 	 */
 	protected final long repositoryId;
 
-	public AbstractRepositoryManager(final String userName,
+	public AbstractRepositoryManager(final String rootUrl,
+			final String additionalUrl, final String userName,
 			final String passwd, final String repositoryName,
 			final long repositoryId) {
+		this.rootUrl = rootUrl;
+		this.additionalUrl = additionalUrl;
 		this.userName = userName;
 		this.passwd = passwd;
 		this.repositoryName = repositoryName;
 		this.repositoryId = repositoryId;
+	}
+
+	public final String getRootUrl() {
+		return rootUrl;
+	}
+
+	public final String getAdditionalUrl() {
+		return additionalUrl;
 	}
 
 	public final String getUserName() {

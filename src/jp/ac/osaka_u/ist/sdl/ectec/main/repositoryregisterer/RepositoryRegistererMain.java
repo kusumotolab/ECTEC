@@ -51,6 +51,11 @@ public class RepositoryRegistererMain {
 
 		} catch (Exception e) {
 			eLogger.fatal("operations failed.\n" + e.toString());
+			
+			if (dbManager != null) {
+				dbManager.rollback();
+			}
+			postprocess();
 		}
 	}
 
@@ -76,7 +81,7 @@ public class RepositoryRegistererMain {
 	 */
 	private static void preprocess(
 			final RepositoryRegistererMainSettings settings) throws Exception {
-		dbManager = new DBConnectionManager(settings.getDbPath(),
+		dbManager = new DBConnectionManager(settings.getDBConfig(),
 				settings.getMaxBatchCount());
 		logger.info("connected to the database");
 

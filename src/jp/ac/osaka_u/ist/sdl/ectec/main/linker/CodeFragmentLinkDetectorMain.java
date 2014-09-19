@@ -1,7 +1,14 @@
 package jp.ac.osaka_u.ist.sdl.ectec.main.linker;
 
+import java.util.Map;
+
 import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
 import jp.ac.osaka_u.ist.sdl.ectec.db.DBConnectionManager;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRepositoryInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.main.IllegalStateException;
+import jp.ac.osaka_u.ist.sdl.ectec.main.linker.similarity.ContentBasedCRDSimilarityCalculator;
+import jp.ac.osaka_u.ist.sdl.ectec.settings.CRDSimilarityCalculateMode;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.RepositoryManagerManager;
 
 import org.apache.log4j.Logger;
 
@@ -45,6 +52,11 @@ public class CodeFragmentLinkDetectorMain {
 		} catch (Exception e) {
 			eLogger.fatal("operations failed.\n" + e.toString());
 			e.printStackTrace();
+			
+			if (dbManager != null) {
+				dbManager.rollback();
+			}
+			postprocess();
 		}
 	}
 
@@ -71,12 +83,54 @@ public class CodeFragmentLinkDetectorMain {
 			final CodeFragmentLinkDetectorMainSettings settings)
 			throws Exception {
 		// make a connection between the db file
-		dbManager = new DBConnectionManager(settings.getDbPath(),
+		dbManager = new DBConnectionManager(settings.getDBConfig(),
 				settings.getMaxBatchCount());
 		logger.info("connected to the db");
 
 		dbManager.initializeElementCounters(settings.getHeaderOfId());
 		logger.info("initialized counters of elements");
+
+		if (settings.getCrdSimilarityMode() == CRDSimilarityCalculateMode.CONTENT_LEVENSHTEIN) {
+			// initialize the manager of repository managers
+			final RepositoryManagerManager repositoryManagerManager = new RepositoryManagerManager();
+			logger.info("initialized the manager of repository managers");
+
+			// retrieving all the repositories registered in the db
+			logger.info("retrieving repositories ...");
+			final Map<Long, DBRepositoryInfo> registeredRepositories = dbManager
+					.getRepositoryRetriever().retrieveAll();
+			if (registeredRepositories.isEmpty()) {
+				throw new IllegalStateException(
+						"cannot retrieve any repositories from db");
+			}
+
+			logger.info(registeredRepositories.size()
+					+ " repositories were retrieved.");
+
+			for (final Map.Entry<Long, DBRepositoryInfo> entry : registeredRepositories
+					.entrySet()) {
+				final DBRepositoryInfo repository = entry.getValue();
+				logger.debug("repository " + entry.getKey() + ": "
+						+ repository.getName() + " - "
+						+ repository.getRootUrl()
+						+ repository.getAdditionalUrl());
+
+				try {
+					repositoryManagerManager.addRepositoryManager(repository);
+				} catch (Exception e) {
+					eLogger.warn(e.toString());
+				}
+			}
+
+			logger.info("repository managers were initialized");
+
+			ContentBasedCRDSimilarityCalculator calculator = (ContentBasedCRDSimilarityCalculator) settings
+					.getCrdSimilarityMode().getCalculator();
+			calculator.setup(repositoryManagerManager,
+					dbManager.getFileRetriever(),
+					dbManager.getRevisionRetriever(),
+					dbManager.getCombinedRevisionRetriever());
+		}
 	}
 
 	/**

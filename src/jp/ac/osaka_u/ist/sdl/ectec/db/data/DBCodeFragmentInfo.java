@@ -68,6 +68,16 @@ public class DBCodeFragmentInfo extends AbstractDBElement implements
 	private final int size;
 
 	/**
+	 * whether the owner file of this fragment was added at the start
+	 */
+	private final boolean fileAddedAtStart;
+
+	/**
+	 * whether the owner file of this fragment was deleted at the end
+	 */
+	private final boolean fileDeletedAtEnd;
+
+	/**
 	 * the constructor for elements that are retrieved from the db
 	 * 
 	 * @param id
@@ -81,13 +91,16 @@ public class DBCodeFragmentInfo extends AbstractDBElement implements
 	 * @param startLine
 	 * @param endLine
 	 * @param size
+	 * @param fileAddedAtStart
+	 * @param fileDeletedAtEnd
 	 */
 	public DBCodeFragmentInfo(final long id, final long ownerFileId,
 			final long ownerRepositoryId, final long crdId,
 			final long startCombinedRevisionId,
 			final long endCombinedRevisionId, final long hash,
 			final long hashForClone, final int startLine, final int endLine,
-			final int size) {
+			final int size, final boolean fileAddedAtStart,
+			final boolean fileDeletedAtEnd) {
 		super(id);
 		this.ownerFileId = ownerFileId;
 		this.ownerRepositoryId = ownerRepositoryId;
@@ -99,6 +112,8 @@ public class DBCodeFragmentInfo extends AbstractDBElement implements
 		this.startLine = startLine;
 		this.endLine = endLine;
 		this.size = size;
+		this.fileAddedAtStart = fileAddedAtStart;
+		this.fileDeletedAtEnd = fileDeletedAtEnd;
 	}
 
 	/**
@@ -114,16 +129,20 @@ public class DBCodeFragmentInfo extends AbstractDBElement implements
 	 * @param startLine
 	 * @param endLine
 	 * @param size
+	 * @param fileAddedAtStart
+	 * @param fileDeletedAtEnd
 	 */
 	public DBCodeFragmentInfo(final long ownerFileId,
 			final long ownerRepositoryId, final long crdId,
 			final long startCombinedRevisionId,
 			final long endCombinedRevisionId, final long hash,
 			final long hashForClone, final int startLine, final int endLine,
-			final int size) {
+			final int size, final boolean fileAddedAtStart,
+			final boolean fileDeletedAtEnd) {
 		this(count.getAndIncrement(), ownerFileId, ownerRepositoryId, crdId,
 				startCombinedRevisionId, endCombinedRevisionId, hash,
-				hashForClone, startLine, endLine, size);
+				hashForClone, startLine, endLine, size, fileAddedAtStart,
+				fileDeletedAtEnd);
 	}
 
 	/**
@@ -223,6 +242,24 @@ public class DBCodeFragmentInfo extends AbstractDBElement implements
 	 */
 	public final int getSize() {
 		return this.size;
+	}
+
+	/**
+	 * get whether the owner file of this fragment was added at the start
+	 * 
+	 * @return
+	 */
+	public final boolean isFileAddedAtStart() {
+		return this.fileAddedAtStart;
+	}
+
+	/**
+	 * get whether the owner file of this fragment was deleted at the end
+	 * 
+	 * @return
+	 */
+	public final boolean isFileDeletedAtEnd() {
+		return this.fileDeletedAtEnd;
 	}
 
 	@Override

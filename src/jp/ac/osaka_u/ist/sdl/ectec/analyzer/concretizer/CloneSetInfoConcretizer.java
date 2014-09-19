@@ -9,7 +9,7 @@ import java.util.TreeMap;
 
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CloneSetInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CodeFragmentInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.RevisionInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CombinedRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
 
 /**
@@ -21,10 +21,11 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetInfo;
 public class CloneSetInfoConcretizer {
 
 	public CloneSetInfo concretize(final DBCloneSetInfo dbClone,
-			final Map<Long, RevisionInfo> revisions,
+			final Map<Long, CombinedRevisionInfo> combinedRevisions,
 			final Map<Long, CodeFragmentInfo> fragments) {
 		final long id = dbClone.getId();
-		final RevisionInfo revision = revisions.get(dbClone.getCombinedRevisionId());
+		final CombinedRevisionInfo combinedRevision = combinedRevisions
+				.get(dbClone.getCombinedRevisionId());
 
 		final List<CodeFragmentInfo> fragmentsList = new ArrayList<CodeFragmentInfo>();
 		final List<Long> fragmentIds = dbClone.getElements();
@@ -32,17 +33,18 @@ public class CloneSetInfoConcretizer {
 			fragmentsList.add(fragments.get(fragmentId));
 		}
 
-		return new CloneSetInfo(id, revision, fragmentsList);
+		return new CloneSetInfo(id, combinedRevision, fragmentsList);
 	}
 
 	public Map<Long, CloneSetInfo> concretizeAll(
 			final Collection<DBCloneSetInfo> dbClones,
-			final Map<Long, RevisionInfo> revisions,
+			final Map<Long, CombinedRevisionInfo> combinedRevisions,
 			final Map<Long, CodeFragmentInfo> fragments) {
 		final Map<Long, CloneSetInfo> result = new TreeMap<Long, CloneSetInfo>();
 
 		for (final DBCloneSetInfo dbClone : dbClones) {
-			final CloneSetInfo clone = concretize(dbClone, revisions, fragments);
+			final CloneSetInfo clone = concretize(dbClone, combinedRevisions,
+					fragments);
 			result.put(clone.getId(), clone);
 		}
 
@@ -51,9 +53,9 @@ public class CloneSetInfoConcretizer {
 
 	public Map<Long, CloneSetInfo> concretizeAll(
 			final Map<Long, DBCloneSetInfo> dbClones,
-			final Map<Long, RevisionInfo> revisions,
+			final Map<Long, CombinedRevisionInfo> combinedRevisions,
 			final Map<Long, CodeFragmentInfo> fragments) {
-		return concretizeAll(dbClones.values(), revisions, fragments);
+		return concretizeAll(dbClones.values(), combinedRevisions, fragments);
 	}
 
 }

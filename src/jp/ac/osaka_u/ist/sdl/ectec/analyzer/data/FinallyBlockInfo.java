@@ -13,10 +13,11 @@ import org.eclipse.jdt.core.dom.Block;
 public class FinallyBlockInfo extends BlockInfo<Block> {
 
 	public FinallyBlockInfo(long id, FileInfo ownerFile, CRD crd,
-			RevisionInfo startRevision, RevisionInfo endRevision,
-			int startLine, int endLine, int size, Block node) {
-		super(id, ownerFile, crd, startRevision, endRevision, startLine,
-				endLine, size, BlockType.FINALLY, node);
+			CombinedRevisionInfo startCombinedRevision,
+			CombinedRevisionInfo endCombinedRevision, int startLine,
+			int endLine, int size, Block node) {
+		super(id, ownerFile, crd, startCombinedRevision, endCombinedRevision,
+				startLine, endLine, size, BlockType.FINALLY, node);
 	}
 
 }

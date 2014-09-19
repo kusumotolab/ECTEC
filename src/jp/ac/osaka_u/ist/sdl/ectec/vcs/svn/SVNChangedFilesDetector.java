@@ -37,17 +37,18 @@ public class SVNChangedFilesDetector implements IChangedFilesDetector {
 	@Override
 	public Map<String, Character> detectChangedFiles(final DBCommitInfo commit,
 			final Language language) throws Exception {
-		final long revision = Long.parseLong(commit
+		final long afterRevision = Long.parseLong(commit
 				.getAfterRevisionIdentifier());
 
 		// a special treat for the initial commit
 		if (commit.getBeforeRevisionId() == -1) {
+			final List<String> allFilesInAfterRev = manager
+					.getListOfSourceFiles(afterRevision, language);
+
 			final Map<String, Character> result = new HashMap<String, Character>();
-			final List<String> allFiles = manager.getListOfSourceFiles(
-					revision, language);
-			for (final String file : allFiles) {
+
+			for (final String file : allFilesInAfterRev) {
 				result.put(file, 'A');
-				System.out.println(file);
 			}
 			return Collections.unmodifiableMap(result);
 		}
@@ -58,7 +59,7 @@ public class SVNChangedFilesDetector implements IChangedFilesDetector {
 
 		final SVNRepository repository = manager.getRepository();
 
-		repository.log(null, revision, revision, true, false,
+		repository.log(null, afterRevision, afterRevision, true, false,
 				new ISVNLogEntryHandler() {
 					public void handleLogEntry(SVNLogEntry logEntry)
 							throws SVNException {
@@ -66,17 +67,32 @@ public class SVNChangedFilesDetector implements IChangedFilesDetector {
 						for (final Map.Entry<String, SVNLogEntryPath> entry : logEntry
 								.getChangedPaths().entrySet()) {
 
+							final String targetStr;
+							if (manager.getAdditionalUrl() != null) {
+								targetStr = entry.getKey().substring(
+										manager.getAdditionalUrl().length() + 1);
+							} else {
+								targetStr = entry.getKey().substring(1);
+							}
+							// for (final String sourceFilePath :
+							// allFilesInAfterRev) {
+							// if (targetStr.endsWith(sourceFilePath)) {
+							// targetStr = sourceFilePath;
+							// break;
+							// }
+							// }
+
 							// in the case that source files are updated
 							if (language.isTarget(entry.getKey())) {
-								result.put(entry.getKey().substring(1), entry
-										.getValue().getType());
+								result.put(targetStr, entry.getValue()
+										.getType());
 								continue;
 							}
 
 							// in the case that directories are deleted
 							else if (('D' == entry.getValue().getType())
 									|| ('R' == entry.getValue().getType())) {
-								deleted.add(entry.getKey().substring(1));
+								deleted.add(targetStr);
 								continue;
 							}
 						}
@@ -85,12 +101,24 @@ public class SVNChangedFilesDetector implements IChangedFilesDetector {
 
 		if (!deleted.isEmpty()) {
 			final List<String> sourceFilesInDeletedDir = manager
-					.getListOfSourceFiles(commit.getBeforeRevisionIdentifier(),
-							language, deleted);
+					.getListOfSourceFiles(Long.parseLong(commit
+							.getBeforeRevisionIdentifier()), language, deleted);
 
 			for (final String deletedFile : sourceFilesInDeletedDir) {
 				result.put(deletedFile, 'D');
 			}
+
+			// for (final String deletedDir : deleted) {
+			// for (final String deletedFile : sourceFilesInBeforeRev) {
+			// final String dirName = deletedFile.substring(0,
+			// deletedFile.lastIndexOf("/"));
+			// if (deletedDir.endsWith(dirName)) {
+			// result.put(deletedFile, 'D');
+			// break;
+			// }
+			// }
+			// }
+
 		}
 
 		return Collections.unmodifiableMap(result);

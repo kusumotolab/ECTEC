@@ -1,4 +1,4 @@
-This is e-pTeX, Version 3.1415926-p3.3-110825-2.5 (sjis) (TeX Live 2012/W32TeX) (format=platex 2013.1.4)  27 OCT 2013 04:25
+This is e-pTeX, Version 3.1415926-p3.3-110825-2.5 (sjis) (TeX Live 2012/W32TeX) (format=platex 2013.1.4)  29 MAY 2014 18:13
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -101,53 +101,56 @@ Package: subfigure 2002/03/15 v2.1.5 subfigure package
 \subfig@top=\skip56
 \subfig@bottom=\skip57
 )
-(./reference.aux)
+(c:/w32tex/share/texmf/tex/latex/url/url.sty
+\Urlmuskip=\muskip10
+Package: url 2006/04/12  ver 3.3  Verb mode for urls, etc.
+) (./reference.aux)
 \openout1 = `reference.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for JY1/mc/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for JT1/mc/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
- (I search kanjifont definition file: . . )
-(I search font definition file: . . . . . . . )
-LaTeX Font Info:    Try loading font information for OT1+ptm on input line 27.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for JY1/mc/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for JT1/mc/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
 
-(c:/w32tex/share/texmf/tex/latex/psnfss/ot1ptm.fd
+(I search kanjifont definition file: . . ) (I search font definition file: . .
+. . . . . )
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 28.
+ (c:/w32tex/share/texmf/tex/latex/psnfss/ot1ptm.fd
 File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
 )
 LaTeX Font Info:    Font shape `JT1/mc/bx/n' in size <17.28> not available
-(Font)              Font shape `JT1/gt/m/n' tried instead on input line 31.
+(Font)              Font shape `JT1/gt/m/n' tried instead on input line 32.
 LaTeX Font Info:    Font shape `JY1/mc/bx/n' in size <17.28> not available
-(Font)              Font shape `JY1/gt/m/n' tried instead on input line 31.
+(Font)              Font shape `JY1/gt/m/n' tried instead on input line 32.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <17.28> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 31.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 32.
 
 
 Package Fancyhdr Warning: \fancyhead's `E' option without twoside option is use
-less on input line 46.
+less on input line 47.
 
 
 Package Fancyhdr Warning: \fancyfoot's `E' option without twoside option is use
-less on input line 47.
+less on input line 48.
 
 LaTeX Font Info:    Font shape `JT1/mc/bx/n' in size <14.4> not available
-(Font)              Font shape `JT1/gt/m/n' tried instead on input line 49.
+(Font)              Font shape `JT1/gt/m/n' tried instead on input line 50.
 LaTeX Font Info:    Font shape `JY1/mc/bx/n' in size <14.4> not available
-(Font)              Font shape `JY1/gt/m/n' tried instead on input line 49.
+(Font)              Font shape `JY1/gt/m/n' tried instead on input line 50.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 49.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 50.
 (./reference.toc
 LaTeX Font Info:    Font shape `JT1/mc/bx/n' in size <10> not available
 (Font)              Font shape `JT1/gt/m/n' tried instead on input line 1.
@@ -161,7 +164,7 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <5> on input line 3.
  (I search kanjifont definition file: . . )
 (I search font definition file: . . . . . . . )
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 19.
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 25.
 
 (c:/w32tex/share/texmf/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
@@ -172,16 +175,23 @@ File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 \openout3 = `reference.toc'.
 
  [2]
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 82.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 82.
 LaTeX Font Info:    Font shape `JT1/mc/bx/n' in size <12> not available
-(Font)              Font shape `JT1/gt/m/n' tried instead on input line 88.
+(Font)              Font shape `JT1/gt/m/n' tried instead on input line 77.
 LaTeX Font Info:    Font shape `JY1/mc/bx/n' in size <12> not available
-(Font)              Font shape `JY1/gt/m/n' tried instead on input line 88.
+(Font)              Font shape `JY1/gt/m/n' tried instead on input line 77.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 88.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 77.
+
+(I search kanjifont definition file: . . ) (I search font definition file: . .
+. . . . . )
+LaTeX Font Info:    Try loading font information for OT1+phv on input line 84.
+ (c:/w32tex/share/texmf/tex/latex/psnfss/ot1phv.fd
+File: ot1phv.fd 2001/06/04 scalable font definitions for OT1/phv.
+)
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 87.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 87.
 
 
 Package Fancyhdr Warning: \headheight is too small (12.0pt): 
@@ -189,35 +199,35 @@ Package Fancyhdr Warning: \headheight is too small (12.0pt):
  We now make it that large for the rest of the document.
  This may cause the page layout to be inconsistent, however.
 
-[3]
-Overfull \hbox (22.31018pt too wide) in paragraph at lines 167--170
+[3] [4]
+Overfull \hbox (22.31018pt too wide) in paragraph at lines 286--289
 []$                    $\OT1/pcr/m/n/10 file:///G:/ECTEC/sample-repository, Ver
 sionControlSystem.SVN); 
  []
 
+[5]
 File: ./figure/overview.pdf Graphic file (type pdf)
-<./figure/overview.pdf> [4]
+ <./figure/overview.pdf> [6]
 File: ./figure/files-example.pdf Graphic file (type pdf)
- <./figure/files-example.pdf> [5]
-LaTeX Font Info:    Try loading font information for OMS+ptm on input line 292.
+ <./figure/files-example.pdf> [7]
+LaTeX Font Info:    Try loading font information for OMS+ptm on input line 411.
 
 
 (c:/w32tex/share/texmf/tex/latex/psnfss/omsptm.fd
 File: omsptm.fd 
 )
 LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 292.
- [6]
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 411.
 File: ./figure/blocks-example.pdf Graphic file (type pdf)
 
-<./figure/blocks-example.pdf>
+<./figure/blocks-example.pdf> [8]
 File: ./figure/block-links-init.pdf Graphic file (type pdf)
  <./figure/block-links-init.pdf>
 File: ./figure/block-links-single.pdf Graphic file (type pdf)
 
 <./figure/block-links-single.pdf>
 File: ./figure/block-links-multiple.pdf Graphic file (type pdf)
- <./figure/block-links-multiple.pdf> [7]
+ <./figure/block-links-multiple.pdf>
 File: ./figure/normalization-original.pdf Graphic file (type pdf)
 
 <./figure/normalization-original.pdf>
@@ -228,20 +238,20 @@ File: ./figure/normalization-identifier.pdf Graphic file (type pdf)
 <./figure/normalization-identifier.pdf>
 File: ./figure/normalization-subblock.pdf Graphic file (type pdf)
  <./figure/normalization-subblock.pdf>
-[8] [9] [10] [11] [12]
-Overfull \hbox (17.70016pt too wide) in paragraph at lines 721--732
+[9] [10] [11] [12] [13] [14]
+Overfull \hbox (17.70016pt too wide) in paragraph at lines 840--851
  [] 
  []
 
-[13] [14]
-Overfull \hbox (35.2768pt too wide) in paragraph at lines 820--821
-[]\OT1/ptm/m/n/10 2 \JY1/mc/m/n/10 で述べたように ， \OT1/ptm/m/n/10 De-tec-tor
+[15] [16]
+Overfull \hbox (35.2768pt too wide) in paragraph at lines 939--940
+[]\OT1/ptm/m/n/10 3 \JY1/mc/m/n/10 で述べたように ， \OT1/ptm/m/n/10 De-tec-tor
  \JY1/mc/m/n/10 のメインクラスは \OT1/pcr/m/n/10 jp.ac.osaka[]u.ist.sdl.ectec.d
 etector.DetectorMain
  []
 
-[15] [16] [17] [18] [19] [20]
-Overfull \hbox (11.36589pt too wide) in paragraph at lines 1219--1222
+[17] [18] [19] [20] [21]
+Overfull \hbox (11.36589pt too wide) in paragraph at lines 1338--1341
 \JY1/mc/m/n/10 リビジ ョ ンを指定することで ， その期間に存在していた系譜を取得
 することができる ． また ， \OT1/pcr/m/n/10 mustBeComprised
  []
@@ -255,18 +265,18 @@ LaTeX Font Warning: Font shape `JT1/gt/m/it' undefined
 LaTeX Font Warning: Font shape `JY1/gt/m/it' undefined
 (Font)              using `JY1/gt/m/n' instead on input line 7.
 
-) [21] (./reference.aux)
+) [22] (./reference.aux)
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
  ) 
 Here is how much of TeX's memory you used:
- 1136 strings out of 494054
- 13814 string characters out of 6159315
- 84514 words of memory out of 5000000
- 4556 multiletter control sequences out of 15000+600000
- 18717 words of font info for 63 fonts, out of 8000000 for 9000
+ 1271 strings out of 494054
+ 15434 string characters out of 6159315
+ 84009 words of memory out of 5000000
+ 4675 multiletter control sequences out of 15000+600000
+ 19323 words of font info for 64 fonts, out of 8000000 for 9000
  745 hyphenation exceptions out of 8191
- 26i,11n,43p,341b,337s stack positions out of 5000i,500n,10000p,500000b,50000s
+ 26i,11n,43p,341b,333s stack positions out of 5000i,500n,10000p,500000b,50000s
 
-Output written on reference.dvi (21 pages, 86056 bytes).
+Output written on reference.dvi (22 pages, 96900 bytes).

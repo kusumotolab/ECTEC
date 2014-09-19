@@ -21,7 +21,7 @@ public class RepositoryRegisterer extends
 
 	@Override
 	protected String createPreparedStatementQueue() {
-		return "insert into REPOSITORY values (?,?,?,?,?,?)";
+		return "insert into REPOSITORY values (?,?,?,?,?,?,?)";
 	}
 
 	@Override
@@ -30,7 +30,8 @@ public class RepositoryRegisterer extends
 		int column = 0;
 		pstmt.setLong(++column, element.getId());
 		pstmt.setString(++column, element.getName());
-		pstmt.setString(++column, element.getUrl());
+		pstmt.setString(++column, element.getRootUrl());
+		pstmt.setString(++column, element.getAdditionalUrl());
 		pstmt.setString(++column, element.getManagingVcs().getStr());
 		pstmt.setString(++column, element.getUserName());
 		pstmt.setString(++column, element.getPasswd());

@@ -1,50 +1,56 @@
 \contentsline {section}{\numberline {1}まえがき}{3}
-\contentsline {section}{\numberline {2}クイックスタート}{3}
-\contentsline {subsection}{\numberline {2.1}事前分析}{3}
-\contentsline {subsection}{\numberline {2.2}ライブラリ呼び出し}{4}
-\contentsline {section}{\numberline {3}処理}{4}
-\contentsline {subsection}{\numberline {3.1}概要}{4}
-\contentsline {subsection}{\numberline {3.2}STEP1: 事前分析}{5}
-\contentsline {subsubsection}{\numberline {3.2.1}STEP1-1: 分析対象コミットの特定}{5}
-\contentsline {subsubsection}{\numberline {3.2.2}STEP1-2: 分析対象ソースファイルの特定}{6}
-\contentsline {subsubsection}{\numberline {3.2.3}STEP1-3: ブロックの特定}{6}
-\contentsline {subsubsection}{\numberline {3.2.4}STEP1-4: ブロックリンクの特定}{7}
-\contentsline {subsubsection}{\numberline {3.2.5}STEP1-5: コードクローンの特定}{8}
-\contentsline {subsubsection}{\numberline {3.2.6}STEP1-6: コードクローンリンクの特定}{9}
-\contentsline {subsubsection}{\numberline {3.2.7}STEP1-7: コードクローンの系譜の特定}{9}
-\contentsline {subsection}{\numberline {3.3}STEP2: ライブラリ呼び出し}{9}
-\contentsline {section}{\numberline {4}データ構造}{9}
-\contentsline {subsection}{\numberline {4.1}データベース}{9}
-\contentsline {subsection}{\numberline {4.2}具体化後}{13}
-\contentsline {subsubsection}{\numberline {4.2.1}{\tt CloneGenealogyInfo}}{14}
-\contentsline {subsubsection}{\numberline {4.2.2}{\tt CloneSetLinkInfo}}{14}
-\contentsline {subsubsection}{\numberline {4.2.3}{\tt CloneSetInfo}}{14}
-\contentsline {subsubsection}{\numberline {4.2.4}{\tt CodeFragmentLinkInfo}}{14}
-\contentsline {subsubsection}{\numberline {4.2.5}{\tt BlockInfo}}{15}
-\contentsline {subsubsection}{\numberline {4.2.6}{\tt FileInfo}}{15}
-\contentsline {subsubsection}{\numberline {4.2.7}{\tt RevisionInfo}}{15}
-\contentsline {section}{\numberline {5}使用方法}{15}
-\contentsline {subsection}{\numberline {5.1}事前分析}{15}
-\contentsline {subsubsection}{\numberline {5.1.1}-r (必須)}{15}
-\contentsline {subsubsection}{\numberline {5.1.2}-d (必須)}{16}
-\contentsline {subsubsection}{\numberline {5.1.3}-a}{16}
-\contentsline {subsubsection}{\numberline {5.1.4}-l}{16}
-\contentsline {subsubsection}{\numberline {5.1.5}-th}{16}
-\contentsline {subsubsection}{\numberline {5.1.6}-u}{17}
-\contentsline {subsubsection}{\numberline {5.1.7}-pw}{17}
-\contentsline {subsubsection}{\numberline {5.1.8}-s}{17}
-\contentsline {subsubsection}{\numberline {5.1.9}-e}{17}
-\contentsline {subsubsection}{\numberline {5.1.10}-v}{18}
-\contentsline {subsubsection}{\numberline {5.1.11}-vc}{18}
-\contentsline {subsubsection}{\numberline {5.1.12}-ow}{18}
-\contentsline {subsubsection}{\numberline {5.1.13}-mb}{18}
-\contentsline {subsubsection}{\numberline {5.1.14}-ch}{19}
-\contentsline {subsubsection}{\numberline {5.1.15}-cs}{19}
-\contentsline {subsubsection}{\numberline {5.1.16}-fl}{19}
-\contentsline {subsubsection}{\numberline {5.1.17}-st}{19}
-\contentsline {subsubsection}{\numberline {5.1.18}-g}{20}
-\contentsline {subsubsection}{\numberline {5.1.19}-cst}{20}
-\contentsline {subsubsection}{\numberline {5.1.20}-p}{20}
-\contentsline {subsection}{\numberline {5.2}ライブラリ呼び出し}{20}
-\contentsline {subsubsection}{\numberline {5.2.1}データへのアクセス}{20}
-\contentsline {subsubsection}{\numberline {5.2.2}制約記述}{21}
+\contentsline {section}{\numberline {2}概要}{3}
+\contentsline {subsection}{\numberline {2.1}入出力}{3}
+\contentsline {subsection}{\numberline {2.2}制限}{3}
+\contentsline {section}{\numberline {3}クイックスタート}{4}
+\contentsline {subsection}{\numberline {3.1}インストール}{4}
+\contentsline {subsection}{\numberline {3.2}実行の前に}{4}
+\contentsline {subsection}{\numberline {3.3}実行手順}{4}
+\contentsline {subsection}{\numberline {3.4}事前分析}{5}
+\contentsline {subsection}{\numberline {3.5}ライブラリ呼び出し}{5}
+\contentsline {section}{\numberline {4}処理}{6}
+\contentsline {subsection}{\numberline {4.1}概要}{6}
+\contentsline {subsection}{\numberline {4.2}STEP1: 事前分析}{7}
+\contentsline {subsubsection}{\numberline {4.2.1}STEP1-1: 分析対象コミットの特定}{7}
+\contentsline {subsubsection}{\numberline {4.2.2}STEP1-2: 分析対象ソースファイルの特定}{7}
+\contentsline {subsubsection}{\numberline {4.2.3}STEP1-3: ブロックの特定}{8}
+\contentsline {subsubsection}{\numberline {4.2.4}STEP1-4: ブロックリンクの特定}{9}
+\contentsline {subsubsection}{\numberline {4.2.5}STEP1-5: コードクローンの特定}{9}
+\contentsline {subsubsection}{\numberline {4.2.6}STEP1-6: コードクローンリンクの特定}{10}
+\contentsline {subsubsection}{\numberline {4.2.7}STEP1-7: コードクローンの系譜の特定}{10}
+\contentsline {subsection}{\numberline {4.3}STEP2: ライブラリ呼び出し}{11}
+\contentsline {section}{\numberline {5}データ構造}{11}
+\contentsline {subsection}{\numberline {5.1}データベース}{11}
+\contentsline {subsection}{\numberline {5.2}具体化後}{15}
+\contentsline {subsubsection}{\numberline {5.2.1}{\tt CloneGenealogyInfo}}{15}
+\contentsline {subsubsection}{\numberline {5.2.2}{\tt CloneSetLinkInfo}}{16}
+\contentsline {subsubsection}{\numberline {5.2.3}{\tt CloneSetInfo}}{16}
+\contentsline {subsubsection}{\numberline {5.2.4}{\tt CodeFragmentLinkInfo}}{16}
+\contentsline {subsubsection}{\numberline {5.2.5}{\tt BlockInfo}}{16}
+\contentsline {subsubsection}{\numberline {5.2.6}{\tt FileInfo}}{16}
+\contentsline {subsubsection}{\numberline {5.2.7}{\tt RevisionInfo}}{17}
+\contentsline {section}{\numberline {6}使用方法}{17}
+\contentsline {subsection}{\numberline {6.1}事前分析}{17}
+\contentsline {subsubsection}{\numberline {6.1.1}-r (必須)}{17}
+\contentsline {subsubsection}{\numberline {6.1.2}-d (必須)}{17}
+\contentsline {subsubsection}{\numberline {6.1.3}-a}{17}
+\contentsline {subsubsection}{\numberline {6.1.4}-l}{18}
+\contentsline {subsubsection}{\numberline {6.1.5}-th}{18}
+\contentsline {subsubsection}{\numberline {6.1.6}-u}{18}
+\contentsline {subsubsection}{\numberline {6.1.7}-pw}{18}
+\contentsline {subsubsection}{\numberline {6.1.8}-s}{18}
+\contentsline {subsubsection}{\numberline {6.1.9}-e}{19}
+\contentsline {subsubsection}{\numberline {6.1.10}-v}{19}
+\contentsline {subsubsection}{\numberline {6.1.11}-vc}{19}
+\contentsline {subsubsection}{\numberline {6.1.12}-ow}{19}
+\contentsline {subsubsection}{\numberline {6.1.13}-mb}{20}
+\contentsline {subsubsection}{\numberline {6.1.14}-ch}{20}
+\contentsline {subsubsection}{\numberline {6.1.15}-cs}{20}
+\contentsline {subsubsection}{\numberline {6.1.16}-fl}{20}
+\contentsline {subsubsection}{\numberline {6.1.17}-st}{21}
+\contentsline {subsubsection}{\numberline {6.1.18}-g}{21}
+\contentsline {subsubsection}{\numberline {6.1.19}-cst}{21}
+\contentsline {subsubsection}{\numberline {6.1.20}-p}{21}
+\contentsline {subsection}{\numberline {6.2}ライブラリ呼び出し}{21}
+\contentsline {subsubsection}{\numberline {6.2.1}データへのアクセス}{22}
+\contentsline {subsubsection}{\numberline {6.2.2}制約記述}{22}

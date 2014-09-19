@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import jp.ac.osaka_u.ist.sdl.ectec.AbstractSettings;
 import jp.ac.osaka_u.ist.sdl.ectec.PropertiesReader;
-import jp.ac.osaka_u.ist.sdl.ectec.main.AbstractSettings;
 import jp.ac.osaka_u.ist.sdl.ectec.settings.IDStringReader;
 
 import org.apache.commons.cli.CommandLine;

@@ -112,13 +112,16 @@ public class FileInfoInstancesCreatingThread implements Runnable {
 				final long previousCombinedRevisionId = nextChangeCombinedCommit
 						.getBeforeCombinedRevisionId();
 
+				final boolean deletedByNextChange = (nextChange.getChangeType() == ChangeTypeOnFile.DELETE);
+
 				switch (currentChange.getChangeType()) {
 				case ADD:
 					final DBFileInfo addedFile = new DBFileInfo(
 							currentChange.getRepositoryId(), path,
 							currentChangeCombinedCommit
 									.getAfterCombinedRevisionId(),
-							previousCombinedRevisionId);
+							previousCombinedRevisionId, true,
+							deletedByNextChange);
 					files.put(addedFile.getId(), addedFile);
 					break;
 
@@ -127,7 +130,8 @@ public class FileInfoInstancesCreatingThread implements Runnable {
 							currentChange.getRepositoryId(), path,
 							currentChangeCombinedCommit
 									.getAfterCombinedRevisionId(),
-							previousCombinedRevisionId);
+							previousCombinedRevisionId, false,
+							deletedByNextChange);
 					files.put(changedFile.getId(), changedFile);
 					break;
 
@@ -148,7 +152,8 @@ public class FileInfoInstancesCreatingThread implements Runnable {
 				final DBFileInfo addedFile = new DBFileInfo(
 						currentChange.getRepositoryId(), path,
 						currentChangeCombinedCommit
-								.getAfterCombinedRevisionId(), lastRevisionId);
+								.getAfterCombinedRevisionId(), lastRevisionId,
+						true, false);
 				files.put(addedFile.getId(), addedFile);
 				break;
 
@@ -156,7 +161,8 @@ public class FileInfoInstancesCreatingThread implements Runnable {
 				final DBFileInfo changedFile = new DBFileInfo(
 						currentChange.getRepositoryId(), path,
 						currentChangeCombinedCommit
-								.getAfterCombinedRevisionId(), lastRevisionId);
+								.getAfterCombinedRevisionId(), lastRevisionId,
+						false, false);
 				files.put(changedFile.getId(), changedFile);
 				break;
 

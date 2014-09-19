@@ -6,8 +6,10 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCloneSetLinkInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentGenealogyInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentLinkInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCombinedRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCrdInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBFileInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRepositoryInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
 
 /**
@@ -18,26 +20,32 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBRevisionInfo;
  */
 public class DBDataManagerManager {
 
+	private final DBDataManager<DBRepositoryInfo> dbRepositoryManager;
+
 	private final DBDataManager<DBRevisionInfo> dbRevisionManager;
 	
+	private final DBDataManager<DBCombinedRevisionInfo> dbCombinedRevisionManager;
+
 	private final DBDataManager<DBFileInfo> dbFileManager;
-	
+
 	private final DBDataManager<DBCodeFragmentInfo> dbFragmentManager;
-	
+
 	private final DBDataManager<DBCloneSetInfo> dbCloneManager;
-	
+
 	private final DBDataManager<DBCodeFragmentLinkInfo> dbFragmentLinkManager;
-	
+
 	private final DBDataManager<DBCloneSetLinkInfo> dbCloneLinkManager;
-	
+
 	private final DBDataManager<DBCodeFragmentGenealogyInfo> dbFragmentGenealogyManager;
-	
+
 	private final DBDataManager<DBCloneGenealogyInfo> dbCloneGenealogyManager;
-	
+
 	private final DBDataManager<DBCrdInfo> dbCrdManager;
-	
+
 	public DBDataManagerManager() {
+		this.dbRepositoryManager = new DBDataManager<DBRepositoryInfo>();
 		this.dbRevisionManager = new DBDataManager<DBRevisionInfo>();
+		this.dbCombinedRevisionManager = new DBDataManager<DBCombinedRevisionInfo>();
 		this.dbFileManager = new DBDataManager<DBFileInfo>();
 		this.dbFragmentManager = new DBDataManager<DBCodeFragmentInfo>();
 		this.dbCloneManager = new DBDataManager<DBCloneSetInfo>();
@@ -48,10 +56,18 @@ public class DBDataManagerManager {
 		this.dbCrdManager = new DBDataManager<DBCrdInfo>();
 	}
 
+	public final DBDataManager<DBRepositoryInfo> getDbRepositoryManager() {
+		return dbRepositoryManager;
+	}
+
 	public final DBDataManager<DBRevisionInfo> getDbRevisionManager() {
 		return dbRevisionManager;
 	}
 
+	public final DBDataManager<DBCombinedRevisionInfo> getDbCombinedRevisionManager() {
+		return dbCombinedRevisionManager;
+	}
+	
 	public final DBDataManager<DBFileInfo> getDbFileManager() {
 		return dbFileManager;
 	}
@@ -83,7 +99,7 @@ public class DBDataManagerManager {
 	public final DBDataManager<DBCrdInfo> getDbCrdManager() {
 		return dbCrdManager;
 	}
-	
+
 	public final void clear() {
 		this.dbRevisionManager.clear();
 		this.dbFileManager.clear();
@@ -95,5 +111,5 @@ public class DBDataManagerManager {
 		this.dbCloneGenealogyManager.clear();
 		this.dbCrdManager.clear();
 	}
-	
+
 }

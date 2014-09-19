@@ -20,7 +20,7 @@ public enum CodeFragmentLinkMode {
 	/**
 	 * detect n by m links
 	 */
-	MULTIPLE(new String[] { "m", "multiple", "d", "default" },
+	MULTIPLE(new String[] { "m", "multiple", "multi", "d", "default" },
 			new MultipleCodeFragmentLinker());
 
 	private final String[] correspondingStrs;

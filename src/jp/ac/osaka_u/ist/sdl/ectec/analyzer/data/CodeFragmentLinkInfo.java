@@ -1,5 +1,7 @@
 package jp.ac.osaka_u.ist.sdl.ectec.analyzer.data;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.ElementVisitor;
+
 /**
  * A class that represents links of code fragments
  * 
@@ -10,14 +12,14 @@ public class CodeFragmentLinkInfo extends AbstractElement implements
 		Comparable<CodeFragmentLinkInfo> {
 
 	/**
-	 * the before revision
+	 * the before combined revision
 	 */
-	private final RevisionInfo beforeRevision;
+	private final CombinedRevisionInfo beforeCombinedRevision;
 
 	/**
-	 * the after revision
+	 * the after combined revision
 	 */
-	private final RevisionInfo afterRevision;
+	private final CombinedRevisionInfo afterCombinedRevision;
 
 	/**
 	 * the before fragment
@@ -35,34 +37,34 @@ public class CodeFragmentLinkInfo extends AbstractElement implements
 	private final boolean changed;
 
 	public CodeFragmentLinkInfo(final long id,
-			final RevisionInfo beforeRevision,
-			final RevisionInfo afterRevision,
+			final CombinedRevisionInfo beforeCombinedRevision,
+			final CombinedRevisionInfo afterCombinedRevision,
 			final CodeFragmentInfo beforeFragment,
 			final CodeFragmentInfo afterFragment, final boolean changed) {
 		super(id);
-		this.beforeRevision = beforeRevision;
-		this.afterRevision = afterRevision;
+		this.beforeCombinedRevision = beforeCombinedRevision;
+		this.afterCombinedRevision = afterCombinedRevision;
 		this.beforeFragment = beforeFragment;
 		this.afterFragment = afterFragment;
 		this.changed = changed;
 	}
 
 	/**
-	 * get the before revision
+	 * get the before combined revision
 	 * 
 	 * @return
 	 */
-	public final RevisionInfo getBeforeRevision() {
-		return beforeRevision;
+	public final CombinedRevisionInfo getBeforeCombinedRevision() {
+		return beforeCombinedRevision;
 	}
 
 	/**
-	 * get the after revision
+	 * get the after combined revision
 	 * 
 	 * @return
 	 */
-	public final RevisionInfo getAfterRevision() {
-		return afterRevision;
+	public final CombinedRevisionInfo getAfterCombinedRevision() {
+		return afterCombinedRevision;
 	}
 
 	/**
@@ -94,14 +96,14 @@ public class CodeFragmentLinkInfo extends AbstractElement implements
 
 	@Override
 	public int compareTo(CodeFragmentLinkInfo another) {
-		final int compareWithBeforeRev = beforeRevision.compareTo(another
-				.getBeforeRevision());
+		final int compareWithBeforeRev = beforeCombinedRevision
+				.compareTo(another.getBeforeCombinedRevision());
 		if (compareWithBeforeRev != 0) {
 			return compareWithBeforeRev;
 		}
 
-		final int compareWithAfterRev = afterRevision.compareTo(another
-				.getAfterRevision());
+		final int compareWithAfterRev = afterCombinedRevision.compareTo(another
+				.getAfterCombinedRevision());
 		if (compareWithAfterRev != 0) {
 			return compareWithAfterRev;
 		}
@@ -119,6 +121,11 @@ public class CodeFragmentLinkInfo extends AbstractElement implements
 		}
 
 		return ((Long) id).compareTo(another.getId());
+	}
+
+	@Override
+	public void accept(final ElementVisitor visitor) {
+		visitor.visit(this);
 	}
 
 }

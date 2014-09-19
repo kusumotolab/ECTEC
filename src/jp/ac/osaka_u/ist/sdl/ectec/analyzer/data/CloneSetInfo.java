@@ -3,6 +3,8 @@ package jp.ac.osaka_u.ist.sdl.ectec.analyzer.data;
 import java.util.Collections;
 import java.util.List;
 
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.ElementVisitor;
+
 /**
  * A class that represents clone sets
  * 
@@ -15,14 +17,14 @@ public class CloneSetInfo extends AbstractElement implements
 	/**
 	 * the owner revision
 	 */
-	private final RevisionInfo revision;
+	private final CombinedRevisionInfo revision;
 
 	/**
 	 * the list of code fragments
 	 */
 	private final List<CodeFragmentInfo> elements;
 
-	public CloneSetInfo(final long id, final RevisionInfo revision,
+	public CloneSetInfo(final long id, final CombinedRevisionInfo revision,
 			final List<CodeFragmentInfo> elements) {
 		super(id);
 		this.revision = revision;
@@ -30,11 +32,11 @@ public class CloneSetInfo extends AbstractElement implements
 	}
 
 	/**
-	 * get the revision
+	 * get the combined revision
 	 * 
 	 * @return
 	 */
-	public final RevisionInfo getRevision() {
+	public final CombinedRevisionInfo getCombinedRevision() {
 		return revision;
 	}
 
@@ -50,12 +52,17 @@ public class CloneSetInfo extends AbstractElement implements
 	@Override
 	public int compareTo(CloneSetInfo another) {
 		final int compareWithRevision = revision.compareTo(another
-				.getRevision());
+				.getCombinedRevision());
 		if (compareWithRevision != 0) {
 			return compareWithRevision;
 		}
 
 		return ((Long) id).compareTo(another.getId());
+	}
+	
+	@Override
+	public void accept(final ElementVisitor visitor) {
+		visitor.visit(this);
 	}
 
 }

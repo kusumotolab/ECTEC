@@ -10,7 +10,7 @@ import java.util.TreeMap;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CodeFragmentGenealogyInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CodeFragmentInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CodeFragmentLinkInfo;
-import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.RevisionInfo;
+import jp.ac.osaka_u.ist.sdl.ectec.analyzer.data.CombinedRevisionInfo;
 import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCodeFragmentGenealogyInfo;
 
 /**
@@ -23,14 +23,14 @@ public class CodeFragmentGenealogyConcretizer {
 
 	public CodeFragmentGenealogyInfo concretize(
 			final DBCodeFragmentGenealogyInfo dbGenealogy,
-			final Map<Long, RevisionInfo> revisions,
+			final Map<Long, CombinedRevisionInfo> combinedRevisions,
 			final Map<Long, CodeFragmentInfo> fragments,
 			final Map<Long, CodeFragmentLinkInfo> fragmentLinks) {
 		final long id = dbGenealogy.getId();
-		final RevisionInfo startRevision = revisions.get(dbGenealogy
-				.getStartCombinedRevisionId());
-		final RevisionInfo endRevision = revisions.get(dbGenealogy
-				.getEndCombinedRevisionId());
+		final CombinedRevisionInfo startCombinedRevision = combinedRevisions
+				.get(dbGenealogy.getStartCombinedRevisionId());
+		final CombinedRevisionInfo endCombinedRevision = combinedRevisions
+				.get(dbGenealogy.getEndCombinedRevisionId());
 
 		final List<CodeFragmentInfo> fragmentsList = new ArrayList<CodeFragmentInfo>();
 		final List<Long> fragmentIds = dbGenealogy.getElements();
@@ -51,20 +51,21 @@ public class CodeFragmentGenealogyConcretizer {
 			}
 		}
 
-		return new CodeFragmentGenealogyInfo(id, startRevision, endRevision,
-				fragmentsList, fragmentLinksList, changeCount);
+		return new CodeFragmentGenealogyInfo(id, startCombinedRevision,
+				endCombinedRevision, fragmentsList, fragmentLinksList,
+				changeCount);
 	}
 
 	public Map<Long, CodeFragmentGenealogyInfo> concretizeAll(
 			final Collection<DBCodeFragmentGenealogyInfo> dbGenealogies,
-			final Map<Long, RevisionInfo> revisions,
+			final Map<Long, CombinedRevisionInfo> combinedRevisions,
 			final Map<Long, CodeFragmentInfo> fragments,
 			final Map<Long, CodeFragmentLinkInfo> fragmentLinks) {
 		final Map<Long, CodeFragmentGenealogyInfo> result = new TreeMap<Long, CodeFragmentGenealogyInfo>();
 
 		for (final DBCodeFragmentGenealogyInfo dbGenealogy : dbGenealogies) {
 			final CodeFragmentGenealogyInfo genealogy = concretize(dbGenealogy,
-					revisions, fragments, fragmentLinks);
+					combinedRevisions, fragments, fragmentLinks);
 			result.put(genealogy.getId(), genealogy);
 		}
 
@@ -73,11 +74,11 @@ public class CodeFragmentGenealogyConcretizer {
 
 	public Map<Long, CodeFragmentGenealogyInfo> concretizeAll(
 			final Map<Long, DBCodeFragmentGenealogyInfo> dbGenealogies,
-			final Map<Long, RevisionInfo> revisions,
+			final Map<Long, CombinedRevisionInfo> combinedRevisions,
 			final Map<Long, CodeFragmentInfo> fragments,
 			final Map<Long, CodeFragmentLinkInfo> fragmentLinks) {
-		return concretizeAll(dbGenealogies.values(), revisions, fragments,
-				fragmentLinks);
+		return concretizeAll(dbGenealogies.values(), combinedRevisions,
+				fragments, fragmentLinks);
 	}
 
 }
