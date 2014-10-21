@@ -133,6 +133,7 @@ public class RevisionDetectorMainSettings extends AbstractSettings {
 			logger.info("targets all the repositories registered into the db");
 		}
 
+		ignoredRevisions = new ConcurrentHashMap<Long, Set<String>>();
 		if (cmd.hasOption("igl")) {
 			final String ignoreListPath = cmd.getOptionValue("igl");
 			final File ignoreListFile = new File(ignoreListPath);
@@ -141,7 +142,6 @@ public class RevisionDetectorMainSettings extends AbstractSettings {
 						+ ignoreListPath);
 			}
 
-			ignoredRevisions = new ConcurrentHashMap<Long, Set<String>>();
 			ignoredRevisions.putAll(IgnoreListReader.read(ignoreListFile));
 			logger.info("loaded ignored list: " + ignoreListPath);
 		} else {
