@@ -59,6 +59,9 @@ public abstract class AbstractWithSubTableElementRegisterer<T extends AbstractDB
 					.entrySet()) {
 				final int subCount = countEntry.getValue();
 				if (subCount >= maxBatchCount) {
+					mainPstmt.executeBatch();
+					mainPstmt.clearBatch();
+
 					final PreparedStatement subPstmt = subPstmts.get(countEntry
 							.getKey());
 					subPstmt.executeBatch();
