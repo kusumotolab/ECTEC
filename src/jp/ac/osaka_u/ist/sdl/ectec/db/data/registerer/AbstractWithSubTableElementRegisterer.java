@@ -40,53 +40,55 @@ public abstract class AbstractWithSubTableElementRegisterer<T extends AbstractDB
 
 		final Map<String, PreparedStatement> subPstmts = makePreparedStatementsForSubElements();
 
-		int mainCount = 0;
-		final Map<String, Integer> currentCount = new HashMap<String, Integer>();
-		for (final String subElement : subElements) {
-			currentCount.put(subElement, 0);
-		}
-
-		for (final T element : elements) {
-			fillMainElementPreparedStatement(mainPstmt, element);
-			final Map<String, Integer> currentCountCopy = fillSubElementPreparedStatements(
-					element, subPstmts, currentCount);
-
-			if ((mainCount++ % maxBatchCount) == 0) {
-				mainPstmt.executeBatch();
-				mainPstmt.clearBatch();
+		try {
+			int mainCount = 0;
+			final Map<String, Integer> currentCount = new HashMap<String, Integer>();
+			for (final String subElement : subElements) {
+				currentCount.put(subElement, 0);
 			}
-			for (final Map.Entry<String, Integer> countEntry : currentCountCopy
-					.entrySet()) {
-				final int subCount = countEntry.getValue();
-				if (subCount >= maxBatchCount) {
+
+			for (final T element : elements) {
+				fillMainElementPreparedStatement(mainPstmt, element);
+				final Map<String, Integer> currentCountCopy = fillSubElementPreparedStatements(
+						element, subPstmts, currentCount);
+
+				if ((mainCount++ % maxBatchCount) == 0) {
 					mainPstmt.executeBatch();
 					mainPstmt.clearBatch();
+				}
+				for (final Map.Entry<String, Integer> countEntry : currentCountCopy
+						.entrySet()) {
+					final int subCount = countEntry.getValue();
+					if (subCount >= maxBatchCount) {
+						mainPstmt.executeBatch();
+						mainPstmt.clearBatch();
 
-					final PreparedStatement subPstmt = subPstmts.get(countEntry
-							.getKey());
-					subPstmt.executeBatch();
-					subPstmt.clearBatch();
-					currentCount.put(countEntry.getKey(), subCount
-							- maxBatchCount);
-				} else {
-					currentCount.put(countEntry.getKey(), subCount);
+						final PreparedStatement subPstmt = subPstmts
+								.get(countEntry.getKey());
+						subPstmt.executeBatch();
+						subPstmt.clearBatch();
+						currentCount.put(countEntry.getKey(), subCount
+								- maxBatchCount);
+					} else {
+						currentCount.put(countEntry.getKey(), subCount);
+					}
 				}
 			}
-		}
 
-		mainPstmt.executeBatch();
+			mainPstmt.executeBatch();
 
-		for (final Map.Entry<String, PreparedStatement> subPstmtEntry : subPstmts
-				.entrySet()) {
-			subPstmtEntry.getValue().executeBatch();
-		}
+			for (final Map.Entry<String, PreparedStatement> subPstmtEntry : subPstmts
+					.entrySet()) {
+				subPstmtEntry.getValue().executeBatch();
+			}
 
-		dbManager.commit();
-
-		mainPstmt.close();
-		for (final Map.Entry<String, PreparedStatement> subPstmtEntry : subPstmts
-				.entrySet()) {
-			subPstmtEntry.getValue().close();
+			dbManager.commit();
+		} finally {
+			mainPstmt.close();
+			for (final Map.Entry<String, PreparedStatement> subPstmtEntry : subPstmts
+					.entrySet()) {
+				subPstmtEntry.getValue().close();
+			}
 		}
 	}
 

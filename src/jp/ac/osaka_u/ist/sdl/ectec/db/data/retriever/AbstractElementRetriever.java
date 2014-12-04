@@ -40,15 +40,30 @@ public abstract class AbstractElementRetriever<T extends AbstractDBElement> {
 	 */
 	public synchronized SortedMap<Long, T> retrieve(final String query)
 			throws SQLException {
-		final Statement stmt = dbManager.createStatement();
-		final ResultSet rs = stmt.executeQuery(query);
+		Statement stmt = null;
+		ResultSet rs = null;
+		SortedMap<Long, T> result = null;
 
-		final SortedMap<Long, T> result = instantiate(rs);
+		try {
+			stmt = dbManager.createStatement();
+			rs = stmt.executeQuery(query);
 
-		stmt.close();
-		rs.close();
+			result = instantiate(rs);
+		} finally {
+			if (stmt != null) {
+				stmt.close();
+			}
 
-		return Collections.unmodifiableSortedMap(result);
+			if (rs != null) {
+				rs.close();
+			}
+		}
+
+		if (result != null) {
+			return Collections.unmodifiableSortedMap(result);
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -157,18 +172,23 @@ public abstract class AbstractElementRetriever<T extends AbstractDBElement> {
 	public synchronized long getMaximumId() throws SQLException {
 		final String query = "select MAX(" + getIdColumnName() + ") from "
 				+ getTableName();
-
-		final Statement stmt = dbManager.createStatement();
-		final ResultSet rs = stmt.executeQuery(query);
-
 		long result = 0;
-		while (rs.next()) {
-			result = rs.getLong(1);
-			break;
-		}
 
-		stmt.close();
-		rs.close();
+		Statement stmt = null;
+		ResultSet rs = null;
+
+		try {
+			stmt = dbManager.createStatement();
+			rs = stmt.executeQuery(query);
+
+			while (rs.next()) {
+				result = rs.getLong(1);
+				break;
+			}
+		} finally {
+			stmt.close();
+			rs.close();
+		}
 
 		return result;
 	}

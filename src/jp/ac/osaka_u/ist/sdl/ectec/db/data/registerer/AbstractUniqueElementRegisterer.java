@@ -14,8 +14,8 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.AbstractDBElement;
  * 
  * @param <T>
  */
-public abstract class AbstractUniqueElementRegisterer<T extends AbstractDBElement> extends AbstractElementRegisterer<T> {
-
+public abstract class AbstractUniqueElementRegisterer<T extends AbstractDBElement>
+		extends AbstractElementRegisterer<T> {
 
 	/**
 	 * the constructor
@@ -35,27 +35,30 @@ public abstract class AbstractUniqueElementRegisterer<T extends AbstractDBElemen
 	 * @throws SQLException
 	 */
 	@Override
-	public synchronized void register(final Collection<T> elements) throws SQLException {
+	public synchronized void register(final Collection<T> elements)
+			throws SQLException {
 		final PreparedStatement pstmt = dbManager
 				.createPreparedStatement(createPreparedStatementQueue());
 
-		int count = 0;
+		try {
+			int count = 0;
 
-		for (final T element : elements) {
-			setAttributes(pstmt, element);
-			pstmt.addBatch();
-			if ((++count % maxBatchCount) == 0) {
-				pstmt.executeBatch();
-				pstmt.clearBatch();
+			for (final T element : elements) {
+				setAttributes(pstmt, element);
+				pstmt.addBatch();
+				if ((++count % maxBatchCount) == 0) {
+					pstmt.executeBatch();
+					pstmt.clearBatch();
+				}
 			}
+
+			pstmt.executeBatch();
+			dbManager.commit();
+		} finally {
+			pstmt.close();
 		}
-
-		pstmt.executeBatch();
-		dbManager.commit();
-
-		pstmt.close();
 	}
-	
+
 	/**
 	 * get the query to create a prepared statement
 	 * 

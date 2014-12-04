@@ -28,27 +28,28 @@ public abstract class AbstractNonuniqueElementRegisterer<T extends AbstractDBEle
 		final PreparedStatement pstmt = dbManager
 				.createPreparedStatement(createPreparedStatementQuery());
 
-		int count = 0;
-		for (final T element : elements) {
-			count += fillPreparedStatement(pstmt, element);
+		try {
+			int count = 0;
+			for (final T element : elements) {
+				count += fillPreparedStatement(pstmt, element);
 
-			if ((count - maxBatchCount) >= 0) {
-				pstmt.executeBatch();
-				pstmt.clearBatch();
-				count -= maxBatchCount;
+				if ((count - maxBatchCount) >= 0) {
+					pstmt.executeBatch();
+					pstmt.clearBatch();
+					count -= maxBatchCount;
+				}
 			}
+
+			pstmt.executeBatch();
+			dbManager.commit();
+		} finally {
+			pstmt.close();
 		}
-
-		pstmt.executeBatch();
-		dbManager.commit();
-		pstmt.close();
 	}
-
 
 	protected abstract String createPreparedStatementQuery();
 
-	protected abstract int fillPreparedStatement(
-			final PreparedStatement pstmt, final T element)
-			throws SQLException;
+	protected abstract int fillPreparedStatement(final PreparedStatement pstmt,
+			final T element) throws SQLException;
 
 }

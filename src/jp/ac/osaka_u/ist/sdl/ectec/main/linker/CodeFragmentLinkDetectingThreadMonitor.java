@@ -1,5 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.main.linker;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -147,8 +148,11 @@ public class CodeFragmentLinkDetectingThreadMonitor {
 				}
 
 			} catch (Exception e) {
-				eLogger.warn("something is wrong in the monitoring thread\n"
-						+ e.toString());
+				eLogger.warn("something is wrong in the monitoring thread\n", e);
+				if (e instanceof SQLException) {
+					eLogger.warn("error code: "
+							+ ((SQLException) e).getErrorCode());
+				}
 			}
 
 			// break this loop if all the other threads have died

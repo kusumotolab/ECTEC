@@ -1,5 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector;
 
+import java.sql.SQLException;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentMap;
@@ -119,8 +120,13 @@ public class CodeFragmentDetectingThreadMonitor {
 				}
 
 			} catch (Exception e) {
-				eLogger.warn("something is wrong in RevisionDetectThreadMonitor\n"
-						+ e.toString());
+				eLogger.warn(
+						"something is wrong in CodeFragmentDetectingThreadMonitor\n",
+						e);
+				if (e instanceof SQLException) {
+					eLogger.warn("error code: "
+							+ ((SQLException) e).getErrorCode());
+				}
 			}
 
 			// break this loop if all the other threads have died

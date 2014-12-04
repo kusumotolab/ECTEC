@@ -1,5 +1,6 @@
 package jp.ac.osaka_u.ist.sdl.ectec.main.revisiondetector;
 
+import java.sql.SQLException;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentMap;
@@ -110,8 +111,13 @@ public class RevisionDetectThreadMonitor {
 				}
 
 			} catch (Exception e) {
-				eLogger.warn("something is wrong in RevisionDetectThreadMonitor\n"
-						+ e.toString());
+				eLogger.warn(
+						"something is wrong in RevisionDetectThreadMonitor\n",
+						e);
+				if (e instanceof SQLException) {
+					eLogger.warn("error code: "
+							+ ((SQLException) e).getErrorCode());
+				}
 			}
 
 			boolean allThreadDead = true;
