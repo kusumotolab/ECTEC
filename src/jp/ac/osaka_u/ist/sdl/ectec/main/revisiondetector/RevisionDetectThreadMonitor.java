@@ -115,8 +115,13 @@ public class RevisionDetectThreadMonitor {
 						"something is wrong in RevisionDetectThreadMonitor\n",
 						e);
 				if (e instanceof SQLException) {
-					eLogger.warn("error code: "
-							+ ((SQLException) e).getErrorCode());
+					final SQLException se = (SQLException) e;
+					eLogger.warn("error code: " + se.getErrorCode());
+
+					SQLException ne = null;
+					while ((ne = se.getNextException()) != null) {
+						eLogger.warn("next exception: ", ne);
+					}
 				}
 			}
 
