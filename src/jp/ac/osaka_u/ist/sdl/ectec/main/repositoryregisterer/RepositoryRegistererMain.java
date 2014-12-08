@@ -8,9 +8,9 @@ import org.apache.log4j.Logger;
 /**
  * The main class to register the given repository. <br>
  * This process MUST follow the db making process.
- * 
+ *
  * @author k-hotta
- * 
+ *
  */
 public class RepositoryRegistererMain {
 
@@ -40,12 +40,10 @@ public class RepositoryRegistererMain {
 
 			// initialize db
 			preprocess(settings);
-
 			// main processing
 			final RepositoryRegisterer registerer = new RepositoryRegisterer(
 					settings, dbManager);
 			registerer.perform();
-
 			// post processing
 			postprocess();
 
@@ -63,7 +61,7 @@ public class RepositoryRegistererMain {
 
 	/**
 	 * load the settings
-	 * 
+	 *
 	 * @param args
 	 * @return
 	 * @throws Exception
@@ -77,7 +75,7 @@ public class RepositoryRegistererMain {
 
 	/**
 	 * perform pre-processing
-	 * 
+	 *
 	 * @param settings
 	 * @throws Exception
 	 */

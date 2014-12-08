@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="WebContent/WEB-INF/lib"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/commons-cli-1.2.jar" sourcepath="lib/commons-cli-1.2-sources.jar"/>
@@ -23,5 +24,6 @@
 	<classpathentry kind="lib" path="lib/svnkit-javahl16-1.8.6.jar" sourcepath="lib/svnkit-javahl16-1.8.6-sources.jar"/>
 	<classpathentry kind="lib" path="lib/jna-4.1.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="C:/Programs/PostgreSQL/pgJDBC/postgresql-9.3-1100.jdbc4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

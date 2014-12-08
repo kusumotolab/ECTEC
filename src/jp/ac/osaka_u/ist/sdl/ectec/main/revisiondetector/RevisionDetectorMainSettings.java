@@ -141,7 +141,6 @@ public class RevisionDetectorMainSettings extends AbstractSettings {
 				throw new IllegalSettingValueException("cannot find "
 						+ ignoreListPath);
 			}
-
 			ignoredRevisions.putAll(IgnoreListReader.read(ignoreListFile));
 			logger.info("loaded ignored list: " + ignoreListPath);
 		} else {
