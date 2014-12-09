@@ -1,0 +1,15 @@
+2014-11-27 19:39:24.384 (         0 [ms]) CONFIG - the loaded property file: ectec.properties
+2014-11-27 19:39:24.384 (         0 [ms]) CONFIG - the path of the database file: localhost/dbtest2
+2014-11-27 19:39:24.384 (         0 [ms]) CONFIG - the number of threads: 12
+2014-11-27 19:39:24.384 (         0 [ms]) CONFIG - the maximum number of batched statements: 200000
+2014-11-27 19:39:24.384 (         0 [ms]) CONFIG - the specified DBMS: PostgreSQL
+2014-11-27 19:39:24.384 (         0 [ms]) CONFIG - the user name of DB: sa
+2014-11-27 19:39:24.384 (         0 [ms]) CONFIG - the password of DB: 
+2014-11-27 19:39:24.384 (         0 [ms]) CONFIG - overwrite is allowed
+2014-11-27 19:39:24.514 (       130 [ms]) INFO DBMaker - connected to the db
+2014-11-27 19:39:24.514 (       130 [ms]) INFO DBMaker - dropping the existing tables if exist
+2014-11-27 19:39:24.524 (       140 [ms]) INFO DBMaker - dropping the existing indexes if exist
+2014-11-27 19:39:24.554 (       170 [ms]) INFO DBMaker - creating new tables if not exist
+2014-11-27 19:39:24.894 (       510 [ms]) INFO DBMaker - creating indexes
+2014-11-27 19:39:25.204 (       820 [ms]) INFO DBConnectionManager - db connection was closed
+2014-11-27 19:39:25.204 (       820 [ms]) INFO DBMaker - operations have finished.
