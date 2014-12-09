@@ -1,7 +1,5 @@
 package jp.ac.osaka_u.ist.sdl.ectec;
 
-import java.io.File;
-
 import jp.ac.osaka_u.ist.sdl.ectec.db.IDBConfig;
 import jp.ac.osaka_u.ist.sdl.ectec.db.PostgreSQLDBConfig;
 import jp.ac.osaka_u.ist.sdl.ectec.db.SQLiteDBConfig;
@@ -16,9 +14,9 @@ import org.apache.log4j.Logger;
 
 /**
  * An abstract class having common functions to keep runtime settings
- * 
+ *
  * @author k-hotta
- * 
+ *
  */
 public abstract class AbstractSettings implements PropertiesKeys {
 
@@ -88,7 +86,7 @@ public abstract class AbstractSettings implements PropertiesKeys {
 
 	/**
 	 * parse and load the given arguments
-	 * 
+	 *
 	 * @param args
 	 * @throws Exception
 	 */
@@ -98,7 +96,7 @@ public abstract class AbstractSettings implements PropertiesKeys {
 
 	/**
 	 * parse and load the given arguments
-	 * 
+	 *
 	 * @param args
 	 * @param dbMustExist
 	 * @throws Exception
@@ -126,10 +124,14 @@ public abstract class AbstractSettings implements PropertiesKeys {
 		if (dbPath == null) {
 			throw new IllegalSettingValueException("dbPath must not be null.");
 		}
+
+		// POSTGRESQLだとローカルにファイルは存在しないのでコメントアウト
+		/*
 		final File dbFile = new File(dbPath);
 		if (dbMustExist && !dbFile.exists()) {
 			throw new IllegalSettingValueException(dbPath + " doesn't exist.");
 		}
+		*/
 
 		logger.info("the path of the database file: " + dbPath);
 
@@ -202,7 +204,7 @@ public abstract class AbstractSettings implements PropertiesKeys {
 
 	/**
 	 * define options
-	 * 
+	 *
 	 * @return
 	 */
 	protected final Options defineOptions() {
@@ -252,7 +254,7 @@ public abstract class AbstractSettings implements PropertiesKeys {
 	/**
 	 * define particular options for each subsystem <br>
 	 * override this method if any particular options are required
-	 * 
+	 *
 	 * @param options
 	 * @return
 	 */
@@ -263,7 +265,7 @@ public abstract class AbstractSettings implements PropertiesKeys {
 	/**
 	 * initialize particular settings in each subsystem <br>
 	 * override this method if any particular options are required
-	 * 
+	 *
 	 * @param cmd
 	 * @param propReader
 	 * @throws Exception
