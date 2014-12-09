@@ -89,32 +89,31 @@ public class CodeFragmentDetectingThreadMonitor {
 			try {
 				Thread.sleep(Constants.MONITORING_INTERVAL);
 
-				if (detectedCrds.size() >= maxElementsCount) {
+				if (detectedCrds.size() >= maxElementsCount
+						|| detectedFragments.size() >= maxElementsCount) {
 					synchronized (detectedCrds) {
-						final Set<DBCrdInfo> currentElements = new TreeSet<DBCrdInfo>();
-						currentElements.addAll(detectedCrds.values());
-						crdRegisterer.register(currentElements);
-						logger.info(currentElements.size()
-								+ " CRDs have been registered into db");
-						numberOfCrds += currentElements.size();
+						synchronized (detectedFragments) {
+							final Set<DBCrdInfo> currentCrds = new TreeSet<DBCrdInfo>();
+							currentCrds.addAll(detectedCrds.values());
+							crdRegisterer.register(currentCrds);
+							logger.info(currentCrds.size()
+									+ " CRDs have been registered into db");
+							numberOfCrds += currentCrds.size();
 
-						for (final DBCrdInfo crd : currentElements) {
-							detectedCrds.remove(crd.getId());
-						}
-					}
-				}
+							for (final DBCrdInfo crd : currentCrds) {
+								detectedCrds.remove(crd.getId());
+							}
 
-				if (detectedFragments.size() >= maxElementsCount) {
-					synchronized (detectedFragments) {
-						final Set<DBCodeFragmentInfo> currentElements = new TreeSet<DBCodeFragmentInfo>();
-						currentElements.addAll(detectedFragments.values());
-						fragmentRegisterer.register(currentElements);
-						logger.info(currentElements.size()
-								+ " fragments have been registered into db");
-						numberOfFragments += currentElements.size();
+							final Set<DBCodeFragmentInfo> currentFragments = new TreeSet<DBCodeFragmentInfo>();
+							currentFragments.addAll(detectedFragments.values());
+							fragmentRegisterer.register(currentFragments);
+							logger.info(currentFragments.size()
+									+ " fragments have been registered into db");
+							numberOfFragments += currentFragments.size();
 
-						for (final DBCodeFragmentInfo fragment : currentElements) {
-							detectedFragments.remove(fragment.getId());
+							for (final DBCodeFragmentInfo fragment : currentFragments) {
+								detectedFragments.remove(fragment.getId());
+							}
 						}
 					}
 				}
