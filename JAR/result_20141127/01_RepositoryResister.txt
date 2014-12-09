@@ -1,0 +1,17 @@
+2014-11-27 19:39:25.494 (         0 [ms]) CONFIG - the loaded property file: ectec.properties
+2014-11-27 19:39:25.494 (         0 [ms]) CONFIG - the path of the database file: localhost/dbtest2
+2014-11-27 19:39:25.494 (         0 [ms]) CONFIG - the number of threads: 12
+2014-11-27 19:39:25.494 (         0 [ms]) CONFIG - the maximum number of batched statements: 200000
+2014-11-27 19:39:25.494 (         0 [ms]) CONFIG - the specified DBMS: PostgreSQL
+2014-11-27 19:39:25.494 (         0 [ms]) CONFIG - the user name of DB: sa
+2014-11-27 19:39:25.494 (         0 [ms]) CONFIG - the password of DB: 
+2014-11-27 19:39:25.494 (         0 [ms]) CONFIG - the path of input file: myrepositories-test.csv
+2014-11-27 19:39:25.644 (       150 [ms]) INFO RepositoryRegistererMain - connected to the database
+2014-11-27 19:39:25.694 (       200 [ms]) INFO RepositoryRegistererMain - initialized counters of elements
+2014-11-27 19:39:25.694 (       200 [ms]) INFO RepositoryRegisterer - loading the given file ... 
+2014-11-27 19:39:25.694 (       200 [ms]) INFO RepositoryRegisterer - loading myrepositories-test.csv has been completed
+2014-11-27 19:39:25.694 (       200 [ms]) INFO RepositoryRegisterer - 2 repositories have been detected
+2014-11-27 19:39:25.694 (       200 [ms]) INFO RepositoryRegisterer - registering repositories into db ... 
+2014-11-27 19:39:25.704 (       210 [ms]) INFO RepositoryRegisterer - registering repositories into db has been completed
+2014-11-27 19:39:25.704 (       210 [ms]) INFO DBConnectionManager - db connection was closed
+2014-11-27 19:39:25.704 (       210 [ms]) INFO RepositoryRegistererMain - operations have finished.

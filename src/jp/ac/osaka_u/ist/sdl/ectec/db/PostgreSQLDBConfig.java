@@ -17,7 +17,7 @@ public class PostgreSQLDBConfig implements IDBConfig {
 	// C:\Program Files\psqlJDBC\postgresql-8.3-603.jdbc4.jar
 	private static final String DRIVER = "org.postgresql.Driver";
 
-	private static final String HEADER = "jdbc:postgresql://localhost/";
+	private static final String HEADER = "jdbc:postgresql://";
 
 	private final String dbPath;
 

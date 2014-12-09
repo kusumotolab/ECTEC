@@ -1,0 +1,272 @@
+2014-12-02 17:11:33.261 (     17118 [ms]) WARN jp.ac.osaka_u.ist.sdl.ectec.main.
+fragmentdetector.CodeFragmentDetectingThread
+ thread Thread-2 at CodeFragmentDetectingThread.java run jp.ac.osaka_u.ist.sdl.e
+ctec.main.fragmentdetector.CodeFragmentDetectingThread.run(CodeFragmentDetecting
+Thread.java:166)
+something is wrong in processing trunk/src/core/com/lowagie/text/pdf/OcspClient.
+java in repository 2 at combined revision 11101
+2014-12-02 17:15:16.733 (    240590 [ms]) WARN jp.ac.osaka_u.ist.sdl.ectec.main.
+fragmentdetector.CodeFragmentDetectingThreadMonitor
+ thread main at CodeFragmentDetectingThreadMonitor.java monitor jp.ac.osaka_u.is
+t.sdl.ectec.main.fragmentdetector.CodeFragmentDetectingThreadMonitor.monitor(Cod
+eFragmentDetectingThreadMonitor.java:122)
+something is wrong in RevisionDetectThreadMonitor
+java.sql.BatchUpdateException: バッチ投入 99,800 insert into CODE_FRAGMENT value
+s (99801,4590,3,204770,409,409,-1063747257,1303176062,54,118,211,0,0) は停止しま
+した。getNextExceptionを呼んで原因を見て下さい。
+2014-12-02 17:15:20.565 (    244422 [ms]) WARN jp.ac.osaka_u.ist.sdl.ectec.main.
+fragmentdetector.CodeFragmentDetectingThreadMonitor
+ thread main at CodeFragmentDetectingThreadMonitor.java monitor jp.ac.osaka_u.is
+t.sdl.ectec.main.fragmentdetector.CodeFragmentDetectingThreadMonitor.monitor(Cod
+eFragmentDetectingThreadMonitor.java:122)
+something is wrong in RevisionDetectThreadMonitor
+java.sql.BatchUpdateException: バッチ投入 0 insert into CRD values(204770,'METHO
+D','method','JEditTextArea(View)','JEditTextArea(View)',14,'204737','class,org.g
+jt.sp.jedit.textarea.JEditTextArea,737
+
+method,JEditTextArea(View),14
+') は停止しました。getNextExceptionを呼んで原因を見て下さい。
+2014-12-02 17:15:25.010 (    248867 [ms]) WARN jp.ac.osaka_u.ist.sdl.ectec.main.
+fragmentdetector.CodeFragmentDetectingThreadMonitor
+ thread main at CodeFragmentDetectingThreadMonitor.java monitor jp.ac.osaka_u.is
+t.sdl.ectec.main.fragmentdetector.CodeFragmentDetectingThreadMonitor.monitor(Cod
+eFragmentDetectingThreadMonitor.java:122)
+something is wrong in RevisionDetectThreadMonitor
+java.sql.BatchUpdateException: バッチ投入 0 insert into CRD values(204770,'METHO
+D','method','JEditTextArea(View)','JEditTextArea(View)',14,'204737','class,org.g
+jt.sp.jedit.textarea.JEditTextArea,737
+
+method,JEditTextArea(View),14
+') は停止しました。getNextExceptionを呼んで原因を見て下さい。
+2014-12-02 17:15:35.463 (    259320 [ms]) WARN jp.ac.osaka_u.ist.sdl.ectec.main.
+fragmentdetector.CodeFragmentDetectingThreadMonitor
+ thread main at CodeFragmentDetectingThreadMonitor.java monitor jp.ac.osaka_u.is
+t.sdl.ectec.main.fragmentdetector.CodeFragmentDetectingThreadMonitor.monitor(Cod
+eFragmentDetectingThreadMonitor.java:122)
+something is wrong in RevisionDetectThreadMonitor
+java.sql.BatchUpdateException: バッチ投入 0 insert into CRD values(204770,'METHO
+D','method','JEditTextArea(View)','JEditTextArea(View)',14,'204737','class,org.g
+jt.sp.jedit.textarea.JEditTextArea,737
+
+method,JEditTextArea(View),14
+') は停止しました。getNextExceptionを呼んで原因を見て下さい。
+2014-12-02 17:15:42.780 (    266637 [ms]) WARN jp.ac.osaka_u.ist.sdl.ectec.main.
+fragmentdetector.CodeFragmentDetectingThreadMonitor
+ thread main at CodeFragmentDetectingThreadMonitor.java monitor jp.ac.osaka_u.is
+t.sdl.ectec.main.fragmentdetector.CodeFragmentDetectingThreadMonitor.monitor(Cod
+eFragmentDetectingThreadMonitor.java:122)
+something is wrong in RevisionDetectThreadMonitor
+java.sql.BatchUpdateException: バッチ投入 0 insert into CRD values(204770,'METHO
+D','method','JEditTextArea(View)','JEditTextArea(View)',14,'204737','class,org.g
+jt.sp.jedit.textarea.JEditTextArea,737
+
+method,JEditTextArea(View),14
+') は停止しました。getNextExceptionを呼んで原因を見て下さい。
+2014-12-02 17:16:21.365 (    305222 [ms]) WARN jp.ac.osaka_u.ist.sdl.ectec.main.
+fragmentdetector.CodeFragmentDetectingThreadMonitor
+ thread main at CodeFragmentDetectingThreadMonitor.java monitor jp.ac.osaka_u.is
+t.sdl.ectec.main.fragmentdetector.CodeFragmentDetectingThreadMonitor.monitor(Cod
+eFragmentDetectingThreadMonitor.java:122)
+something is wrong in RevisionDetectThreadMonitor
+java.sql.BatchUpdateException: バッチ投入 0 insert into CRD values(204770,'METHO
+D','method','JEditTextArea(View)','JEditTextArea(View)',14,'204737','class,org.g
+jt.sp.jedit.textarea.JEditTextArea,737
+
+method,JEditTextArea(View),14
+') は停止しました。getNextExceptionを呼んで原因を見て下さい。
+2014-12-02 17:17:39.345 (    383202 [ms]) WARN jp.ac.osaka_u.ist.sdl.ectec.main.
+fragmentdetector.CodeFragmentDetectingThreadMonitor
+ thread main at CodeFragmentDetectingThreadMonitor.java monitor jp.ac.osaka_u.is
+t.sdl.ectec.main.fragmentdetector.CodeFragmentDetectingThreadMonitor.monitor(Cod
+eFragmentDetectingThreadMonitor.java:122)
+something is wrong in RevisionDetectThreadMonitor
+java.sql.BatchUpdateException: バッチ投入 0 insert into CRD values(204770,'METHO
+D','method','JEditTextArea(View)','JEditTextArea(View)',14,'204737','class,org.g
+jt.sp.jedit.textarea.JEditTextArea,737
+
+method,JEditTextArea(View),14
+') は停止しました。getNextExceptionを呼んで原因を見て下さい。
+2014-12-02 17:18:22.409 (    426266 [ms]) WARN jp.ac.osaka_u.ist.sdl.ectec.main.
+fragmentdetector.CodeFragmentDetectingThreadMonitor
+ thread main at CodeFragmentDetectingThreadMonitor.java monitor jp.ac.osaka_u.is
+t.sdl.ectec.main.fragmentdetector.CodeFragmentDetectingThreadMonitor.monitor(Cod
+eFragmentDetectingThreadMonitor.java:122)
+something is wrong in RevisionDetectThreadMonitor
+java.sql.BatchUpdateException: バッチ投入 0 insert into CRD values(204770,'METHO
+D','method','JEditTextArea(View)','JEditTextArea(View)',14,'204737','class,org.g
+jt.sp.jedit.textarea.JEditTextArea,737
+
+method,JEditTextArea(View),14
+') は停止しました。getNextExceptionを呼んで原因を見て下さい。
+2014-12-02 17:19:07.369 (    471226 [ms]) WARN jp.ac.osaka_u.ist.sdl.ectec.main.
+fragmentdetector.CodeFragmentDetectingThreadMonitor
+ thread main at CodeFragmentDetectingThreadMonitor.java monitor jp.ac.osaka_u.is
+t.sdl.ectec.main.fragmentdetector.CodeFragmentDetectingThreadMonitor.monitor(Cod
+eFragmentDetectingThreadMonitor.java:122)
+something is wrong in RevisionDetectThreadMonitor
+java.sql.BatchUpdateException: バッチ投入 0 insert into CRD values(204770,'METHO
+D','method','JEditTextArea(View)','JEditTextArea(View)',14,'204737','class,org.g
+jt.sp.jedit.textarea.JEditTextArea,737
+
+method,JEditTextArea(View),14
+') は停止しました。getNextExceptionを呼んで原因を見て下さい。
+2014-12-02 17:20:42.493 (    566350 [ms]) WARN jp.ac.osaka_u.ist.sdl.ectec.main.
+fragmentdetector.CodeFragmentDetectingThreadMonitor
+ thread main at CodeFragmentDetectingThreadMonitor.java monitor jp.ac.osaka_u.is
+t.sdl.ectec.main.fragmentdetector.CodeFragmentDetectingThreadMonitor.monitor(Cod
+eFragmentDetectingThreadMonitor.java:122)
+something is wrong in RevisionDetectThreadMonitor
+java.sql.BatchUpdateException: バッチ投入 0 insert into CRD values(204770,'METHO
+D','method','JEditTextArea(View)','JEditTextArea(View)',14,'204737','class,org.g
+jt.sp.jedit.textarea.JEditTextArea,737
+
+method,JEditTextArea(View),14
+') は停止しました。getNextExceptionを呼んで原因を見て下さい。
+2014-12-02 17:21:37.442 (    621299 [ms]) WARN jp.ac.osaka_u.ist.sdl.ectec.main.
+fragmentdetector.CodeFragmentDetectingThreadMonitor
+ thread main at CodeFragmentDetectingThreadMonitor.java monitor jp.ac.osaka_u.is
+t.sdl.ectec.main.fragmentdetector.CodeFragmentDetectingThreadMonitor.monitor(Cod
+eFragmentDetectingThreadMonitor.java:122)
+something is wrong in RevisionDetectThreadMonitor
+java.sql.BatchUpdateException: バッチ投入 0 insert into CRD values(204770,'METHO
+D','method','JEditTextArea(View)','JEditTextArea(View)',14,'204737','class,org.g
+jt.sp.jedit.textarea.JEditTextArea,737
+
+method,JEditTextArea(View),14
+') は停止しました。getNextExceptionを呼んで原因を見て下さい。
+2014-12-02 17:22:33.915 (    677772 [ms]) WARN jp.ac.osaka_u.ist.sdl.ectec.main.
+fragmentdetector.CodeFragmentDetectingThreadMonitor
+ thread main at CodeFragmentDetectingThreadMonitor.java monitor jp.ac.osaka_u.is
+t.sdl.ectec.main.fragmentdetector.CodeFragmentDetectingThreadMonitor.monitor(Cod
+eFragmentDetectingThreadMonitor.java:122)
+something is wrong in RevisionDetectThreadMonitor
+java.sql.BatchUpdateException: バッチ投入 0 insert into CRD values(204770,'METHO
+D','method','JEditTextArea(View)','JEditTextArea(View)',14,'204737','class,org.g
+jt.sp.jedit.textarea.JEditTextArea,737
+
+method,JEditTextArea(View),14
+') は停止しました。getNextExceptionを呼んで原因を見て下さい。
+2014-12-02 17:24:10.332 (    774189 [ms]) WARN jp.ac.osaka_u.ist.sdl.ectec.main.
+fragmentdetector.CodeFragmentDetectingThreadMonitor
+ thread main at CodeFragmentDetectingThreadMonitor.java monitor jp.ac.osaka_u.is
+t.sdl.ectec.main.fragmentdetector.CodeFragmentDetectingThreadMonitor.monitor(Cod
+eFragmentDetectingThreadMonitor.java:122)
+something is wrong in RevisionDetectThreadMonitor
+java.sql.BatchUpdateException: バッチ投入 0 insert into CRD values(204770,'METHO
+D','method','JEditTextArea(View)','JEditTextArea(View)',14,'204737','class,org.g
+jt.sp.jedit.textarea.JEditTextArea,737
+
+method,JEditTextArea(View),14
+') は停止しました。getNextExceptionを呼んで原因を見て下さい。
+Exception in thread "Thread-8" java.lang.OutOfMemoryError: Java heap space
+        at java.util.Arrays.copyOf(Arrays.java:2367)
+        at java.lang.AbstractStringBuilder.expandCapacity(AbstractStringBuilder.
+java:130)
+        at java.lang.AbstractStringBuilder.ensureCapacityInternal(AbstractString
+Builder.java:114)
+        at java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:415
+)
+        at java.lang.StringBuilder.append(StringBuilder.java:132)
+        at jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.normalizer.StringCr
+eateVisitor.getStringWhiteSpacesRemoved(StringCreateVisitor.java:31)
+        at jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.normalizer.StringCr
+eateVisitor.getString(StringCreateVisitor.java:13)
+        at jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.crd.AbstractBlockAn
+alyzer.analyze(AbstractBlockAnalyzer.java:97)
+        at jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.ASTParser.detectCrd
+(ASTParser.java:253)
+        at jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.ASTParser.visit(AST
+Parser.java:276)
+        at org.eclipse.jdt.core.dom.TypeDeclaration.accept0(TypeDeclaration.java
+:467)
+        at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+        at org.eclipse.jdt.core.dom.ASTNode.acceptChildren(ASTNode.java:2585)
+        at org.eclipse.jdt.core.dom.CompilationUnit.accept0(CompilationUnit.java
+:220)
+        at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+
+Exception: java.lang.OutOfMemoryError thrown from the UncaughtExceptionHandler i
+n thread "Thread-8"
+Exception in thread "Thread-7" java.lang.OutOfMemoryError: Java heap space
+        at java.util.Arrays.copyOf(Arrays.java:2367)
+        at java.lang.AbstractStringBuilder.expandCapacity(AbstractStringBuilder.
+java:130)
+        at java.lang.AbstractStringBuilder.ensureCapacityInternal(AbstractString
+Builder.java:114)
+        at java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:415
+)
+        at java.lang.StringBuffer.append(StringBuffer.java:237)
+        at jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.normalizer.Normaliz
+edStringCreator.visit(NormalizedStringCreator.java:115)
+        at org.eclipse.jdt.core.dom.MethodInvocation.accept0(MethodInvocation.ja
+va:237)
+        at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+        at jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.normalizer.MyNaiveA
+stFlattener.visit(MyNaiveAstFlattener.java:853)
+        at org.eclipse.jdt.core.dom.InfixExpression.accept0(InfixExpression.java
+:364)
+        at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+        at jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.normalizer.MyNaiveA
+stFlattener.visit(MyNaiveAstFlattener.java:533)
+        at org.eclipse.jdt.core.dom.ClassInstanceCreation.accept0(ClassInstanceC
+reation.java:323)
+        at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+        at jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.normalizer.MyNaiveA
+stFlattener.visit(MyNaiveAstFlattener.java:1512)
+        at org.eclipse.jdt.core.dom.ThrowStatement.accept0(ThrowStatement.java:1
+39)
+        at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+        at jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.normalizer.MyNaiveA
+stFlattener.visit(MyNaiveAstFlattener.java:430)
+        at org.eclipse.jdt.core.dom.Block.accept0(Block.java:134)
+        at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+        at jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.normalizer.MyNaiveA
+stFlattener.visit(MyNaiveAstFlattener.java:811)
+        at org.eclipse.jdt.core.dom.IfStatement.accept0(IfStatement.java:186)
+        at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+        at jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.normalizer.MyNaiveA
+stFlattener.visit(MyNaiveAstFlattener.java:430)
+        at org.eclipse.jdt.core.dom.Block.accept0(Block.java:134)
+        at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+        at jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.normalizer.MyNaiveA
+stFlattener.visit(MyNaiveAstFlattener.java:1019)
+        at org.eclipse.jdt.core.dom.MethodDeclaration.accept0(MethodDeclaration.
+java:489)
+        at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+        at jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.normalizer.MyNaiveA
+stFlattener.visit(MyNaiveAstFlattener.java:1619)
+        at org.eclipse.jdt.core.dom.TypeDeclaration.accept0(TypeDeclaration.java
+:467)
+        at org.eclipse.jdt.core.dom.ASTNode.accept(ASTNode.java:2514)
+Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
+        at org.postgresql.jdbc2.AbstractJdbc2Statement.executeBatch(AbstractJdbc
+2Statement.java:2859)
+        at jp.ac.osaka_u.ist.sdl.ectec.db.data.registerer.AbstractUniqueElementR
+egisterer.register(AbstractUniqueElementRegisterer.java:48)
+        at jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.CodeFragmentDetecti
+ngThreadMonitor.monitor(CodeFragmentDetectingThreadMonitor.java:95)
+        at jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.CodeFragmentIdentif
+ier.run(CodeFragmentIdentifier.java:152)
+        at jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.CodeFragmentDetecto
+r.run(CodeFragmentDetector.java:95)
+        at jp.ac.osaka_u.ist.sdl.ectec.main.fragmentdetector.CodeFragmentDetecto
+rMain.main(CodeFragmentDetectorMain.java:57)
+Exception in thread "Thread-3" java.lang.OutOfMemoryError: Java heap space
+Exception in thread "Thread-10" java.lang.OutOfMemoryError: Java heap space
+Exception in thread "Thread-1" java.lang.OutOfMemoryError: Java heap space
+Exception in thread "Thread-5" java.lang.OutOfMemoryError: Java heap space
+Exception in thread "Thread-6" java.lang.OutOfMemoryError: Java heap space
+Exception in thread "Thread-9" java.lang.OutOfMemoryError: Java heap space
+12 02, 2014 5:47:51 午後 org.tmatesoft.svn.core.internal.util.DefaultSVNDebugLog
+ger log
+重大: WC: Java heap space
+java.lang.OutOfMemoryError: Java heap space
+
+Exception in thread "Thread-0" java.lang.OutOfMemoryError: Java heap space
+12 02, 2014 5:48:29 午後 org.tmatesoft.svn.core.internal.util.DefaultSVNDebugLog
+ger log
+重大: WC: Java heap space
+java.lang.OutOfMemoryError: Java heap space
+
+Exception in thread "Thread-2" java.lang.OutOfMemoryError: Java heap space
+Exception in thread "Thread-4" java.lang.OutOfMemoryError: Java heap space
