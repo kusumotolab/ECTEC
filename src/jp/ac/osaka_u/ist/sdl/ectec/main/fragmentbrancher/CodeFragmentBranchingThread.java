@@ -91,9 +91,16 @@ public class CodeFragmentBranchingThread implements Runnable {
 						.getAfterCombinedRevisionId();
 
 				processCommit(beforeCombinedRevisionId, afterCombinedRevisionId);
+				processedCombinedCommits.put(targetCombinedCommit.getId(),
+						targetCombinedCommit);
+				logger.info("[" + processedCombinedCommits.size() + "/"
+						+ targetCombinedCommits.length
+						+ "] processed the combined commit "
+						+ targetCombinedCommit.getId());
 
 				synchronized (detectedLinks) {
 					if (detectedLinks.size() > maximumElementsCount) {
+						logger.info(detectedLinks.size() + " links will be registered");
 						linkRegisterer.register(detectedLinks.values());
 						detectedLinks.clear();
 					}

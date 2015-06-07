@@ -61,6 +61,14 @@ public class CodeFragmentBranchIdentifier {
 					processedCombinedCommits, index, maxElementsCount));
 			threads[i].start();
 		}
+		
+		for (final Thread thread : threads) {
+			try {
+				thread.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 
 		if (!detectedLinks.isEmpty()) {
 			linkRegisterer.register(detectedLinks.values());
