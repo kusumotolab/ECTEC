@@ -7,10 +7,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
-import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
-import jp.ac.osaka_u.ist.sdl.ectec.vcs.AbstractTargetRevisionDetector;
-
 import org.apache.log4j.Logger;
 import org.tmatesoft.svn.core.ISVNLogEntryHandler;
 import org.tmatesoft.svn.core.SVNException;
@@ -18,11 +14,15 @@ import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
 import org.tmatesoft.svn.core.io.SVNRepository;
 
+import jp.ac.osaka_u.ist.sdl.ectec.LoggingManager;
+import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
+import jp.ac.osaka_u.ist.sdl.ectec.vcs.AbstractTargetRevisionDetector;
+
 /**
  * A target revision detector for a SVN repository
- * 
+ *
  * @author k-hotta
- * 
+ *
  */
 public class SVNTargetRevisionDetector extends
 		AbstractTargetRevisionDetector<SVNRepositoryManager> {
@@ -110,6 +110,18 @@ public class SVNTargetRevisionDetector extends
 		}
 
 		return Collections.unmodifiableMap(revisions);
+	}
+
+	@Override
+	protected String detectCommitterName(String identifier) {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
+
+	@Override
+	protected String detectCommitterEmail(String identifier) {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
 	}
 
 }

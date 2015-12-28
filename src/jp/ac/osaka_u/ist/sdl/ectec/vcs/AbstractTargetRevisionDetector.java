@@ -14,9 +14,9 @@ import jp.ac.osaka_u.ist.sdl.ectec.settings.Language;
 
 /**
  * A target revision detector for a SVN repository
- * 
+ *
  * @author k-hotta
- * 
+ *
  */
 public abstract class AbstractTargetRevisionDetector<M extends AbstractRepositoryManager> {
 
@@ -61,10 +61,15 @@ public abstract class AbstractTargetRevisionDetector<M extends AbstractRepositor
 					tmpRevision.getIdentifer(), repositoryId);
 			targetRevisions.put(newRevision.getId(), newRevision);
 
+
 			final DBCommitInfo commit = new DBCommitInfo(repositoryId,
 					previousRevision.getId(), newRevision.getId(),
 					previousRevision.getIdentifier(),
-					newRevision.getIdentifier(), tmpRevision.getDate());
+					newRevision.getIdentifier(),
+					detectCommitterName(newRevision.getIdentifier()),
+					detectCommitterEmail(newRevision.getIdentifier()),
+					tmpRevision.getDate());
+
 			commits.put(commit.getId(), commit);
 
 			previousRevision = newRevision;
@@ -75,6 +80,12 @@ public abstract class AbstractTargetRevisionDetector<M extends AbstractRepositor
 	protected abstract Map<String, Date> detectRevisionsAfterTargetCommits(
 			final Language language, final Set<String> ignoredList)
 			throws Exception;
+
+	protected abstract String detectCommitterName(
+			final String identifier);
+
+	protected abstract String detectCommitterEmail(
+			final String identifier);
 
 	public Map<Long, DBRevisionInfo> getTargetRevisions() {
 		return Collections.unmodifiableMap(targetRevisions);

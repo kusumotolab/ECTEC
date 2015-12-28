@@ -10,9 +10,9 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
 
 /**
  * A class that represents the registerer of commits
- * 
+ *
  * @author k-hotta
- * 
+ *
  */
 public class CommitRegisterer extends
 		AbstractUniqueElementRegisterer<DBCommitInfo> {
@@ -23,7 +23,7 @@ public class CommitRegisterer extends
 
 	@Override
 	protected String createPreparedStatementQueue() {
-		return "insert into VCS_COMMIT values (?,?,?,?,?,?,?,?,?,?,?,?)";
+		return "insert into VCS_COMMIT values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	}
 
 	@Override
@@ -36,6 +36,8 @@ public class CommitRegisterer extends
 		pstmt.setLong(++column, element.getAfterRevisionId());
 		pstmt.setString(++column, element.getBeforeRevisionIdentifier());
 		pstmt.setString(++column, element.getAfterRevisionIdentifier());
+		pstmt.setString(++column, element.getCommitter());
+		pstmt.setString(++column, element.getCommitterEmail());
 
 		final Date date = element.getDate();
 		final Calendar calendar = Calendar.getInstance();

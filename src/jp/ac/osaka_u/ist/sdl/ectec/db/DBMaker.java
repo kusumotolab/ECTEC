@@ -10,9 +10,9 @@ import org.apache.log4j.Logger;
 
 /**
  * A class for create
- * 
+ *
  * @author k-hotta
- * 
+ *
  */
 public class DBMaker {
 
@@ -70,7 +70,7 @@ public class DBMaker {
 
 	/**
 	 * make the db
-	 * 
+	 *
 	 * @param overwrite
 	 *            if true, the existing db is overwritten by the new one (the
 	 *            existing db will be deleted)
@@ -97,7 +97,7 @@ public class DBMaker {
 
 			logger.info("dropping the existing indexes if exist");
 			dropIndexes();
-			
+
 			logger.info("creating new tables if not exist");
 			createNewTables();
 
@@ -136,7 +136,7 @@ public class DBMaker {
 
 	/**
 	 * create new tables
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void createNewTables() throws Exception {
@@ -404,7 +404,7 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the repository table
-	 * 
+	 *
 	 * @return
 	 */
 	private String getRepositoryTableQuery() {
@@ -425,7 +425,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the repository table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createRepositoryTableIndexes() throws Exception {
@@ -435,7 +435,7 @@ public class DBMaker {
 
 	/**
 	 * drop indexes on the repository table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void dropRepositoryTableIndexes() throws Exception {
@@ -445,7 +445,7 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the revision table
-	 * 
+	 *
 	 * @return
 	 */
 	private String getRevisionTableQuery() {
@@ -463,7 +463,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the revision table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createRevisionTableIndexes() throws Exception {
@@ -475,7 +475,7 @@ public class DBMaker {
 
 	/**
 	 * drop indexes on the revision table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void dropRevisionTableIndexes() throws Exception {
@@ -487,7 +487,7 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the commit table
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCommitTableQuery() {
@@ -500,6 +500,8 @@ public class DBMaker {
 		builder.append("AFTER_REVISION_ID BIGINT,");
 		builder.append("BEFORE_REVISION_IDENTIFIER TEXT NOT NULL,");
 		builder.append("AFTER_REVISION_IDENTIFIER TEXT NOT NULL,");
+		builder.append("COMMITTER_NAME TEXT,");
+		builder.append("COMMITTER_ADDRESS TEXT,");
 		builder.append("YEAR INTEGER CHECK(YEAR > 0),");
 		builder.append("MONTH INTEGER CHECK(MONTH >= 1 AND MONTH <= 12),");
 		builder.append("DAY INTEGER CHECK(DAY >= 1 AND DAY <= 31),");
@@ -518,7 +520,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the commit table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCommitTableIndexes() throws Exception {
@@ -548,7 +550,7 @@ public class DBMaker {
 
 	/**
 	 * drop indexes on the commit table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void dropCommitTableIndexes() throws Exception {
@@ -571,7 +573,7 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the combined revision table
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCombinedRevisionTableQuery() {
@@ -589,7 +591,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the revision table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCombinedRevisionTableIndexes() throws Exception {
@@ -603,7 +605,7 @@ public class DBMaker {
 
 	/**
 	 * drop indexes on the revision table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void dropCombinedRevisionTableIndexes() throws Exception {
@@ -617,7 +619,7 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the combined revision table
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCombinedCommitTableQuery() {
@@ -638,7 +640,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the revision table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCombinedCommitTableIndexes() throws Exception {
@@ -654,7 +656,7 @@ public class DBMaker {
 
 	/**
 	 * drop indexes on the combined commit table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void dropCombinedCommitTableIndexes() throws Exception {
@@ -670,7 +672,7 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the file table
-	 * 
+	 *
 	 * @return
 	 */
 	private String getFileTableQuery() {
@@ -694,7 +696,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the file table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createFileTableIndexes() throws Exception {
@@ -710,7 +712,7 @@ public class DBMaker {
 
 	/**
 	 * drop indexes on the file table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void dropFileTableIndexes() throws Exception {
@@ -725,7 +727,7 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the table for crds
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCrdQuery() {
@@ -747,7 +749,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the crd table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCrdTableIndexes() throws Exception {
@@ -757,7 +759,7 @@ public class DBMaker {
 
 	/**
 	 * drop indexes on the crd table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void dropCrdTableIndexes() throws Exception {
@@ -767,7 +769,7 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the code fragment table
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCodeFragmentTableQuery() {
@@ -799,7 +801,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the code fragment table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCodeFragmentTableIndexes() throws Exception {
@@ -825,7 +827,7 @@ public class DBMaker {
 
 	/**
 	 * drop indexes on the code fragment table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void dropCodeFragmentTableIndexes() throws Exception {
@@ -851,7 +853,7 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the clone set table
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCloneSetTableQuery() {
@@ -871,7 +873,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the clone set table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCloneSetTableIndexes() throws Exception {
@@ -887,7 +889,7 @@ public class DBMaker {
 
 	/**
 	 * drop indexes on the clone set table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void dropCloneSetTableIndexes() throws Exception {
@@ -902,7 +904,7 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the table for links of code fragments
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCodeFragmentLinkTableQuery() {
@@ -926,7 +928,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the fragment link table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCodeFragmentLinkTableIndexes() throws Exception {
@@ -944,7 +946,7 @@ public class DBMaker {
 
 	/**
 	 * drop indexes on the fragment link table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void dropCodeFragmentLinkTableIndexes() throws Exception {
@@ -962,7 +964,7 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the table for links of clone sets
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCloneSetLinkTableQuery() {
@@ -985,7 +987,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the clone link table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCloneSetLinkTableIndexes() throws Exception {
@@ -1003,7 +1005,7 @@ public class DBMaker {
 
 	/**
 	 * drop indexes on the clone link table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void dropCloneSetLinkTableIndexes() throws Exception {
@@ -1021,7 +1023,7 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the table for links of clone sets
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCloneSetLinkFragmentLinkTableQuery() {
@@ -1040,7 +1042,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the clone link table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCloneSetLinkFragmentLinkTableIndexes() throws Exception {
@@ -1054,7 +1056,7 @@ public class DBMaker {
 
 	/**
 	 * drop indexes on the clone link table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void dropCloneSetLinkFragmentLinkTableIndexes() throws Exception {
@@ -1068,7 +1070,7 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the table for genealogies of clones
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCloneGenealogyTableQuery() {
@@ -1087,7 +1089,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the clone genealogy table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCloneGenealogyTableIndexes() throws Exception {
@@ -1103,7 +1105,7 @@ public class DBMaker {
 
 	/**
 	 * drop indexes on the clone genealogy table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void dropCloneGenealogyTableIndexes() throws Exception {
@@ -1119,7 +1121,7 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the table for elements in genealogies of clones
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCloneGenealogyEelementTableQuery() {
@@ -1138,7 +1140,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the clone genealogy element table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCloneGenealogyElementTableIndexes() throws Exception {
@@ -1152,7 +1154,7 @@ public class DBMaker {
 
 	/**
 	 * drop indexes on the clone genealogy element table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void dropCloneGenealogyElementTableIndexes() throws Exception {
@@ -1166,7 +1168,7 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the table for links in genealogies of clones
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCloneGenealogyLinkTableQuery() {
@@ -1185,7 +1187,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the clone genealogy element table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCloneGenealogyLinkTableIndexes() throws Exception {
@@ -1199,7 +1201,7 @@ public class DBMaker {
 
 	/**
 	 * drop indexes on the clone genealogy element table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void dropCloneGenealogyLinkTableIndexes() throws Exception {
@@ -1213,7 +1215,7 @@ public class DBMaker {
 
 	/**
 	 * get the query to create the table for genealogies of code fragments
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCodeFragmentGenealogyTableQuery() {
@@ -1232,7 +1234,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the fragment genealogy table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCodeFragmentGenealogyTableIndexes() throws Exception {
@@ -1248,7 +1250,7 @@ public class DBMaker {
 
 	/**
 	 * drop indexes on the fragment genealogy table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void dropCodeFragmentGenealogyTableIndexes() throws Exception {
@@ -1265,7 +1267,7 @@ public class DBMaker {
 	/**
 	 * get the query to create the table for elements in genealogies of code
 	 * fragments
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCodeFragmentGenealogyElementTableQuery() {
@@ -1284,7 +1286,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the fragment genealogy table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCodeFragmentGenealogyElementTableIndexes()
@@ -1299,7 +1301,7 @@ public class DBMaker {
 
 	/**
 	 * drop indexes on the fragment genealogy table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void dropCodeFragmentGenealogyElementTableIndexes()
@@ -1315,7 +1317,7 @@ public class DBMaker {
 	/**
 	 * get the query to create the table for elements in genealogies of code
 	 * fragments
-	 * 
+	 *
 	 * @return
 	 */
 	private String getCodeFragmentGenealogyLinkTableQuery() {
@@ -1334,7 +1336,7 @@ public class DBMaker {
 
 	/**
 	 * create indexes on the fragment genealogy table
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void createCodeFragmentGenealogyLinkTableIndexes() throws Exception {
