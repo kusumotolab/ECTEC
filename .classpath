@@ -24,6 +24,7 @@
 	<classpathentry kind="lib" path="lib/svnkit-javahl16-1.8.6.jar" sourcepath="lib/svnkit-javahl16-1.8.6-sources.jar"/>
 	<classpathentry kind="lib" path="lib/jna-4.1.0.jar"/>
 	<classpathentry kind="lib" path="lib/postgresql-9.3-1103.jdbc4.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.jgit-3.5.1.201410131835-r.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
