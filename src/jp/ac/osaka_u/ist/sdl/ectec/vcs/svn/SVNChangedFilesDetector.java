@@ -69,10 +69,22 @@ public class SVNChangedFilesDetector implements IChangedFilesDetector {
 
 							final String targetStr;
 							if (manager.getAdditionalUrl() != null) {
-								targetStr = entry.getKey().substring(
-										manager.getAdditionalUrl().length() + 1);
+								targetStr = entry.getKey()
+										.substring(
+												manager.getAdditionalUrl()
+														.length() + 1);
 							} else {
 								targetStr = entry.getKey().substring(1);
+							}
+
+							String copyStr = entry.getValue().getCopyPath();
+							if (copyStr != null) {
+								if (manager.getAdditionalUrl() != null) {
+									copyStr = copyStr.substring(manager
+											.getAdditionalUrl().length() + 1);
+								} else {
+									copyStr = copyStr.substring(1);
+								}
 							}
 							// for (final String sourceFilePath :
 							// allFilesInAfterRev) {
@@ -82,18 +94,23 @@ public class SVNChangedFilesDetector implements IChangedFilesDetector {
 							// }
 							// }
 
+							final char type = entry.getValue().getType();
+
 							// in the case that source files are updated
 							if (language.isTarget(entry.getKey())) {
-								result.put(targetStr, entry.getValue()
-										.getType());
-								continue;
+								if (copyStr != null && type == 'R') {
+									if (language.isTarget(copyStr)) {
+										result.put(copyStr, 'D');
+									}
+									result.put(targetStr, 'A');
+								} else {
+									result.put(targetStr, type);
+								}
 							}
 
 							// in the case that directories are deleted
-							else if (('D' == entry.getValue().getType())
-									|| ('R' == entry.getValue().getType())) {
+							else if ('D' == entry.getValue().getType()) {
 								deleted.add(targetStr);
-								continue;
 							}
 						}
 					}
@@ -105,7 +122,9 @@ public class SVNChangedFilesDetector implements IChangedFilesDetector {
 							.getBeforeRevisionIdentifier()), language, deleted);
 
 			for (final String deletedFile : sourceFilesInDeletedDir) {
-				result.put(deletedFile, 'D');
+				if (!result.containsKey(deletedFile)) {
+					result.put(deletedFile, 'D');
+				}
 			}
 
 			// for (final String deletedDir : deleted) {
