@@ -13,9 +13,9 @@ import jp.ac.osaka_u.ist.sdl.ectec.db.data.DBCommitInfo;
 
 /**
  * A class for retrieving commits
- * 
+ *
  * @author k-hotta
- * 
+ *
  */
 public class CommitRetriever extends
 		AbstractUniqueElementRetriever<DBCommitInfo> {
@@ -33,6 +33,8 @@ public class CommitRetriever extends
 		final long afterRevisionId = rs.getLong(++column);
 		final String beforeRevisionIdentifier = rs.getString(++column);
 		final String afterRevisionIdentifier = rs.getString(++column);
+		final String committerName = rs.getString(++column);
+		final String committerEmail = rs.getString(++column);
 		final int year = rs.getInt(++column);
 		final int month = rs.getInt(++column);
 		final int day = rs.getInt(++column);
@@ -44,9 +46,10 @@ public class CommitRetriever extends
 				minute, second);
 		final Date date = cal.getTime();
 
-		return new DBCommitInfo(id, repositoryId, beforeRevisionId,
-				afterRevisionId, beforeRevisionIdentifier,
-				afterRevisionIdentifier, date);
+		return new DBCommitInfo(id, repositoryId,
+				beforeRevisionId, afterRevisionId,
+				beforeRevisionIdentifier, afterRevisionIdentifier,
+				committerName, committerEmail, date);
 	}
 
 	@Override
@@ -88,7 +91,6 @@ public class CommitRetriever extends
 				result = currentCommit;
 			}
 		}
-
 		return result;
 	}
 

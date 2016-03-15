@@ -125,6 +125,8 @@ public class GitChangedFilesDetector implements IChangedFilesDetector {
 			}
 		}
 
+		revWalk.dispose();
+
 		return Collections.unmodifiableMap(result);
 	}
 

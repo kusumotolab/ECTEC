@@ -5,9 +5,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * A class that represents commits
- * 
+ *
  * @author k-hotta
- * 
+ *
  */
 public class DBCommitInfo extends AbstractDBElement implements
 		Comparable<DBCommitInfo> {
@@ -43,34 +43,48 @@ public class DBCommitInfo extends AbstractDBElement implements
 	private final String afterRevisionIdentifier;
 
 	/**
+	 * the name of committer
+	 */
+	private final String committer;
+
+	/**
+	 *  the e-mail address of committer
+	 */
+	private final String committerEmail;
+
+	/**
 	 * the date of the commit
 	 */
 	private final Date date;
 
 	public DBCommitInfo(final long repositoryId, final long beforeRevisionId,
 			final long afterRevisionId, final String beforeRevisionIdentifier,
-			final String afterRevisionIdentifier, final Date date) {
+			final String afterRevisionIdentifier, final String committer,
+			final String committerEmail, final Date date) {
 		this(count.getAndIncrement(), repositoryId, beforeRevisionId,
 				afterRevisionId, beforeRevisionIdentifier,
-				afterRevisionIdentifier, date);
+				afterRevisionIdentifier, committer, committerEmail, date);
 	}
 
 	public DBCommitInfo(final long id, final long repositoryId,
 			final long beforeRevisionId, final long afterRevisionId,
 			final String beforeRevisionIdentifier,
-			final String afterRevisionIdentifier, final Date date) {
+			final String afterRevisionIdentifier, final String committer,
+			final String committerEmail, final Date date) {
 		super(id);
 		this.repositoryId = repositoryId;
 		this.beforeRevisionId = beforeRevisionId;
 		this.afterRevisionId = afterRevisionId;
 		this.beforeRevisionIdentifier = beforeRevisionIdentifier;
 		this.afterRevisionIdentifier = afterRevisionIdentifier;
+		this.committer = committer;
+		this.committerEmail = committerEmail;
 		this.date = date;
 	}
 
 	/**
 	 * reset the count with the given long value
-	 * 
+	 *
 	 * @param l
 	 */
 	public static void resetCount(final long l) {
@@ -79,7 +93,7 @@ public class DBCommitInfo extends AbstractDBElement implements
 
 	/**
 	 * get the repository id
-	 * 
+	 *
 	 * @return
 	 */
 	public final long getRepositoryId() {
@@ -88,7 +102,7 @@ public class DBCommitInfo extends AbstractDBElement implements
 
 	/**
 	 * get the before revision id
-	 * 
+	 *
 	 * @return
 	 */
 	public final long getBeforeRevisionId() {
@@ -97,7 +111,7 @@ public class DBCommitInfo extends AbstractDBElement implements
 
 	/**
 	 * get the after revision id
-	 * 
+	 *
 	 * @return
 	 */
 	public final long getAfterRevisionId() {
@@ -106,7 +120,7 @@ public class DBCommitInfo extends AbstractDBElement implements
 
 	/**
 	 * get the identifier of the before revision
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getBeforeRevisionIdentifier() {
@@ -115,7 +129,7 @@ public class DBCommitInfo extends AbstractDBElement implements
 
 	/**
 	 * get the identifier of the after revision
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getAfterRevisionIdentifier() {
@@ -123,8 +137,25 @@ public class DBCommitInfo extends AbstractDBElement implements
 	}
 
 	/**
+	 * get the committer
+	 *
+	 * @return
+	 */
+	public final String getCommitter() {
+		return this.committer;
+	}
+
+	/**
+	 * get the committerEmail
+	 *
+	 * @return
+	 */
+	public final String getCommitterEmail() {
+		return this.committerEmail;
+	}
+	/**
 	 * get the date of the commit
-	 * 
+	 *
 	 * @return
 	 */
 	public final Date getDate() {

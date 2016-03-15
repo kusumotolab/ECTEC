@@ -11,12 +11,17 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevSort;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.revwalk.filter.AndRevFilter;
+import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
@@ -68,9 +73,18 @@ public class GitTargetRevisionDetector extends
 
 		Git git = new Git(gitRepository);
 		RevWalk revWalk = new RevWalk(gitRepository);
-		Iterable<RevCommit> logs = git.log().call();
 
-		for(RevCommit rev : logs){
+		/*
+		 * Git Command: git log first-parent
+		 * search master branch only
+		 */
+		revWalk.sort(RevSort.TOPO);
+		revWalk.setRevFilter(AndRevFilter.create(new FirstParentRevFilter(revWalk), RevFilter.ALL));
+		Ref headRef = gitRepository.getRef(Constants.HEAD);
+		RevCommit headCommit = revWalk.parseCommit(headRef.getObjectId());
+		revWalk.markStart(headCommit);
+
+		for(RevCommit rev : revWalk){
 			//新しいコミットから順にListに格納．ただし，ignoredListに含まれるコミットはListに格納しない．
 			if(ignoredList.contains(rev.getName())){
 				logger.debug("\t["
@@ -148,4 +162,48 @@ public class GitTargetRevisionDetector extends
 		return Collections.unmodifiableMap(revisions);
 	}
 
+	@Override
+	protected String detectCommitterName(String identifier) {
+		/*
+		 * return committer name from commitID
+		 */
+		String name = null;
+		final Map<String, String> committerInfo = new HashMap<String, String>();
+		final Repository gitRepository = manager.getRepository();
+		RevWalk revWalk = new RevWalk(gitRepository);
+		try{
+		ObjectId specificCommitId = gitRepository.resolve(identifier);
+		RevCommit revCommit = revWalk.parseCommit(specificCommitId);
+		name = revCommit.getAuthorIdent().getName();
+		}catch(Exception e){
+			eLogger.warn("\t[" + manager.getRepositoryName()
+			+ "] revision :" + identifier
+			+ " can't read committer name \n"
+			+ e.toString());
+		}
+
+		return name;
+	}
+
+	@Override
+	protected String detectCommitterEmail(String identifier) {
+		/*
+		 * return committer e-mail address from commitID
+		 */
+		String email = null;
+		final Map<String, String> committerInfo = new HashMap<String, String>();
+		final Repository gitRepository = manager.getRepository();
+		RevWalk revWalk = new RevWalk(gitRepository);
+		try{
+		ObjectId specificCommitId = gitRepository.resolve(identifier);
+		RevCommit revCommit = revWalk.parseCommit(specificCommitId);
+		email = revCommit.getAuthorIdent().getEmailAddress();
+		}catch(Exception e){
+			eLogger.warn("\t[" + manager.getRepositoryName()
+			+ "] revision :" + identifier
+			+ " can't read committer email address \n"
+			+ e.toString());
+		}
+		return email;
+	}
 }
