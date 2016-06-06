@@ -33,6 +33,8 @@ import jp.ac.osaka_u.ist.sdl.ectec.vcs.IChangedFilesDetector;
 public class GitRepositoryManager extends AbstractRepositoryManager {
 
 	private Repository repository;
+	
+	private final String SEPARATOR = System.getProperty("line.separator");
 
 
 	public GitRepositoryManager(String rootUrl, String additionalUrl,
@@ -100,6 +102,7 @@ public class GitRepositoryManager extends AbstractRepositoryManager {
 
 		while((contentsLine = br.readLine()) != null){
 			builder.append(contentsLine);
+			builder.append(SEPARATOR);
 		}
 
 		revWalk.dispose();
